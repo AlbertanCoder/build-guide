@@ -197,8 +197,8 @@
     maps and reports heat sources from the air &mdash; every part, price, rule and line of code
     checked against primary sources. Tap any card to open it.</p>
     <div class="pill-row">
-      <span class="pill">&#127841; ~CA$725 to build</span>
-      <span class="pill">&#9201; 6 weekends</span>
+      <span class="pill">&#127841; ~CA$600 lean build</span>
+      <span class="pill">&#9201; 6 weekends &middot; start tonight</span>
       <span class="pill">&#128293; Detects fires &amp; hotspots</span>
       <span class="pill">&#128218; Quizzes in every step</span>
     </div>
@@ -229,8 +229,8 @@
     including drones and night-vision aircraft. Building one proves you can do the whole chain:
     assemble, fly, sense, detect, map, report. Very few candidates can.</div>
     <div class="grid3">
-      <div class="stat"><div class="big">~CA$725</div><div class="lbl">Total build (verified
-        parts prices, 30 Oct 2026 &mdash; ~US$520)</div></div>
+      <div class="stat"><div class="big">~CA$600</div><div class="lbl">Lean build (verified prices,
+        30 Oct 2026). All-new parts ~$685 &mdash; the savings checklist is in tab 3</div></div>
       <div class="stat"><div class="big">6 weekends</div><div class="lbl">Build &amp; test time;
         legal to fly after a free online exam</div></div>
       <div class="stat"><div class="big">7 / 10</div><div class="lbl">Difficulty: some soldering,
@@ -243,6 +243,31 @@
         night with visible lights on the drone &mdash; exactly when fires are found</div></div>
     </div>
   </div>
+
+  <details class="acc">
+    <summary>Will this land me a job? The straight answer</summary>
+    <div class="acc-body">
+      <p><strong>It makes you more likely &mdash; it can't make you certain.</strong> Nobody honest
+      can promise a job. Here's exactly what this build does and doesn't do:</p>
+      <p><strong>Does:</strong> gives you what entry candidates usually lack &mdash;
+      <em>evidence</em> you can point at (a working system, night-mission recordings, a map),
+      <em>a reference</em> who watched you work through problems, and <em>interview fluency</em>
+      (you can explain every file without notes). Alberta's hiring rules treat experience as
+      equal to education for most classifications &mdash; verified "two-way equivalency" language
+      on alberta.ca. Demand is real: Job Bank rates the outlook <strong>Moderate</strong> for
+      data engineers (NOC 21211) with ~4,150 people in the occupation, mostly Calgary &amp;
+      Edmonton.</p>
+      <p><strong>Doesn't:</strong> waive written minimums for GoA jobs (Level 1 needs a diploma,
+      or certificate + 1 year experience, or a named certification &mdash; the Level 1 checker is
+      in the Career tab), guarantee interviews, or beat 5 years of production experience. What it
+      does beat: tutorial certificates, "I'm passionate" cover letters, and every candidate who
+      can't explain their own code.</p>
+      <div class="note ok"><strong>How to stack the odds:</strong> apply from weekend 3 (not
+      after finishing) &mdash; steady applications + this portfolio + one more project later (the
+      data-pipeline build from the old guide is in git history if you want it) is the pattern that
+      converts. The reference loop in the Career tab is where offers actually come from.</div>
+    </div>
+  </details>
 
   <details class="acc">
     <summary>What it can and cannot see (the honest capability line)</summary>
@@ -452,18 +477,71 @@
     </div>
   </details>
 
+  <details class="acc" open>
+    <summary>Lean vs full &mdash; the savings checklist (how to hit ~CA$600)</summary>
+    <div class="acc-body">
+      <table>
+        <tr><th>Cut</th><th>Saves</th><th>What you give up (honest version)</th></tr>
+        <tr><td>Budget 2207 motors (EMAX ECO II class)</td><td>~$25</td>
+          <td>Nothing that matters here. Top-tier motors are for racing margins.</td></tr>
+        <tr><td>RadioMaster Pocket <em>used</em> in Edmonton</td><td>~$40</td>
+          <td>Nothing &mdash; these are durable. Test the gimbals before buying.</td></tr>
+        <tr><td>2 LiPos instead of 3</td><td>~$30</td>
+          <td>Less flight time per session. Fine while you're learning.</td></tr>
+        <tr><td>Borrow a soldering iron</td><td>~$45</td>
+          <td>Nothing. It's needed for one step (motor wires).</td></tr>
+        <tr><td>Defer GPS module</td><td>~$28</td>
+          <td>Auto-coordinates. Early tests use manual launch position &mdash; buy GPS before mapping missions.</td></tr>
+      </table>
+      <p class="muted"><strong>Lean ≈ CA$600 · All-new ≈ CA$685 · Later upgrades</strong> (3rd
+      battery, GPS, spare motor) ≈ +$80 when you want them. The interactive list below starts at
+      the all-new numbers &mdash; apply the cuts above (used radio, borrowed iron, no GPS) and
+      watch the total drop toward $600.</p>
+      <div class="note gold"><strong>Don't cheap out on exactly two things:</strong> the thermal
+      camera (the MLX90640 is already the cheapest credible sensor &mdash; nothing below it is
+      worth flying) and the battery charger (a balance charger from a known brand; no-name chargers
+      are how LiPo fires happen).</div>
+    </div>
+  </details>
+
   <details class="acc">
-    <summary>Buying notes &amp; the two-battery rule</summary>
+    <summary>Start this week &mdash; Edmonton edition (it's 30 October)</summary>
+    <div class="acc-body">
+      <p><strong>Good news about the timing:</strong> winter is <em>bench season</em>. Everything
+      up to the first hover happens indoors anyway. Order now, build through November, and fly on
+      the first calm, dry, mild days — plus your night-mission rehearsals in spring, right before
+      fire season when the story is hottest.</p>
+      <ul>
+        <li><strong>Local pickup beats shipping:</strong> Great Hobbies (Alberta chain) lists both
+        the SpeedyBee F405 stack and the RadioMaster Pocket &mdash; check store stock online
+        before driving. Also: Edmonton FPV buy/sell groups for a used Pocket, and Amazon.ca carries
+        the Pocket. Electronics spares (wire, heat shrink, props): Memory Express or any hobby shop.</li>
+        <li><strong>Ship what you can't find locally:</strong> SpeedyBee direct (add 2&ndash;3
+        weeks + possible duty), Motion RC (US warehouse), Adafruit/DigiKey for the camera + Pi.</li>
+        <li><strong>Cold-weather reality (Edmonton winter):</strong> LiPos lose punch below
+        &minus;10 &deg;C &mdash; keep packs warm in a jacket pocket, expect shorter flights, and
+        never charge a frozen pack. The MLX90640 itself is rated to well below freezing.</li>
+        <li><strong>Free and first:</strong> register the drone ($5) and pass the Transport Canada
+        Small Basic online exam (14+) this week &mdash; costs almost nothing and it's the piece
+        that makes every flight after it legal.</li>
+      </ul>
+      <div class="note ok"><strong>Order of operations so nothing stalls:</strong> radio first
+      (you can practice on a free simulator like Liftoff while everything else ships), then stack +
+      motors + frame (Weekend 1), then Pi + camera (Weekend 2). The exam and registration can be
+      done tonight.</div>
+    </div>
+  </details>
+
+  <details class="acc">
+    <summary>Buying notes &amp; LiPo safety</summary>
     <div class="acc-body">
       <ul>
-        <li><strong>Canada shops:</strong> RotorVillage, Great Hobbies, Drone Dynamics, EpicFPV
-        &mdash; or SpeedyBee/Motion RC direct (add shipping + possible duty).</li>
-        <li><strong>The Pi + camera are the payload</strong> &mdash; they're identical to the
-        ground-station build's parts, so if you already ordered them, tick them off.</li>
-        <li><strong>Soldering iron required</strong> for the airframe (motor wires &rarr; ESC).
-        A $30 adjustable iron + rosin-core solder is fine. The payload itself is solder-free.</li>
+        <li><strong>Soldering:</strong> one step needs it (motor wires &rarr; ESC). A $30
+        adjustable iron + rosin-core solder is fine. The payload itself is solder-free.</li>
         <li><strong>LiPo safety:</strong> never charge unattended, charge in a LiPo bag, never
         fly a swollen or damaged pack. This is the one part of the hobby that genuinely bites.</li>
+        <li><strong>The Pi + camera are the payload</strong> &mdash; if you already ordered them
+        for the old ground-station plan, tick them off.</li>
       </ul>
     </div>
   </details>
@@ -937,10 +1015,10 @@ while True:
     ],
     
     final: [
-      { q: "Total build cost and the two priciest parts?",
-        a: ["~CA$725; the thermal camera and the motors/stack", "~CA$5,000; motors and batteries", "~CA$100; the Pi", "Free; it's all software"],
+      { q: "Roughly what does the lean build cost, and how do you get there?",
+        a: ["~CA$600 lean / ~$685 all-new: budget motors, used radio locally, 2 batteries, borrow an iron, defer GPS", "~CA$5,000; motors and batteries", "~CA$100; the Pi", "Free; it's all software"],
         c: 0,
-        why: "~US$520 / ~CA$725 at verified 30 Oct 2026 prices: the MLX90640 camera ($74.95), motors ×4 ($80) and the F405 stack ($65.99) are the big lines." },
+        why: "Verified 30 Oct 2026 prices: MLX90640 $74.95, stack $65.99, Pi $19.05, Pocket $76.99 are the fixed lines. Lean cuts: budget 2207 motors, a used Pocket in Edmonton, 2 LiPos instead of 3, and GPS later — that's the ~$600. The shopping list in tab 3 has the whole checklist." },
       { q: "What is the single legal line that never bends?",
         a: ["Night flying", "Never near a wildfire: 5 NM (9.3 km) exclusion below 3,000 ft", "Battery size", "Altitude"],
         c: 1,
@@ -1105,23 +1183,22 @@ while True:
   document.getElementById("alt").addEventListener("input", renderCoverage);
   document.getElementById("fov").addEventListener("change", renderCoverage);
   renderCoverage();
-  /* ---------- Shopping list with budget cap ---------- */
-  const CAP = 1100;
+  /* ---------- Shopping list: budget-first (lean build) ---------- */
+  const CAP = 750;
   const ITEMS = [
-    ["frame", "5\" freestyle frame", "US$25-40. Any 5\" freestyle frame with 30.5 mm stack mounts.", 48],
-    ["stack", "SpeedyBee F405 V4 BLS 55A stack", "US$65.99 verified, SpeedyBee store. FC + 4-in-1 ESC, 3-6S.", 92],
-    ["motors", "2306.5 motors ×4", "US$19.99 each verified, SpeedyBee store. 1800-1950 KV class.", 112],
-    ["radio", "RadioMaster Pocket ELRS + 2× 18650", "US$76.99 + $13.39 verified, Motion RC. 16ch, EdgeTX, 288 g.", 126],
+    ["frame", "5\" freestyle frame", "US$25-40. Budget frames are fine — carbon is carbon at this level.", 45],
+    ["stack", "SpeedyBee F405 V4 BLS 55A stack", "US$65.99 verified, SpeedyBee store. The budget benchmark — don't overspend here.", 92],
+    ["motors", "Budget 2207 motors ×4", "~US$13-15 each (e.g. EMAX ECO II class — shop around). Verified top-tier SpeedyBee 2306.5s are US$19.99 ea if you want them.", 78],
+    ["radio", "RadioMaster Pocket ELRS + 2× 18650", "US$76.99 + $13.39 verified (Motion RC). LEAN TIP: buy used locally — Edmonton FPV buy/sell pages often have Pockets for ~$80-90. Also on Amazon.ca.", 126],
     ["receiver", "ELRS receiver (ER4 class)", "US$16.99 verified, Motion RC.", 24],
-    ["pi", "Raspberry Pi Zero 2 W", "US$19.05 verified, Adafruit. The 10 g brain.", 27],
+    ["pi", "Raspberry Pi Zero 2 W", "US$19.05 verified, Adafruit. Check local Pi stock too (RPi locator).", 27],
     ["camera", "MLX90640 thermal camera (4407)", "US$74.95. Out of stock at Adafruit 30 Oct — DigiKey link on the page. Already ordered?", 105],
     ["cable", "STEMMA QT cable", "US$0.95-1.25 verified. Camera → Pi, no soldering.", 3],
-    ["batteries", "4S LiPo ×3 + balance charger", "Estimate US$60-90. One to fly, two to keep flying.", 125],
-    ["gps", "GPS module for the Pi", "Estimate ~US$20. Needed for map coordinates.", 28],
-    ["props", "Propellers (spares!)", "Estimate US$10-15. You will break some.", 18],
-    ["led", "Night LED kit + battery straps + wire", "Estimate US$15-25. The LEDs make night flights legal (CAR 901.39).", 28],
-    ["iron", "Soldering iron + solder", "Estimate US$30-40 if you don't own one. For motor wires only.", 48],
-    ["misc", "Heat shrink, standoffs, tape, velcro", "Estimate US$15. The unglamorous half of every build.", 21]
+    ["batteries", "4S LiPo ×2 + balance charger", "LEANS TO 2 packs (~US$65-75 total): one to fly, one on charge. Add a 3rd later (~$30).", 95],
+    ["misc", "Props, battery straps, LED night kit, wire, heat shrink", "Estimate US$30-40. Props in multipacks; the LED kit makes night flights legal (CAR 901.39).", 45],
+    ["iron", "Soldering iron + solder", "ONLY IF you don't own one (~US$30-40). Needed just for motor wires. LEAN TIP: borrow one for the build weekend.", 45],
+    ["gps", "GPS module (LATER UPGRADE)", "Defer ~US$20. Early tests use manual launch coordinates; add GPS before mapping missions.", 0],
+    ["spare", "Spare motor + extra props (LATER UPGRADE)", "Defer ~US$25. Buy after your first successful hover.", 0]
   ];
   function priceOf(item) {
     const custom = saved.prices[item[0]];
