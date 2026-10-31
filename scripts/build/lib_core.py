@@ -318,8 +318,14 @@ def label(text, loc, detail=None, kind="part"):
     return ob
 
 
-def hotspot(stage, title, detail, loc):
-    """Clickable step-8 test-stage marker."""
+def hotspot(stage, title, detail, loc, targets=""):
+    """
+    Clickable step-8 test-stage marker.
+
+    `targets` is a comma-separated list of mesh-name prefixes the viewer tints
+    when the pin is activated, so the hotspot can point at the subsystem the
+    stage actually tests.
+    """
     ob = bpy.data.objects.new("HS_" + stage, None)
     bpy.context.scene.collection.objects.link(ob)
     ob.location = loc
@@ -327,6 +333,7 @@ def hotspot(stage, title, detail, loc):
     ob["label"] = title
     ob["detail"] = detail
     ob["stage"] = stage
+    ob["targets"] = targets
     ob["kind"] = "hotspot"
     return ob
 
@@ -366,7 +373,7 @@ def shift(objs, dx=0.0, dy=0.0, dz=0.0):
 # export + preview
 # ----------------------------------------------------------------------------
 def export(name, preview=False, camera_at=(0.30, -0.32, 0.22),
-           target=(0, 0, 0.012), ortho_scale=None, res=760, samples=64):
+           target=(0, 0, 0.012), ortho_scale=None, res=700, samples=36):
     """Write docs/models/<name>.glb and optionally a preview PNG."""
     os.makedirs(OUT_DIR, exist_ok=True)
     path = os.path.join(OUT_DIR, name + ".glb")
@@ -391,21 +398,47 @@ def export(name, preview=False, camera_at=(0.30, -0.32, 0.22),
     return path
 
 
-def _render_preview(name, camera_at, target, ortho_scale, res, samples, ground_z=-0.0006):
+def _render_preview(name, camera_at, target, ortho_scale, res, samples, ground_z=None):
     scene = bpy.context.scene
     os.makedirs(PREVIEW_DIR, exist_ok=True)
+
+    # Auto-frame: keep the requested viewing direction, but compute the
+    # distance from the actual scene bounds so nothing is cropped or tiny.
+    lo = [1e9, 1e9, 1e9]
+    hi = [-1e9, -1e9, -1e9]
+    for ob in scene.objects:
+        if ob.type != "MESH":
+            continue
+        for corner in ob.bound_box:
+            world = ob.matrix_world @ Vector(corner)
+            for i in range(3):
+                lo[i] = min(lo[i], world[i])
+                hi[i] = max(hi[i], world[i])
+    if lo[0] > hi[0]:
+        lo, hi = [-0.1, -0.1, 0.0], [0.1, 0.1, 0.1]
+    centre = Vector(((lo[0] + hi[0]) / 2, (lo[1] + hi[1]) / 2, (lo[2] + hi[2]) / 2))
+    radius = 0.5 * Vector((hi[0] - lo[0], hi[1] - lo[1], hi[2] - lo[2])).length
+    if ground_z is None:
+        ground_z = lo[2] - 0.0008
 
     cam_data = bpy.data.cameras.new("PreviewCam")
     if ortho_scale:
         cam_data.type = "ORTHO"
-        cam_data.ortho_scale = ortho_scale
+        cam_data.ortho_scale = max(ortho_scale, radius * 2.4)
     else:
-        cam_data.lens = 52
+        cam_data.lens = 48
+    direction = (Vector(camera_at) - Vector(target))
+    if direction.length < 1e-6:
+        direction = Vector((0.6, -0.7, 0.5))
+    direction.normalize()
+    half_fov = math.atan(18.0 / cam_data.lens)      # 36 mm sensor, half-width
+    dist = radius / math.sin(half_fov) * 1.06
     cam = bpy.data.objects.new("PreviewCam", cam_data)
     scene.collection.objects.link(cam)
-    cam.location = camera_at
-    look_at(cam, Vector(target))
+    cam.location = centre + direction * dist
+    look_at(cam, centre)
     scene.camera = cam
+    target = tuple(centre)
 
     key = bpy.data.lights.new("Key", type="AREA")
     key.energy = 5.0

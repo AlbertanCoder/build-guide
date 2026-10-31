@@ -253,15 +253,19 @@ def vtx_and_antenna(P, antenna_x=-0.060):
                                     ((antenna_x + 0.002), 0.0, z + 0.006)], 0.0012,
                        P["wire_black"], res=6))
     base_z = z + 0.006
-    objs.append(C.cyl("antenna_stem", 0.0022, 0.020,
-                      (antenna_x, 0.0, base_z + 0.010),
+    objs.append(C.cyl("antenna_stem", 0.0022, 0.016,
+                      (antenna_x, 0.0, base_z + 0.008),
                       mat=P["plastic_black"], seg=10))
-    objs.append(C.cyl("antenna_lobe", 0.0105, 0.028,
-                      (antenna_x, 0.0, base_z + 0.034),
-                      mat=P["plastic_grey"], seg=16, radius_top=0.006))
-    objs.append(C.cyl("antenna_tip", 0.006, 0.006,
-                      (antenna_x, 0.0, base_z + 0.049),
-                      mat=P["plastic_black"], seg=12, radius_top=0.003))
+    # TBS Diamond: a flat diamond-section omni, not a cone
+    for i, tag in enumerate(("a", "b")):
+        blade = C.box(f"antenna_diamond_{tag}", (0.020, 0.0018, 0.030),
+                      (antenna_x, 0.0, base_z + 0.031),
+                      rot=(0, 0, math.radians(45 * i)), mat=P["plastic_grey"],
+                      bevel=0.0006)
+        objs.append(blade)
+    objs.append(C.cyl("antenna_cap", 0.004, 0.004,
+                      (antenna_x, 0.0, base_z + 0.048),
+                      mat=P["plastic_black"], seg=10, radius_top=0.002))
     return objs
 
 
@@ -365,13 +369,34 @@ def battery(P, loc=(0.0, 0.0, 0.0), crosswise=True, label=True):
     x0, y0, z0 = loc
     sx, sy, sz = (0.034, 0.072, 0.026) if crosswise else (0.072, 0.034, 0.026)
     cz = z0 + sz / 2.0
-    band = (0.0345, 0.030, 0.0265) if crosswise else (0.030, 0.0345, 0.0265)
-    lead_x = x0 + sx / 2.0
     objs = [
         C.box("battery_pack", (sx, sy, sz), (x0, y0, cz),
               mat=P["battery"], bevel=0.0022, seg=2),
-        C.box("battery_band", band, (x0 + (0.002 if crosswise else 0.008), y0, cz),
-              mat=P["battery_label"]),
+    ]
+
+    # printed label: dark brand band plus two pale spec blocks, laid on the top
+    top = z0 + sz
+    if crosswise:
+        objs += [
+            C.box("battery_band", (0.030, 0.020, 0.0004), (x0, y0, top + 0.0002),
+                  mat=P["battery_label"]),
+            C.box("battery_brand", (0.012, 0.046, 0.0004),
+                  (x0 - 0.009, y0, top + 0.0002), mat=P["silicone_black"]),
+            C.box("battery_cell_seam", (0.0012, 0.070, 0.024),
+                  (x0, y0, cz), mat=P["silicone_black"]),
+        ]
+    else:
+        objs += [
+            C.box("battery_band", (0.020, 0.030, 0.0004), (x0, y0, top + 0.0002),
+                  mat=P["battery_label"]),
+            C.box("battery_brand", (0.046, 0.012, 0.0004),
+                  (x0, y0 - 0.009, top + 0.0002), mat=P["silicone_black"]),
+            C.box("battery_cell_seam", (0.070, 0.0012, 0.024),
+                  (x0, y0, cz), mat=P["silicone_black"]),
+        ]
+
+    lead_x = x0 + sx / 2.0
+    objs += [
         C.tube("battery_lead", [(lead_x - 0.004, y0 - 0.008, cz + 0.004),
                                 (lead_x + 0.008, y0 - 0.011, cz - 0.002),
                                 (lead_x + 0.016, y0 - 0.013, cz - 0.007)],
@@ -383,9 +408,12 @@ def battery(P, loc=(0.0, 0.0, 0.0), crosswise=True, label=True):
         C.box("battery_xt60", (0.011, 0.020, 0.010),
               (lead_x + 0.022, y0 - 0.011, cz - 0.008),
               mat=P["plastic_black"], bevel=0.0008),
+        C.box("battery_balance_plug", (0.008, 0.014, 0.004),
+              (lead_x + 0.004, y0 + 0.012, cz + 0.010),
+              mat=P["plastic_white"], bevel=0.0004),
     ]
     if label:
-        C.label("4S 1500 LiHV PACK", (x0, y0, z0 + sz + 0.004))
+        C.label("4S 1500 LiHV PACK", (x0, y0, top + 0.010))
     return objs
 
 

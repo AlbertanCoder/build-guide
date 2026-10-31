@@ -28,6 +28,37 @@ Open **4 Build Steps** in the guide for eight custom diagrams covering inventory
 
 The individual SVG diagrams are also available in `docs/images/build/`.
 
+### Interactive 3D models
+
+Each of the eight steps — plus the finished aircraft — is now an interactive 3D model you can
+orbit, zoom and pan, with HTML part labels read from the model itself. three.js is vendored in
+`docs/vendor/three` (no CDN), models are lazy-loaded on scroll, and each step keeps its original
+SVG as a collapsible "original diagram" link. Step 8's six test stages are clickable hotspots
+(A–F) that highlight the hardware each stage exercises.
+
+Models are generated from committed Blender scripts, so they can be rebuilt at any time:
+
+```bash
+blender -b --factory-startup -P scripts/build/build_step02_frame.py
+blender -b --factory-startup -P scripts/build/build_final_product.py   # etc.
+```
+
+| File | Purpose |
+|---|---|
+| `scripts/build/lib_core.py` | materials, explicit-mesh primitives, label anchors, GLB export, preview render |
+| `scripts/build/lib_quad.py` | the quad itself: frame, motors, propellers, stack, payload, battery |
+| `scripts/build/lib_kit.py` | bench hardware: radio, charger, LiPo bag, smoke stopper, monitor, laptop, tools |
+| `scripts/build/build_*.py` | one builder per model |
+| `docs/models/*.glb` | exported models (all under 7k triangles) |
+| `docs/js/viewer3d.js` | on-demand viewer: orbit/zoom/pan, CSS2D labels, hotspots, shadow catcher |
+
+Labels travel inside the GLB as node `extras`, so a model and its labels can never drift apart.
+To view locally, serve the repo root (ES modules and GLB fetches need HTTP):
+
+```bash
+python -m http.server 8000
+```
+
 *These are previews of the HTML guide, not a completed aircraft. Click any image to view it full-size.*
 
 ## Open the guide

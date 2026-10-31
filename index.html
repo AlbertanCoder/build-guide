@@ -243,6 +243,12 @@
   .viewer3d.is-failed .viewer3d-canvas { display: none; }
   .viewer3d.is-failed .viewer3d-nogl { display: block; }
   .viewer3d-nogl { display: none; padding: 18px; color: var(--soft); font-size: 13.5px; }
+  .viewer3d-pin { pointer-events: auto; cursor: pointer; width: 24px; height: 24px;
+    border-radius: 50%; border: 2px solid #fff; background: var(--ember); color: #fff;
+    font: 700 12px/1 "Segoe UI", sans-serif; display: grid; place-items: center;
+    box-shadow: 0 2px 8px rgba(24,58,46,.35); padding: 0; }
+  .viewer3d-pin:hover { transform: scale(1.12); }
+  .viewer3d-pin.is-active { background: var(--pine); box-shadow: 0 0 0 4px rgba(27,94,79,.28); }
   .finished-build { margin: 0 0 20px; }
   .finished-build > p { max-width: 720px; }
   details.orig-diagram { margin: 8px 0 0; font-size: 13px; }
@@ -698,7 +704,23 @@
 
       <div class="visual-guide">
         <article class="visual-step">
-          <a href="docs/images/build/01-parts.svg" target="_blank" rel="noopener"><img src="docs/images/build/01-parts.svg" alt="All parts grouped on the bench before assembly"></a>
+          <div class="viewer3d" data-model="docs/models/step-01-parts.glb" data-title="Lay out everything">
+            <div class="viewer3d-canvas">
+              <div class="viewer3d-labels"></div>
+              <span class="viewer3d-status">Loading 3D&hellip;</span>
+            </div>
+            <p class="viewer3d-nogl">This interactive view needs WebGL &mdash; the original diagram is linked below.</p>
+            <div class="viewer3d-bar">
+              <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
+              <button type="button" data-action="reset">Reset view</button>
+              <button type="button" data-action="labels" aria-pressed="true">Labels</button>
+              <button type="button" data-action="fullscreen">Full screen</button>
+            </div>
+          </div>
+          <details class="orig-diagram">
+            <summary>Original diagram (SVG)</summary>
+            <a href="docs/images/build/01-parts.svg" target="_blank" rel="noopener">01-parts.svg &mdash; All parts grouped on the bench before assembly</a>
+          </details>
           <div class="build-notes"><h3>1 · Lay out everything</h3>
             <p><strong>Do this:</strong> Put the five groups on the bench and compare them with the order list.</p>
             <p class="need"><strong>You need:</strong> Airframe, radio/power, analog FPV, thermal payload, tools and laptop.</p>
@@ -730,14 +752,46 @@
 
 
         <article class="visual-step">
-          <a href="docs/images/build/03-stack.svg" target="_blank" rel="noopener"><img src="docs/images/build/03-stack.svg" alt="Motor wiring, ESC, capacitor, battery lead and smoke stopper"></a>
+          <div class="viewer3d" data-model="docs/models/step-03-stack.glb" data-title="Solder and inspect">
+            <div class="viewer3d-canvas">
+              <div class="viewer3d-labels"></div>
+              <span class="viewer3d-status">Loading 3D&hellip;</span>
+            </div>
+            <p class="viewer3d-nogl">This interactive view needs WebGL &mdash; the original diagram is linked below.</p>
+            <div class="viewer3d-bar">
+              <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
+              <button type="button" data-action="reset">Reset view</button>
+              <button type="button" data-action="labels" aria-pressed="true">Labels</button>
+              <button type="button" data-action="fullscreen">Full screen</button>
+            </div>
+          </div>
+          <details class="orig-diagram">
+            <summary>Original diagram (SVG)</summary>
+            <a href="docs/images/build/03-stack.svg" target="_blank" rel="noopener">03-stack.svg &mdash; Motor wiring, ESC, capacitor, battery lead and smoke stopper</a>
+          </details>
           <div class="build-notes"><h3>3 · Solder and inspect</h3>
             <p><strong>Do this:</strong> Solder motor wires, battery lead and capacitor to the ESC. Fit the FC above it.</p>
             <p class="need"><strong>You need:</strong> Stack, iron, solder/flux, cutters, safety glasses, meter and smoke stopper.</p>
             <p class="check">✓ Check: polarity and continuity pass; no bridges or loose wires; first power uses the smoke stopper.</p></div>
         </article>
         <article class="visual-step">
-          <a href="docs/images/build/04-receiver-fpv.svg" target="_blank" rel="noopener"><img src="docs/images/build/04-receiver-fpv.svg" alt="RP1 UART wiring and analog camera, VTX, antenna and monitor chain"></a>
+          <div class="viewer3d" data-model="docs/models/step-04-receiver-fpv.glb" data-title="Add control and video">
+            <div class="viewer3d-canvas">
+              <div class="viewer3d-labels"></div>
+              <span class="viewer3d-status">Loading 3D&hellip;</span>
+            </div>
+            <p class="viewer3d-nogl">This interactive view needs WebGL &mdash; the original diagram is linked below.</p>
+            <div class="viewer3d-bar">
+              <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
+              <button type="button" data-action="reset">Reset view</button>
+              <button type="button" data-action="labels" aria-pressed="true">Labels</button>
+              <button type="button" data-action="fullscreen">Full screen</button>
+            </div>
+          </div>
+          <details class="orig-diagram">
+            <summary>Original diagram (SVG)</summary>
+            <a href="docs/images/build/04-receiver-fpv.svg" target="_blank" rel="noopener">04-receiver-fpv.svg &mdash; RP1 UART wiring and analog camera, VTX, antenna and monitor chain</a>
+          </details>
           <div class="build-notes"><h3>4 · Add control and video</h3>
             <p><strong>Do this:</strong> Cross RP1 TX/RX to the FC's R2/T2. Then connect the analog camera, HV VTX, antenna and monitor.</p>
             <p class="need"><strong>You need:</strong> RP1 V2, Phoenix 2, Unify HV, TBS Diamond antenna and M5 monitor.</p>
@@ -745,14 +799,46 @@
         </article>
 
         <article class="visual-step">
-          <a href="docs/images/build/05-power.svg" target="_blank" rel="noopener"><img src="docs/images/build/05-power.svg" alt="Pocket radio cells and 4S LiHV battery connected to the M4AC charger"></a>
+          <div class="viewer3d" data-model="docs/models/step-05-power.glb" data-title="Charge power safely">
+            <div class="viewer3d-canvas">
+              <div class="viewer3d-labels"></div>
+              <span class="viewer3d-status">Loading 3D&hellip;</span>
+            </div>
+            <p class="viewer3d-nogl">This interactive view needs WebGL &mdash; the original diagram is linked below.</p>
+            <div class="viewer3d-bar">
+              <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
+              <button type="button" data-action="reset">Reset view</button>
+              <button type="button" data-action="labels" aria-pressed="true">Labels</button>
+              <button type="button" data-action="fullscreen">Full screen</button>
+            </div>
+          </div>
+          <details class="orig-diagram">
+            <summary>Original diagram (SVG)</summary>
+            <a href="docs/images/build/05-power.svg" target="_blank" rel="noopener">05-power.svg &mdash; Pocket radio cells and 4S LiHV battery connected to the M4AC charger</a>
+          </details>
           <div class="build-notes"><h3>5 · Charge power safely</h3>
             <p><strong>Do this:</strong> Install the radio's two 18650 cells. Connect a 4S pack to the M4AC with XT60 and balance lead.</p>
             <p class="need"><strong>You need:</strong> 18650 pair, USB-C cord, GNB 4S packs, M4AC and LiPo bag.</p>
             <p class="check">✓ Check: select LiHV/4S, inspect leads and balance-charge attended in the bag.</p></div>
         </article>
         <article class="visual-step">
-          <a href="docs/images/build/06-payload.svg" target="_blank" rel="noopener"><img src="docs/images/build/06-payload.svg" alt="Pi Qwiic HAT connected independently to thermal camera and GPS"></a>
+          <div class="viewer3d" data-model="docs/models/step-06-payload.glb" data-title="Wire the Pi payload">
+            <div class="viewer3d-canvas">
+              <div class="viewer3d-labels"></div>
+              <span class="viewer3d-status">Loading 3D&hellip;</span>
+            </div>
+            <p class="viewer3d-nogl">This interactive view needs WebGL &mdash; the original diagram is linked below.</p>
+            <div class="viewer3d-bar">
+              <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
+              <button type="button" data-action="reset">Reset view</button>
+              <button type="button" data-action="labels" aria-pressed="true">Labels</button>
+              <button type="button" data-action="fullscreen">Full screen</button>
+            </div>
+          </div>
+          <details class="orig-diagram">
+            <summary>Original diagram (SVG)</summary>
+            <a href="docs/images/build/06-payload.svg" target="_blank" rel="noopener">06-payload.svg &mdash; Pi Qwiic HAT connected independently to thermal camera and GPS</a>
+          </details>
           <div class="build-notes"><h3>6 · Wire the Pi payload</h3>
             <p><strong>Do this:</strong> Solder the 1×5 sensor headers, fit the Qwiic HAT and connect each sensor with a PRT-17912 cable.</p>
             <p class="need"><strong>You need:</strong> Zero 2 WH kit, Qwiic HAT, MLX90640, PA1010D, two jumper cables and micro-USB pigtail.</p>
@@ -760,14 +846,46 @@
         </article>
 
         <article class="visual-step">
-          <a href="docs/images/build/07-mount.svg" target="_blank" rel="noopener"><img src="docs/images/build/07-mount.svg" alt="Payload secured over frame centre with camera down, GPS up and clear propeller zones"></a>
+          <div class="viewer3d" data-model="docs/models/step-07-mount.glb" data-title="Mount and balance">
+            <div class="viewer3d-canvas">
+              <div class="viewer3d-labels"></div>
+              <span class="viewer3d-status">Loading 3D&hellip;</span>
+            </div>
+            <p class="viewer3d-nogl">This interactive view needs WebGL &mdash; the original diagram is linked below.</p>
+            <div class="viewer3d-bar">
+              <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
+              <button type="button" data-action="reset">Reset view</button>
+              <button type="button" data-action="labels" aria-pressed="true">Labels</button>
+              <button type="button" data-action="fullscreen">Full screen</button>
+            </div>
+          </div>
+          <details class="orig-diagram">
+            <summary>Original diagram (SVG)</summary>
+            <a href="docs/images/build/07-mount.svg" target="_blank" rel="noopener">07-mount.svg &mdash; Payload secured over frame centre with camera down, GPS up and clear propeller zones</a>
+          </details>
           <div class="build-notes"><h3>7 · Mount and balance</h3>
             <p><strong>Do this:</strong> Secure Pi/HAT with nylon standoffs and zip ties, then add a Kevlar strap. Route every cable clear of props.</p>
             <p class="need"><strong>You need:</strong> Standoffs, zip ties, Kevlar strap, battery grip pad and frame.</p>
             <p class="check">✓ Check: two retention methods, no carbon contact, balanced centre of gravity.</p></div>
         </article>
         <article class="visual-step">
-          <a href="docs/images/build/08-test.svg" target="_blank" rel="noopener"><img src="docs/images/build/08-test.svg" alt="Testing sequence from software and bench checks to hover and hot-plate validation"></a>
+          <div class="viewer3d" data-model="docs/models/step-08-test.glb" data-title="Test in order">
+            <div class="viewer3d-canvas">
+              <div class="viewer3d-labels"></div>
+              <span class="viewer3d-status">Loading 3D&hellip;</span>
+            </div>
+            <p class="viewer3d-nogl">This interactive view needs WebGL &mdash; the original diagram is linked below.</p>
+            <div class="viewer3d-bar">
+              <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
+              <button type="button" data-action="reset">Reset view</button>
+              <button type="button" data-action="labels" aria-pressed="true">Labels</button>
+              <button type="button" data-action="fullscreen">Full screen</button>
+            </div>
+          </div>
+          <details class="orig-diagram">
+            <summary>Original diagram (SVG)</summary>
+            <a href="docs/images/build/08-test.svg" target="_blank" rel="noopener">08-test.svg &mdash; Testing sequence from software and bench checks to hover and hot-plate validation</a>
+          </details>
           <div class="build-notes"><h3>8 · Test in order</h3>
             <p><strong>Do this:</strong> Run tests and demo, verify GPS fix and power, test radio/video, check motors with props off, then hover.</p>
             <p class="need"><strong>You need:</strong> Acer laptop, payload package, open legal site and a controlled hot plate.</p>

@@ -21,7 +21,7 @@ import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer
 const CREAM = 0xf7f2e8;
 
 // Bumped when the GLBs are rebuilt, so browsers never serve a stale model.
-const MODEL_VERSION = '2026-10-31b';
+const MODEL_VERSION = '2026-10-31d';
 
 const loader = new GLTFLoader();
 
@@ -87,7 +87,11 @@ class ModelViewer {
     this.canvasHost = root.querySelector('.viewer3d-canvas');
     this.labelHost = root.querySelector('.viewer3d-labels');
     this.status = root.querySelector('.viewer3d-status');
+    this.hint = root.querySelector('.viewer3d-hint');
     this.labels = [];
+    this.pins = [];
+    this.tinted = [];
+    this.hintText = this.hint ? this.hint.textContent : '';
 
     root.querySelectorAll('[data-action]').forEach((btn) => {
       btn.addEventListener('click', () => this.action(btn.dataset.action));
@@ -99,6 +103,11 @@ class ModelViewer {
       this.camera.position.copy(this.home.position);
       this.controls.target.copy(this.home.target);
       this.controls.update();
+      this.clearHighlight();
+      this.pins.forEach((pin) => {
+        if (pin.element) pin.element.classList.remove('is-active');
+      });
+      if (this.hint) this.hint.textContent = this.hintText;
       this.render();
     } else if (name === 'labels') {
       this.labelsOn = !this.labelsOn;
@@ -192,7 +201,9 @@ class ModelViewer {
       }
       const data = obj.userData || {};
       if (data.kind === 'part' && data.label) this.addLabel(obj, data);
+      if (data.kind === 'hotspot' && data.label) this.addPin(obj, data);
     });
+    this.model = model;
 
     const box = this.meshBounds(model);
     const centre = box.getCenter(new THREE.Vector3());
@@ -265,6 +276,68 @@ class ModelViewer {
     css2d.position.copy(obj.position);
     obj.parent.add(css2d);
     this.labels.push(css2d);
+  }
+
+  addPin(obj, data) {
+    const el = document.createElement('button');
+    el.type = 'button';
+    el.className = 'viewer3d-pin';
+    el.textContent = data.stage || '?';
+    el.title = data.label;
+    el.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      this.activatePin(el, data);
+    });
+    const css2d = new CSS2DObject(el);
+    css2d.position.copy(obj.position);
+    obj.parent.add(css2d);
+    this.pins.push(css2d);
+  }
+
+  activatePin(el, data) {
+    this.pins.forEach((pin, i) => {
+      if (pin.element) pin.element.classList.remove('is-active');
+    });
+    el.classList.add('is-active');
+
+    if (this.hint) {
+      this.hint.textContent = data.detail
+        ? `${data.label} — ${data.detail}`
+        : data.label;
+    }
+    this.highlight(data.targets);
+  }
+
+  highlight(targets) {
+    this.clearHighlight();
+    if (!targets || !this.model) {
+      this.render();
+      return;
+    }
+    const prefixes = String(targets).split(',')
+      .map((t) => t.trim())
+      .filter(Boolean);
+
+    this.model.traverse((obj) => {
+      if (!obj.isMesh || !obj.name) return;
+      if (!prefixes.some((p) => obj.name.startsWith(p))) return;
+      const original = obj.material;
+      const tinted = original.clone();
+      tinted.emissive = new THREE.Color(0xc2571b);
+      tinted.emissiveIntensity = 0.65;
+      obj.material = tinted;
+      this.tinted.push([obj, original]);
+    });
+    this.render();
+  }
+
+  clearHighlight() {
+    for (const [obj, original] of this.tinted) {
+      if (obj.material && obj.material !== original) obj.material.dispose();
+      obj.material = original;
+    }
+    this.tinted = [];
   }
 
   resize() {
