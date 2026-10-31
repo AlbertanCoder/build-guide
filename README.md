@@ -1,6 +1,26 @@
 # Shad's Fire-Detecting Drone Build Guide
 
+## [▶ Open the Interactive HTML Guide](https://albertancoder.github.io/build-guide/)
+
+**Quick links:** [Live guide](https://albertancoder.github.io/build-guide/) · [HTML source file](index.html) · [Exact order list](Shad-Drone-Order-List.md) · [Audit report](Shad-Drone-Audit-Report.md) · [Payload software](Shad-Drone-Payload/)
+
 A single-page, interactive order and build guide for a 5-inch analog FPV quadcopter with a Raspberry Pi thermal/GPS payload.
+
+## Preview
+
+### Main page and 46-hour build-time calculator
+
+[![Main guide and build-time calculator](docs/images/overview.png)](docs/images/overview.png)
+
+### Parts and interactive budget
+
+[![Parts and budget](docs/images/order-plan.png)](docs/images/order-plan.png)
+
+### Detection pipeline and coverage calculator
+
+[![Detection pipeline and coverage calculator](docs/images/logic.png)](docs/images/logic.png)
+
+*These are previews of the HTML guide, not a completed aircraft. Click any image to view it full-size.*
 
 ## Open the guide
 
