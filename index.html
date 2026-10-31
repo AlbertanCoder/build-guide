@@ -214,6 +214,48 @@
                  details.acc > .acc-body { display: block !important; } }
 
 </style>
+<!-- Interactive 3D build models: three.js is vendored in docs/vendor/three, so
+     this works offline with no CDN calls. Rendering is on-demand and lazy. -->
+<style>
+  .viewer3d { position: relative; margin: 0 0 14px; background: var(--bg);
+              border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .viewer3d-canvas { position: relative; width: 100%; aspect-ratio: 16 / 10; min-height: 240px;
+                     background: var(--bg); }
+  .viewer3d-canvas canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+  .viewer3d-labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .viewer3d-label { display: inline-block; font-size: 10px; font-weight: 700;
+    letter-spacing: .3px; text-transform: uppercase; color: var(--pine-deep);
+    background: rgba(255,255,255,.92); border: 1px solid rgba(27,94,79,.32);
+    border-radius: 999px; padding: 1px 7px; white-space: nowrap;
+    box-shadow: 0 1px 4px rgba(24,58,46,.12); }
+  .viewer3d-status { position: absolute; inset: 0; display: grid; place-items: center;
+    color: var(--soft); font-size: 13px; }
+  .viewer3d.is-ready .viewer3d-status { display: none; }
+  .viewer3d-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 8px 10px; border-top: 1px solid var(--line); background: #fffdf8; }
+  .viewer3d-hint { flex: 1 1 190px; color: var(--soft); font-size: 12px; }
+  .viewer3d-bar button { font-size: 12.5px; font-weight: 600; color: var(--pine-deep);
+    background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 5px 11px; }
+  .viewer3d-bar button:hover { border-color: var(--pine); color: var(--pine); }
+  .viewer3d-bar button[aria-pressed="false"] { opacity: .5; }
+  .viewer3d:fullscreen { display: flex; flex-direction: column; background: var(--bg); }
+  .viewer3d:fullscreen .viewer3d-canvas { flex: 1; aspect-ratio: auto; }
+  .viewer3d.is-failed .viewer3d-canvas { display: none; }
+  .viewer3d.is-failed .viewer3d-nogl { display: block; }
+  .viewer3d-nogl { display: none; padding: 18px; color: var(--soft); font-size: 13.5px; }
+  .finished-build { margin: 0 0 20px; }
+  .finished-build > p { max-width: 720px; }
+  details.orig-diagram { margin: 8px 0 0; font-size: 13px; }
+  details.orig-diagram summary { cursor: pointer; color: var(--sky); font-weight: 600; }
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "./docs/vendor/three/build/three.module.js",
+    "three/addons/": "./docs/vendor/three/addons/"
+  }
+}
+</script>
 </head>
 <body>
 <header class="hero">
@@ -632,6 +674,28 @@
     <summary>Start here &mdash; 8 pictures to build it</summary>
     <div class="acc-body">
       <p>Follow the pictures in order. Each card lists the parts and the check to complete before moving on. The full 19-step checklist remains below for reference.</p>
+
+      <div class="finished-build">
+        <h3>The finished build</h3>
+        <p>Every part in its flying position: 5-inch X frame, F405 + 50A stack, analog FPV, the 4S pack
+        strapped behind the Pi Zero 2 WH payload, thermal lens facing the ground and the GPS mast
+        clear of both prop arcs. Rotate it to see how the payload sits inside the frame.</p>
+        <div class="viewer3d" data-model="docs/models/final-product.glb" data-title="The finished build">
+          <div class="viewer3d-canvas">
+            <div class="viewer3d-labels"></div>
+            <span class="viewer3d-status">Loading 3D&hellip;</span>
+          </div>
+          <p class="viewer3d-nogl">This interactive view needs WebGL. Every step still links its original
+          diagram, so the guide stays readable without it.</p>
+          <div class="viewer3d-bar">
+            <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
+            <button type="button" data-action="reset">Reset view</button>
+            <button type="button" data-action="labels" aria-pressed="true">Labels</button>
+            <button type="button" data-action="fullscreen">Full screen</button>
+          </div>
+        </div>
+      </div>
+
       <div class="visual-guide">
         <article class="visual-step">
           <a href="docs/images/build/01-parts.svg" target="_blank" rel="noopener"><img src="docs/images/build/01-parts.svg" alt="All parts grouped on the bench before assembly"></a>
@@ -641,11 +705,27 @@
             <p class="check">✓ Check: every item is present before touching a wire.</p></div>
         </article>
         <article class="visual-step">
-          <a href="docs/images/build/02-frame.svg" target="_blank" rel="noopener"><img src="docs/images/build/02-frame.svg" alt="Source One frame with four motors and center flight stack"></a>
+          <div class="viewer3d" data-model="docs/models/step-02-frame.glb" data-title="Frame and motors">
+            <div class="viewer3d-canvas">
+              <div class="viewer3d-labels"></div>
+              <span class="viewer3d-status">Loading 3D&hellip;</span>
+            </div>
+            <p class="viewer3d-nogl">This interactive view needs WebGL &mdash; the original diagram is linked below.</p>
+            <div class="viewer3d-bar">
+              <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
+              <button type="button" data-action="reset">Reset view</button>
+              <button type="button" data-action="labels" aria-pressed="true">Labels</button>
+              <button type="button" data-action="fullscreen">Full screen</button>
+            </div>
+          </div>
           <div class="build-notes"><h3>2 · Build the frame</h3>
             <p><strong>Do this:</strong> Fit the arms, standoffs and four motors. Leave propellers off.</p>
             <p class="need"><strong>You need:</strong> Source One V6 frame, motors, included hardware and hex drivers.</p>
-            <p class="check">✓ Check: frame is rigid, screws cannot touch windings, motors spin freely.</p></div>
+            <p class="check">✓ Check: frame is rigid, screws cannot touch windings, motors spin freely.</p>
+            <details class="orig-diagram">
+              <summary>Original diagram (SVG)</summary>
+              <a href="docs/images/build/02-frame.svg" target="_blank" rel="noopener">02-frame.svg &mdash; X frame plan view, M1&ndash;M4 order and 30.5&nbsp;mm stack holes</a>
+            </details></div>
         </article>
 
 
@@ -1560,5 +1640,6 @@ while True:
     });
   });
 </script>
+<script type="module" src="docs/js/viewer3d.js"></script>
 </body>
 </html>
