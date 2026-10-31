@@ -373,7 +373,14 @@ def shift(objs, dx=0.0, dy=0.0, dz=0.0):
 # export + preview
 # ----------------------------------------------------------------------------
 def export(name, preview=False, camera_at=(0.30, -0.32, 0.22),
-           target=(0, 0, 0.012), ortho_scale=None, res=700, samples=36):
+           target=(0, 0, 0.012), ortho_scale=None, res=None, samples=None):
+    """Write docs/models/<name>.glb and optionally a preview PNG.
+
+    Preview resolution/samples can be raised for gallery renders via the
+    PREVIEW_RES and PREVIEW_SAMPLES environment variables.
+    """
+    res = res or int(os.environ.get("PREVIEW_RES", "700"))
+    samples = samples or int(os.environ.get("PREVIEW_SAMPLES", "36"))
     """Write docs/models/<name>.glb and optionally a preview PNG."""
     os.makedirs(OUT_DIR, exist_ok=True)
     path = os.path.join(OUT_DIR, name + ".glb")
@@ -481,7 +488,7 @@ def _render_preview(name, camera_at, target, ortho_scale, res, samples, ground_z
     scene.view_settings.exposure = -0.45
 
     scene.render.engine = "CYCLES"
-    scene.cycles.device = "CPU"
+    scene.cycles.device = os.environ.get("PREVIEW_DEVICE", "CPU")
     scene.cycles.samples = samples
     scene.cycles.use_denoising = True
     scene.render.resolution_x = res
