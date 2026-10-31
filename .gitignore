@@ -6,3 +6,6 @@ flight-log.jsonl
 # Blender build logs are throwaway output, not source
 scripts/build/*.log
 scripts/build/*.err
+
+# Standalone single-file builds are generated, not source
+dist/

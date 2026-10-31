@@ -1743,7 +1743,15 @@ while True:
   renderBudget();
   paintFlashes();
   paintGlobal();
-  openTab("why");
+  /* Deep links: "#p-steps" or "#steps" opens that tab directly, so the build
+     steps (and their 3D viewers) can be shared or bookmarked. */
+  function tabFromHash() {
+    const id = (location.hash || "").replace(/^#p-/, "").replace(/^#/, "");
+    for (let i = 0; i < TABS.length; i += 1) { if (TABS[i][0] === id) return id; }
+    return "why";
+  }
+  openTab(tabFromHash());
+  window.addEventListener("hashchange", function () { openTab(tabFromHash()); });
 </script>
 <script>
   "use strict";

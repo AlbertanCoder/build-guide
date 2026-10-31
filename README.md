@@ -59,6 +59,26 @@ To view locally, serve the repo root (ES modules and GLB fetches need HTTP):
 python -m http.server 8000
 ```
 
+### Opening the guide by double-click (no server)
+
+Browsers block ES modules and `.glb` fetches on `file://`, so opening `index.html` directly shows
+the page but no 3D. For a double-clickable copy, build the self-contained single file instead —
+three.js, all nine models and every diagram get inlined, and the result works from any folder:
+
+```bash
+# once, in a scratch dir: npm install esbuild
+esbuild docs/js/viewer3d.js --bundle --format=iife --minify --target=es2020 \
+  --alias:three=./docs/vendor/three/build/three.module.js \
+  --alias:three/addons/controls/OrbitControls.js=./docs/vendor/three/addons/controls/OrbitControls.js \
+  --alias:three/addons/loaders/GLTFLoader.js=./docs/vendor/three/addons/loaders/GLTFLoader.js \
+  --alias:three/addons/renderers/CSS2DRenderer.js=./docs/vendor/three/addons/renderers/CSS2DRenderer.js \
+  --outfile=bundle.js
+
+node scripts/standalone/make-standalone.js bundle.js "Shad's Build Guide (3D).html"
+```
+
+The build steps tab is deep-linkable: `#p-steps` opens it directly.
+
 *These are previews of the HTML guide, not a completed aircraft. Click any image to view it full-size.*
 
 ## Open the guide

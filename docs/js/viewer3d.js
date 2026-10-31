@@ -23,6 +23,19 @@ const CREAM = 0xf7f2e8;
 // Bumped when the GLBs are rebuilt, so browsers never serve a stale model.
 const MODEL_VERSION = '2026-10-31d';
 
+/**
+ * Resolve a model URL.
+ *
+ * The repo build fetches the .glb next to the page. The standalone single-file
+ * build cannot fetch anything from file://, so it inlines every model as a
+ * data: URI in window.BUILD_GUIDE_MODEL_DATA and we use that instead.
+ */
+function resolveModelUri(src) {
+  const embedded = window.BUILD_GUIDE_MODEL_DATA;
+  if (embedded && embedded[src]) return embedded[src];
+  return src + (src.includes('?') ? '&' : '?') + 'v=' + MODEL_VERSION;
+}
+
 const loader = new GLTFLoader();
 
 /**
@@ -178,7 +191,7 @@ class ModelViewer {
     if (this.status) this.status.textContent = 'Loading 3D…';
 
     loader.load(
-      this.src + (this.src.includes('?') ? '&' : '?') + 'v=' + MODEL_VERSION,
+      resolveModelUri(this.src),
       (gltf) => this.onLoaded(gltf),
       undefined,
       (err) => {
