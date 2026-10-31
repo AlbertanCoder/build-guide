@@ -34,7 +34,7 @@ def build():
     Q.vtx_and_antenna(P, antenna_x=-0.075)
     Q.led_strip(P)
 
-    _, payload = C.collect(Q.pi_payload, P)
+    _, payload = C.collect(Q.pi_payload, P, label_sensors=False)
     C.shift(payload, dx=PI_DX)
 
     Q.battery_pad(P, BAT)
