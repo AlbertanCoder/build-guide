@@ -2,3 +2,7 @@ __pycache__/
 *.py[cod]
 .venv/
 flight-log.jsonl
+
+# Blender build logs are throwaway output, not source
+scripts/build/*.log
+scripts/build/*.err
