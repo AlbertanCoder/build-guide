@@ -1,21 +1,38 @@
-# Shad's Build Guide
+# Shad's Fire-Detecting Drone Build Guide
 
-One system, three builds, one job hunt — a single-page, interactive guide:
+A single-page, interactive order and build guide for a 5-inch analog FPV quadcopter with a Raspberry Pi thermal/GPS payload.
 
-1. **Wildfire field station** — MLX90640 thermal camera + Python + real CWFIS satellite data + an AI crew briefing
-2. **Winter concrete monitor** — DS18B20 probes + the maturity method (ASTM C1074), calibrated against real lab crushes
-3. **Wildfire data pipeline** — free Alberta open data, cleaned and charted on a free public dashboard
+## Open the guide
 
-The guide includes: the why (demand + verified pay), verified parts & prices, step-by-step build
-instructions with code checked against Adafruit's libraries, a 13-week plan, a career playbook
-based on Alberta Public Service Minimum Recruitment Standards, **routine quizzes + a final exam
-with instant feedback**, and an honest-limits section.
+Open `index.html` in a browser. Tabs, build checkboxes, progress, quizzes, flashcards, the coverage calculator, editable budget and persistent 46-hour build-time calculator work locally in the browser.
 
-Every part, price, pin, wage and hiring rule was fact-checked against primary sources on
-**30 October 2026**. Progress and quiz scores save in your browser (localStorage) — nothing is
-sent anywhere.
+## Included documents
 
-**View the guide →** open `index.html` (or the GitHub Pages link on the right).
+- `Shad-Drone-Order-List.md` — exact parts, quantities, live retailer links, prices, compatibility and cost breakdown.
+- `Shad-Drone-Audit-Report.md` — A–G review, component substitutions, compatibility and validation results.
+- `Shad-Drone-Payload/` — thermal hotspot grouping, geolocation, real/synthetic payload backends, offline coordinate viewer and unit tests.
+- `shad-drone-icon.svg` — current favicon/header artwork.
 
----
-Made for Shad · Edmonton, Alberta · This is a prototype builder's roadmap, not career or legal advice.
+The unavailable stack, thermal camera, Pi and goggles were replaced with live alternatives checked on **31 October 2026**. Stock and freight still need confirmation at checkout. The complete selected plan costs **CA$1,673.00**, or **CA$1,754.10 after 5% GST**, before remaining retailer freight.
+
+## Payload setup
+
+See `Shad-Drone-Payload/README.md` for wiring, power, installation and acceptance checks. Run the software tests before hardware integration:
+
+```bash
+cd Shad-Drone-Payload
+python -m unittest -v test_drone_logic.py
+python payload.py --demo
+python payload.py --demo --serve
+```
+
+The viewer defaults to `http://127.0.0.1:8000` and the append-only log is `flight-log.jsonl`.
+
+## Validation
+
+- 55/55 browser checks passed, including all tabs, saved state, quizzes, flashcards, budget, coverage and mobile layouts.
+- 19/19 payload unit tests passed.
+- Demo, map health/API and viewer responses passed.
+- 35/35 order-document links opened successfully.
+
+Product availability, compatibility and performance must still be verified during assembly, bench testing and controlled flight testing. This is a prototype builder's roadmap, not career or legal advice.

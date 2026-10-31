@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Shad's Fire-Detecting Drone &mdash; Step-by-Step Build Guide</title>
+<link rel="icon" type="image/svg+xml" href="shad-drone-icon.svg">
 <style>
 
   :root {
@@ -40,7 +41,20 @@
   .wrap { max-width: 1020px; margin: 0 auto; position: relative; z-index: 1; }
   .kicker { font-size: 12px; letter-spacing: 2.5px; text-transform: uppercase;
             color: #ffd9a8; font-weight: 700; margin: 0 0 8px; }
+  .brand { display: flex; align-items: center; gap: 16px; }
+  .brand .mark { flex: none; width: 56px; height: 56px; filter: drop-shadow(0 2px 10px rgba(0,0,0,.35)); }
+  .brand .mark svg { display: block; width: 100%; height: 100%; }
+  @media (max-width: 480px) { .brand { gap: 12px; } .brand .mark { width: 44px; height: 44px; } }
   header.hero .sub { color: #d9ebe3; max-width: 720px; margin: 10px 0 16px; font-size: 16px; }
+  .build-time { margin: 0 0 16px; padding: 14px 16px; border: 1px solid rgba(255,255,255,.24);
+                border-radius: 12px; background: rgba(0,0,0,.16); }
+  .build-time label { display: flex; justify-content: space-between; gap: 12px; font-weight: 700; }
+  .build-time input[type="range"] { width: 100%; margin: 10px 0 12px; accent-color: #ffd9a8; }
+  .build-time .time-results { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .build-time .time-result { padding: 8px 10px; border-radius: 8px; background: rgba(255,255,255,.1); }
+  .build-time .time-result strong { display: block; color: #ffd9a8; font-size: 18px; }
+  .build-time .time-result span { color: #d9ebe3; font-size: 12.5px; }
+  @media (max-width: 600px) { .build-time .time-results { grid-template-columns: 1fr; } }
   .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
   .pill { display: inline-block; font-size: 12.5px; padding: 5px 13px; border-radius: 999px;
           font-weight: 600; background: rgba(255,255,255,.14); color: #fff;
@@ -191,21 +205,76 @@
 <body>
 <header class="hero">
   <div class="wrap">
-    <p class="kicker">Built for Shad &middot; Edmonton &middot; Verified 30 October 2026</p>
-    <h1>Build a Fire-Detecting Drone</h1>
-    <p class="sub">A step-by-step guide to building a thermal-camera quadcopter that finds,
-    maps and reports heat sources from the air &mdash; every part, price, rule and line of code
-    checked against primary sources. Tap any card to open it.</p>
+    <div class="brand">
+      <div class="mark" aria-hidden="true">
+        <svg viewBox="0 0 128 128" role="img" aria-label="Fire-detecting drone logo">
+          <defs>
+            <linearGradient id="badgeG" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#123a2e" /><stop offset="1" stop-color="#1b5e4f" />
+            </linearGradient>
+            <linearGradient id="flameG" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0" stop-color="#c2571b" /><stop offset=".55" stop-color="#e8863a" /><stop offset="1" stop-color="#ffd9a8" />
+            </linearGradient>
+            <linearGradient id="flameCore" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0" stop-color="#ffd9a8" /><stop offset="1" stop-color="#fff4e0" />
+            </linearGradient>
+          </defs>
+          <rect x="3" y="3" width="122" height="122" rx="30" fill="url(#badgeG)" />
+          <rect x="3" y="3" width="122" height="122" rx="30" fill="none" stroke="#2a7a63" stroke-width="2.5" />
+          <g stroke="#d9ebe3" stroke-width="1" opacity=".13">
+            <line x1="30" y1="48" x2="98" y2="48" /><line x1="30" y1="70" x2="98" y2="70" /><line x1="30" y1="92" x2="98" y2="92" />
+            <line x1="48" y1="30" x2="48" y2="98" /><line x1="70" y1="30" x2="70" y2="98" /><line x1="92" y1="30" x2="92" y2="98" />
+          </g>
+          <g stroke="#3f8f74" stroke-width="5" stroke-linecap="round">
+            <line x1="64" y1="72" x2="40" y2="41" /><line x1="64" y1="72" x2="88" y2="41" />
+            <line x1="64" y1="72" x2="40" y2="101" /><line x1="64" y1="72" x2="88" y2="101" />
+          </g>
+          <g fill="#eaf4ef">
+            <circle cx="37" cy="37" r="8.5" /><circle cx="91" cy="37" r="8.5" />
+            <circle cx="37" cy="105" r="8.5" /><circle cx="91" cy="105" r="8.5" />
+          </g>
+          <g fill="#123a2e">
+            <circle cx="37" cy="37" r="3.4" /><circle cx="91" cy="37" r="3.4" />
+            <circle cx="37" cy="105" r="3.4" /><circle cx="91" cy="105" r="3.4" />
+          </g>
+          <g stroke="#bcd3c9" stroke-width="2.2" fill="none" opacity=".9">
+            <ellipse cx="37" cy="37" rx="13.5" ry="3.4" transform="rotate(45 37 37)" />
+            <ellipse cx="91" cy="37" rx="13.5" ry="3.4" transform="rotate(-45 91 37)" />
+            <ellipse cx="37" cy="105" rx="13.5" ry="3.4" transform="rotate(-45 37 105)" />
+            <ellipse cx="91" cy="105" rx="13.5" ry="3.4" transform="rotate(45 91 105)" />
+          </g>
+          <path d="M64 40 C71 50 76 58 76 70 C76 80 70 86 64 86 C58 86 52 80 52 70 C52 58 57 50 64 40 Z" fill="url(#flameG)" />
+          <path d="M64 55 C68 61 71 66 71 71 C71 77 68 81 64 81 C60 81 57 77 57 71 C57 66 60 61 64 55 Z" fill="url(#flameCore)" />
+        </svg>
+      </div>
+      <div>
+        <p class="kicker">Built for Shad &middot; Edmonton &middot; Order plan updated 31 October 2026</p>
+        <h1>Build a Fire-Detecting Drone</h1>
+      </div>
+    </div>
+    <p class="sub">A complete order and build plan for a thermal-camera FPV quadcopter.
+    Unavailable parts are replaced with live alternatives, every required category is priced, and
+    the payload software is included and tested. Follow the assembly and acceptance checks before flight.</p>
     <div class="pill-row">
-      <span class="pill">&#127841; ~CA$600 lean build</span>
-      <span class="pill">&#9201; 6 weekends &middot; start tonight</span>
-      <span class="pill">&#128293; Detects fires &amp; hotspots</span>
-      <span class="pill">&#128218; Quizzes in every step</span>
+      <span class="pill">&#127841; CA$1,754.10 + remaining freight</span>
+      <span class="pill">&#9201; 46-hour estimate</span>
+      <span class="pill">&#128293; 32&times;24 thermal prototype</span>
+      <span class="pill">&#128218; 7 interactive tabs</span>
     </div>
     <div class="progressrow">
       <div class="bar"><span id="globalBar"></span></div>
       <div id="globalLabel">0% complete</div>
     </div>
+    <section class="build-time" aria-labelledby="build-time-title">
+      <label id="build-time-title" for="hours-week">Hours you can put in per week
+        <output id="hours-week-value" for="hours-week">8 hours/week</output></label>
+      <input id="hours-week" type="range" min="2" max="40" step="2" value="8">
+      <div class="time-results" aria-live="polite">
+        <div class="time-result"><strong>46 hours</strong><span>Estimated total hands-on build time</span></div>
+        <div class="time-result"><strong id="build-weeks">6 weeks</strong><span>Estimated time to finish</span></div>
+        <div class="time-result"><strong id="build-finish-date">—</strong><span>Projected finish date from today</span></div>
+      </div>
+    </section>
     <div role="tablist" aria-label="Guide sections" id="tabs"></div>
   </div>
 </header>
@@ -218,68 +287,67 @@
   </div>
 
   <div class="card">
-    <p>A <strong>5-inch quadcopter you build yourself</strong>, carrying a
-    <strong>Raspberry Pi Zero 2 W + MLX90640 thermal camera</strong>. As it flies, the camera
-    reads 768 temperatures per frame, the Pi finds hotspots in the code <em>you</em> wrote, and
-    they land on a live map with GPS coordinates &mdash; an aerial fire-detection system in
-    miniature.</p>
-    <div class="note ok"><strong>Why this is worth building:</strong> it is the exact job
-    agencies pay for &mdash; Alberta Agriculture &amp; Forestry funded a research program on
-    using drones for wildfire hotspot detection, and Budget 2024 added $151M for wildfire tech
-    including drones and night-vision aircraft. Building one proves you can do the whole chain:
-    assemble, fly, sense, detect, map, report. Very few candidates can.</div>
+    <div class="note ok"><strong>ORDER PLAN &mdash; alternatives selected 31 October 2026.</strong>
+      The unavailable stack, thermal camera, Pi and goggles have been replaced with live listings.
+      The <a href="Shad-Drone-Order-List.md">complete order list</a> covers the airframe, analog FPV,
+      payload, tools, configuration laptop and compliance allowance. Merchandise, shown laptop freight
+      and the fee allowance total CA$1,673.00; the planning total after 5% GST is CA$1,754.10 before
+      the remaining retailer freight charges.</div>
+    <p>This build is a <strong>5-inch analog FPV quadcopter</strong> carrying a
+    <strong>header-equipped Raspberry Pi Zero 2 WH, Pimoroni MLX90640 thermal board and PA1010D GPS</strong>.
+    The four-port Qwiic HAT and independent sensor cables let the thermal lens point down while the GPS
+    antenna points up. The selected GEPRC F405 stack supplies regulated 5V/3A for the Pi; the HV video
+    transmitter uses the 4S battery separately.</p>
+    <div class="note"><strong>Software is included:</strong> the local
+      <a href="Shad-Drone-Payload/README.md">payload package</a> provides hotspot grouping, geolocation,
+      GPS/camera integration, append-only logging and an offline coordinate viewer. All 19 synthetic unit
+      tests passed. Physical fit, power stability, detection accuracy and flight behaviour still follow the
+      documented assembly and acceptance tests.</div>
     <div class="grid3">
-      <div class="stat"><div class="big">~CA$600</div><div class="lbl">Lean build (verified prices,
-        30 Oct 2026). All-new parts ~$685 &mdash; the savings checklist is in tab 3</div></div>
-      <div class="stat"><div class="big">6 weekends</div><div class="lbl">Build &amp; test time;
-        legal to fly after a free online exam</div></div>
-      <div class="stat"><div class="big">7 / 10</div><div class="lbl">Difficulty: some soldering,
-        careful prop safety, but no code from scratch &mdash; the detection code comes tested</div></div>
-      <div class="stat"><div class="big">768</div><div class="lbl">Temperatures per frame from
-        the thermal camera &mdash; your code finds fire in them</div></div>
-      <div class="stat"><div class="big">$28&ndash;$58/hr</div><div class="lbl">Data/engineering
-        roles in Alberta (Job Bank, NOC 21211): median $43.27/hr</div></div>
-      <div class="stat"><div class="big">Night = legal</div><div class="lbl">CAR 901.39: fly at
-        night with visible lights on the drone &mdash; exactly when fires are found</div></div>
+      <div class="stat"><div class="big">ORDER PLAN</div><div class="lbl">35 live product links;
+        exact models and quantities, with freight shown separately</div></div>
+      <div class="stat"><div class="big">46 hours</div><div class="lbl">Estimated hands-on time across
+        19 steps; use the slider above for a finish date</div></div>
+      <div class="stat"><div class="big">19 / 19</div><div class="lbl">Payload unit tests passed;
+        demo and map API also verified</div></div>
+      <div class="stat"><div class="big">768</div><div class="lbl">Temperatures per frame; 55&deg;&times;35&deg;
+        lens footprint is about 104&times;63 m at 100 m AGL</div></div>
+      <div class="stat"><div class="big">$43.27/hr</div><div class="lbl">Job Bank Alberta/Edmonton data
+        engineer median (NOC 21211), updated 19 Nov 2025</div></div>
+      <div class="stat"><div class="big">Lights at night</div><div class="lbl">CAR 901.39 requires the
+        aircraft to remain visible; all other operating rules still apply</div></div>
     </div>
   </div>
 
   <details class="acc">
     <summary>Will this land me a job? The straight answer</summary>
     <div class="acc-body">
-      <p><strong>It makes you more likely &mdash; it can't make you certain.</strong> Nobody honest
-      can promise a job. Here's exactly what this build does and doesn't do:</p>
-      <p><strong>Does:</strong> gives you what entry candidates usually lack &mdash;
-      <em>evidence</em> you can point at (a working system, night-mission recordings, a map),
-      <em>a reference</em> who watched you work through problems, and <em>interview fluency</em>
-      (you can explain every file without notes). Alberta's hiring rules treat experience as
-      equal to education for most classifications &mdash; verified "two-way equivalency" language
-      on alberta.ca. Demand is real: Job Bank rates the outlook <strong>Moderate</strong> for
-      data engineers (NOC 21211) with ~4,150 people in the occupation, mostly Calgary &amp;
-      Edmonton.</p>
-      <p><strong>Doesn't:</strong> waive written minimums for GoA jobs (Level 1 needs a diploma,
-      or certificate + 1 year experience, or a named certification &mdash; the Level 1 checker is
-      in the Career tab), guarantee interviews, or beat 5 years of production experience. What it
-      does beat: tutorial certificates, "I'm passionate" cover letters, and every candidate who
-      can't explain their own code.</p>
-      <div class="note ok"><strong>How to stack the odds:</strong> apply from weekend 3 (not
-      after finishing) &mdash; steady applications + this portfolio + one more project later (the
-      data-pipeline build from the old guide is in git history if you want it) is the pattern that
-      converts. The reference loop in the Career tab is where offers actually come from.</div>
+      <p><strong>No employment outcome is guaranteed.</strong> A completed, tested project can be
+      portfolio evidence, but this unbuilt HTML guide is not evidence of a working system, a reference,
+      or interview fluency.</p>
+      <p>Job Bank groups the data engineer profile under <strong>Data scientists (NOC 21211)</strong>
+      and rates Alberta prospects <strong>Moderate</strong>. GoA Systems Analyst is a separate
+      classification; its current
+      Level 1 MRS accepts a related two-year diploma, or a related one-year certificate/qualifying
+      industry certification plus one year of related experience. Experience alone does not satisfy that
+      written education/certification route. The specific job posting and hiring ministry decide relatedness.</p>
+      <div class="note"><strong>Honest next step:</strong> finish and test the system before describing
+      it as working. Publish source code, test results, limitations and flight records; then use it as one
+      part of a broader job application rather than a substitute for required education or experience.</div>
     </div>
   </details>
 
   <details class="acc">
     <summary>What it can and cannot see (the honest capability line)</summary>
     <div class="acc-body">
-      <p><strong>Can:</strong> detect a campfire-sized target (0.5&ndash;1 m) from ~30 m altitude,
-      map it with GPS coordinates, and report it &mdash; in daylight or at night. Spot a person
-      or vehicle, find a smouldering stump, prove a "cold" fire line is actually cold.</p>
-      <p><strong>Cannot:</strong> replace agency aircraft. Professional wildfire platforms carry
-      640&times;512 sensors (8&times; sharper) on $15,000+ airframes, fly for hours on certified
-      missions, and are crewed by trained operators. The MLX90640's 32&times;24 grid is a
-      learning-grade sensor &mdash; perfect for proving the pipeline, not for protecting a town.
-      Saying that out loud is what makes everything else you claim believable.</p>
+      <p><strong>Design target, not a verified capability:</strong> test a controlled warm target
+      from low altitude and record detection rate, false positives and geolocation error. At 30 m AGL,
+      a 55&deg;&times;35&deg; frame is about 31&times;20 m, or roughly 1&times;0.8 m per pixel;
+      a 1 m target may occupy about one pixel and cannot be promised detectable. Day/night, emissivity,
+      atmospheric conditions, motion, tilt and terrain all affect results.</p>
+      <p><strong>Cannot:</strong> replace agency aircraft or declare an area safe. The MLX90640's
+      32&times;24 grid is a learning-grade sensor. No detection range, mapping accuracy, professional
+      sensor cost, flight endurance or operational readiness claim is bench-verified for this build.</p>
       <div class="note warn"><strong>The one legal line that never bends:</strong> no drone may
       fly over or within <strong>5 nautical miles (9.3 km)</strong> of a wildfire below 3,000 ft
       (CAR 601.15). Real fires are agency airspace &mdash; unauthorised drones ground air tankers
@@ -292,13 +360,11 @@
   <details class="acc">
     <summary>Why a drone beats the ground station for your portfolio</summary>
     <div class="acc-body">
-      <p>The same core skill &mdash; detect heat, georeference it, report honestly &mdash; but
-      demonstrated on the platform everyone imagines when you say "wildfire tech". In interviews,
-      "I built a thermal drone that maps hotspots" opens doors that "I built a ground sensor"
-      doesn't. And the FPInnovations research (funded by Alberta Agriculture &amp; Forestry) is
-      explicit: <em>"the RPA platform is only one small part of the solution&hellip; until the
-      firefighter on the ground receives a map of GPS-referenced hotspots, the mission is
-      incomplete."</em> That map-making is the software skill you'll own.</p>
+      <p>An airborne prototype can combine mechanical, radio, sensing, positioning and software
+      work, but it is not inherently more valuable than a tested ground station. FPInnovations'
+      Alberta-funded 2020 report calls the platform only one small part of the solution and says the
+      mission is incomplete until interpreted data reaches the firefighter as a map of GPS-referenced
+      hotspots. That supports the value of integration and reporting, not a hiring guarantee.</p>
     </div>
   </details>
 
@@ -331,8 +397,8 @@
   <details class="acc" open>
     <summary><span class="emoji">&#128200;</span> Try it &mdash; altitude &amp; coverage calculator</summary>
     <div class="acc-body">
-      <p>Move the sliders: how high you fly decides how much ground one frame covers &mdash; and
-      how big a fire looks. This is the exact math <code>geo.py</code> uses.</p>
+      <p>Move the sliders to estimate the ideal nadir footprint. This is simple pinhole-camera
+      geometry, not proof of detection performance; the included <a href="Shad-Drone-Payload/geo.py">geo.py</a> implements and tests the ideal-nadir approximation.</p>
       <div class="grid2">
         <div><strong>Altitude above ground</strong><br>
           <input type="range" id="alt" min="5" max="120" value="30"> metres
@@ -348,33 +414,35 @@
         <div class="stat"><div class="big" id="cover-w">&mdash;</div>
           <div class="lbl">Ground width covered by one frame</div></div>
         <div class="stat"><div class="big" id="mpp">&mdash;</div>
-          <div class="lbl">Metres per pixel &mdash; a 1 m fire is this many pixels</div></div>
+          <div class="lbl">Metres per horizontal pixel &mdash; divide target width by this value</div></div>
         <div class="stat"><div class="big" id="cover-a">&mdash;</div>
           <div class="lbl">Ground area covered per frame</div></div>
       </div>
-      <div class="note warn" id="alt-note" hidden><strong>Too high for a 1-metre target:</strong>
-      a campfire would be less than 2 pixels across &mdash; detectable, but hard to prove. Fly
-      lower, or sweep and confirm on a second pass.</div>
-      <p class="muted"><strong>Formulas (verified, from your geo.py):</strong> ground width =
-      2 &times; altitude &times; tan(FOV/2). Pixels are 32 across. Converting a pixel to
-      latitude/longitude uses ~111,320 m per degree of latitude; longitude degrees shrink by
-      cos(latitude). Approximate by design &mdash; and your README will say so.</p>
+      <div class="note warn" id="alt-note" hidden><strong>Less than two horizontal pixels:</strong>
+      a 1 m target may be difficult to distinguish from noise. Detection is not guaranteed; lower the
+      aircraft only where legal and safe, then validate with repeated controlled targets.</div>
+      <p class="muted"><strong>Ideal nadir formulas:</strong> ground width = 2 &times; altitude &times;
+      tan(FOV/2); horizontal metres/pixel = width/32. At 100 m, the 55&deg;&times;35&deg; lens gives
+      approximately 104.1&times;63.1 m and 3.25&times;2.63 m per pixel. Geographic conversion uses
+      ~111,320 m/degree latitude and longitude scaling by cos(latitude), but omits tilt, terrain,
+      lens distortion and GPS/heading/height error.</p>
     </div>
   </details>
 
   <details class="acc">
     <summary><span class="emoji">&#128293;</span> What "detecting a fire" actually means</summary>
     <div class="acc-body">
-      <p>Three layers, and only the third one is "the drone":</p>
+      <p>The payload pipeline has three software stages, followed by hardware validation:</p>
       <ol>
         <li><strong>Sense:</strong> the MLX90640 returns 768 temperatures per frame. A fire is a
         cluster of hot pixels &mdash; say 38 &deg;C background, 300+ &deg;C at the target.</li>
-        <li><strong>Detect:</strong> <code>hotspots.py</code> flood-fills touching hot pixels into
-        one hotspot with a centre, size and peak temperature. Threshold and minimum size are
-        <em>your</em> tuning knobs.</li>
-        <li><strong>Report:</strong> <code>geo.py</code> turns the pixel position into
-        latitude/longitude; the page draws it on a map with the drone's footprint rectangle; an
-        optional AI button writes a 5-line briefing from the data only.</li>
+        <li><strong>Detect:</strong> the included <a href="Shad-Drone-Payload/hotspots.py">hotspots.py</a>
+        flood-fills edge-connected hot pixels into groups with centroid, size and peak temperature.
+        Synthetic tests cover grouping, thresholds, edges and invalid inputs.</li>
+        <li><strong>Report:</strong> the included <a href="Shad-Drone-Payload/geo.py">geo.py</a>
+        converts pixels using position, altitude and heading; <code>payload.py</code> logs results and
+        <code>map_server.py</code> displays them offline. Detection and coordinate accuracy still require
+        controlled hardware tests.</li>
       </ol>
       <p>The same three layers work from the ground, the air, or a satellite feed &mdash; that's
       why the pipeline is the career asset, not the airframe.</p>
@@ -386,25 +454,25 @@
       <p><strong>Basic operations</strong> &mdash; what this build flies under
       <span class="muted">(TC page updated 19 Mar 2026)</span>:</p>
       <ul>
-        <li>Drone under <strong>25 kg</strong> (yours will be ~1 kg) &middot; you must
-        <strong>always see it</strong> (visual line of sight)</li>
-        <li>More than <strong>30 m horizontally from any person</strong></li>
-        <li><strong>Uncontrolled airspace</strong>, more than 5.6 km from a certified airport,
-        more than 1.9 km from a heliport</li>
-        <li><strong>Register your drone</strong> (250 g+) and mark it &middot; carry your
-        <strong>Pilot Certificate &mdash; Basic Operations</strong> (free online exam, age 14+,
-        never expires)</li>
+        <li>Operating weight no more than <strong>25 kg</strong>; measure the completed aircraft
+        rather than relying on the removed 1 kg/3.7 kg estimates. Maintain VLOS.</li>
+        <li>More than <strong>30 m horizontally from any person</strong>. This is an operations-category
+        boundary, not a universal safe distance.</li>
+        <li><strong>Uncontrolled airspace</strong>, more than 5.6 km from the centre of a certified airport,
+        more than 1.9 km from the centre of a heliport; military-aerodrome permission is separate.</li>
+        <li><strong>Register and mark the drone</strong> (250 g to 25 kg) and carry proof plus a
+        <strong>Pilot Certificate &mdash; Basic Operations</strong>. The Small Basic exam and registration
+        have fees; age 14+ applies to Basic. The certificate does not expire, but skills must stay current.</li>
       </ul>
-      <div class="note ok"><strong>Night flying is legal</strong> (CAR 901.39, quoted verbatim):
-      "No pilot shall operate a remotely piloted aircraft system at night unless the remotely
-      piloted aircraft is equipped with lights that are sufficient to allow the aircraft to be
-      visible to the pilot or a visual observer&hellip; and those lights are turned on." &mdash;
-      a $10 LED kit makes your drone legal for exactly the missions that matter.</div>
-      <div class="note warn"><strong>The wildfire rule that never bends (CAR 601.15):</strong>
-      never over or within <strong>5 nautical miles (9.3 km)</strong> of a wildfire below 3,000 ft
-      &mdash; fines to $25,000 and imprisonment possible. Before any summer flight, check for
-      smoke plumes and local fire bans. Your test targets: fire pits, burn barrels, hot plates
-      &mdash; on private land, with permission, fire bans checked, water/extinguisher on hand.</div>
+      <div class="note"><strong>Night lighting is necessary, not sufficient (CAR 901.39):</strong>
+      the lights must be on and sufficient for the pilot or a visual observer to see the aircraft.
+      A generic LED kit does not by itself make a flight legal; VLOS, airspace, bystander, aerodrome,
+      NOTAM, site and all other applicable rules still apply.</div>
+      <div class="note warn"><strong>Forest-fire restriction (CAR 601.15):</strong>
+      do not operate over a forest-fire area or within <strong>5 nautical miles (9.3 km)</strong> of one
+      below 3,000 ft AGL, and do not enter airspace restricted by a NOTAM under 601.16. Check current
+      NOTAMs, Alberta fire bans and local/site rules before flight. Use a hot plate for bench tests;
+      an open test fire also requires landowner permission and every applicable permit.</div>
     </div>
   </details>
 </section>
@@ -422,9 +490,11 @@
     </div>
     <div class="bar" style="background:#e6e1d5;margin:10px 0"><span id="budget-bar" style="background:var(--pine)"></span></div>
     <p id="budget-note" aria-live="polite" class="muted"></p>
-    <div class="note gold">Prices in <strong>US dollars</strong> where marked, read off live
-    manufacturer/retailer pages 30 Oct 2026; Canadian totals use a rough 1.4. Planning numbers,
-    not quotes &mdash; edit them as you shop.</div>
+    <div class="note ok"><strong>Complete source-verified order plan.</strong>
+      Editable amounts match the selected items checked on 31 Oct 2026. SparkFun's US$10.85 is converted
+      at the Bank of Canada rate of CA$1.3960/US$1 (30 Oct). The CA$1,673.00 subtotal includes the shown
+      laptop freight and CA$15 compliance allowance; CA$81.10 GST gives CA$1,754.10 before remaining
+      retailer freight. Use the <a href="Shad-Drone-Order-List.md">line-by-line order document</a> for stock and freight.</div>
     <div id="shopping"></div>
   </div>
 
@@ -432,96 +502,87 @@
     <summary>The full build sheet &mdash; what each part does</summary>
     <div class="acc-body">
       <table>
-        <tr><th>Part</th><th>Job on the drone</th><th>Price</th><th>Status (30 Oct 2026)</th></tr>
-        <tr><td><strong>5" freestyle frame</strong></td>
-          <td>The skeleton. 5-inch props, room for a 30.5 mm stack + payload deck</td>
-          <td>US$25&ndash;40</td>
-          <td><span class="badge b-blue">Shop around</span> SpeedyBee Master 5-class frames; any 5" freestyle frame works</td></tr>
-        <tr><td><strong>SpeedyBee F405 V4 BLS 55A stack</strong></td>
-          <td>Flight controller + 4-in-1 ESC: flies the drone, powers everything (3&ndash;6S)</td>
-          <td>US$65.99</td>
-          <td><span class="badge b-green">Verified, SpeedyBee store</span> Betaflight/INAV, 30.5 mm mounting, Bluetooth config</td></tr>
-        <tr><td><strong>2306.5 motors &times;4</strong></td>
-          <td>Thrust. 1800&ndash;1950 KV class for 4S/5-inch props</td>
-          <td>US$19.99 ea</td>
-          <td><span class="badge b-green">Verified, SpeedyBee store</span></td></tr>
-        <tr><td><strong>RadioMaster Pocket (ELRS)</strong></td>
-          <td>Your controller. 16 channels, EdgeTX, hall gimbals, 288 g</td>
-          <td>US$76.99</td>
-          <td><span class="badge b-green">Verified, Motion RC</span> needs 2&times; 18650 cells (US$13.39/2-pk)</td></tr>
-        <tr><td><strong>ELRS receiver (e.g. ER4)</strong></td>
-          <td>Onboard radio link to your controller</td>
-          <td>US$16.99</td>
-          <td><span class="badge b-green">Verified, Motion RC</span></td></tr>
-        <tr><td><strong>Raspberry Pi Zero 2 W</strong></td>
-          <td>The brain: runs your detection code in flight (quad-core 1 GHz, 512 MB, WiFi, 10 g!)</td>
-          <td>US$19.05</td>
-          <td><span class="badge b-green">Verified, Adafruit</span></td></tr>
-        <tr><td><strong>MLX90640 thermal camera (4407)</strong></td>
-          <td>The eye: 32&times;24 = 768 temps/frame, &plusmn;2 &deg;C, 55&deg;&times;35&deg; FOV</td>
-          <td>US$74.95</td>
-          <td><span class="badge b-amber">Adafruit out of stock</span> <span class="badge b-green">DigiKey link on page</span></td></tr>
-        <tr><td><strong>STEMMA QT cable</strong></td>
-          <td>Camera &rarr; Pi, no soldering on the payload</td>
-          <td>US$0.95&ndash;1.25</td>
-          <td><span class="badge b-green">Verified</span></td></tr>
-        <tr><td><strong>4S LiPo batteries &times;3 + charger</strong></td>
-          <td>Power. ~1500&ndash;1800 mAh. Budget 3 &mdash; one to fly, two to keep flying</td>
-          <td>US$60&ndash;90</td>
-          <td><span class="badge b-amber">Estimate</span> prices vary; get a balance charger</td></tr>
-        <tr><td><strong>Propellers + small parts</strong></td>
-          <td>Props (buy spares &mdash; you'll break some), battery straps, LED night kit</td>
-          <td>US$25&ndash;40</td>
-          <td><span class="badge b-amber">Estimate</span></td></tr>
+        <tr><th>Package</th><th>Selected contents</th><th>Subtotal</th><th>Status (31 Oct 2026)</th></tr>
+        <tr><td><strong>Airframe</strong></td>
+          <td>TBS Source One V6 frame, GEPRC F405 50A stack, four Emax ECO III 1900KV motors, two Gemfan 51499 prop sets</td>
+          <td>CA$231.52</td><td><span class="badge b-green">Live listings</span> 30.5 mm stack mounting; assembly clearance check required</td></tr>
+        <tr><td><strong>Radio link</strong></td>
+          <td>RadioMaster Pocket ELRS, 3200mAh 18650 pair, RP1 V2 CRSF serial receiver</td>
+          <td>CA$145.97</td><td><span class="badge b-green">Live listings</span> UART binding/failsafe setup in steps 4&ndash;5</td></tr>
+        <tr><td><strong>Flight power</strong></td>
+          <td>Two GNB 1500mAh 4S 120C HV packs with XT60 and ToolkitRC M4AC LiHV charger</td>
+          <td>CA$117.97</td><td><span class="badge b-green">Live listings</span> correct chemistry and connectors</td></tr>
+        <tr><td><strong>Analog FPV</strong></td>
+          <td>RunCam Phoenix 2 SE, TBS Unify Pro HV VTX, TBS Diamond antenna, Skyzone M5 diversity monitor/DVR</td>
+          <td>CA$401.96</td><td><span class="badge b-green">Live listings</span> analog 5.8GHz chain; legal channel/power check required</td></tr>
+        <tr><td><strong>Thermal/GPS payload</strong></td>
+          <td>Pi Zero 2 WH kit, Pimoroni 55&deg; MLX90640, PA1010D GPS, SparkFun Qwiic HAT + two jumper cables</td>
+          <td>CA$239.00</td><td><span class="badge b-green">Live listings</span> pre-soldered Pi header and independent sensor orientation</td></tr>
+        <tr><td><strong>Payload power/mounting</strong></td>
+          <td>24AWG micro-USB cable and two nylon M2.5 standoff packs</td>
+          <td>CA$6.85</td><td><span class="badge b-green">Live listings</span> use the stack's regulated 5V/3A after meter checks</td></tr>
+        <tr><td><strong>Tools, safety and mounting</strong></td>
+          <td>Flywoo tool kit, smoke stopper, LiPo bag, straps/pad, COB lighting, heat shrink and zip ties</td>
+          <td>CA$177.01</td><td><span class="badge b-green">Live listings</span> no separate soldering station required</td></tr>
+        <tr><td><strong>Computer and small supplies</strong></td>
+          <td>Recertified Acer laptop + shown freight, threadlocker, AAA cells, safety glasses and compliance allowance</td>
+          <td>CA$352.72</td><td><span class="badge b-green">Live listings</span> Windows 11 S mode must be switched off</td></tr>
       </table>
     </div>
   </details>
 
   <details class="acc" open>
-    <summary>Lean vs full &mdash; the savings checklist (how to hit ~CA$600)</summary>
+    <summary>How the unavailable parts were replaced</summary>
     <div class="acc-body">
-      <table>
-        <tr><th>Cut</th><th>Saves</th><th>What you give up (honest version)</th></tr>
-        <tr><td>Budget 2207 motors (EMAX ECO II class)</td><td>~$25</td>
-          <td>Nothing that matters here. Top-tier motors are for racing margins.</td></tr>
-        <tr><td>RadioMaster Pocket <em>used</em> in Edmonton</td><td>~$40</td>
-          <td>Nothing &mdash; these are durable. Test the gimbals before buying.</td></tr>
-        <tr><td>2 LiPos instead of 3</td><td>~$30</td>
-          <td>Less flight time per session. Fine while you're learning.</td></tr>
-        <tr><td>Borrow a soldering iron</td><td>~$45</td>
-          <td>Nothing. It's needed for one step (motor wires).</td></tr>
-        <tr><td>Defer GPS module</td><td>~$28</td>
-          <td>Auto-coordinates. Early tests use manual launch position &mdash; buy GPS before mapping missions.</td></tr>
-      </table>
-      <p class="muted"><strong>Lean ≈ CA$600 · All-new ≈ CA$685 · Later upgrades</strong> (3rd
-      battery, GPS, spare motor) ≈ +$80 when you want them. The interactive list below starts at
-      the all-new numbers &mdash; apply the cuts above (used radio, borrowed iron, no GPS) and
-      watch the total drop toward $600.</p>
-      <div class="note gold"><strong>Don't cheap out on exactly two things:</strong> the thermal
-      camera (the MLX90640 is already the cheapest credible sensor &mdash; nothing below it is
-      worth flying) and the battery charger (a balance charger from a known brand; no-name chargers
-      are how LiPo fires happen).</div>
+      <ul>
+        <li>SpeedyBee's discontinued stack became the in-stock GEPRC F405 BLS 50A combo.</li>
+        <li>Adafruit's out-of-stock thermal board became PiShop's in-stock Pimoroni 55&deg; MLX90640.</li>
+        <li>The Pi is the in-stock Zero 2 WH Pi-hole hardware kit, including its pre-soldered header,
+        32GB card, reader and bench supply.</li>
+        <li>Independent Qwiic jumper cables allow a downward thermal lens and upward GPS antenna.</li>
+        <li>Out-of-stock budget goggles became the Skyzone M5 analog diversity monitor/DVR.</li>
+      </ul>
+      <div class="note gold"><strong>Cost is explicit:</strong> CA$1,673.00 for merchandise, shown laptop
+      freight and the compliance allowance, plus CA$81.10 GST = CA$1,754.10 before remaining freight.
+      The original CA$750 target is retained in the interactive meter for comparison, not used to hide
+      the cost of the complete build.</div>
     </div>
   </details>
 
   <details class="acc">
-    <summary>Start this week &mdash; Edmonton edition (it's 30 October)</summary>
+    <summary>46-hour build-time estimate &mdash; all 19 steps</summary>
     <div class="acc-body">
-      <p><strong>Good news about the timing:</strong> winter is <em>bench season</em>. Everything
-      up to the first hover happens indoors anyway. Order now, build through November, and fly on
-      the first calm, dry, mild days — plus your night-mission rehearsals in spring, right before
-      fire season when the story is hottest.</p>
+      <table>
+        <tr><th>Steps</th><th>Work</th><th>Hours</th></tr>
+        <tr><td>1&ndash;3</td><td>BOM resolution/inventory, frame and soldered stack</td><td>8.0</td></tr>
+        <tr><td>4&ndash;6</td><td>Receiver, Betaflight/failsafe and first hover</td><td>7.0</td></tr>
+        <tr><td>7&ndash;10</td><td>Pi setup, camera/GPS integration, detection tests, payload mounting</td><td>10.0</td></tr>
+        <tr><td>11&ndash;14</td><td>GPS feed, geolocation validation, map implementation, calibration</td><td>10.0</td></tr>
+        <tr><td>15&ndash;19</td><td>Night/demo tests, README, evidence and quizzes</td><td>11.0</td></tr>
+        <tr><td colspan="2"><strong>Total hands-on estimate (not six guaranteed weekends)</strong></td><td><strong>46.0</strong></td></tr>
+      </table>
+      <p class="muted">Per-step figures: 1, 3, 4, 2, 3, 2, 2, 2, 4, 2, 2, 3, 3, 3, 2, 3, 2, 2, 1 hours.
+      Learning delays, shipping and regulator/retailer lead times are excluded.</p>
+    </div>
+  </details>
+
+  <details class="acc">
+    <summary>Start this week &mdash; Edmonton order plan</summary>
+    <div class="acc-body">
+      <p><strong>Good news about the timing:</strong> winter is <em>bench season</em>. Flash the Pi,
+      run the synthetic tests, assemble and inspect indoors, then fly only when weather and site rules allow.</p>
       <ul>
-        <li><strong>Local pickup beats shipping:</strong> Great Hobbies (Alberta chain) lists both
-        the SpeedyBee F405 stack and the RadioMaster Pocket &mdash; check store stock online
-        before driving. Also: Edmonton FPV buy/sell groups for a used Pocket, and Amazon.ca carries
-        the Pocket. Electronics spares (wire, heat shrink, props): Memory Express or any hobby shop.</li>
-        <li><strong>Ship what you can't find locally:</strong> SpeedyBee direct (add 2&ndash;3
-        weeks + possible duty), Motion RC (US warehouse), Adafruit/DigiKey for the camera + Pi.</li>
+        <li><strong>Order by retailer:</strong> the airframe, radio, FPV and most tools come from
+        Rotor Village in Manitoba; the Pi, thermal board and GPS come from PiShop in Ottawa; the Qwiic
+        HAT/cables come from SparkFun; the laptop and small supplies come from Walmart/Edmonton pickup
+        or delivery. Exact links are in the <a href="Shad-Drone-Order-List.md">order document</a>.</li>
+        <li><strong>Freight is separate:</strong> Rotor Village and PiShop calculate by weight and
+        destination. SparkFun freight/import charges and any small-Walmart-item charge need checkout
+        quotes. Stock is checked, not reserved.</li>
         <li><strong>Cold-weather reality (Edmonton winter):</strong> LiPos lose punch below
         &minus;10 &deg;C &mdash; keep packs warm in a jacket pocket, expect shorter flights, and
         never charge a frozen pack. The MLX90640 itself is rated to well below freezing.</li>
-        <li><strong>Free and first:</strong> register the drone ($5) and pass the Transport Canada
+        <li><strong>Compliance first:</strong> register the drone ($5) and pass the Transport Canada
         Small Basic online exam (14+) this week &mdash; costs almost nothing and it's the piece
         that makes every flight after it legal.</li>
       </ul>
@@ -536,8 +597,10 @@
     <summary>Buying notes &amp; LiPo safety</summary>
     <div class="acc-body">
       <ul>
-        <li><strong>Soldering:</strong> one step needs it (motor wires &rarr; ESC). A $30
-        adjustable iron + rosin-core solder is fine. The payload itself is solder-free.</li>
+        <li><strong>Soldering:</strong> airframe wiring needs it. The payload is solder-free only
+        with a pre-populated Pi header/Qwiic HAT; a standard Zero 2 W needs a header soldered. Budget
+        for a temperature-controlled iron, stand, solder, flux, eye protection, ventilation, cutters,
+        strippers, drivers, meter and smoke stopper &mdash; not just a bare iron.</li>
         <li><strong>LiPo safety:</strong> never charge unattended, charge in a LiPo bag, never
         fly a swollen or damaged pack. This is the one part of the hobby that genuinely bites.</li>
         <li><strong>The Pi + camera are the payload</strong> &mdash; if you already ordered them
@@ -555,25 +618,25 @@
   <div class="card">
     <div class="note gold" style="margin:0"><strong>Done-means rule:</strong> every step has an
     observable check. Don't move on until it passes &mdash; and after each step, explain out loud
-    what you did, then take the quizzes in tab 7.</div>
+    what you did, then take the quizzes in tab 6.</div>
   </div>
 
   <details class="acc" open>
     <summary>Weekend 1 &mdash; build the airframe (tick as you go)</summary>
     <div class="acc-body">
       <ul class="tasks">
-        <li><label><input type="checkbox" data-key="s-1"><span><strong>1 &middot; Bench inventory</strong>
-          <small>Every part on the table, manuals downloaded (stack, radio, receiver). Done: you can name each part's job.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-1"><span><strong>1 &middot; Order and inventory</strong>
+          <small>Use the complete order document, confirm stock and freight at checkout, then download the GEPRC, receiver, VTX and Pi sensor manuals. Done: every item is present and matched to the list before assembly.</small></span></label></li>
         <li><label><input type="checkbox" data-key="s-2"><span><strong>2 &middot; Frame assembly</strong>
-          <small>Standoffs, arms, stack mounts. Motors onto the four arms with the screws supplied &mdash; snug, not stripped. Done: frame rigid, motors spin freely by hand.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="s-3"><span><strong>3 &middot; Solder the stack</strong>
-          <small>ESC onto the frame, motor wires to the ESC pads (order per the manual). Battery lead + capacitor on the ESC. Done: joints shiny and solid, no bridges.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="s-4"><span><strong>4 &middot; Receiver + flight controller</strong>
-          <small>FC on the standoffs, receiver wired to a UART, antenna secured away from carbon. Done: receiver binds to your RadioMaster Pocket (ELRS: bind on receiver, then from the radio's ExpressLRS script).</small></span></label></li>
-        <li><label><input type="checkbox" data-key="s-5"><span><strong>5 &middot; Betaflight setup (props OFF!)</strong>
-          <small>USB &rarr; Betaflight Configurator: motor directions (props off!), arm switch, receiver protocol (CRSF), mode ranges, failsafe. Done: motors idle when armed, arm switch works, throttle cut triggers failsafe.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="s-6"><span><strong>6 &middot; First hover &mdash; safe area, no payload</strong>
-          <small>Open field, no people within 30 m (the Basic-ops rule). 1 m hover, land. Done: stable hover, clean landing, nothing hot.</small></span></label></li>
+          <small>Use the selected frame's standoffs and mounts. Verify motor-screw length and use appropriate threadlock where the manual requires it. Done: frame rigid, no screw touches a winding, motors turn freely.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-3"><span><strong>3 &middot; Solder and inspect the stack</strong>
+          <small>Follow the exact FC/ESC manual for motor order, battery lead and capacitor. Use eye protection, ventilation and a smoke stopper on first power. Done: polarity and continuity checked, no bridges or loose wires.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-4"><span><strong>4 &middot; RP1 V2 serial receiver + flight controller</strong>
+          <small>Do not use the PWM-only ER4 example. Wire the RP1's 5V and GND, receiver TX to FC R2 and receiver RX to FC T2; secure the included UFL antenna. Enable UART2 serial RX and CRSF, then bind with compatible ELRS firmware.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-5"><span><strong>5 &middot; Betaflight setup (props OFF)</strong>
+          <small>Verify motor order/direction at a safe minimum output, channel map, arm switch and failsafe. Configure motor behaviour deliberately rather than assuming armed motors must idle. Done: correct channel response and immediate disarm/throttle-cut behaviour.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-6"><span><strong>6 &middot; First hover &mdash; legal area, no payload</strong>
+          <small>Only after certification/registration and site/airspace/NOTAM checks. For Basic operations remain more than 30 m horizontally from any person and meet all aerodrome/VLOS limits. Make a brief 1 m hover, land and inspect temperatures.</small></span></label></li>
       </ul>
     </div>
   </details>
@@ -581,19 +644,19 @@
     <summary>Weekend 2 &mdash; build the thermal payload</summary>
     <div class="acc-body">
       <ul class="tasks">
-        <li><label><input type="checkbox" data-key="s-7"><span><strong>7 &middot; Pi Zero 2 W on the bench</strong>
-          <small>Raspberry Pi OS on microSD, boot, enable I2C (raspi-config). Done: Pi boots on WiFi.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="s-8"><span><strong>8 &middot; Plug in the thermal camera</strong>
-          <small>STEMMA QT cable: camera &rarr; Pi. Install the Adafruit MLX90640 library. Done: test code prints 768 numbers that warm when you bring a hand near the lens.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="s-9"><span><strong>9 &middot; The detection code (the important part)</strong>
-          <small>Port the tested hotspots.py flood fill to the Pi. Tune threshold + min pixels against a candle or hot mug at 2 m. Done: exactly one hotspot reported, sensible temperature.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="s-10"><span><strong>10 &middot; Mount the payload</strong>
-          <small>Pi + camera on the top plate, lens down, balanced over centre. Night LED kit fitted (CAR 901.39). Done: hovers with payload aboard.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-7"><span><strong>7 &middot; Pi Zero 2 WH on the bench</strong>
+          <small>Flash the Pi-hole kit's blank 32GB card with Raspberry Pi OS using the Acer laptop and included reader. Fit the pre-soldered Pi into the Qwiic HAT, enable I2C and use the included 5.1V/2.5A micro-USB bench supply.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-8"><span><strong>8 &middot; Connect camera and GPS through the Qwiic HAT</strong>
+          <small>Solder the included straight 1&times;5 male headers onto the Pimoroni boards. Connect each to DEV-14459 with a PRT-17912 jumper cable, matching 3.3V/GND/SDA/SCL labels. Install the payload requirements and verify camera address 0x33 and GPS address 0x10.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-9"><span><strong>9 &middot; Run and tune the included detection code</strong>
+          <small>Run all 19 synthetic tests in the payload package, then use the demo before hardware tests. Tune threshold and minimum pixels against a safe controlled warm target and save detection/false-positive results.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-10"><span><strong>10 &middot; Mount and power the payload</strong>
+          <small>Use nylon standoffs, zip ties and a secondary Kevlar strap. Keep the thermal lens down and GPS antenna up, away from carbon. Connect the meter-checked 24AWG micro-USB power pigtail to the GEPRC's regulated 5V/3A output, avoid backfeed, and verify Pi voltage under load.</small></span></label></li>
       </ul>
-      <h3>Payload code &mdash; tested API, adapted for the Pi</h3>
+      <h3>Payload example &mdash; included package, 19 synthetic tests passed</h3>
       <pre><code>import time, board, busio
 import adafruit_mlx90640
-from hotspots import find_hotspots   # your tested flood fill
+from hotspots import find_hotspots   # included tested module in Shad-Drone-Payload
 
 i2c = busio.I2C(board.SCL, board.SDA, frequency=800000)
 mlx = adafruit_mlx90640.MLX90640(i2c)
@@ -609,21 +672,22 @@ while True:
         print("HOTSPOT,%.1f,%.1f,%d,%.1f" %
               (h["x"], h["y"], h["pixels"], h["max_c"]))
     time.sleep(0.5)</code></pre>
-      <p class="muted">Same library API as the verified ground code (<code>getFrame</code>, 768
-      values) &mdash; but on real Linux Python, no serial bridge. The flood-fill module is the one
-      already passing 9/9 tests.</p>
+      <p class="muted">The MLX90640 uses the documented <code>getFrame</code> API, 768-value buffer
+      and refresh-rate settings at address 0x33. The full GPS/logging/map implementation is in
+      <a href="Shad-Drone-Payload/README.md">Shad-Drone-Payload</a>. Its 19 synthetic tests and demo passed;
+      physical Pi/sensor integration and airborne accuracy still require the listed acceptance tests.</p>
     </div>
   </details>
   <details class="acc">
     <summary>Weekend 3 &mdash; link it up: coordinates on a map</summary>
     <div class="acc-body">
       <ul class="tasks">
-        <li><label><input type="checkbox" data-key="s-11"><span><strong>11 &middot; GPS or position feed</strong>
-          <small>Add a GPS module to the Pi (or log your tablet position at launch). Every hotspot needs the camera's lat/lon + altitude to land on the map.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="s-12"><span><strong>12 &middot; geo.py in the loop</strong>
-          <small>Pixel &rarr; metres north/east &rarr; degrees, using the verified formula. Done: a marked target lands within ~2 m of its real position on the map.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="s-13"><span><strong>13 &middot; The live map</strong>
-          <small>Rebuild the web page: heat frame + red hotspot markers + footprint rectangle + optional AI briefing button (data only, .env key, never on GitHub). Done: flying over a heat target pops a marker.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-11"><span><strong>11 &middot; GPS position feed</strong>
+          <small>Read the PA1010D at 0x10 and log latitude, longitude, altitude and fix quality with each frame. Set the calibrated aircraft heading explicitly; do not infer reliable heading from a stationary GPS.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-12"><span><strong>12 &middot; Validate the included geo.py</strong>
+          <small>The module converts pixel offsets to metres, rotates by measured heading and returns coordinates. It omits tilt, terrain and lens distortion. Done: repeated surveyed-target results with measured error, not a promised 2 m accuracy.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-13"><span><strong>13 &middot; Run the offline coordinate viewer</strong>
+          <small>Run <code>python payload.py --demo --serve</code> in the payload folder and open the local map. Then run the real backend with a GPS fix. Done: recorded data produces the expected marker and JSONL log before a live flight.</small></span></label></li>
       </ul>
     </div>
   </details>
@@ -631,17 +695,17 @@ while True:
   <details class="acc">
     <summary>Weekend 4&ndash;5 &mdash; flight tests over heat targets (the fun part)</summary>
     <div class="acc-body">
-      <div class="note warn"><strong>Safety first, every time:</strong> private land, owner's
-      permission, fire bans checked, water/extinguisher at the target, no people within 30 m of
-      the aircraft, weather checked. If any fail, reschedule &mdash; the targets aren't going
-      anywhere.</div>
+      <div class="note warn"><strong>Safety first, every time:</strong> use a controlled hot plate
+      rather than an open fire. Obtain site permission; check certification, registration, airspace,
+      NOTAMs, weather and fire rules. For Basic operations stay more than 30 m horizontally from any
+      person. These are test acceptance criteria, not pre-existing results.</div>
       <ul class="tasks">
         <li><label><input type="checkbox" data-key="s-14"><span><strong>14 &middot; Calibration pass (day)</strong>
-          <small>Three known targets (hot plate, BBQ, hot water bucket) in a triangle, flown at 20&ndash;30 m. Done: 3/3 detected, zero false alarms on cold ground. Record it.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="s-15"><span><strong>15 &middot; The night pass (legal: lights on)</strong>
-          <small>Same targets after dark, LED kit glowing &mdash; the real mission profile: thermal contrast is best at night. Done: 3/3 at night, coordinates within ~2&ndash;3 m.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="s-16"><span><strong>16 &middot; The demo mission</strong>
-          <small>One marked &ldquo;fire&rdquo; (fire pit or burn barrel, owner's permission) among cold decoys. Fly a grid, land, open the map. Done: the marker lands on the fire and nothing else &mdash; rehearsed 3 times in a row.</small></span></label></li>
+          <small>Use three measured targets with cold controls at a safe, legal altitude. Record detection rate, false positives and geolocation error over repeated passes; do not claim 3/3 or zero false alarms before the evidence exists.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-15"><span><strong>15 &middot; Night pass &mdash; only if every rule is met</strong>
+          <small>Use lights sufficient for VLOS and repeat the same targets. Passive longwave IR does not need LED illumination; the lights are for aircraft visibility. Compare results with day tests and report measured coordinate error.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-16"><span><strong>16 &middot; Controlled demo mission</strong>
+          <small>Run a VLOS grid over a safe hot plate among cold controls and replay the logged map. Use the selected Phoenix 2/HV VTX/M5 analog chain on a legal channel and power setting. Done only after three repeated, documented runs meet the acceptance thresholds.</small></span></label></li>
       </ul>
     </div>
   </details>
@@ -655,7 +719,7 @@ while True:
         <li><label><input type="checkbox" data-key="s-18"><span><strong>18 &middot; Record the evidence</strong>
           <small>5-minute video: bench test &rarr; night takeoff &rarr; detection &rarr; map with marker on target. Plus a build photo and the flight log.</small></span></label></li>
         <li><label><input type="checkbox" data-key="s-19"><span><strong>19 &middot; Quizzes + story</strong>
-          <small>Pass every quiz in tab 7. Practise explaining any part without notes. Then start the vouching loop in the Career tab.</small></span></label></li>
+          <small>Pass every quiz in tab 6. Practise explaining the actual tested implementation without notes; do not present unverified features as finished.</small></span></label></li>
       </ul>
     </div>
   </details>
@@ -670,14 +734,14 @@ while True:
   <div class="card">
     <div class="note ok"><strong>Why this build travels well:</strong> wildfire tech is
     unmistakably Alberta &mdash; and the drone is a story interviewers remember. The Alberta
-    Public Service officially treats experience as equal to education for most classifications
-    ("two-way equivalency", verified alberta.ca) &mdash; what you need is proof: portfolio,
-    documented hours, people who vouch.</div>
+    Alberta's general MRS page describes both one-way and two-way equivalencies, but the classification
+    and job posting control. For Systems Analyst Level 1, do not assume experience alone replaces the
+    written education/certification route; the hiring ministry decides related qualifications.</div>
     <div class="grid3">
-      <div class="stat"><div class="big">$28.00/hr</div><div class="lbl">Starting out (low) &mdash; ~$58k/yr</div></div>
-      <div class="stat"><div class="big">$43.27/hr</div><div class="lbl">Median &mdash; ~$90k/yr</div></div>
-      <div class="stat"><div class="big">$57.69/hr</div><div class="lbl">High end &mdash; ~$120k/yr
-        <span class="muted">(Job Bank, NOC 21211, AB)</span></div></div>
+      <div class="stat"><div class="big">$28.00/hr</div><div class="lbl">Low &mdash; not a promised starting wage</div></div>
+      <div class="stat"><div class="big">$43.27/hr</div><div class="lbl">Median &mdash; Alberta and Edmonton</div></div>
+      <div class="stat"><div class="big">$57.69/hr</div><div class="lbl">High &mdash; reference 2023&ndash;2024
+        <span class="muted">(Job Bank, NOC 21211, updated 19 Nov 2025)</span></div></div>
     </div>
   </div>
 
@@ -697,7 +761,7 @@ while True:
           <td>AI-specific; portfolio work accepted</td></tr>
         <tr><td>Drone &amp; wildfire services (RPAS contractors, forestry tech)</td>
           <td>RPAS pilot, remote sensing tech, data analyst</td>
-          <td>Your certificate + build + night mission logs are a direct fit</td></tr>
+          <td>Potentially relevant project experience; certification and posting requirements still apply</td></tr>
       </table>
       <div class="note gold">Free fluency builders: the
       <a href="https://github.com/GovAlta/Alberta-AI-Academy">Alberta AI Academy</a> and GovAlta's
@@ -776,63 +840,69 @@ while True:
   </div>
 
   <details class="acc" open>
-    <summary>Checked at the source (30 Oct 2026)</summary>
+    <summary>Checked at primary sources (31 Oct 2026)</summary>
     <div class="acc-body">
       <ul>
-        <li><span class="badge b-green">Checked</span> Every price &mdash; SpeedyBee store
-        (stack US$65.99, motors US$19.99), Motion RC (Pocket US$76.99, ER4 US$16.99), Adafruit
-        (Pi Zero 2 W US$19.05, MLX90640 US$74.95).</li>
-        <li><span class="badge b-green">Checked</span> Flight rules &mdash; Basic operations
-        page (TC, updated 19 Mar 2026) and CAR 901.39 night-lighting rule quoted verbatim from
-        laws-lois.justice.gc.ca (current to 30 Sep 2026).</li>
-        <li><span class="badge b-green">Checked</span> The wildfire exclusion &mdash; CAR 601.15
-        / CASA 2021-11: 5 nautical miles (9.3 km) at altitudes below 3,000 ft.</li>
-        <li><span class="badge b-green">Checked</span> Camera API &mdash; <code>getFrame</code>
-        (768 values) and the flood-fill design against your 9/9 passing test suite.</li>
-        <li><span class="badge b-green">Checked</span> Wages &mdash; Job Bank Canada (NOC 21211,
-        AB): $28.00 / $43.27 / $57.69 hourly; outlook Moderate 2025&ndash;27.</li>
+        <li><span class="badge b-green">Checked</span> GEPRC F405 BLS 50A stock/specs,
+        RP1 V2 CRSF/5V receiver, and the Zero 2 WH kit with pre-soldered header and bench supply.</li>
+        <li><span class="badge b-green">Checked</span> Pimoroni MLX90640 and PA1010D stock/specs,
+        SparkFun Qwiic HAT/cables, analog FPV chain, charger, tools and laptop. All 35 order links opened successfully.</li>
+        <li><span class="badge b-green">Checked</span> Transport Canada Basic operations and CAR
+        900.06/901.39/601.15. The 30 m condition is a Basic-category boundary; night lights do not waive other rules.</li>
+        <li><span class="badge b-green">Checked</span> GoA Systems Analyst MRS PDF (reviewed
+        20 May 2026) and Job Bank NOC 21211 Alberta/Edmonton wages $28.00/$43.27/$57.69.</li>
+        <li><span class="badge b-green">Checked</span> FPInnovations TR-2020-N29 (2020), including
+        solar gain/reflectance, GPS-referenced maps and the complete-system conclusions.</li>
+        <li><span class="badge b-green">Verified locally</span> <code>hotspots.py</code>, <code>geo.py</code>,
+        <code>payload.py</code> and <code>map_server.py</code>: 19/19 synthetic tests plus demo/map API checks.
+        Physical fit and airborne performance remain acceptance-test items.</li>
       </ul>
     </div>
   </details>
 
   <details class="acc">
-    <summary>Still to prove (your tests)</summary>
+    <summary>Assembly and acceptance checks after delivery</summary>
     <div class="acc-body">
       <ul>
-        <li><span class="badge b-amber">To prove</span> Detection range for 1-metre targets
-        &mdash; the calculator gives the theory; your calibration pass gives the truth. Record
-        what you measure.</li>
-        <li><span class="badge b-amber">To prove</span> GPS accuracy of your setup (~2&ndash;3 m
-        is typical for consumer GPS; measure yours on a marked target).</li>
-        <li><span class="badge b-amber">To prove</span> Flight time with the payload aboard
-        (expect 4&ndash;6 min per battery on a 5" build &mdash; measure, don't assume).</li>
-        <li><span class="badge b-amber">Re-check</span> Wages and postings before quoting them
-        &mdash; they drift and close.</li>
+        <li><span class="badge b-amber">Inspect</span> Stack/ESC and capacitor clearance, motor-screw
+        length, payload retention, thermal-lens/GPS-antenna orientation, all-up weight and centre of gravity.</li>
+        <li><span class="badge b-amber">Bench-test</span> Receiver binding/failsafe, Pi power stability,
+        shared I2C reliability, analog video, GPS fix, motor current/temperature and short hover behaviour.</li>
+        <li><span class="badge b-amber">Validate</span> Repeated controlled-target detection rates,
+        false positives and surveyed-position error; do not use ideal geometry as an accuracy claim.</li>
+        <li><span class="badge b-amber">Re-check</span> Checkout stock/freight, current portal fees,
+        certification/registration, RF rules, airspace, NOTAMs and site/fire rules at the time of use.</li>
       </ul>
     </div>
   </details>
 
   <details class="acc">
-    <summary>Sources (all links live, checked 30 Oct 2026)</summary>
+    <summary>Primary sources checked 31 Oct 2026</summary>
     <div class="acc-body">
       <ul>
         <li><a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations">TC: Basic operations</a>
-        &middot; <a href="https://laws-lois.justice.gc.ca/eng/regulations/SOR-96-433/section-901.39.html">CAR 901.39 (night flying)</a>
-        &middot; <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/flying-your-drone-safely-legally">TC drone rules &amp; penalties</a></li>
-        <li><a href="https://tc.canada.ca/en/aviation/reference-centre/civil-aviation-safety-alerts/operation-remotely-piloted-aircraft-systems-rpas-near-wildfires-civil-aviation-safety-alert-casa-no-2021-11">TC: RPAS near wildfires (CASA 2021-11)</a>
-        &middot; <a href="https://library.fpinnovations.ca/media/FOP/TR2020N29.PDF">FPInnovations TR-2020-N29 (hotspot detection research)</a></li>
-        <li><a href="https://www.speedybee.com/speedybee-f405-v4-bls-55a-30x30-fc-esc-stack/">SpeedyBee F405 V4 stack</a>
-        &middot; <a href="https://www.speedybee.com/motors/">SpeedyBee motors</a>
-        &middot; <a href="https://motionrc.com/products/radiomaster-pocket-16-channel-elrs-transmitter-charcoal-hp0157-0054-m2">RadioMaster Pocket</a></li>
-        <li><a href="https://www.adafruit.com/piz2w">Raspberry Pi Zero 2 W</a> &middot;
-        <a href="https://www.adafruit.com/product/4407">MLX90640 (4407)</a> &middot;
-        <a href="https://github.com/adafruit/Adafruit_CircuitPython_MLX90640">MLX90640 library</a></li>
-        <li><a href="https://www.alberta.ca/alberta-public-service-minimum-recruitment-standards">Alberta MRS</a>
+        &middot; <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/choosing-right-drone-advanced-complex-operations">TC: RPAS safety assurance</a>
+        &middot; <a href="https://laws-lois.justice.gc.ca/eng/regulations/SOR-96-433/section-900.06.html">CAR 900.06</a>
+        &middot; <a href="https://laws-lois.justice.gc.ca/eng/regulations/SOR-96-433/section-901.39.html">CAR 901.39</a>
+        &middot; <a href="https://laws-lois.justice.gc.ca/eng/regulations/SOR-96-433/section-601.15.html">CAR 601.15</a></li>
+        <li><a href="https://rotorvillage.ca/geprc-taker-f405-bls-50a-combo-stack/">GEPRC F405 BLS 50A stack</a>
+        &middot; <a href="https://rotorvillage.ca/radiomaster-rp1-v2-tcxo-expresslrs-2-4ghz-receiver/">RadioMaster RP1 V2</a>
+        &middot; <a href="https://rotorvillage.ca/tbs-source-one-v6-5/">TBS Source One V6 frame</a>
+        &middot; <a href="https://rotorvillage.ca/skyzone-m5-diversity-fpv-monitor/">Skyzone M5 monitor</a></li>
+        <li><a href="https://www.pishop.ca/product/raspberry-pi-zero-2wh-pi-hole-kit/">Pi Zero 2 WH kit</a>
+        &middot; <a href="https://www.pishop.ca/product/mlx90640-thermal-camera-breakout/">Pimoroni MLX90640</a>
+        &middot; <a href="https://www.pishop.ca/product/pa1010d-gps-breakout/">Pimoroni PA1010D GPS</a>
+        &middot; <a href="https://www.sparkfun.com/sparkfun-qwiic-hat-for-raspberry-pi.html">SparkFun Qwiic HAT</a>
+        &middot; <a href="Shad-Drone-Order-List.md">All 35 order links</a></li>
+        <li><a href="https://www.alberta.ca/system/files/custom_downloaded_images/psc-recruitment-standards-systems-analyst.pdf">GoA Systems Analyst MRS PDF</a>
         &middot; <a href="https://www.jobbank.gc.ca/marketreport/wages-occupation/24510/AB">Job Bank wages</a>
-        &middot; <a href="https://open.alberta.ca/dataset/wildfire-data">Alberta historical wildfire data</a></li>
+        &middot; <a href="https://www.jobbank.gc.ca/marketreport/summary-occupation/24510/AB">Job Bank profile/outlook</a>
+        &middot; <a href="https://library.fpinnovations.ca/media/FOP/TR2020N29.PDF">FPInnovations TR-2020-N29</a></li>
       </ul>
-      <p class="muted">Rebuilt from the earlier ground-station guide on request &mdash; the drone
-      edition, 30 Oct 2026. One file, one topic.</p>
+      <p class="muted"><a href="Shad-Drone-Audit-Report.md">Read the updated A&ndash;G audit and
+      substitution report</a>, or open the <a href="Shad-Drone-Payload/README.md">tested payload package</a>.
+      The supplied chat artwork was not available as a readable image file, so the existing
+      <code>shad-drone-icon.svg</code> remains.</p>
     </div>
   </details>
 </section>
@@ -840,8 +910,9 @@ while True:
 
 <footer>
   <p><strong>Honesty box:</strong> a prototype builder's roadmap, not career or legal advice.
-  You will fly only over safe targets on private land &mdash; never near a real wildfire.</p>
+  Use controlled bench targets and fly only after all certification, site, aviation and safety checks pass.</p>
   <p>Made for Shad &middot; Edmonton &middot; progress and quiz scores save in this browser only.</p>
+  <p><a href="https://github.com/AlbertanCoder/build-guide">Source, order documents and payload on GitHub</a></p>
 </footer>
 
 <script>
@@ -856,9 +927,33 @@ while True:
   saved.quizBest = saved.quizBest || {};
   saved.level1 = saved.level1 || "";
   saved.flashes = saved.flashes || {};
+  saved.hoursWeek = Number(saved.hoursWeek) >= 2 && Number(saved.hoursWeek) <= 40
+    ? Number(saved.hoursWeek) : 8;
   function save() {
     try { localStorage.setItem(STORE, JSON.stringify(saved)); } catch (e) {}
   }
+
+  /* ---------- Build-time calculator ---------- */
+  const TOTAL_BUILD_HOURS = 46;
+  const hoursWeek = document.getElementById("hours-week");
+  hoursWeek.value = saved.hoursWeek;
+  function updateBuildTime() {
+    const hours = Number(hoursWeek.value);
+    const weeks = Math.round((TOTAL_BUILD_HOURS / hours) * 2) / 2;
+    const finish = new Date();
+    finish.setHours(12, 0, 0, 0);
+    finish.setDate(finish.getDate() + Math.round(weeks * 7));
+    document.getElementById("hours-week-value").textContent = hours + " hours/week";
+    document.getElementById("build-weeks").textContent = weeks.toLocaleString("en-CA") +
+      (weeks === 1 ? " week" : " weeks");
+    document.getElementById("build-finish-date").textContent = new Intl.DateTimeFormat("en-CA", {
+      year: "numeric", month: "short", day: "numeric"
+    }).format(finish);
+    saved.hoursWeek = hours;
+    save();
+  }
+  hoursWeek.addEventListener("input", updateBuildTime);
+  updateBuildTime();
 
   /* ---------- Tabs ---------- */
   const TABS = [["why", "1 What & Why"], ["build", "2 How It Works"], ["parts", "3 Parts & Budget"],
@@ -929,33 +1024,33 @@ while True:
       { q: "What does the flight controller + ESC stack actually do?",
         a: ["Stores the camera images", "The FC flies the drone (reading the receiver, stabilising) and the ESC turns battery power into motor speed", "Charges the battery", "Talks to satellites"],
         c: 1,
-        why: "The SpeedyBee F405 V4 stack is two boards: the flight controller (the pilot's autopilot brain) and a 55A 4-in-1 ESC that drives the four motors. Everything else plugs into it." },
+        why: "The selected GEPRC TAKER F405 BLS 50A stack pairs an F405 flight controller with a 50A four-in-one ESC, 30.5 mm mounting and a regulated 5V/3A output for the Pi." },
       { q: "Why must props be OFF during bench setup?",
         a: ["They're heavy", "Armed motors spin with enough force to cause serious injury — configure motor direction, receiver and modes with props off, always", "To save battery", "Betaflight requires it"],
         c: 1,
         why: "This is the cardinal rule of the hobby. A 5-inch prop at idle can cut skin; at power it can injure badly. Props go on last, after everything works, and come off first before any config." },
       { q: "Under Basic operations, how far must the drone stay from any person?",
-        a: ["5 metres", "30 metres (100 feet) horizontally", "100 metres", "No limit if you're careful"],
+        a: ["5 metres", "More than 30 metres (100 feet) horizontally", "100 metres", "No limit if you're careful"],
         c: 1,
         why: "Transport Canada Basic operations: more than 30 m horizontally from any person. Closer than that is Advanced operations territory. That's why test flights happen in empty fields." },
       { q: "What do the 18650 batteries in the RadioMaster Pocket power?",
         a: ["The drone", "Your hand controller — the drone has its own LiPo battery", "The thermal camera", "The GPS"],
         c: 1,
-        why: "Two systems, two power sources: 18650 cells in your hand controller, a 4S LiPo on the drone. The Pi and camera run off the drone's power (via the stack's 5V output)." },
+        why: "Two systems, two power sources: 18650 cells in your hand controller and a 4S LiPo on the drone. The Pi still needs a verified regulated micro-USB power solution; direct stack power is not a complete wiring plan." },
       { q: "What is the LiPo safety rule that actually matters?",
         a: ["Charge fast", "Never charge unattended, charge in a LiPo bag, and never fly a swollen or damaged pack", "Store in the freezer", "Discharge fully after every flight"],
         c: 1,
         why: "LiPo fires are the genuine hazard in this hobby. Charge attended and bagged, storage-charge packs you're not using, and retire swollen packs to a battery recycling depot." }
     ],
     payload: [
-      { q: "Why the Raspberry Pi Zero 2 W as the drone's brain?",
-        a: ["It's the cheapest computer anywhere", "Quad-core CPU and WiFi at 10 grams — light enough to fly, powerful enough to run detection code in real time", "It has a built-in thermal camera", "It flies the drone"],
+      { q: "Why consider the Raspberry Pi Zero 2 W for the payload?",
+        a: ["It is a flight controller", "Its 65×30 mm board has a quad-core CPU, 512MB RAM and WiFi; detection performance still needs testing", "It includes a thermal camera", "It needs no power wiring"],
         c: 1,
-        why: "10 grams (Adafruit spec) and 512MB RAM with 2.4GHz WiFi. The flight controller flies the aircraft; the Pi runs your Python detection code and streams results to the ground." },
-      { q: "How does the thermal camera connect to the Pi?",
-        a: ["HDMI", "STEMMA QT / Qwiic cable — plug and play, no soldering", "WiFi", "USB-C"],
+        why: "Raspberry Pi specifies the form factor, processor, memory and wireless. The standard GPIO footprint is unpopulated, and no airborne real-time detection claim has been bench-tested." },
+      { q: "How do the thermal camera and GPS connect to the Pi?",
+        a: ["HDMI", "A populated Pi header + Qwiic HAT + PRT-17912 jumper cables on the shared I2C bus", "A QT cable pushed into bare GPIO holes", "USB-C only"],
         c: 1,
-        why: "The JST-SH 4-pin STEMMA QT cable carries I2C. On the Pi you enable I2C in raspi-config, install Adafruit's MLX90640 library, and get frames. Same camera, same library as the ground station build." },
+        why: "DEV-14459 provides four Qwiic connectors on the Pi's 3.3V I2C bus. A standard Zero 2 W needs a header soldered; a WH/header version avoids that payload soldering." },
       { q: "How many temperature readings per frame, and at what accuracy?",
         a: ["64 readings, ±5 °C", "768 readings (32×24), ±2 °C in the 0–100 °C range", "1,024 readings, ±0.1 °C", "One reading"],
         c: 1,
@@ -967,86 +1062,86 @@ while True:
       { q: "The night LED kit isn't decoration — what is it?",
         a: ["Style", "A legal requirement: CAR 901.39 says the drone must carry lights sufficient to keep it visible to the pilot at night, turned on", "A heat source", "A GPS antenna"],
         c: 1,
-        why: "Night is when thermal detection works best — and CAR 901.39 makes visible lighting the condition for flying legally after dark." }
+        why: "CAR 901.39 requires sufficient switched-on lighting for the pilot or visual observer to see the aircraft. Lights do not improve the passive thermal sensor and do not waive any other rule." }
     ],
         detect: [
       { q: "How does the code find a fire in 768 numbers?",
         a: ["It averages them", "Flood fill: every hot pixel above a threshold spreads through touching hot pixels; the connected blob is one hotspot with a centre, size and peak temperature", "It asks the AI", "It compares frames"],
         c: 1,
-        why: "The same tested hotspots.py flood fill from the ground build. Your two tuning knobs: the temperature threshold (what counts as hot) and minimum pixels (how big a blob counts as a real target)." },
+        why: "The included hotspots.py implements this flood fill. Its 19 synthetic tests cover grouping, thresholds, minimum size, edges and invalid inputs; controlled sensor tests still tune real detection." },
       { q: "How does a pixel become a map coordinate?",
         a: ["It doesn't", "Ground width = 2 × altitude × tan(FOV/2) gives metres per pixel; distance from frame centre becomes metres north/east, converted at ~111,320 m per degree", "GPS inside the camera", "The AI guesses"],
         c: 1,
-        why: "That's geo.py's verified math. Longitude degrees also shrink by cos(latitude) — important at Edmonton's 53° north. Approximate by design, and honest about it." },
-      { q: "Why fly the night pass for real testing?",
-        a: ["It looks dramatic", "Thermal contrast is best at night — no solar gain or reflectance creating false positives (the FPInnovations report names these as daytime problems)", "Drones fly better at night", "It's illegal in daylight"],
+        why: "That is the ideal nadir approximation proposed for geo.py. Heading must rotate the offsets; tilt, terrain, lens distortion, GPS and height errors are excluded and must be measured." },
+      { q: "Why compare day and night test results?",
+        a: ["Night guarantees zero false positives", "FPInnovations identifies solar gain and reflectance as daytime influences; lower-contrast conditions should be measured rather than assumed", "Drones fly better at night", "Daylight is banned"],
         c: 1,
-        why: "Alberta's own infrared imaging guidance says solar gain and reflectance confound daytime thermal imaging with false positives. Night is the operational profile — which is why agencies scan at night too." },
-      { q: "What is the '3/3 with zero false alarms' rule in the calibration pass?",
-        a: ["Luck", "A done-means check: every planted target detected AND no cold background flagged — proves sensitivity AND specificity before you trust the system", "A flight regulation", "Battery spec"],
+        why: "The report supports planning scans when solar gain/reflectance are low and thermal contrast is high. It does not guarantee that every night frame has no false positives." },
+      { q: "What does a '3/3 with zero false alarms' pass establish?",
+        a: ["Operational reliability forever", "Only an initial acceptance result; repeated trials are needed to estimate detection and false-alarm performance", "A flight regulation", "A battery specification"],
         c: 1,
-        why: "Detecting what's there is only half; NOT detecting what isn't is the other half. Measure both, record both." },
-      { q: "How does the AI briefing stay honest?",
-        a: ["AI is always right", "It only receives the detected hotspot list with instructions to use just that data — and you check every line against the map", "It's certified", "The drone verifies it"],
+        why: "Record true detections, missed targets and false positives over repeated controlled tests. One small pass is evidence for that trial, not a general proof." },
+      { q: "How should a future AI briefing be checked?",
+        a: ["Assume it is always right", "Compare every statement with the measured hotspot log; no AI briefing is implemented in this HTML", "Treat it as certified", "Let it control the drone"],
         c: 1,
-        why: "Constrained input + explicit prompt + human verification. The map is ground truth; the AI only writes words about the data it was given. Safety checks stay in plain code." }
+        why: "Generated prose is not ground truth. Use recorded measurements, human verification and plain-code safety checks." }
     ],
     rules: [
-      { q: "May you fly over or near a real wildfire to test this drone?",
-        a: ["Yes, if careful", "Absolutely not — no aircraft including drones within 5 nautical miles (9.3 km) of a wildfire below 3,000 ft (CAR 601.15)", "Only at night", "Only with a radio"],
+      { q: "What does CAR 601.15 restrict around a forest fire?",
+        a: ["Nothing for drones", "Operating over the fire area or within 5 NM (9.3 km) below 3,000 ft AGL; NOTAM-restricted airspace is also prohibited", "Only night flights", "Only flights above 25 kg"],
         c: 1,
-        why: "Unauthorized drones force air tankers and helicopters to ground operations. Fines reach $25,000 and imprisonment is possible. Real fires are agency airspace — you test on safe targets instead." },
-      { q: "What makes night flying legal?",
-        a: ["Nothing does — it's banned", "Lights on the drone sufficient to keep it visible to the pilot or visual observer, turned on (CAR 901.39)", "A special night certificate", "Flying below trees"],
+        why: "Read the actual section rather than treating it as a slogan. Check NOTAMs and use controlled bench targets instead of flying to a wildfire." },
+      { q: "What does CAR 901.39 require for night operation?",
+        a: ["Nothing", "Lights sufficient for the pilot or visual observer to see the aircraft, turned on; all other applicable rules still apply", "A generic LED kit alone makes every flight legal", "Flying below trees"],
         c: 1,
-        why: "CAR 901.39 quoted verbatim in the guide. A simple LED kit satisfies it — and night is exactly when the mission happens." },
-      { q: "What do you need before your first legal flight?",
-        a: ["A pilot licence", "Drone registration + marking (250 g+) and a Pilot Certificate — Basic Operations (free online exam, 14+, never expires)", "A fire department permit only", "Insurance"],
+        why: "Night lighting is necessary, not a waiver of VLOS, category, airspace, aerodrome, NOTAM, site or safety requirements." },
+      { q: "What does a 250 g–25 kg drone need for Basic operations?",
+        a: ["No registration", "Registration/marking, proof of registration and a Pilot Certificate — Basic Operations; exam and registration fees apply", "Only a fire department permit", "Only insurance"],
         c: 1,
-        why: "Both verified on Transport Canada's site: register/mark the drone, pass the Small Basic Exam online, carry both while flying. No other form of certification is accepted." },
-      { q: "Basic operations requires flying…",
-        a: ["Over crowds", "Within visual line of sight, in uncontrolled airspace, 5.6+ km from certified airports, 1.9+ km from heliports", "At any altitude", "Beyond visual line of sight"],
+        why: "Transport Canada requires the certificate and registration proof. Basic is age 14+, the certificate does not expire, and skills must remain current." },
+      { q: "Which set contains only Basic-operation conditions?",
+        a: ["Over crowds", "VLOS, ≤25 kg, >30 m from any person, uncontrolled airspace, >5.6 km from certified airports and >1.9 km from heliports", "Any altitude or location", "Beyond visual line of sight"],
         c: 1,
-        why: "The full Basic-conditions list from TC's page (updated 19 Mar 2026). Breach any one and you're into Advanced/Complex territory with more paperwork." },
+        why: "These are category boundaries, not a complete site-risk assessment. Failing a condition can make the operation Advanced or Complex." },
       { q: "Before any test flight, the safety ritual is…",
-        a: ["Just look up", "Private land + permission, fire bans checked, water/extinguisher at target, no people within 30 m, weather checked — any failure = reschedule", "Charge batteries overnight", "Tell neighbours after"],
+        a: ["Just look up", "Certification/registration, site permission, airspace/NOTAM/fire checks, weather, >30 m from people for Basic, controlled target and emergency plan", "Charge batteries unattended", "Skip failsafe testing"],
         c: 1,
-        why: "Every item is a hard gate, not a preference. Fires, people and aircraft are what go wrong — rescheduling is free; an incident isn't." }
+        why: "Private land alone is not blanket authorization. Recheck current rules and stop if any gate fails." }
     ],
     
     final: [
-      { q: "Roughly what does the lean build cost, and how do you get there?",
-        a: ["~CA$600 lean / ~$685 all-new: budget motors, used radio locally, 2 batteries, borrow an iron, defer GPS", "~CA$5,000; motors and batteries", "~CA$100; the Pi", "Free; it's all software"],
+      { q: "What does the complete order plan cost before remaining freight?",
+        a: ["CA$1,673.00 plus CA$81.10 GST = CA$1,754.10", "CA$600 including everything", "CA$750 including all freight", "Nothing; all parts are free"],
         c: 0,
-        why: "Verified 30 Oct 2026 prices: MLX90640 $74.95, stack $65.99, Pi $19.05, Pocket $76.99 are the fixed lines. Lean cuts: budget 2207 motors, a used Pocket in Edmonton, 2 LiPos instead of 3, and GPS later — that's the ~$600. The shopping list in tab 3 has the whole checklist." },
-      { q: "What is the single legal line that never bends?",
-        a: ["Night flying", "Never near a wildfire: 5 NM (9.3 km) exclusion below 3,000 ft", "Battery size", "Altitude"],
+        why: "The complete list includes the airframe, analog FPV, payload, tools and laptop. Rotor Village/PiShop/SparkFun and any small-item freight remain checkout-dependent." },
+      { q: "What is the forest-fire operating restriction?",
+        a: ["Night flying", "CAR 601.15: no operation over the fire area or within 5 NM below 3,000 ft AGL; check NOTAMs too", "Battery size", "Any flight is allowed with permission"],
         c: 1,
-        why: "CAR 601.15. Real fires are agency airspace; unauthorised drones ground air tankers and endanger crews. Safe targets on private land are how you train instead." },
-      { q: "A 1-metre target at 30 m altitude with the 55° lens covers roughly…",
-        a: ["Half the screen", "About 31 m of ground per frame ≈ 1 m per pixel — the target is ~1 pixel: fly lower or sweep twice", "10 pixels", "Impossible to see"],
+        why: "Use controlled bench targets and check current aviation/site rules rather than flying to a wildfire." },
+      { q: "A 1-metre target at 30 m AGL with the 55° lens is approximately…",
+        a: ["Half the screen", "About one horizontal pixel: 31.2 m frame width / 32 ≈ 0.98 m per pixel, so detection is uncertain", "Ten pixels", "Always detectable"],
         c: 1,
-        why: "Ground width = 2 × 30 × tan(27.5°) ≈ 31 m over 32 pixels ≈ 0.98 m/pixel. The calculator in tab 2 does this live — and honest limits like this are why people trust the rest." },
-      { q: "Why does the detection code contain no flight code?",
-        a: ["Drones can't run Python", "Pure logic is testable on the bench with hand-worked numbers — proven before hardware exists, reused across ground, air and pipelines", "To save battery", "Legal reasons"],
+        why: "The geometry describes sampling, not detection performance. Use repeated controlled tests and only safe, legal altitudes." },
+      { q: "Why keep detection logic separate from flight code?",
+        a: ["Drones can't run Python", "Pure logic can be tested independently; the included module has 19 passing synthetic tests", "To avoid all testing", "For legal certification"],
         c: 1,
-        why: "Same principle as every build in your portfolio: separate the math from the hardware so you can test the math." },
-      { q: "What does the FPInnovations research say is the real product of a detection mission?",
-        a: ["The aircraft", "The map of GPS-referenced hotspots delivered to the firefighter — the platform is 'one small part of the solution'", "The video", "The battery log"],
+        why: "Separation makes synthetic tests possible; it does not prove airborne performance." },
+      { q: "What does FPInnovations identify as the mission product?",
+        a: ["The aircraft alone", "A map of GPS-referenced hotspots delivered to the firefighter; the platform is only one small part of the solution", "A dramatic video", "A guaranteed job"],
         c: 1,
-        why: "The Alberta-funded report's own words. That map pipeline is what you've built and can explain end-to-end — which is exactly what makes you hirable." },
-      { q: "Why is the night pass with LEDs the real demo?",
-        a: ["It's prettier", "It's the legal, operational profile of actual hotspot work (night + lights per CAR 901.39), with the best thermal contrast and zero solar false positives", "It flies faster", "Daylight is banned"],
+        why: "That is supported by the 2020 report. It does not show that this prototype works or that an employer will hire the builder." },
+      { q: "What do night LEDs do for this build?",
+        a: ["Improve the passive thermal sensor", "Help satisfy CAR 901.39 visibility requirements; they do not remove other rules or guarantee zero false positives", "Replace registration", "Provide GPS"],
         c: 1,
-        why: "Night + lights is both the regulation and the physics — and a rehearsed night mission on video is the story that lands in interviews." },
+        why: "Lighting and thermal contrast are separate issues. Validate detection and legality independently." },
       { q: "What must the README always include?",
-        a: ["Only features", "Honest limits: sensor resolution, position accuracy, prototype status, and sources", "Contact info only", "A sales pitch"],
+        a: ["Only successes", "Honest limits, measured results, missing features, prototype status and sources", "A guaranteed accuracy", "A hiring promise"],
         c: 1,
-        why: "32×24 resolution, approximate position, prototype — saying it first is what makes every other claim believable." },
+        why: "Report what was actually tested and distinguish design targets from evidence." },
       { q: "Where do the wage numbers in this guide come from?",
-        a: ["Reddit", "Job Bank Canada (NOC 21211, AB, updated Nov 2025) — and they drift, so re-check before quoting", "A friend", "They're guesses"],
+        a: ["Reddit", "Job Bank NOC 21211, Alberta/Edmonton, updated Nov 2025 — recheck before quoting", "A friend", "A guaranteed employer offer"],
         c: 1,
-        why: "Sources named, dates stamped, drift admitted. Facts expire; saying so is what makes the rest credible." }
+        why: "The $28.00/$43.27/$57.69 figures are low/median/high occupational wages, not a promised starting salary." }
     ]
   };
 
@@ -1144,12 +1239,12 @@ while True:
   Object.keys(QUIZZES).forEach(renderQuiz);
   /* ---------- The six-step chain ---------- */
   const CHAIN = [
-    ["1 Sense", "MLX90640: 768 temperatures per frame, in the air or on the bench"],
-    ["2 Detect", "hotspots.py flood fill: hot pixels above threshold become one hotspot"],
-    ["3 Locate", "geo.py: pixel + altitude + lens angle → metres → latitude/longitude"],
-    ["4 Map", "red markers + the camera's ground footprint rectangle on a live map"],
-    ["5 Report", "optional AI briefing written from the hotspot list only"],
-    ["6 Prove", "calibration pass 3/3, night pass 3/3, README with honest limits"]
+    ["1 Sense", "Selected MLX90640: 768 temperature readings per frame at I2C address 0x33"],
+    ["2 Detect", "Included hotspots.py with 19 passing synthetic tests; controlled sensor tuning still required"],
+    ["3 Locate", "Included geo.py with position, altitude and heading; surveyed-target error still required"],
+    ["4 Map", "Included payload.py and map_server.py provide JSONL logging and an offline coordinate viewer"],
+    ["5 Report", "Logs retain measured values and limitations; no unsupported AI briefing is claimed"],
+    ["6 Prove", "Acceptance targets: repeated controlled tests, logged error and honest limitations"]
   ];
   (function () {
     const chain = document.getElementById("chain");
@@ -1171,8 +1266,10 @@ while True:
     const alt = Number(document.getElementById("alt").value);
     const fov = Number(document.getElementById("fov").value);
     const widthM = 2 * alt * Math.tan((fov * Math.PI / 180) / 2);
+    const verticalFov = fov === 55 ? 35 : 70;
+    const heightM = 2 * alt * Math.tan((verticalFov * Math.PI / 180) / 2);
     const mpp = widthM / 32;
-    const areaM = widthM * (widthM * 24 / 32);
+    const areaM = widthM * heightM;
     document.getElementById("alt-out").textContent = alt + " m";
     document.getElementById("cover-w").textContent = widthM.toFixed(1) + " m wide";
     document.getElementById("mpp").textContent = mpp.toFixed(2) + " m";
@@ -1186,19 +1283,39 @@ while True:
   /* ---------- Shopping list: budget-first (lean build) ---------- */
   const CAP = 750;
   const ITEMS = [
-    ["frame", "5\" freestyle frame", "US$25-40. Budget frames are fine — carbon is carbon at this level.", 45],
-    ["stack", "SpeedyBee F405 V4 BLS 55A stack", "US$65.99 verified, SpeedyBee store. The budget benchmark — don't overspend here.", 92],
-    ["motors", "Budget 2207 motors ×4", "~US$13-15 each (e.g. EMAX ECO II class — shop around). Verified top-tier SpeedyBee 2306.5s are US$19.99 ea if you want them.", 78],
-    ["radio", "RadioMaster Pocket ELRS + 2× 18650", "US$76.99 + $13.39 verified (Motion RC). LEAN TIP: buy used locally — Edmonton FPV buy/sell pages often have Pockets for ~$80-90. Also on Amazon.ca.", 126],
-    ["receiver", "ELRS receiver (ER4 class)", "US$16.99 verified, Motion RC.", 24],
-    ["pi", "Raspberry Pi Zero 2 W", "US$19.05 verified, Adafruit. Check local Pi stock too (RPi locator).", 27],
-    ["camera", "MLX90640 thermal camera (4407)", "US$74.95. Out of stock at Adafruit 30 Oct — DigiKey link on the page. Already ordered?", 105],
-    ["cable", "STEMMA QT cable", "US$0.95-1.25 verified. Camera → Pi, no soldering.", 3],
-    ["batteries", "4S LiPo ×2 + balance charger", "LEANS TO 2 packs (~US$65-75 total): one to fly, one on charge. Add a 3rd later (~$30).", 95],
-    ["misc", "Props, battery straps, LED night kit, wire, heat shrink", "Estimate US$30-40. Props in multipacks; the LED kit makes night flights legal (CAR 901.39).", 45],
-    ["iron", "Soldering iron + solder", "ONLY IF you don't own one (~US$30-40). Needed just for motor wires. LEAN TIP: borrow one for the build weekend.", 45],
-    ["gps", "GPS module (LATER UPGRADE)", "Defer ~US$20. Early tests use manual launch coordinates; add GPS before mapping missions.", 0],
-    ["spare", "Spare motor + extra props (LATER UPGRADE)", "Defer ~US$25. Buy after your first successful hover.", 0]
+    ["frame", "TBS Source One V6 5-inch frame", "CA$48.99, live Rotor Village listing.", 48.99],
+    ["stack", "GEPRC TAKER F405 BLS 50A Combo Stack", "CA$85.99; replaces discontinued SpeedyBee F405 V4.", 85.99],
+    ["motors", "Emax ECO III 2207 1900KV motors ×4", "CA$21.99 each; CA$87.96 total.", 87.96],
+    ["props", "Gemfan 51499 prop sets ×2", "CA$4.29 per set of 2CW+2CCW.", 8.58],
+    ["radio", "RadioMaster Pocket ELRS, charcoal", "CA$99.99; USB-C charging cable included.", 99.99],
+    ["radio-cells", "RadioMaster 3200mAh 18650 pair", "CA$17.99 for the transmitter.", 17.99],
+    ["receiver", "RadioMaster RP1 V2 CRSF serial receiver", "CA$27.99 at Rotor Village.", 27.99],
+    ["batteries", "GNB 1500mAh 4S 120C HV LiPo ×2", "CA$33.99 each; XT60.", 67.98],
+    ["charger", "ToolkitRC M4AC LiHV balance charger", "CA$49.99; AC input and 1–4S LiHV support.", 49.99],
+    ["fpv-camera", "RunCam Phoenix 2 Special Edition", "CA$36.99; analog camera with cable/bracket.", 36.99],
+    ["vtx", "TBS Unify Pro 5G8 HV VTX", "CA$77.99; 2–6S input, SMA connector.", 77.99],
+    ["vtx-antenna", "TBS Diamond SMA antenna", "CA$36.99; matches VTX connector.", 36.99],
+    ["monitor", "Skyzone M5F diversity FPV monitor/DVR", "CA$249.99; analog receiver and antennas included.", 249.99],
+    ["straps", "Kevlar battery straps ×2", "CA$8.99 per 2-pack.", 8.99],
+    ["lights", "4S COB LED strip, 1m", "CA$11.99; uses flight battery, not Pi's 5V rail.", 11.99],
+    ["battery-pad", "Flywoo Ultra Grip battery pad", "CA$3.99.", 3.99],
+    ["tools", "Flywoo FPV tool kit + iron + multimeter", "CA$103.99; iron, stand, flux, solder, drivers, cutters and meter included.", 103.99],
+    ["smoke-stopper", "iFlight Smart Smoke Stopper", "CA$11.99; XT30/XT60.", 11.99],
+    ["lipo-bag", "RVS LiPo storage bag", "CA$14.99.", 14.99],
+    ["heat-shrink", "6mm ×10 and 38mm ×2 heat shrink", "CA$8.08 total for wire and connector insulation.", 8.08],
+    ["zip-ties", "3mm × 100mm zip ties, 100-pack", "CA$12.99 for sensor/payload retention.", 12.99],
+    ["standoffs", "Nylon M2.5 standoff packs ×2", "CA$0.95 each; four per pack.", 1.90],
+    ["micro-usb", "24AWG right-angle micro-USB cable", "CA$4.95; becomes meter-checked power-only pigtail.", 4.95],
+    ["pi", "Raspberry Pi Zero 2 WH Pi-hole hardware kit", "CA$94.95; header Pi, 32GB card, reader and 5.1V/2.5A bench PSU.", 94.95],
+    ["thermal", "Pimoroni MLX90640 55° thermal breakout", "CA$86.95, in stock at PiShop.", 86.95],
+    ["gps", "Pimoroni PA1010D GPS breakout", "CA$41.95, in stock at PiShop.", 41.95],
+    ["qwiic", "SparkFun Qwiic HAT + two PRT-17912 cables", "US$10.85 converted to CA$15.15 at BoC 1.3960.", 15.15],
+    ["laptop", "Recertified Acer Aspire 1 Windows laptop", "CA$269 with one-year Acer warranty; switch out of S mode.", 269],
+    ["laptop-freight", "BuySmart laptop delivery shown to Edmonton", "CA$35.99; actual address changes quote.", 35.99],
+    ["threadlock", "Permatex Blue 242 threadlocker", "CA$10.28, sold by Walmart.", 10.28],
+    ["aaa", "Energizer MAX AAA cells, 8-pack", "CA$9.47; multimeter requires two.", 9.47],
+    ["glasses", "3M SecureFit 200 safety glasses", "CA$12.98; clear anti-fog lenses.", 12.98],
+    ["compliance", "Small Basic exam + registration allowance", "CA$15 planning allowance; confirm live portal fees.", 15]
   ];
   function priceOf(item) {
     const custom = saved.prices[item[0]];
@@ -1212,8 +1329,8 @@ while True:
     bar.style.width = Math.min(100, total / CAP * 100) + "%";
     bar.style.background = total > CAP ? "#c2571b" : "#1b5e4f";
     document.getElementById("budget-note").textContent = total > CAP
-      ? "You're $" + Math.round(total - CAP) + " over the $1,100 ceiling. Shop the used market or skip the second battery set first."
-      : "$" + Math.round(CAP - total) + " left under the $1,100 ceiling, not counting items you tick as owned.";
+      ? "The complete order plan is $" + Math.round(total - CAP) + " above the original CA$750 target before remaining freight. See the landed-cost summary."
+      : "$" + Math.round(CAP - total) + " remains under the original CA$750 target before remaining freight; confirm checkout stock and charges.";
   }
   ITEMS.forEach(function (item) {
     const row = document.createElement("div");
@@ -1295,26 +1412,26 @@ while True:
   }
   /* ---------- Flashcards ---------- */
   const FLASHES = [
-    ["Walk me through your drone build.",
-     "5-inch freestyle frame, SpeedyBee F405 stack, 2306 motors, ELRS radio link. On top: a Raspberry Pi Zero 2 W and an MLX90640 thermal camera on I2C. The flight controller flies it; the Pi runs the detection code."],
-    ["How does it detect fire?",
-     "768 temperatures per frame. The flood fill collects hot pixels above a threshold into one hotspot with centre, size and peak temperature. geo.py turns that pixel into latitude/longitude using altitude and the lens angle."],
+    ["Walk me through the proposed build.",
+     "The order uses a Source One V6 frame, GEPRC F405 BLS 50A stack, Emax ECO III motors and analog FPV. The payload is a header-equipped Zero 2 WH, Qwiic HAT, Pimoroni MLX90640 and PA1010D GPS, with independent sensor orientation."],
+    ["How would it detect heat?",
+     "The sensor returns 768 readings. The included flood-fill module groups edge-connected pixels above a tuned threshold. All 19 synthetic tests passed; real detection still needs controlled-target measurements."],
     ["What does one pixel cover?",
-     "Ground width is 2 × altitude × tan(lens/2). At 30 m with the 55° lens that's about 31 m across 32 pixels — roughly a metre per pixel. A campfire is about one pixel there, so I fly lower for small targets."],
-    ["Why do you test at night?",
-     "Thermal contrast is best at night — no solar gain or reflectance causing false positives. And it's the real mission profile: agencies scan at night too. It's legal because the drone carries visible lights, per CAR 901.39."],
+     "At 30 m AGL, the 55° horizontal FoV covers about 31.2 m, or 0.98 m per horizontal pixel. The 35° vertical FoV covers about 18.9 m, or 0.79 m per vertical pixel. Small-target detection is therefore uncertain."],
+    ["Why compare day and night tests?",
+     "FPInnovations describes solar gain and reflectance as daytime false-positive sources and recommends high thermal contrast. Night lights are for VLOS, not thermal illumination, and CAR 901.39 is only one of the rules that must be met."],
     ["What can't it do?",
-     "It's a 32×24 learning-grade sensor with approximate positions — a prototype. Agency platforms carry 640×512 sensors on certified aircraft. What I own is the pipeline: sense, detect, georeference, report honestly."],
-    ["What's the rule that never bends?",
-     "Never near a real wildfire — no drones within 5 nautical miles (9.3 km) below 3,000 feet. Real fires are agency airspace; unauthorised drones ground air tankers. I train on safe targets on private land."],
-    ["How do you know the detections are real?",
-     "Calibration: three known targets in a triangle, flown at 20–30 m. It must find 3 of 3 AND flag nothing on cold ground. Sensitivity and specificity — both measured, both recorded."],
-    ["Why is the detection code separate from the flight code?",
-     "Pure logic can be tested on the bench with numbers I worked out by hand, before the hardware exists. Same flood fill that passed 9/9 tests on the ground runs on the Pi in the air."],
-    ["How do you keep the AI briefing honest?",
-     "It only receives the detected hotspot list and is told to use just that data. I check every line against the map. Safety checks stay in plain code — the AI never decides anything."],
-    ["Why should we hire you without a degree?",
-     "Because you can see what I do. I designed the system, built the airframe, wrote and tested the detection code, flew legal night missions, and I can explain every part — including where it fails."]
+     "It is a 32×24 learning-grade prototype. It cannot certify an area safe, replace agency operations, or claim detection range and mapping accuracy without measured evidence."],
+    ["What is the forest-fire restriction?",
+     "CAR 601.15 prohibits operating over a forest-fire area or within 5 NM below 3,000 ft AGL, and NOTAM-restricted airspace is separate. I would use controlled bench targets, not fly to a wildfire."],
+    ["How would you validate detections?",
+     "Use repeated controlled hot/cold targets, record true/false detections and surveyed-position error, and publish the data. A single 3/3 pass is not enough to establish operational reliability."],
+    ["Why separate detection logic from flight code?",
+     "Pure functions can be tested before hardware integration. The included package has 19 passing unit tests plus demo/map checks. Those validate the logic, not physical hardware or airborne performance."],
+    ["Is the AI briefing implemented?",
+     "No. This HTML does not include the airborne map or AI briefing. If added later, generated text must be checked against logged measurements and kept away from flight-safety decisions."],
+    ["Can this project replace job requirements?",
+     "No. A tested project can support a portfolio, but GoA Systems Analyst Level 1 still has written MRS education/certification routes, and the hiring ministry decides related qualifications and experience."]
   ];
   const flashBox = document.getElementById("flashcards");
   FLASHES.forEach(function (pair, i) {

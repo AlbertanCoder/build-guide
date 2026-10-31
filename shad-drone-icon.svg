@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 128 128" role="img" aria-label="Fire-detecting drone logo">
+  <title>Fire-detecting drone logo</title>
+  <defs>
+    <linearGradient id="badgeG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#123a2e"/>
+      <stop offset="1" stop-color="#1b5e4f"/>
+    </linearGradient>
+    <linearGradient id="flameG" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#c2571b"/>
+      <stop offset=".55" stop-color="#e8863a"/>
+      <stop offset="1" stop-color="#ffd9a8"/>
+    </linearGradient>
+    <linearGradient id="flameCore" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#ffd9a8"/>
+      <stop offset="1" stop-color="#fff4e0"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="3" y="3" width="122" height="122" rx="30" fill="url(#badgeG)"/>
+  <rect x="3" y="3" width="122" height="122" rx="30" fill="none" stroke="#2a7a63" stroke-width="2.5"/>
+
+  <g stroke="#d9ebe3" stroke-width="1" opacity=".13">
+    <line x1="30" y1="48" x2="98" y2="48"/>
+    <line x1="30" y1="70" x2="98" y2="70"/>
+    <line x1="30" y1="92" x2="98" y2="92"/>
+    <line x1="48" y1="30" x2="48" y2="98"/>
+    <line x1="70" y1="30" x2="70" y2="98"/>
+    <line x1="92" y1="30" x2="92" y2="98"/>
+  </g>
+
+  <g stroke="#3f8f74" stroke-width="5" stroke-linecap="round">
+    <line x1="64" y1="72" x2="40" y2="41"/>
+    <line x1="64" y1="72" x2="88" y2="41"/>
+    <line x1="64" y1="72" x2="40" y2="101"/>
+    <line x1="64" y1="72" x2="88" y2="101"/>
+  </g>
+
+  <g fill="#eaf4ef">
+    <circle cx="37" cy="37" r="8.5"/>
+    <circle cx="91" cy="37" r="8.5"/>
+    <circle cx="37" cy="105" r="8.5"/>
+    <circle cx="91" cy="105" r="8.5"/>
+  </g>
+  <g fill="#123a2e">
+    <circle cx="37" cy="37" r="3.4"/>
+    <circle cx="91" cy="37" r="3.4"/>
+    <circle cx="37" cy="105" r="3.4"/>
+    <circle cx="91" cy="105" r="3.4"/>
+  </g>
+
+  <g stroke="#bcd3c9" stroke-width="2.2" fill="none" opacity=".9">
+    <ellipse cx="37" cy="37" rx="13.5" ry="3.4" transform="rotate(45 37 37)"/>
+    <ellipse cx="91" cy="37" rx="13.5" ry="3.4" transform="rotate(-45 91 37)"/>
+    <ellipse cx="37" cy="105" rx="13.5" ry="3.4" transform="rotate(-45 37 105)"/>
+    <ellipse cx="91" cy="105" rx="13.5" ry="3.4" transform="rotate(45 91 105)"/>
+  </g>
+
+  <path d="M64 40 C71 50 76 58 76 70 C76 80 70 86 64 86 C58 86 52 80 52 70 C52 58 57 50 64 40 Z" fill="url(#flameG)"/>
+  <path d="M64 55 C68 61 71 66 71 71 C71 77 68 81 64 81 C60 81 57 77 57 71 C57 66 60 61 64 55 Z" fill="url(#flameCore)"/>
+</svg>
