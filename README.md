@@ -20,6 +20,14 @@ A single-page, interactive order and build guide for a 5-inch analog FPV quadcop
 
 [![Detection pipeline and coverage calculator](docs/images/logic.png)](docs/images/logic.png)
 
+### Illustrated 8-step build
+
+Open **4 Build Steps** in the guide for eight custom diagrams covering inventory, frame assembly, soldering, receiver/FPV wiring, charging, Pi/sensor wiring, payload mounting and testing.
+
+[![Illustrated 8-step build](docs/images/illustrated-build.png)](docs/images/illustrated-build.png)
+
+The individual SVG diagrams are also available in `docs/images/build/`.
+
 *These are previews of the HTML guide, not a completed aircraft. Click any image to view it full-size.*
 
 ## Open the guide

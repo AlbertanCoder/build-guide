@@ -136,6 +136,19 @@
   .tasks label { display: flex; gap: 12px; padding: 11px 2px; cursor: pointer; align-items: flex-start; }
   .tasks input { width: 21px; height: 21px; margin-top: 3px; flex: none; accent-color: var(--pine); }
   .tasks small { display: block; color: var(--soft); font-size: 14px; }
+  .visual-guide { display: grid; gap: 18px; }
+  .visual-step { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(240px, .8fr);
+                 overflow: hidden; background: var(--card); border: 1px solid var(--line);
+                 border-radius: 14px; box-shadow: var(--shadow); }
+  .visual-step > a { display: block; background: #f7f2e8; }
+  .visual-step img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .visual-step .build-notes { padding: 18px; }
+  .visual-step h3 { margin: 0 0 10px; color: var(--pine-deep); }
+  .visual-step p { font-size: 14.5px; margin-bottom: 10px; }
+  .visual-step .need { color: var(--soft); }
+  .visual-step .check { color: var(--pine); font-weight: 700; }
+  @media (max-width: 720px) { .visual-step { grid-template-columns: 1fr; }
+    .visual-step img { height: auto; } .visual-step .build-notes { padding: 14px 16px; } }
   .tasks input:checked + span { color: var(--soft); text-decoration: line-through; }
   .tasks input:checked + span small { text-decoration: none; }
 
@@ -614,6 +627,75 @@
     <h2>4 &middot; Build it &mdash; step by step</h2>
     <button class="expand-btn" data-panel="p-steps">Expand all</button>
   </div>
+
+  <details class="acc" open>
+    <summary>Start here &mdash; 8 pictures to build it</summary>
+    <div class="acc-body">
+      <p>Follow the pictures in order. Each card lists the parts and the check to complete before moving on. The full 19-step checklist remains below for reference.</p>
+      <div class="visual-guide">
+        <article class="visual-step">
+          <a href="docs/images/build/01-parts.svg" target="_blank" rel="noopener"><img src="docs/images/build/01-parts.svg" alt="All parts grouped on the bench before assembly"></a>
+          <div class="build-notes"><h3>1 · Lay out everything</h3>
+            <p><strong>Do this:</strong> Put the five groups on the bench and compare them with the order list.</p>
+            <p class="need"><strong>You need:</strong> Airframe, radio/power, analog FPV, thermal payload, tools and laptop.</p>
+            <p class="check">✓ Check: every item is present before touching a wire.</p></div>
+        </article>
+        <article class="visual-step">
+          <a href="docs/images/build/02-frame.svg" target="_blank" rel="noopener"><img src="docs/images/build/02-frame.svg" alt="Source One frame with four motors and center flight stack"></a>
+          <div class="build-notes"><h3>2 · Build the frame</h3>
+            <p><strong>Do this:</strong> Fit the arms, standoffs and four motors. Leave propellers off.</p>
+            <p class="need"><strong>You need:</strong> Source One V6 frame, motors, included hardware and hex drivers.</p>
+            <p class="check">✓ Check: frame is rigid, screws cannot touch windings, motors spin freely.</p></div>
+        </article>
+
+
+        <article class="visual-step">
+          <a href="docs/images/build/03-stack.svg" target="_blank" rel="noopener"><img src="docs/images/build/03-stack.svg" alt="Motor wiring, ESC, capacitor, battery lead and smoke stopper"></a>
+          <div class="build-notes"><h3>3 · Solder and inspect</h3>
+            <p><strong>Do this:</strong> Solder motor wires, battery lead and capacitor to the ESC. Fit the FC above it.</p>
+            <p class="need"><strong>You need:</strong> Stack, iron, solder/flux, cutters, safety glasses, meter and smoke stopper.</p>
+            <p class="check">✓ Check: polarity and continuity pass; no bridges or loose wires; first power uses the smoke stopper.</p></div>
+        </article>
+        <article class="visual-step">
+          <a href="docs/images/build/04-receiver-fpv.svg" target="_blank" rel="noopener"><img src="docs/images/build/04-receiver-fpv.svg" alt="RP1 UART wiring and analog camera, VTX, antenna and monitor chain"></a>
+          <div class="build-notes"><h3>4 · Add control and video</h3>
+            <p><strong>Do this:</strong> Cross RP1 TX/RX to the FC's R2/T2. Then connect the analog camera, HV VTX, antenna and monitor.</p>
+            <p class="need"><strong>You need:</strong> RP1 V2, Phoenix 2, Unify HV, TBS Diamond antenna and M5 monitor.</p>
+            <p class="check">✓ Check: CRSF channels and failsafe work; video works; VTX is never powered without its antenna.</p></div>
+        </article>
+
+        <article class="visual-step">
+          <a href="docs/images/build/05-power.svg" target="_blank" rel="noopener"><img src="docs/images/build/05-power.svg" alt="Pocket radio cells and 4S LiHV battery connected to the M4AC charger"></a>
+          <div class="build-notes"><h3>5 · Charge power safely</h3>
+            <p><strong>Do this:</strong> Install the radio's two 18650 cells. Connect a 4S pack to the M4AC with XT60 and balance lead.</p>
+            <p class="need"><strong>You need:</strong> 18650 pair, USB-C cord, GNB 4S packs, M4AC and LiPo bag.</p>
+            <p class="check">✓ Check: select LiHV/4S, inspect leads and balance-charge attended in the bag.</p></div>
+        </article>
+        <article class="visual-step">
+          <a href="docs/images/build/06-payload.svg" target="_blank" rel="noopener"><img src="docs/images/build/06-payload.svg" alt="Pi Qwiic HAT connected independently to thermal camera and GPS"></a>
+          <div class="build-notes"><h3>6 · Wire the Pi payload</h3>
+            <p><strong>Do this:</strong> Solder the 1×5 sensor headers, fit the Qwiic HAT and connect each sensor with a PRT-17912 cable.</p>
+            <p class="need"><strong>You need:</strong> Zero 2 WH kit, Qwiic HAT, MLX90640, PA1010D, two jumper cables and micro-USB pigtail.</p>
+            <p class="check">✓ Check: camera 0x33 and GPS 0x10 respond; thermal faces down, GPS faces up.</p></div>
+        </article>
+
+        <article class="visual-step">
+          <a href="docs/images/build/07-mount.svg" target="_blank" rel="noopener"><img src="docs/images/build/07-mount.svg" alt="Payload secured over frame centre with camera down, GPS up and clear propeller zones"></a>
+          <div class="build-notes"><h3>7 · Mount and balance</h3>
+            <p><strong>Do this:</strong> Secure Pi/HAT with nylon standoffs and zip ties, then add a Kevlar strap. Route every cable clear of props.</p>
+            <p class="need"><strong>You need:</strong> Standoffs, zip ties, Kevlar strap, battery grip pad and frame.</p>
+            <p class="check">✓ Check: two retention methods, no carbon contact, balanced centre of gravity.</p></div>
+        </article>
+        <article class="visual-step">
+          <a href="docs/images/build/08-test.svg" target="_blank" rel="noopener"><img src="docs/images/build/08-test.svg" alt="Testing sequence from software and bench checks to hover and hot-plate validation"></a>
+          <div class="build-notes"><h3>8 · Test in order</h3>
+            <p><strong>Do this:</strong> Run tests and demo, verify GPS fix and power, test radio/video, check motors with props off, then hover.</p>
+            <p class="need"><strong>You need:</strong> Acer laptop, payload package, open legal site and a controlled hot plate.</p>
+            <p class="check">✓ Check: repeated hot/cold results are recorded before claiming detection. Never test at a wildfire.</p></div>
+        </article>
+      </div>
+    </div>
+  </details>
 
   <div class="card">
     <div class="note gold" style="margin:0"><strong>Done-means rule:</strong> every step has an

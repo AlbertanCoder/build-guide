@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+<title id="title">Step 7: Mount the payload securely and check balance</title>
+<desc id="desc">Top view of quad with Pi and HAT secured by standoffs, zip ties and Kevlar strap, thermal lens below, GPS above, battery pad and clear prop zones.</desc>
+<rect width="960" height="540" fill="#f7f2e8"/>
+<style>.t{font:700 22px 'Segoe UI',sans-serif;fill:#123a2e}.s{font:17px 'Segoe UI',sans-serif;fill:#21332b}.b{fill:#fff;stroke:#1b5e4f;stroke-width:3;rx:12}.a{fill:#e4f0ea;stroke:#1b5e4f;stroke-width:3;rx:12}.w{fill:#fbe9dc;stroke:#c2571b;stroke-width:3;rx:12}.f{stroke:#123a2e;stroke-width:20;stroke-linecap:round}.p{fill:none;stroke:#9a700a;stroke-width:3;stroke-dasharray:8 7}.g{stroke:#1b5e4f;stroke-width:4;fill:none}</style>
+<text x="32" y="40" class="t">7 · Secure it twice, then check weight and centre of gravity</text>
+<path d="M410 245 L265 155 M550 245 L695 155 M410 295 L265 385 M550 295 L695 385" class="f"/>
+<circle cx="230" cy="140" r="65" class="p"/><circle cx="730" cy="140" r="65" class="p"/><circle cx="230" cy="400" r="65" class="p"/><circle cx="730" cy="400" r="65" class="p"/>
+<rect x="395" y="180" width="170" height="120" class="a"/><text x="480" y="211" text-anchor="middle" class="t">PI + HAT</text><text x="480" y="241" text-anchor="middle" class="s">Nylon standoffs</text><text x="480" y="271" text-anchor="middle" class="s">Zip ties + strap</text>
+<rect x="415" y="320" width="130" height="65" class="b"/><text x="480" y="348" text-anchor="middle" class="t">4S PACK</text><text x="480" y="374" text-anchor="middle" class="s">Grip pad + strap</text>
+<rect x="60" y="205" width="210" height="105" class="b"/><text x="165" y="240" text-anchor="middle" class="t">THERMAL ↓</text><text x="165" y="272" text-anchor="middle" class="s">lens faces ground</text>
+<rect x="690" y="205" width="210" height="105" class="b"/><text x="795" y="240" text-anchor="middle" class="t">GPS ↑</text><text x="795" y="272" text-anchor="middle" class="s">clear view of sky</text>
+<path d="M330 270 H395 M565 270 H630" class="g"/>
+<circle cx="480" cy="270" r="12" fill="#c2571b"/><text x="480" y="430" text-anchor="middle" class="t">Balance around the frame centre</text>
+<rect x="170" y="455" width="620" height="58" class="w"/><text x="480" y="491" text-anchor="middle" class="t">No board touches carbon · no cable enters a prop circle</text>
+</svg>

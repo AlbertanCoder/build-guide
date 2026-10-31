@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+<title id="title">Step 1: Lay out all parts before building</title>
+<desc id="desc">Five groups: airframe, radio and power, analog FPV, thermal payload, and tools, with a final inventory check.</desc>
+<rect width="960" height="540" fill="#f7f2e8"/>
+<style>.t{font:700 24px 'Segoe UI',sans-serif;fill:#123a2e}.s{font:18px 'Segoe UI',sans-serif;fill:#21332b}.b{fill:#fff;stroke:#1b5e4f;stroke-width:3;rx:16}.a{fill:#e4f0ea;stroke:#1b5e4f;stroke-width:3;rx:16}.w{fill:#fbe9dc;stroke:#c2571b;stroke-width:3;rx:16}.c{fill:#1b5e4f}.o{fill:#c2571b}</style>
+<text x="32" y="42" class="t">1 · Put every part on the bench first</text>
+<rect x="30" y="70" width="275" height="165" class="b"/><text x="48" y="102" class="t">AIRFRAME</text><text x="48" y="136" class="s">Frame + F405 stack</text><text x="48" y="164" class="s">4 motors + 2 prop sets</text><text x="48" y="192" class="s">Straps + battery pad</text>
+<rect x="342" y="70" width="275" height="165" class="b"/><text x="360" y="102" class="t">RADIO + POWER</text><text x="360" y="136" class="s">Pocket + 18650 pair</text><text x="360" y="164" class="s">RP1 V2 receiver</text><text x="360" y="192" class="s">2× 4S + M4AC charger</text>
+<rect x="654" y="70" width="275" height="165" class="b"/><text x="672" y="102" class="t">ANALOG FPV</text><text x="672" y="136" class="s">Phoenix 2 camera</text><text x="672" y="164" class="s">Unify HV + SMA antenna</text><text x="672" y="192" class="s">Skyzone M5 monitor</text>
+<rect x="165" y="260" width="275" height="165" class="a"/><text x="183" y="292" class="t">THERMAL PAYLOAD</text><text x="183" y="326" class="s">Zero 2 WH + Qwiic HAT</text><text x="183" y="354" class="s">MLX90640 + PA1010D</text><text x="183" y="382" class="s">2 jumper cables + standoffs</text>
+<rect x="520" y="260" width="275" height="165" class="a"/><text x="538" y="292" class="t">TOOLS + COMPUTER</text><text x="538" y="326" class="s">Flywoo kit + smoke stopper</text><text x="538" y="354" class="s">Acer laptop + SD reader</text><text x="538" y="382" class="s">Glasses + LiPo bag</text>
+<rect x="230" y="452" width="500" height="58" class="w"/><text x="480" y="489" text-anchor="middle" class="t">✓ Count everything before touching a wire</text>
+</svg>
