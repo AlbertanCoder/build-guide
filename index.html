@@ -407,7 +407,97 @@
     <code>curing.py</code> will do in code &mdash; with tests written from numbers you worked out
     by hand, just like <code>hotspots.py</code>.</p>
   </div>
+
+  <div class="card">
+    <h2>Where's the drone? The rules and the research</h2>
+    <p>Short answer: <strong>the law keeps this build on the ground, and the research says that's
+    where your value is.</strong> Here is the verified evidence &mdash; then the upgrade path if
+    you ever do go airborne.</p>
+    <h3>The legal wall (verified: Transport Canada, 30 Oct 2026)</h3>
+    <div class="note warn"><strong>CAR 601.15 / CASA 2021-11:</strong> &ldquo;No person shall
+    operate an aircraft, <em>including drones</em>, over a wildfire or any area within
+    <strong>5 nautical miles (9.3 km)</strong> of a wildfire at an altitude of less than 3,000
+    feet above ground level.&rdquo; Unauthorized drones force air tankers and helicopters to
+    <strong>ground operations</strong> &mdash; and put lives at risk. Fines reach $5,000 for
+    individuals and $25,000 for corporations, plus possible imprisonment for endangering aircraft.
+    You must also &ldquo;stay away from emergency sites such as traffic accidents and
+    wildfires.&rdquo;</div>
+    <p>So no hobby build can legally demonstrate on a real fire. The ground station isn't a
+    compromise &mdash; for you, it's the only legal way to work this exact data.</p>
+  </div>
+  <div class="card">
+    <h2>What the research says (FPInnovations 2020 &mdash; funded by Alberta Agriculture &amp; Forestry)</h2>
+    <p>The federal-provincial research on exactly this question: &ldquo;Remotely Piloted Aircraft
+    Systems: Evaluation of Platforms for Hotspot Detection on Wildfires&rdquo; (Technical Report
+    No. 29). Its findings:</p>
+    <ul>
+      <li><strong>Drones are real and used</strong> &mdash; but for <strong>patrol and mop-up</strong>
+      (finding smouldering hotspots <em>after</em> the fire is controlled), flown <strong>at
+      night</strong>, because daytime sun creates false positives.</li>
+      <li><strong>Real mission specs:</strong> tactical scans = night, low altitude; strategic
+      scans = 100,000+ ha, 4&ndash;6 hour endurance at 5,000&ndash;10,000 ft. Pro platforms run
+      <strong>$15,000+</strong>; prosumer drones only get 25&ndash;30 minutes per battery.</li>
+      <li><strong>Night remote work needs paperwork:</strong> beyond-visual-line-of-sight operations
+      require a <strong>Special Flight Operations Certificate</strong> from Transport Canada.</li>
+      <li><strong>The killer quote:</strong> &ldquo;The RPA platform is only one small part of the
+      solution&hellip; until this data have been interpreted and the firefighter on the ground
+      receives a <strong>map of GPS-referenced hotspots</strong>, the mission is incomplete.&rdquo;
+      <em>That map is exactly what Build 1 already makes.</em></li>
+      <li><strong>No proven cost win over helicopters</strong> &mdash; the review found no
+      cost-effectiveness comparison favouring drones; helicopters remain the preferred tactical
+      platform.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>What Alberta actually does &mdash; and what a real thermal drone costs</h2>
+    <p><strong>Alberta Wildfire (Budget 2024 announcement, verified):</strong> $151 million over
+    three years for wildfire preparedness &mdash; including <strong>additional drones for aerial
+    wildfire surveillance</strong>, drone and helicopter testing by Alberta Wildfire personnel, and
+    night-vision helicopters (goggles amplify light ~60,000&times;) for overnight bucketing. Alberta
+    has run an AI wildfire-occurrence prediction system since 2022. The 2023 season: 1,094 fires,
+    2.2 million hectares. It's real, it's funded &mdash; and it's agency and contractor work.</p>
+    <table>
+      <tr><th>Option</th><th>Thermal sensor</th><th>Price (verified 30 Oct 2026)</th><th>Rules</th></tr>
+      <tr><td>Your ground station</td><td>MLX90640, 32&times;24 = 768 readings</td>
+        <td><strong>~$120 CAD</strong></td><td>No airspace rules &mdash; it doesn't fly</td></tr>
+      <tr><td>Real thermal drone (DJI Mavic 3 Thermal)</td><td>640&times;512 thermal + zoom</td>
+        <td><strong>~$6,879 CAD</strong></td>
+        <td>Registration + Transport Canada pilot certificate + 5 NM wildfire rule</td></tr>
+      <tr><td>Professional hotspot platform (per research)</td><td>Gimbal thermal + mapping software</td>
+        <td><strong>$15,000+</strong></td>
+        <td>SFOC for night BVLOS + wildfire-operations expertise</td></tr>
+    </table>
+    <p class="muted">Drone price: DJI Mavic 3 Thermal, $6,879 CAD from a Canadian DJI dealer
+    (Wonderfull Inc.), 640&times;512 thermal camera with point/zone temperature measurement.
+    Research figures: FPInnovations TR-2020-N29.</p>
+  </div>
+
+  <div class="card">
+    <h2>The drone upgrade roadmap (later, when it's legal and funded)</h2>
+    <ol>
+      <li><strong>Get the paperwork first (cheap, legal now):</strong> Transport Canada drone pilot
+      certificate &mdash; Basic at 14+, Advanced at 16+. Register and mark any drone 250 g+.
+      Fines without them: up to $1,000&ndash;$5,000 per rule broken.</li>
+      <li><strong>Practise legally:</strong> private land, away from emergency sites and any smoke
+      plumes, daylight, visual line of sight. Heat targets like a BBQ or fire pit at a safe
+      distance &mdash; <strong>never a wildfire</strong>.</li>
+      <li><strong>Mount the same sensor later:</strong> a prosumer airframe carrying a 640&times;512
+      thermal camera streams frames into the same <code>FRAME,</code> pipeline &mdash; no code
+      rewrite, because you kept detection in pure logic.</li>
+      <li><strong>Night + BVLOS = SFOC:</strong> real hotspot work happens at night, beyond visual
+      line of sight &mdash; that's a Special Flight Operations Certificate from Transport Canada,
+      and by then you'd be working <em>with</em> an agency or contractor, not near a fire alone.</li>
+      <li><strong>The career path:</strong> Alberta Wildfire tests and contracts this tech. Your
+      portfolio + certificate + legal night hours is how you'd join one of those teams.</li>
+    </ol>
+    <div class="note ok"><strong>Why this ordering is actually good for you:</strong> the research
+    says the platform is &ldquo;one small part of the solution&rdquo; &mdash; the hireable skill is
+    detection + georeferencing + honest reporting. You build and prove that skill on the ground for
+    ~$120, legally, this winter. The drone becomes a $6.9k upgrade later, not a $6.9k gate now.</div>
+  </div>
 </section>
+
 <section role="tabpanel" id="p-parts" aria-labelledby="t-parts" hidden>
   <div class="card">
     <div class="row between">
@@ -857,6 +947,7 @@ while True:
   <div id="quiz-parts" class="quiz" data-quiz="parts"></div>
   <div id="quiz-software" class="quiz" data-quiz="software"></div>
   <div id="quiz-concrete" class="quiz" data-quiz="concrete"></div>
+  <div id="quiz-drone" class="quiz" data-quiz="drone"></div>
   <div id="quiz-career" class="quiz" data-quiz="career"></div>
 
   <h2 style="margin:22px 0 12px">Final exam &mdash; mixed, 8 questions</h2>
@@ -891,6 +982,11 @@ while True:
       <li><span class="badge b-green">Checked</span> The GoA Minimum Recruitment Standards &mdash;
       the two-way-equivalency quote from alberta.ca and the Level 1/2/3 minimums from the official
       Systems Analyst PDF (last reviewed 20 May 2026), read word-for-word.</li>
+      <li><span class="badge b-green">Checked</span> The drone question &mdash; Transport Canada's
+      wildfire airspace rule (5 NM / 9.3 km, CAR 601.15, CASA 2021-11) and the FPInnovations
+      RPAS-for-hotspot-detection review (TR-2020-N29, funded by Alberta Agriculture and Forestry),
+      plus Alberta's Budget 2024 drone/night-vision funding announcement and a Canadian dealer
+      price for the DJI Mavic 3 Thermal ($6,879 CAD).</li>
       <li><span class="badge b-green">Checked</span> Wages and outlook &mdash; Job Bank Canada
       (NOC 21211, Alberta): low $28.00/hr, median $43.27/hr, high $57.69/hr; outlook Moderate for
       2025&ndash;2027.</li>
@@ -938,6 +1034,9 @@ while True:
       <li><a href="https://cwfis.cfs.nrcan.gc.ca">CWFIS (Canadian Wildland Fire Information System)</a>
       &middot; <a href="https://data.alberta.ca">data.alberta.ca</a>
       &middot; <a href="https://leafletjs.com">Leaflet</a></li>
+      <li><a href="https://tc.canada.ca/en/aviation/reference-centre/civil-aviation-safety-alerts/operation-remotely-piloted-aircraft-systems-rpas-near-wildfires-civil-aviation-safety-alert-casa-no-2021-11">Transport Canada: RPAS near wildfires (CASA 2021-11)</a>
+      &middot; <a href="https://library.fpinnovations.ca/media/FOP/TR2020N29.PDF">FPInnovations TR-2020-N29: RPAS for hotspot detection</a>
+      &middot; <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/flying-your-drone-safely-legally">TC drone rules &amp; penalties</a></li>
       <li><a href="https://github.com/GovAlta/THE-VELOCITY-WHITE-PAPERS">GovAlta Velocity White Papers</a>
       &middot; <a href="https://github.com/GovAlta/Alberta-AI-Academy">Alberta AI Academy</a></li>
     </ul>
@@ -1097,6 +1196,28 @@ while True:
         c: 2,
         why: "Honesty beats a confident wrong number. Two Canadian websites quote CSA A23.1 (a paid standard this guide couldn't read) at 7 MPa; US guidance says 3.5 MPa. The lab — or your project spec — settles it." }
     ],
+    drone: [
+      { q: "How close to a wildfire may you legally fly a drone in Canada?",
+        a: ["Right over it, if you're careful", "Nowhere within 5 nautical miles (9.3 km) below 3,000 ft — the airspace is closed to drones", "100 metres away", "Only at night"],
+        c: 1,
+        why: "CAR 601.15 / Transport Canada CASA 2021-11: no person shall operate an aircraft, including drones, over a wildfire or within 5 NM (9.3 km) of one below 3,000 ft AGL. Unauthorized drones force firefighting aircraft to ground operations — fines reach $5,000 for individuals and $25,000 for corporations." },
+      { q: "According to the FPInnovations review (funded by Alberta Agriculture and Forestry), what is a thermal drone's actual job on a wildfire?",
+        a: ["Dropping water", "Patrol and mop-up at night: finding smouldering hotspots after the fire is controlled, so ground crews get GPS locations", "Replacing air tankers", "Scouting new fire starts from anywhere in the province"],
+        c: 1,
+        why: "The research describes hotspot detection as a late-stage, nighttime tactical mission. Daytime sun creates false positives; night is when manned aircraft are down and thermal imaging works best. No hobbyist can do this legally near a real fire — agencies and contracted services do." },
+      { q: "What does the research say is the most valuable part of the system?",
+        a: ["The aircraft itself", "The map of GPS-referenced hotspots the firefighter on the ground receives — the platform is only 'one small part of the solution'", "The battery endurance", "The camera's colour palette"],
+        c: 1,
+        why: "FPInnovations TR-2020-N29: 'The RPA platform is only one small part of the solution… until this data have been interpreted and the firefighter on the ground receives a map of GPS-referenced hotspots, the mission is incomplete.' That map is exactly what Build 1 already makes — which is why the ground station builds the hireable skill first." },
+      { q: "What would you need before doing legitimate night hotspot work beyond visual line of sight?",
+        a: ["Nothing special", "A bigger battery", "A Special Flight Operations Certificate (SFOC) from Transport Canada, plus a drone pilot certificate and registration", "Permission from the fire chief only"],
+        c: 2,
+        why: "Night, remote, beyond-visual-line-of-sight operations need an SFOC from Transport Canada. All drones 250 g+ must be registered and marked, and every pilot needs a valid drone pilot certificate (Basic at 14+, Advanced at 16+). This work is done with agencies/contractors — not alone near a fire." },
+      { q: "What does a real thermal drone cost vs. your ground-station sensor (verified 30 Oct 2026)?",
+        a: ["About the same", "~$200 vs $6,879 CAD", "$6,879 CAD (DJI Mavic 3 Thermal, 640×512) vs ~$120 CAD for the ground station", "$50,000 vs $120"],
+        c: 2,
+        why: "The DJI Mavic 3 Thermal is $6,879 CAD from a Canadian dealer (640×512 thermal); pro hotspot platforms run $15,000+. Your MLX90640 ground station (32×24) is ~$120 CAD total. The research says the platform is 'one small part' — so you prove the software skill cheaply and legally first, and the drone becomes a later upgrade." }
+    ],
     career: [
       { q: "For GoA Systems Analyst Level 1, which route is NOT on the official list?",
         a: ["A related two-year diploma", "A related one-year certificate + 1 year related experience", "An industry certification (like ISC2) in place of the certificate", "A great project with no education or certification at all"],
@@ -1159,6 +1280,7 @@ while True:
     parts: "Quiz: Parts & hardware (5 questions)",
     software: "Quiz: The software & the math (5 questions)",
     concrete: "Quiz: Concrete & maturity (5 questions)",
+    drone: "Quiz: The drone question (5 questions)",
     career: "Quiz: Career & rules (5 questions)",
     final: "Final exam (8 questions)"
   };
