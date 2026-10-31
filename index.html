@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shad's Build Guide &mdash; One System, Three Builds, One Job Hunt</title>
+<style>
+  :root {
+    --paper: #f6f3ec; --card: #ffffff; --ink: #1d2a30; --soft: #566770; --line: #d9d3c6;
+    --pine: #1b5e4f; --pine-pale: #e3f0ec; --ember: #b84a14; --ember-pale: #fbeadf;
+    --sky: #1f5f8b; --sky-pale: #e4eff6; --gold-pale: #fbf3d8; --gold: #7a5c00;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--paper); color: var(--ink);
+         font: 17px/1.55 "Segoe UI", system-ui, Arial, sans-serif; }
+  h1 { font-size: 27px; line-height: 1.2; margin: 0; }
+  h2 { font-size: 22px; line-height: 1.25; margin: 0 0 8px; }
+  h3 { font-size: 18px; margin: 22px 0 6px; }
+  p { margin: 0 0 12px; }
+  a { color: var(--sky); }
+  code, pre { font-family: Consolas, "Courier New", monospace; font-size: 13.5px; }
+  code { background: #ece7db; padding: 1px 5px; border-radius: 5px; }
+  pre { background: #1d2a30; color: #eef3f1; padding: 14px; border-radius: 8px;
+        overflow-x: auto; margin: 8px 0 14px; line-height: 1.45; }
+  pre code { background: none; padding: 0; color: inherit; }
+  button, input, select { font: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; }
+
+  header { background: var(--pine); color: #fff; padding: 20px 20px 0; }
+  .wrap { max-width: 1020px; margin: 0 auto; }
+  header p { margin: 6px 0 14px; color: #d8ebe5; }
+  [role="tablist"] { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 0; }
+  [role="tab"] { border: 0; background: transparent; color: #d8ebe5; padding: 10px 13px;
+                 border-radius: 8px 8px 0 0; white-space: nowrap; font-weight: 600; font-size: 14.5px; }
+  [role="tab"]:hover { background: rgba(255,255,255,.12); }
+  [role="tab"][aria-selected="true"] { background: var(--paper); color: var(--ink); }
+  main.wrap { max-width: 1060px; padding: 20px 20px 60px; }
+
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+          padding: 18px; margin: 0 0 16px; }
+  .note { border-radius: 8px; padding: 12px 14px; margin: 0 0 14px; }
+  .note.warn { background: var(--ember-pale); }
+  .note.ok { background: var(--pine-pale); }
+  .note.info { background: var(--sky-pale); }
+  .note.gold { background: var(--gold-pale); }
+  .muted { color: var(--soft); font-size: 15px; }
+  .btn { border: 1px solid var(--pine); background: var(--pine); color: #fff;
+         padding: 8px 14px; border-radius: 8px; font-weight: 600; }
+  .btn.ghost { background: transparent; color: var(--pine); }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .between { justify-content: space-between; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+  .stat { background: var(--pine-pale); border-radius: 10px; padding: 13px 15px; }
+  .stat .big { font-size: 21px; font-weight: 700; line-height: 1.25; }
+  .stat .lbl { font-size: 13.5px; color: var(--soft); margin-top: 3px; }
+  .badge { display: inline-block; font-size: 12px; padding: 2px 10px; border-radius: 999px;
+           font-weight: 700; margin: 2px 4px 2px 0; }
+  .b-green { background: var(--pine-pale); color: var(--pine); }
+  .b-amber { background: var(--gold-pale); color: var(--gold); }
+  .b-red { background: var(--ember-pale); color: var(--ember); }
+  .b-blue { background: var(--sky-pale); color: var(--sky); }
+
+  .bar { height: 12px; background: #e6e1d5; border-radius: 6px; overflow: hidden; }
+  .bar > span { display: block; height: 100%; background: var(--pine); width: 0; transition: width .25s; }
+  @media (prefers-reduced-motion: reduce) { .bar > span { transition: none; } html { scroll-behavior: auto; } }
+
+  .tasks { list-style: none; padding: 0; margin: 0; }
+  .tasks li { border-top: 1px solid var(--line); }
+  .tasks li:first-child { border-top: 0; }
+  .tasks label { display: flex; gap: 12px; padding: 11px 2px; cursor: pointer; align-items: flex-start; }
+  .tasks input { width: 21px; height: 21px; margin-top: 3px; flex: none; accent-color: var(--pine); }
+  .tasks small { display: block; color: var(--soft); font-size: 14.5px; }
+  .tasks input:checked + span { color: var(--soft); text-decoration: line-through; }
+  .tasks input:checked + span small { text-decoration: none; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--soft); font-size: 12.5px; text-transform: uppercase; letter-spacing: .7px; }
+  .total-row td { font-weight: 700; color: var(--pine); border-bottom: none; }
+
+  .shop { display: grid; grid-template-columns: 26px 1fr 96px; gap: 4px 10px; padding: 10px 0;
+          border-top: 1px solid var(--line); align-items: start; }
+  .shop:first-of-type { border-top: 0; }
+  .shop input[type="checkbox"] { width: 20px; height: 20px; margin-top: 4px; accent-color: var(--pine); }
+  .shop .amount { display: flex; align-items: center; gap: 3px; }
+  .shop input[type="number"] { width: 74px; padding: 5px 7px; border: 1px solid var(--line); border-radius: 6px; }
+
+  .wire { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; text-align: center; }
+  .wire div { border-radius: 8px; padding: 10px 4px; color: #fff; font-weight: 700; font-size: 15px; }
+  .wire small { display: block; font-weight: 400; }
+
+  details { border-top: 1px solid var(--line); padding: 8px 0; }
+  details:first-of-type { border-top: 0; }
+  summary { cursor: pointer; font-weight: 600; }
+  .answer { margin-top: 8px; }
+  .script { background: var(--paper); border-left: 4px solid var(--pine); padding: 10px 14px; margin: 8px 0; }
+
+  input[type="range"] { width: 100%; accent-color: var(--pine); }
+  .big { font-size: 24px; font-weight: 700; line-height: 1.2; }
+  svg text { font: 12px "Segoe UI", Arial, sans-serif; fill: var(--soft); }
+
+  .quiz { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 18px; margin: 0 0 16px; }
+  .quiz .qnum { font-size: 12.5px; letter-spacing: 1px; text-transform: uppercase; color: var(--soft); }
+  .quiz .qtext { font-size: 18px; font-weight: 600; margin: 6px 0 14px; }
+  .choice { display: block; width: 100%; text-align: left; border: 2px solid var(--line);
+            background: var(--card); border-radius: 10px; padding: 11px 14px; margin: 8px 0;
+            font-size: 15.5px; }
+  .choice:hover:not(:disabled) { border-color: var(--sky); }
+  .choice.right { border-color: var(--pine); background: var(--pine-pale); font-weight: 600; }
+  .choice.wrong { border-color: var(--ember); background: var(--ember-pale); }
+  .choice.dim { opacity: .55; }
+  .verdict { border-radius: 8px; padding: 12px 14px; margin: 12px 0 0; font-size: 15px; }
+  .verdict.good { background: var(--pine-pale); }
+  .verdict.bad { background: var(--ember-pale); }
+  .quiz-done { text-align: center; padding: 10px 0; }
+  .quiz-done .big { font-size: 30px; }
+
+  .flash { perspective: 900px; height: 180px; cursor: pointer; margin-bottom: 8px; }
+  .flash-in { position: relative; width: 100%; height: 100%; transition: transform .5s; transform-style: preserve-3d; }
+  .flash.flip .flash-in { transform: rotateY(180deg); }
+  .face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 12px; padding: 16px;
+          display: flex; flex-direction: column; justify-content: center;
+          border: 1px solid var(--line); }
+  .front { background: var(--card); }
+  .back { background: var(--sky-pale); transform: rotateY(180deg); font-size: 14px; overflow-y: auto; }
+  .face .tag { font-size: 11px; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .hint { font-size: 11.5px; color: var(--soft); text-align: center; margin-bottom: 14px; }
+
+  ol, ul { padding-left: 22px; margin: 0 0 12px; }
+  li { margin-bottom: 5px; }
+  .tasks li { margin: 0; }
+  .pill-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 14px; }
+  @media print { header [role="tablist"] { display: none; } [role="tabpanel"][hidden] { display: block !important; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Shad's Build Guide</h1>
+    <p>One system, three builds, one job hunt. Every part, price, pin and rule in this guide was
+    fact-checked against primary sources on <strong>30 October 2026</strong>. Quizzes,
+    checkboxes and your answers save in this browser.</p>
+    <div class="row between" style="padding-bottom:12px">
+      <div style="flex:1; min-width:200px">
+        <div class="bar" style="background:rgba(255,255,255,.25)"><span id="globalBar"></span></div>
+      </div>
+      <div style="color:#d8ebe5; font-size:13.5px; margin-left:10px" id="globalLabel">0% complete</div>
+    </div>
+    <div role="tablist" aria-label="Guide sections" id="tabs"></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<section role="tabpanel" id="p-why" aria-labelledby="t-why">
+  <div class="card">
+    <h2>1. Why you are building this</h2>
+    <p>Because in Alberta tech, <strong>proof beats credentials</strong>. You are building one
+    system with three faces &mdash; a wildfire field station, a winter concrete curing monitor,
+    and a wildfire data pipeline &mdash; so that one set of skills shows up as three finished,
+    tested, demoable projects. When the degree question comes up in an interview, you answer it
+    with a machine on the table that you can explain line by line.</p>
+    <div class="note ok"><strong>The foundation is official, not a loophole.</strong> The Alberta
+    Public Service's own Minimum Recruitment Standards say: &ldquo;Both education and experience
+    are valued&hellip; Equivalencies allow for alternate, equal qualifications&hellip; In a
+    &lsquo;two-way&rsquo; equivalency you can consider both education and experience as suitable
+    equivalencies.&rdquo; (verified on alberta.ca, 30 Oct 2026).</div>
+  </div>
+
+  <div class="grid3">
+    <div class="stat"><div class="big">13 weeks</div><div class="lbl">10&ndash;15 hours a week
+      (130&ndash;195 hours total). Started 2 Nov 2026.</div></div>
+    <div class="stat"><div class="big">~$120&ndash;$600</div><div class="lbl">New spend depending
+      on track: data pipeline $0, field station ~$120 CAD, concrete track up to ~$600 with lab
+      testing. Prices verified 30 Oct 2026.</div></div>
+    <div class="stat"><div class="big">6 / 10</div><div class="lbl">Difficulty for you: the code
+      is guided and testable; the fiddly parts are hardware wiring and lab logistics, not math.</div></div>
+    <div class="stat"><div class="big">Moderate</div><div class="lbl">Official job outlook for
+      data engineers/data scientists (NOC 21211) in Alberta, 2025&ndash;2027 (Job Bank Canada).
+      Most jobs are in Calgary &amp; Edmonton.</div></div>
+    <div class="stat"><div class="big">$28.00 / hr</div><div class="lbl">Starting-out wage
+      (low end) for data engineers in Alberta &mdash; ~$58k/yr full time.</div></div>
+    <div class="stat"><div class="big">$43.27 / hr</div><div class="lbl">Median Alberta wage
+      &mdash; ~$90k/yr. High end: $57.69/hr (~$120k/yr). Source: Job Bank Canada.</div></div>
+  </div>
+
+  <div class="card">
+    <h2>Your questions, answered plainly</h2>
+    <details open>
+      <summary>Will this actually help me land a tech role?</summary>
+      <div class="answer">
+        <p>It helps in the way that is available to you. It does <strong>not</strong> waive
+        written minimums: for a Government of Alberta Systems Analyst Level 1 job you still need
+        a two-year diploma, <em>or</em> a one-year certificate plus one year of related
+        experience, <em>or</em> an industry certification (the standard names ISC2) in place of
+        the certificate &mdash; plus whatever the hiring team counts as related. What the projects
+        do: give you <strong>evidence of equivalency</strong> (documented, tested work), a
+        reference who has seen you work, and something concrete to talk about in interviews.
+        Private companies set their own rules &mdash; there, a strong project can beat a missing
+        diploma outright.</p>
+        <p class="muted">Verified word-for-word in the official Systems Analyst MRS PDF
+        (last reviewed 20 May 2026).</p>
+      </div>
+    </details>
+    <details>
+      <summary>Is there demand? What will it pay?</summary>
+      <div class="answer">
+        <p><strong>Demand:</strong> Job Bank Canada rates the 2025&ndash;2027 outlook
+        <strong>Moderate</strong> for data engineers/data scientists in Alberta (about 4,150
+        people in the occupation; most opportunities in Calgary and Edmonton). Alberta's
+        government is openly rebuilding its IT with AI-assisted teams, publishes its method
+        free (the Velocity White Papers), and runs a free Alberta AI Academy.</p>
+        <p><strong>Pay (Job Bank Canada, Alberta &mdash; hourly &rarr; roughly yearly at full time):</strong></p>
+        <table>
+          <tr><th>Stage</th><th>Hourly</th><th>~Yearly</th><th>Notes</th></tr>
+          <tr><td>Starting out (low end)</td><td>$28.00</td><td>~$58,000</td>
+            <td>Junior/entry data roles</td></tr>
+          <tr><td>Average (median)</td><td>$43.27</td><td>~$90,000</td>
+            <td>Typically 2&ndash;5 years of proven work</td></tr>
+          <tr><td>High end</td><td>$57.69</td><td>~$120,000</td>
+            <td>Senior/specialist (Calgary high: $72.05/hr, ~$150k)</td></tr>
+        </table>
+        <p>For comparison, the Government of Alberta data posting your research found
+        (Forestry &amp; Parks data engineer, Edmonton) listed <strong>$82,168&ndash;$107,710</strong>,
+        and a Systems Analyst 2 posting listed <strong>$83,258&ndash;$114,316</strong>. Postings
+        close &mdash; always re-check jobpostings.alberta.ca for what is live this week.</p>
+        <p class="muted">Wage figures: Job Bank Canada, NOC 21211, Alberta, updated 19 Nov 2025
+        (2023&ndash;2024 Labour Force Survey). They drift &mdash; re-check before quoting them.</p>
+      </div>
+    </details>
+    <details>
+      <summary>Would this impress people? How much?</summary>
+      <div class="answer">
+        <p>More than a tutorial certificate, less than production experience &mdash; and the gap
+        closes the moment you show the honest parts. Anyone can show a demo that works. What makes
+        people lean in: a lab comparison chart showing where your estimate was <em>wrong</em>,
+        tests that pass, an honest-limits section in your own README, and explaining every file
+        without notes. Most junior candidates cannot do that last part even with a degree.</p>
+      </div>
+    </details>
+    <details>
+      <summary>How hard is it, really?</summary>
+      <div class="answer">
+        <p>The <strong>code is the easy part</strong> &mdash; small, pure-logic modules tested on
+        a laptop with no hardware. The genuinely hard parts: (1) physical wiring that must pass an
+        ice test before you trust it, (2) the concrete track's logistics &mdash; a lab crushes
+        your cylinders on fixed dates you cannot miss, and (3) honest self-review, which is a
+        discipline, not a skill. Everything is beginner-friendly physically: no soldering
+        anywhere, click-in STEMMA QT cables, screw terminals for probes.</p>
+      </div>
+    </details>
+    <details>
+      <summary>What exactly am I building, and why three things?</summary>
+      <div class="answer">
+        <p><strong>Build 1 &mdash; Wildfire field station:</strong> a thermal camera finds hotspots
+        in frames, puts them on a real map next to real satellite hotspots (CWFIS data), and an AI
+        writes a short crew briefing. <strong>Build 2 &mdash; Winter concrete monitor:</strong>
+        waterproof probes log concrete temperature through an Alberta winter, and the maturity
+        method (ASTM C1074) turns that history into a strength estimate checked against real lab
+        crushes. <strong>Build 3 &mdash; Wildfire data pipeline:</strong> free Alberta open data +
+        daily CWFIS satellite hotspots, cleaned, documented and charted on a free public dashboard
+        with an AI weekly summary. Same core skills &mdash; sensors or data in, tested logic, map
+        or chart out, honest reporting &mdash; three different employers' vocabularies.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="note warn"><strong>Honesty box:</strong> this guide is a prototype builder's
+  roadmap, not career or legal advice, and no one can promise a job. Prices drift, postings
+  close, and ministry names change &mdash; search the jobs site by role, not by ministry.
+  Nothing in these projects flies a drone or goes near a real fire; nothing here is a certified
+  concrete system. Details in the Honest Limits tab.</div>
+</section>
+<section role="tabpanel" id="p-build" aria-labelledby="t-build" hidden>
+  <div class="card">
+    <h2>2. What you build &mdash; one system, three faces</h2>
+    <p>You are not building three unrelated projects. Each one follows the same six steps, and
+    most of the middle steps are <strong>shared</strong>. Press any step to see what it does.</p>
+    <div class="wire" style="grid-template-columns:repeat(3,1fr)">
+      <button class="btn" id="face-station">1 &middot; Wildfire field station</button>
+      <button class="btn ghost" id="face-concrete">2 &middot; Winter concrete monitor</button>
+      <button class="btn ghost" id="face-pipeline">3 &middot; Wildfire data pipeline</button>
+    </div>
+    <div class="row" id="chain" style="align-items:stretch"></div>
+    <p class="muted">Dashed boxes are the steps all three builds share.</p>
+    <div class="note info" id="chainDetail" aria-live="polite">Tap any step above.</div>
+  </div>
+
+  <div class="card">
+    <h2>Build 1 &mdash; Wildfire field station <span class="badge b-green">software runs today</span></h2>
+    <p>A <strong>$75 thermal camera + Python + real satellite data + an AI crew briefing</strong>
+    &mdash; the software side of night wildfire hotspot mapping, the work Alberta Wildfire hires
+    drone crews for. The software half already runs in your
+    <code>hotspot-finder</code> repo: tests pass, the page draws heat frames, and thousands of
+    real satellite hotspots load from Canada's CWFIS feed. What's left is the hardware link and
+    the demo polish.</p>
+    <ul>
+      <li><strong>Input:</strong> MLX90640 thermal camera &mdash; 32&times;24 = 768 temperature
+      readings per frame, &plusmn;2 &deg;C accuracy (0&ndash;100 &deg;C), 55&deg;&times;35&deg;
+      field of view (verified on Adafruit's product page, 30 Oct 2026).</li>
+      <li><strong>Find:</strong> <code>hotspots.py</code> &mdash; flood-fill groups touching hot
+      pixels into hotspots. Pure logic, fully tested, no hardware needed.</li>
+      <li><strong>Place:</strong> <code>geo.py</code> &mdash; pixel &rarr; latitude/longitude,
+      with the camera's ground footprint drawn on the map.</li>
+      <li><strong>Compare:</strong> <code>validation.py</code> &mdash; your camera's hotspots vs
+      real CWFIS satellite hotspots, with an honest "here's why these differ" report.</li>
+      <li><strong>Explain:</strong> one button asks Claude for a &le;5-line crew briefing built
+      <em>only</em> from the detected hotspots &mdash; it is told to say "no hotspots found" when
+      the list is empty.</li>
+    </ul>
+    <div class="note gold"><strong>One repo, one merge to-do (your decision A, recorded 31 Oct):</strong>
+    the Desktop folder and the GitHub repo are two good drafts of this same build (19/19 vs 9/9
+    tests passing, unrelated git histories). Your choice: <strong>integrate &mdash; GitHub as base,
+    port the validation upgrade onto it</strong>, run both test suites as the gate, push one clean
+    repo. Nothing gets thrown away.</div>
+  </div>
+
+  <div class="card">
+    <h2>Build 2 &mdash; Winter concrete monitor</h2>
+    <p>Waterproof temperature probes sit in poured concrete while an Alberta winter tries to
+    freeze it. The system logs temperature for weeks, adds up how much <strong>curing</strong> has
+    happened, and estimates strength &mdash; then you check it against a lab crushing your actual
+    cylinders. This is an established method: <strong>the maturity method (ASTM C1074)</strong>.
+    Concrete gains strength through a chemical reaction that runs faster when warm and slower when
+    cold, so temperature history can be turned into a strength estimate &mdash; <em>once a lab has
+    calibrated it for your exact mix</em>.</p>
+    <ul>
+      <li><strong>Input:</strong> up to 6 waterproof DS18B20 probes (&plusmn;0.5 &deg;C from
+      &minus;10 to 85 &deg;C; rated &minus;55 to 125 &deg;C) on one shared wire.</li>
+      <li><strong>Math:</strong> curing total = (temperature &minus; stopping temperature)
+      &times; hours. Below the stopping temperature, time adds nothing.</li>
+      <li><strong>Truth:</strong> a lab crushes cylinders of your exact mix at set ages; those
+      results become the strength table. The system interpolates inside that table and
+      <strong>refuses to guess outside it</strong>.</li>
+    </ul>
+    <div class="note warn"><strong>What this is not:</strong> a learning prototype, not a
+    certified system. Never use it to decide when to strip forms or load real concrete. Even
+    certified systems need calibration for each mix. The formula also cannot see frost damage
+    &mdash; if a probe reads at or below 0 &deg;C, the estimate stops being trustworthy.</div>
+    <div class="note info"><strong>Real-world note:</strong> the maturity method has been studied
+    on exactly this kind of job &mdash; a <a href="https://ascelibrary.org/doi/10.1061/%28ASCE%290733-9364%282007%29133%3A11%28827%29">2007 study</a>
+    ran it on an industrial job in Edmonton, where live data helped decide when to add heat and
+    protection.</div>
+  </div>
+  <div class="card">
+    <h2>Build 3 &mdash; Wildfire data pipeline <span class="badge b-blue">free to build</span></h2>
+    <p>The project that speaks the <em>exact language</em> of data-job postings: automated
+    pipelines, data-quality checks, metadata, dashboards, analysis-ready datasets. Download real
+    Alberta wildfire data, clean it, document it, visualize it, let AI write the weekly summary.
+    Everything runs on free public data and free hosting.</p>
+    <div class="grid3">
+      <div class="stat"><div class="big">1931&ndash;2025</div><div class="lbl">Alberta Historical
+        Wildfire Occurrence Data &mdash; 113,000+ fires, free on data.alberta.ca</div></div>
+      <div class="stat"><div class="big">Daily feed</div><div class="lbl">CWFIS satellite
+        hotspots &mdash; already running live in Build 1</div></div>
+      <div class="stat"><div class="big">$0</div><div class="lbl">Data cost + hosting cost
+        (GitHub Pages). AI summaries cost pennies per run.</div></div>
+    </div>
+    <ul>
+      <li><strong>Pipeline:</strong> scripts pull the historical CSV + daily hotspots into SQLite
+      &mdash; scheduled, repeatable, every run logged.</li>
+      <li><strong>Quality &amp; metadata:</strong> validation rules, exception reports, a data
+      dictionary, lineage notes &mdash; the posting keywords.</li>
+      <li><strong>Output:</strong> clean datasets + a web dashboard (fires by year/region, Leaflet
+      map, this season vs the 10-year average) + an AI weekly briefing, deployed to a public URL.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Try it now: the maturity calculator (Build 2's core math)</h2>
+    <p>Two concrete blocks at different temperatures. Watch how warmth adds &ldquo;curing
+    total&rdquo; over time. This is the exact math the probes will do with real readings.</p>
+    <div class="grid2">
+      <div><strong>Block A average temperature</strong><br>
+        <input type="number" id="temp-a" value="5"> &deg;C</div>
+      <div><strong>Block B average temperature</strong><br>
+        <input type="number" id="temp-b" value="18"> &deg;C</div>
+      <div><strong>Days since pour</strong><br>
+        <input type="number" id="days" value="7" min="1" max="28"></div>
+      <div><strong>Stopping temperature (datum, &deg;C)</strong><br>
+        <input type="number" id="datum" value="-10"></div>
+    </div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="note info"><span class="muted">Block A total</span><div class="big" id="total-a"></div></div>
+      <div class="note ok"><span class="muted">Block B total</span><div class="big" id="total-b"></div></div>
+    </div>
+    <div class="note warn" id="freeze-note" hidden><strong>Freezing risk:</strong> a block at or
+    below 0 &deg;C can freeze, and this formula can't see that damage. It assumes the concrete
+    keeps curing properly, so its number stops being trustworthy here.</div>
+    <svg id="chart" viewBox="0 0 640 230" role="img" aria-label="Curing total over time for both blocks" style="width:100%;height:auto"></svg>
+    <p class="muted"><strong>The formula:</strong> curing total = (temperature &minus; stopping
+    temperature) &times; hours. Temperatures below the stopping temperature add nothing.</p>
+    <h3>Turn curing into strength (once a lab has crushed your cylinders)</h3>
+    <p>Enter real lab results and it estimates Block B's strength. It refuses to guess outside the
+    range you've tested.</p>
+    <div id="lab-rows"></div>
+    <div class="row">
+      <button class="btn ghost" id="load-example">Load a made-up example</button>
+      <button class="btn ghost" id="clear-lab">Clear table</button>
+    </div>
+    <p id="strength-result" class="big" style="margin-top:10px" aria-live="polite"></p>
+    <p class="muted">This interpolation + refusal-to-extrapolate logic is exactly what
+    <code>curing.py</code> will do in code &mdash; with tests written from numbers you worked out
+    by hand, just like <code>hotspots.py</code>.</p>
+  </div>
+</section>
+<section role="tabpanel" id="p-parts" aria-labelledby="t-parts" hidden>
+  <div class="card">
+    <div class="row between">
+      <h2 style="margin:0">3. Parts &amp; budget &mdash; every price verified 30 Oct 2026</h2>
+      <div class="big" id="budget-total"></div>
+    </div>
+    <div class="bar" style="margin:8px 0"><span id="budget-bar"></span></div>
+    <p id="budget-note" aria-live="polite"></p>
+    <div class="note gold"><strong>Adafruit's prices are in US dollars</strong> and were read off
+    their live product pages on 30 Oct 2026. Canadian totals below use a rough 1.4 conversion
+    &mdash; planning numbers, not quotes. Type real prices as you get them; tick what you already
+    own. Stock changes daily; where the page said "out of stock" the day this was checked, the
+    badge says so.</div>
+  </div>
+
+  <div class="card">
+    <h2>Build 1 + Build 2 electronics &mdash; verified detail</h2>
+    <table>
+      <tr><th>Part</th><th>What it does</th><th>Price</th><th>Status &amp; notes (checked 30 Oct 2026)</th></tr>
+      <tr><td><strong>Adafruit MLX90640 thermal camera (4407)</strong>, 55&deg; lens</td>
+        <td>Build 1's eye: 32&times;24 = 768 temps/frame, &plusmn;2 &deg;C (0&ndash;100 &deg;C),
+        55&deg;&times;35&deg; FOV, 0.5&ndash;64 Hz refresh</td>
+        <td>US$74.95</td>
+        <td><span class="badge b-amber">Out of stock at Adafruit</span>
+        <span class="badge b-green">"Buy on DigiKey" button on the page</span></td></tr>
+      <tr><td><strong>Adafruit QT Py ESP32-S3 (5700)</strong></td>
+        <td>The brain: 4 MB flash + 2 MB PSRAM, runs CircuitPython, streams frames over USB</td>
+        <td>US$12.50</td>
+        <td><span class="badge b-amber">Out of stock at Adafruit</span>
+        <span class="badge b-blue">DigiKey/Mouser carry it</span></td></tr>
+      <tr><td><strong>STEMMA QT cable (4210 or similar)</strong></td>
+        <td>Plugs camera or adapter into board &mdash; zero soldering (JST-SH 4-pin)</td>
+        <td>US$0.95&ndash;$1.25</td>
+        <td><span class="badge b-green">50 mm &amp; 200 mm in stock</span>
+        <span class="badge b-amber">100 mm out</span> &mdash; all drop-in compatible</td></tr>
+      <tr><td><strong>Adafruit DS2484 1-Wire adapter (5976)</strong></td>
+        <td>Build 2's hub: lets the board read many DS18B20 probes over one wire, screw
+        terminals, no soldering</td>
+        <td>US$7.50</td>
+        <td><span class="badge b-green">28 in stock</span> &mdash; I2C address 0x18</td></tr>
+      <tr><td><strong>Waterproof DS18B20 probe (381)</strong> &times; up to 6</td>
+        <td>Temperature in wet concrete: &plusmn;0.5 &deg;C (&minus;10&ndash;85 &deg;C),
+        rated &minus;55&ndash;125 &deg;C, 91 cm cable, unique serial number each, query
+        &lt;750 ms. Comes with the 4.7k pull-up resistor</td>
+        <td>US$9.95 each</td>
+        <td><span class="badge b-green">In stock</span>
+        <span class="badge b-amber">Not for corrosive use &mdash; treat each as used up after a
+        pour (Adafruit's own warning; wet cement is corrosive)</span></td></tr>
+      <tr><td>USB-C cable</td><td>Board to laptop (power + serial)</td><td>~US$5</td>
+        <td><span class="badge b-blue">You likely own one</span></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h2>Shopping list &mdash; interactive (all three builds)</h2>
+    <div class="note warn"><strong>Buy nothing for the concrete track until Week 4</strong>, after
+    you have a lab quote. The lab is the biggest unknown here. Your camera + board for Build 1 are
+    already ordered.</div>
+    <div id="shopping"></div>
+  </div>
+
+  <div class="card">
+    <h2>Where to buy (Edmonton)</h2>
+    <ul>
+      <li><strong>Electronics:</strong> DigiKey Canada or Mouser Canada first (Adafruit's own
+      product pages link straight to DigiKey when out of stock), then Adafruit directly.</li>
+      <li><strong>Wire, connectors, bagged concrete, safety gear:</strong> any Edmonton hardware
+      store.</li>
+      <li><strong>Test cylinder moulds (4&times;8 in):</strong> ask the lab first what they want
+      to receive. Hoskin Scientific sells them in Canada.</li>
+      <li><strong>Concrete lab crushing:</strong> Parkland Geotechnical (1-888-252-1638) and
+      Inline Group both list concrete testing with Edmonton locations. Neither publishes prices
+      or confirms they serve individuals &mdash; <strong>call and ask</strong>: do you serve
+      individuals, price per cylinder, which sizes, and how do I deliver them?</li>
+    </ul>
+    <p class="muted">Budget cap: <strong>$600 for the concrete track</strong>. The shopping bar
+    warns you when you cross it. Biggest single unknown: lab crushing cost (placeholder $160
+    &mdash; replace with a real quote).</p>
+  </div>
+</section>
+<section role="tabpanel" id="p-steps" aria-labelledby="t-steps" hidden>
+  <div class="card">
+    <h2>4. Build it step by step</h2>
+    <p>Work top to bottom. Every step has a <strong>done means</strong> check. The software steps
+    run on your laptop with zero hardware &mdash; do them first.</p>
+    <h3>Build 1 &mdash; Wildfire field station</h3>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-key="s-1"><span><strong>Step 1 &mdash; hotspot finder (DONE &amp; tested)</strong>
+        <small><code>hotspots.py</code> groups touching hot pixels via flood fill. Done means: 9/9
+        tests pass. Understand the flood fill: a to-do list spreads through touching hot squares,
+        like paint. Explain it out loud &mdash; a quiz question below checks this.</small></span></label></li>
+      <li><label><input type="checkbox" data-key="s-2"><span><strong>Step 2 &mdash; board code + CircuitPython</strong>
+        <small>Install the <strong>latest CircuitPython</strong> for the QT Py ESP32-S3 from
+        circuitpython.org (use the 4MB flash / 2MB PSRAM build matching part 5700), copy
+        <code>adafruit_mlx90640</code> + <code>adafruit_bus_device</code> into
+        <code>CIRCUITPY/lib</code>, flash the board code. Done means: <code>FRAME,</code> lines on
+        the serial monitor, and the numbers jump when you wave a hand in front of the camera.</small></span></label></li>
+      <li><label><input type="checkbox" data-key="s-3"><span><strong>Step 3 &mdash; live camera on the page</strong>
+        <small><code>SerialCamera</code> reads FRAME lines with pyserial, skips bad lines, never
+        crashes the server. Add record + replay so the demo works unplugged. Done means: real heat
+        image in the browser.</small></span></label></li>
+      <li><label><input type="checkbox" data-key="s-4"><span><strong>Step 4 &mdash; pixels onto the map (geo.py &mdash; DONE)</strong>
+        <small>ground width = 2 &times; altitude &times; tan(FOV/2); ~111,320 m per degree of
+        latitude; longitude scales by cos(latitude). Done means: hot mug in a dark room shows as a
+        red marker inside the camera's footprint rectangle. Record a demo run as backup.</small></span></label></li>
+      <li><label><input type="checkbox" data-key="s-5"><span><strong>Step 5 &mdash; validation + AI briefing</strong>
+        <small><code>validation.py</code> compares your camera's hotspots to real CWFIS satellite
+        hotspots with a 500 m match radius and an honest "here's why these differ" report. The
+        briefing button sends <em>only the hotspot list</em> to Claude with instructions to use
+        just that data and say "no hotspots found" when the list is empty. Keep the API key in
+        <code>.env</code>; <code>.env</code> never reaches GitHub. Done means: briefing matches
+        the numbers on screen, line for line.</small></span></label></li>
+      <li><label><input type="checkbox" data-key="s-6"><span><strong>Step 6 &mdash; demo-ready</strong>
+        <small>README with what it is, how to run it, honest limits and sources. Then run the
+        3-minute demo <strong>3 times in a row without touching code</strong>. Done means: three
+        clean runs, and you can explain any file without notes.</small></span></label></li>
+    </ul>
+    <div class="note gold"><strong>Teach-back rule (this is the job-interview training):</strong>
+    after each step, explain every changed file out loud in plain words, then take that section's
+    quiz below. Wrong answer = read the explanation, retake it. The step isn't done until you
+    pass.</div>
+  </div>
+
+  <div class="card">
+    <h2>Build 1 board code &mdash; verified against Adafruit's libraries</h2>
+    <div class="note ok"><span class="badge b-green">API checked</span> Every call below was
+    checked against Adafruit's own library source and examples on 30 Oct 2026. It still has to
+    pass on your real parts &mdash; that's the Week 5 test.</div>
+    <pre><code>import time
+import board
+import busio
+import adafruit_mlx90640
+
+# The STEMMA QT socket on this board is board.STEMMA_I2C() (SDA1/SCL1).
+# Adafruit's example uses board.I2C(), which is the *other* pins on this board.
+i2c = board.STEMMA_I2C()
+mlx = adafruit_mlx90640.MLX90640(i2c)
+mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_2_HZ
+
+frame = [0] * 768            # 32 x 24 = 768 temperatures per frame
+while True:
+    try:
+        mlx.getFrame(frame)
+    except ValueError:
+        continue             # busy frames happen; just retry
+    print("FRAME," + ",".join("%.2f" % t for t in frame))
+    time.sleep(0.5)</code></pre>
+    <p class="muted">This is Adafruit's own simpletest pattern (which even comments that
+    <code>board.STEMMA_I2C()</code> is for the built-in STEMMA QT connector) with the print
+    changed to the <code>FRAME,</code> line your <code>SerialCamera</code> reader expects.</p>
+  </div>
+  <div class="card">
+    <h2>Build 2 &mdash; wiring the concrete probes (no soldering)</h2>
+    <ol>
+      <li>Plug a STEMMA QT cable into the QT Py's small socket, other end into the DS2484 adapter.</li>
+      <li>Connect each probe's wires to the adapter's <strong>3 screw terminals</strong>. All
+      probes share the same 3 screws &mdash; that's the whole point of 1-Wire.</li>
+      <li>Install CircuitPython on the QT Py (use the build matching your board on
+      circuitpython.org).</li>
+      <li>Copy <code>adafruit_ds248x.mpy</code> and the <code>adafruit_bus_device</code> folder
+      into <code>CIRCUITPY/lib</code>.</li>
+      <li>Copy the code below to <code>CIRCUITPY/code.py</code> and open a serial monitor.</li>
+    </ol>
+    <h3>The adapter's 3 screws, left to right (verified: Adafruit's pinouts page)</h3>
+    <div class="wire">
+      <div style="background:#b3261e">V+<small>Red probe wire (3&ndash;5 V)</small></div>
+      <div style="background:#8a6d00">1W<small>Yellow or white &mdash; data</small></div>
+      <div style="background:#2b3a42">GND<small>Blue or black (4-wire version: black)</small></div>
+    </div>
+    <p class="muted">Adafruit's probe comes in two wire styles &mdash; check the colours on the
+    ones you get against this list and Adafruit's guide before power-on. On the 4-wire version,
+    red = 3&ndash;5 V, black = ground, white = data, and the bare copper wire is the shield.</p>
+    <div class="note gold"><strong>The small resistor in the probe bag:</strong> the 4.7k pull-up
+    is required when wiring a probe straight to a bare microcontroller pin. Adafruit's DS2484
+    adapter board is designed to run the bus directly &mdash; keep the resistor in the bag, and
+    add it between V+ and 1W <em>only if</em> the code finds no sensors.</div>
+    <h3>Longer wires</h3>
+    <p>Each probe has 91 cm of cable. To reach the board from outdoors, join probes to 3-wire
+    cable with lever connectors. Keep the board warm and dry indoors; leave only probes and cable
+    outside. <strong>Test your full cable length on the bench before you pour</strong> &mdash; no
+    tested length limit is published for this exact setup.</p>
+  </div>
+
+  <div class="card">
+    <h2>Build 2 board code &mdash; every call verified against Adafruit's library source</h2>
+    <pre><code>import time
+import board
+from adafruit_ds248x import Adafruit_DS248x
+
+# board.STEMMA_I2C() is the small socket. Adafruit's example uses
+# board.I2C(), which is a different set of pins on this board.
+bus = Adafruit_DS248x(board.STEMMA_I2C())
+
+# Every probe has its own serial number. Find them all once.
+probes = []
+bus.onewire_search_reset()
+while True:
+    serial_number = bytearray(8)
+    if not bus.onewire_search(serial_number):
+        break
+    probes.append(serial_number)
+print("FOUND,", len(probes))
+
+# Each probe takes about 3/4 of a second to read.
+while True:
+    readings = [bus.ds18b20_temperature(p) for p in probes]
+    print("TEMPS," + ",".join("%.2f" % t for t in readings))
+    time.sleep(60)</code></pre>
+    <p class="muted">Verified 30 Oct 2026 against the published
+    <code>adafruit_ds248x.py</code> source: constructor takes an I2C bus (default address 0x18);
+    <code>onewire_search_reset()</code>, <code>onewire_search(new_addr)</code> (returns
+    <code>True</code> while devices remain) and <code>ds18b20_temperature(rom)</code> all exist
+    with exactly these signatures, and the read includes the 0.75 s conversion wait. Not yet run
+    on real hardware &mdash; that is the Week 5 bench test.</p>
+  </div>
+
+  <div class="card">
+    <h2>Prove the probes before you trust them</h2>
+    <ol>
+      <li>Put every probe in a cup of crushed ice and a little water, and stir. Good probes read
+      close to 0 &deg;C.</li>
+      <li>Hold each probe in your hand, one at a time, to learn which serial number is which.
+      Label each cable.</li>
+      <li>Write down each probe's ice reading. That's your calibration record.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>Pouring safely</h2>
+    <ul>
+      <li>Wear waterproof gloves and eye protection. Wet cement can burn skin &mdash; wash it off
+      right away.</li>
+      <li>Wear a proper dust mask when opening and mixing bags; mix outdoors or with good airflow.</li>
+      <li>Keep power and the board away from water. Only the probes go in the concrete.</li>
+      <li>Never add anything to a real job without written approval from the person in charge.</li>
+    </ul>
+    <div class="note warn"><strong>One number to settle with the lab:</strong> what strength
+    protects concrete from freezing. US sources say 3.5 MPa; two Canadian websites quote 7 MPa
+    from CSA A23.1, a paid standard this guide could not read. So this guide has no built-in pass
+    mark &mdash; ask the lab, or use your project's own spec.</div>
+  </div>
+</section>
+<section role="tabpanel" id="p-plan" aria-labelledby="t-plan" hidden>
+  <div class="card">
+    <h2>5. The 13-week plan (10&ndash;15 hrs/week, started 2 Nov 2026)</h2>
+    <p>Merged from both old plans and rebuilt as one track. Tick tasks as you go &mdash; progress
+    saves in this browser and feeds the bar at the top.</p>
+    <div class="note info"><strong>Key dates from your research:</strong> applications start
+    week 4 (GoA hiring runs 4&ndash;8+ weeks, so early applications cost nothing and buy interview
+    practice). Tech Wednesdays meets weekly in Edmonton &mdash; but 11 Nov is Remembrance Day, so
+    confirm which Wednesday before going.</div>
+  </div>
+
+  <div class="card">
+    <h3>Weeks 1&ndash;4 &mdash; get it running, get it seen</h3>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-key="w1-1"><span><strong>Week 1 &mdash; hardware alive + application in</strong>
+        <small>Pass the quiz on Step 1. Board prints FRAME lines; wave your hand at the camera.
+        Start Level 1 of the free Alberta AI Academy. If a GoA posting you want is closing,
+        finish the application yourself &mdash; only you can press Apply.</small></span></label></li>
+      <li><label><input type="checkbox" data-key="w2-1"><span><strong>Week 2 &mdash; live camera, live map</strong>
+        <small>Real heat image on the page; record a demo run as backup. Pixels &rarr; map
+        coordinates; hot-mug test in a dark room. Start the AI briefing button with the
+        <code>.env</code> key.</small></span></label></li>
+      <li><label><input type="checkbox" data-key="w3-1"><span><strong>Week 3 &mdash; validation + demo week</strong>
+        <small>CWFIS comparison report working. README + honest-limits section. Rehearse the
+        3-minute demo 3&times; in a row. <strong>Demo at Tech Wednesdays</strong> &mdash; ask one
+        thing: &ldquo;What would make this useless?&rdquo; Write down everyone's name and exact
+        words.</small></span></label></li>
+      <li><label><input type="checkbox" data-key="w4-1"><span><strong>Week 4 &mdash; record, apply, quote the lab</strong>
+        <small>Record a 5-minute demo video (screen + phone). Polish the README.
+        <strong>Send first applications</strong> with the case study linked. Call Parkland and
+        Inline for cylinder-test quotes (do you serve individuals? price? which sizes? how do I
+        deliver?). Ask a superintendent if you can watch a pour for this project &mdash; watching
+        only. Type real prices into the Shopping tab.</small></span></label></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Weeks 5&ndash;9 &mdash; the concrete proves the point</h3>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-key="w5-1"><span><strong>Week 5 &mdash; probes on the bench</strong>
+        <small>Wire probes to the adapter; starter code prints FOUND and TEMPS lines. Ice test
+        every probe; label cables. Test your full cable length. <em>This week also tests Build 1's
+        real camera when it arrives.</em></small></span></label></li>
+      <li><label><input type="checkbox" data-key="w6-1"><span><strong>Week 6 &mdash; reuse the Hotspot system</strong>
+        <small>Add a TEMPS reader to the server (like the FRAME reader). Write
+        <code>curing.py</code> and its tests &mdash; pure math, no hardware. Live chart on the
+        page. Make the board log with the laptop off (fallback: leave the laptop on and awake
+        during pours). Run a 24-hour outdoor test.</small></span></label></li>
+      <li><label><input type="checkbox" data-key="w7-1"><span><strong>Week 7 &mdash; first pour: teach the system your mix</strong>
+        <small>Book lab test dates <em>before</em> pouring (check holiday hours). Pour &ge;10
+        cylinders from one batch &mdash; measure water exactly; two cylinders hold probes and
+        aren't crushed. Pour two small blocks with probes: one protected, one left colder. Log
+        pour time, water, mix, weather. Photos + notes for the write-up.</small></span></label></li>
+      <li><label><input type="checkbox" data-key="w8-1"><span><strong>Week 8 &mdash; early results + AI summary</strong>
+        <small>Deliver first cylinders on time. Enter lab results. Add a freezing alert (plain
+        code, not AI &mdash; safety checks shouldn't depend on the AI). Reuse the briefing for a
+        site summary with the same no-invention rules.</small></span></label></li>
+      <li><label><input type="checkbox" data-key="w9-1"><span><strong>Week 9 &mdash; second pour, predictions first</strong>
+        <small>Pour the same mix with new cylinders. <strong>Write down predicted strength before
+        each crush</strong> &mdash; a dated prediction is what makes this honest. Keep the first
+        batch's lab dates.</small></span></label></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Weeks 10&ndash;13 &mdash; pipeline, proof, and the push</h3>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-key="w10-1"><span><strong>Weeks 10&ndash;11 &mdash; Build 3: the data pipeline</strong>
+        <small>Download scripts for the 1931&ndash;2025 wildfire CSV + daily CWFIS into SQLite,
+        with run logs. Data-quality checks, metadata, exception reports, a data dictionary. First
+        charts + Leaflet map of historic fires. Keep 1 application going out per week.</small></span></label></li>
+      <li><label><input type="checkbox" data-key="w12-1"><span><strong>Week 12 &mdash; deploy + compare</strong>
+        <small>AI weekly briefing for the dashboard; deploy free (GitHub Pages) with a public URL.
+        Enter the second batch's lab results. Calculate how far off each prediction was (plain
+        percent). Find one reason your worst miss happened. If approved, watch a real pour and ask
+        what would be useful.</small></span></label></li>
+      <li><label><input type="checkbox" data-key="w13-1"><span><strong>Week 13 &mdash; case study + vouching</strong>
+        <small>One-page case study: the problem, what you built, your results, where it was wrong,
+        what it costs. Make the predicted-vs-lab chart the star. State clearly it's a prototype,
+        not certified. Show one person who knows concrete and fix what they catch. Clean the
+        public repo; record a 3-minute video; update resume/LinkedIn with <em>real</em> results
+        (you read every word first).</small></span></label></li>
+      <li><label><input type="checkbox" data-key="w13-2"><span><strong>Then &mdash; show it and ask</strong>
+        <small>Demo to 5 people who know the work (superintendents, lab staff, construction-tech
+        staff, the AI lead). Ask those who've seen your work to be references &mdash; use the words
+        on the Career tab. Apply to 5 real jobs linking the case study.</small></span></label></li>
+    </ul>
+    <div class="note ok"><strong>Done means for the whole plan:</strong> at least one person has
+    agreed to be a reference, 5+ applications are sent, three clean demo runs happened in a row,
+    and a technical person can pick any file and you can explain it with no notes.</div>
+  </div>
+</section>
+<section role="tabpanel" id="p-career" aria-labelledby="t-career" hidden>
+  <div class="card">
+    <h2>6. Career &amp; pay &mdash; how the degree question gets answered</h2>
+    <div class="note ok"><strong>The one fact that makes this path legitimate:</strong> the Alberta
+    Public Service officially treats experience as equal to education for most classifications
+    (&ldquo;two-way equivalency&rdquo; &mdash; exact wording verified on alberta.ca, 30 Oct 2026).
+    Your no-degree route is not a loophole; it is a recognized route. What it needs is
+    <strong>proof of equivalency</strong>: a portfolio, documented project hours, and people who
+    vouch.</div>
+
+    <h3>Where do you stand for GoA Systems Analyst Level 1?</h3>
+    <p>Pick what's true for you (official Systems Analyst MRS PDF, last reviewed 20 May 2026):</p>
+    <div id="level1-options"></div>
+    <div class="note info" id="level1-result" aria-live="polite">Pick one above.</div>
+    <p class="muted">Level 2 (the higher step) needs: a degree + 2 years related experience,
+    <em>or</em> a two-year diploma + 4 years, <em>or</em> a one-year certificate + 5 years. The
+    hiring team decides what counts as &ldquo;related&rdquo; &mdash; that is their call, never
+    automatic. No project or reference can waive a written minimum on its own; someone can speak
+    up for you, but you still have to meet it.</p>
+  </div>
+
+  <div class="card">
+    <h2>The cover-letter formula (equivalency language)</h2>
+    <p>Don't hide from the education line &mdash; address it in one confident sentence:</p>
+    <div class="script">"I offer equivalent, demonstrated experience in place of formal
+    education: production-grade data systems I designed, built, tested and demoed, documented at
+    [portfolio URL], with references who can speak to the work. The Alberta Public Service's
+    Minimum Recruitment Standards recognize such equivalencies."</div>
+    <p>Then spend the rest of the letter on <em>evidence</em>: specific numbers (768-temperature
+    frames, real lab comparison, tests passing), specific tools (Python, Flask, SQL, geospatial
+    data, AI APIs), and specific outcomes (working demos, deployed dashboards).</p>
+
+    <h3>Your 30-second pitch &mdash; once it's true</h3>
+    <div class="script">"I come from concrete work on Alberta jobsites, and I'm moving into tech.
+    I built a low-cost sensor system that estimates concrete strength in the cold, and checked it
+    against lab results. It was off by [your real number]. The same system also maps wildfire
+    hotspots. I can explain every part of it. Want to see?"</div>
+    <p class="muted">Fill in your real number. Never say it until you've measured it.</p>
+  </div>
+  <div class="card">
+    <h2>How to earn someone who'll vouch for you</h2>
+    <ol>
+      <li><strong>Show, don't ask.</strong> Your first ask is "can I show you this for 3 minutes?"
+      never "can you get me a job?"</li>
+      <li><strong>Pick people who know the work.</strong> A superintendent, a concrete lab
+      technician, a Tech Wednesdays regular, an AI lead.</li>
+      <li><strong>Ask for their criticism.</strong> "What would make this useless on a real
+      site?" Then fix what they say.</li>
+      <li><strong>Go back with the fix.</strong> Telling someone "you said this, so I changed it"
+      is what turns them into a supporter.</li>
+      <li><strong>Then ask plainly, once they've seen real results:</strong></li>
+    </ol>
+    <div class="script">"You've seen how I worked on this, including what went wrong. Would you
+    be comfortable being a reference for me? It's completely fine if not."</div>
+
+    <h3>The 3-minute demo structure</h3>
+    <ul>
+      <li><strong>0:00&ndash;0:30 &mdash; the problem:</strong> one sentence from real work.</li>
+      <li><strong>0:30&ndash;2:15 &mdash; the machine:</strong> live heat frame &rarr; hotspots
+      &rarr; map &rarr; satellite comparison. Concrete track: live temperature chart + your
+      prediction vs the lab's number.</li>
+      <li><strong>2:15&ndash;2:45 &mdash; the briefing:</strong> press the button; the AI writes
+      five lines a ground crew could act on.</li>
+      <li><strong>2:45&ndash;3:00 &mdash; the honest limits first:</strong> "Not certified,
+      approximate position, 32&times;24 resolution &mdash; it's a prototype, and the pros already
+      do this. But it runs, and every line is tested." <em>Saying this first is what makes
+      everything else believable.</em></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Where to apply (check weekly)</h2>
+    <table>
+      <tr><th>Where</th><th>What to look for</th><th>Why</th></tr>
+      <tr><td><a href="https://jobpostings.alberta.ca">jobpostings.alberta.ca</a></td>
+        <td>Program Services 3&ndash;4, data/engineering analyst, anything "data" in Forestry,
+        Environment, Agriculture</td>
+        <td>The official route &mdash; MRS equivalency applies</td></tr>
+      <tr><td><a href="https://ca.linkedin.com/jobs">LinkedIn &mdash; Edmonton + Remote</a></td>
+        <td>"Junior data scientist", "ML developer", "data engineer", "AI analyst"</td>
+        <td>Private companies set their own rules; portfolios welcome</td></tr>
+      <tr><td>AltaML, Amii, InnoTech Alberta, Alberta Innovates</td>
+        <td>Associate/ML developer, data scientist, research engineer</td>
+        <td>AI-specific; AltaML explicitly accepts portfolio work</td></tr>
+      <tr><td>Construction &amp; forestry tech (PCL, Stantec, wildfire-tech startups)</td>
+        <td>Data/analytics/automation roles</td>
+        <td>Your concrete + wildfire lane is a direct fit</td></tr>
+    </table>
+    <div class="note gold"><strong>Free fluency builders:</strong> the
+    <a href="https://github.com/GovAlta/Alberta-AI-Academy">Alberta AI Academy</a> (free, no
+    login) and GovAlta's <a href="https://github.com/GovAlta/THE-VELOCITY-WHITE-PAPERS">Velocity
+    White Papers</a> (the province's published AI method) let you speak the government's own
+    language at meetups.</div>
+    <div class="note info"><strong>Two rules:</strong> (1) One application per week from week 4
+    &mdash; steady beats a binge. (2) Track everything: date, role, contact, status, follow-up
+    date. The follow-up is where offers come from.</div>
+  </div>
+</section>
+<section role="tabpanel" id="p-quiz" aria-labelledby="t-quiz" hidden>
+  <div class="card">
+    <h2>7. Prove you know it &mdash; quizzes after every topic</h2>
+    <p>One question at a time, instant feedback with the reason, and a score at the end of each
+    quiz. Wrong answers get explanations &mdash; read them, that's where the learning is. Your
+    best scores save in this browser. <strong>Your rule: a topic isn't done until you pass its
+    quiz.</strong></p>
+    <div class="grid2">
+      <div class="stat"><div class="big" id="score-overview">&mdash;</div>
+        <div class="lbl">Overall quiz mastery (best scores)</div></div>
+      <div class="stat"><div class="big" id="flash-progress">0 / 10</div>
+        <div class="lbl">Flashcards reviewed (bottom of this tab)</div></div>
+    </div>
+  </div>
+
+  <h2 style="margin:22px 0 12px">Topic quizzes</h2>
+  <div id="quiz-parts" class="quiz" data-quiz="parts"></div>
+  <div id="quiz-software" class="quiz" data-quiz="software"></div>
+  <div id="quiz-concrete" class="quiz" data-quiz="concrete"></div>
+  <div id="quiz-career" class="quiz" data-quiz="career"></div>
+
+  <h2 style="margin:22px 0 12px">Final exam &mdash; mixed, 8 questions</h2>
+  <div id="quiz-final" class="quiz" data-quiz="final"></div>
+
+  <div class="card">
+    <h2>Interview flashcards &mdash; tap to flip</h2>
+    <p class="muted">These are the questions you'll actually be asked. Say your answer out loud
+    before you flip.</p>
+    <div id="flashcards"></div>
+  </div>
+</section>
+<section role="tabpanel" id="p-limits" aria-labelledby="t-limits" hidden>
+  <div class="card">
+    <h2>8. Honest limits &amp; sources</h2>
+    <p>You asked for 100% correct. Here is the honest line: what was checked at a source, and
+    what can only be settled by a phone call or your own test.</p>
+    <h3>Checked at the source (30 Oct 2026)</h3>
+    <ul>
+      <li><span class="badge b-green">Checked</span> Every part, price and spec &mdash; read off
+      Adafruit's live product pages (4407, 5700, 4210, 5976, 381), including stock status.</li>
+      <li><span class="badge b-green">Checked</span> The 3 screw terminals are V+, 1W, GND
+      (Adafruit's DS2484 pinouts page), and the probe wire colour codes for both wire styles.</li>
+      <li><span class="badge b-green">Checked</span> Every code call in this guide against
+      Adafruit's published library source: <code>Adafruit_DS248x(i2c)</code>,
+      <code>onewire_search_reset()</code>, <code>onewire_search(rom)</code>,
+      <code>ds18b20_temperature(rom)</code>, <code>MLX90640(i2c)</code>,
+      <code>mlx.getFrame(frame)</code>, <code>RefreshRate.REFRESH_2_HZ</code>.</li>
+      <li><span class="badge b-green">Checked</span> <code>board.STEMMA_I2C()</code> exists in
+      CircuitPython's own board definition for this exact board (4MB flash / 2MB PSRAM build);
+      <code>board.I2C()</code> is indeed a different set of pins there.</li>
+      <li><span class="badge b-green">Checked</span> The GoA Minimum Recruitment Standards &mdash;
+      the two-way-equivalency quote from alberta.ca and the Level 1/2/3 minimums from the official
+      Systems Analyst PDF (last reviewed 20 May 2026), read word-for-word.</li>
+      <li><span class="badge b-green">Checked</span> Wages and outlook &mdash; Job Bank Canada
+      (NOC 21211, Alberta): low $28.00/hr, median $43.27/hr, high $57.69/hr; outlook Moderate for
+      2025&ndash;2027.</li>
+      <li><span class="badge b-green">Checked</span> The maturity formula and its limits, against
+      NRMCA CIP 39, Nebraska DOT's maturity procedure, and an FHWA technical brief. ASTM C1074 is
+      the standard name for the method.</li>
+    </ul>
+    <h3>Still to prove (your tests, or a phone call)</h3>
+    <ul>
+      <li><span class="badge b-amber">To prove</span> That the whole sensor chain works on your
+      parts. Week 5 tests it. The board code is Adafruit's documented pattern but has not yet run
+      on your hardware.</li>
+      <li><span class="badge b-amber">To prove</span> That the board can log for weeks with your
+      laptop off. Week 6. If it can't, the laptop stays on and awake during pours.</li>
+      <li><span class="badge b-amber">To prove</span> Which lab takes your cylinders, and the
+      price. Parkland and Inline list concrete testing in Edmonton, but publish no prices and no
+      sign they serve individuals.</li>
+      <li><span class="badge b-amber">To prove</span> What strength protects concrete from
+      freezing here: US sources say 3.5 MPa; Canadian sites quote 7 MPa from CSA A23.1, a paid
+      standard this guide couldn't read. Ask the lab.</li>
+      <li><span class="badge b-amber">To prove</span> Canadian prices and stock on the day you
+      buy. Test ages (suggest 1, 3, 7, 28 days) must be agreed with the lab.</li>
+      <li><span class="badge b-amber">Re-check</span> Any job posting before relying on it &mdash;
+      the GoA numbers quoted in the Q&amp;A came from live postings during the week of 30 Oct 2026
+      and they close. Job Bank wages get updated yearly.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Sources</h2>
+    <ul>
+      <li><a href="https://www.alberta.ca/alberta-public-service-minimum-recruitment-standards">Alberta Public Service Minimum Recruitment Standards</a>
+      &middot; <a href="https://www.alberta.ca/system/files/custom_downloaded_images/psc-recruitment-standards-systems-analyst.pdf">Systems Analyst MRS PDF</a></li>
+      <li><a href="https://www.jobbank.gc.ca/marketreport/wages-occupation/24510/AB">Job Bank Canada: data engineer wages, Alberta</a>
+      &middot; <a href="https://www.jobbank.gc.ca/marketreport/outlook-occupation/24510/AB">job prospects</a></li>
+      <li><a href="https://www.adafruit.com/product/4407">Adafruit 4407 camera</a> &middot;
+      <a href="https://www.adafruit.com/product/5700">5700 QT Py S3</a> &middot;
+      <a href="https://www.adafruit.com/product/5976">5976 DS2484</a> &middot;
+      <a href="https://www.adafruit.com/product/381">381 waterproof probe</a> &middot;
+      <a href="https://learn.adafruit.com/adafruit-ds2484-i2c-to-1-wire-bus-adapter-breakout">DS2484 guide</a></li>
+      <li><a href="https://github.com/adafruit/Adafruit_CircuitPython_DS248x">Adafruit DS248x library source</a>
+      &middot; <a href="https://github.com/adafruit/Adafruit_CircuitPython_MLX90640">MLX90640 library</a></li>
+      <li><a href="https://www.nrmca.org/wp-content/uploads/2021/01/39pr.pdf">NRMCA CIP 39: maturity method</a>
+      &middot; <a href="https://dot.nebraska.gov/media/ti0oflr5/method-development-maturity-curve.pdf">Nebraska DOT maturity procedure</a></li>
+      <li><a href="https://cwfis.cfs.nrcan.gc.ca">CWFIS (Canadian Wildland Fire Information System)</a>
+      &middot; <a href="https://data.alberta.ca">data.alberta.ca</a>
+      &middot; <a href="https://leafletjs.com">Leaflet</a></li>
+      <li><a href="https://github.com/GovAlta/THE-VELOCITY-WHITE-PAPERS">GovAlta Velocity White Papers</a>
+      &middot; <a href="https://github.com/GovAlta/Alberta-AI-Academy">Alberta AI Academy</a></li>
+    </ul>
+    <p class="muted">Merged into this guide from: Shad's Build Plan, GoA Career Roadmap,
+    Two Builds One Repo, and the wildfire-station skeleton &mdash; kept, cross-checked and
+    consolidated on 30 Oct 2026. One file, one topic.</p>
+  </div>
+</section>
+
+</main>
+
+<script>
+  "use strict";
+  /* ---------- Saving: everything lives in this browser ---------- */
+  const STORE = "shad-build-guide-v1";
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(STORE)) || {}; } catch (e) { saved = {}; }
+  saved.ticks = saved.ticks || {};
+  saved.prices = saved.prices || {};
+  saved.owned = saved.owned || {};
+  saved.quizBest = saved.quizBest || {};
+  saved.lab = saved.lab || [["", ""], ["", ""], ["", ""], ["", ""]];
+  saved.level1 = saved.level1 || "";
+  saved.flashes = saved.flashes || {};
+  function save() {
+    try { localStorage.setItem(STORE, JSON.stringify(saved)); } catch (e) {}
+  }
+
+  /* ---------- Tabs ---------- */
+  const TABS = [["why", "1 Why?"], ["build", "2 What You Build"], ["parts", "3 Parts & Budget"],
+                ["steps", "4 Build Steps"], ["plan", "5 The 13 Weeks"], ["career", "6 Career & Pay"],
+                ["quiz", "7 Quizzes"], ["limits", "8 Honest Limits"]];
+  const tabBar = document.getElementById("tabs");
+  function openTab(id) {
+    TABS.forEach(function (t) {
+      const on = t[0] === id;
+      document.getElementById("p-" + t[0]).hidden = !on;
+      const b = document.getElementById("t-" + t[0]);
+      b.setAttribute("aria-selected", on ? "true" : "false");
+      b.tabIndex = on ? 0 : -1;
+    });
+    window.scrollTo(0, 0);
+  }
+  TABS.forEach(function (t, i) {
+    const b = document.createElement("button");
+    b.id = "t-" + t[0];
+    b.setAttribute("role", "tab");
+    b.setAttribute("aria-controls", "p-" + t[0]);
+    b.textContent = t[1];
+    b.addEventListener("click", function () { openTab(t[0]); });
+    b.addEventListener("keydown", function (e) {
+      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      const next = TABS[(i + (e.key === "ArrowRight" ? 1 : TABS.length - 1)) % TABS.length][0];
+      openTab(next);
+      document.getElementById("t-" + next).focus();
+    });
+    tabBar.appendChild(b);
+  });
+
+  /* ---------- Checkboxes + global progress ---------- */
+  const boxes = Array.from(document.querySelectorAll('input[type="checkbox"][data-key]'));
+  boxes.forEach(function (b) {
+    b.checked = !!saved.ticks[b.dataset.key];
+    b.addEventListener("change", function () {
+      saved.ticks[b.dataset.key] = b.checked;
+      save(); paintGlobal();
+    });
+  });
+  function quizMastery() {
+    let total = 0, got = 0;
+    Object.keys(QUIZZES).forEach(function (k) {
+      total += QUIZZES[k].length;
+      got += saved.quizBest[k] || 0;
+    });
+    return { total: total, got: got };
+  }
+  function paintGlobal() {
+    const done = boxes.filter(function (b) { return b.checked; }).length;
+    const q = quizMastery();
+    const pct = Math.round(((done + q.got) / (boxes.length + q.total)) * 100);
+    document.getElementById("globalBar").style.width = pct + "%";
+    document.getElementById("globalLabel").textContent =
+      pct + "% complete (" + done + "/" + boxes.length + " tasks, " +
+      q.got + "/" + q.total + " quiz points)";
+    const best = saved.quizBest || {};
+    let pass = 0;
+    Object.keys(QUIZZES).forEach(function (k) {
+      if ((best[k] || 0) >= Math.ceil(QUIZZES[k].length * 0.75)) pass++;
+    });
+    document.getElementById("score-overview").textContent = pass + " of " + Object.keys(QUIZZES).length + " passed";
+  }
+  /* ---------- Quiz bank: answers verified against this guide's sources ---------- */
+  const QUIZZES = {
+    parts: [
+      { q: "How many temperature readings does the MLX90640 give per frame?",
+        a: ["768 (32 × 24)", "64", "1,024", "It depends on the refresh rate"],
+        c: 0,
+        why: "32 × 24 = 768 infrared readings per frame — confirmed on Adafruit's product page. The refresh rate changes how often you get a frame, never its size." },
+      { q: "The camera is out of stock at Adafruit. What is the verified backup?",
+        a: ["Wait restock only", "The same page has a 'Buy on DigiKey' button, and DigiKey carries it", "Buy a different camera with a different library", "There is no backup"],
+        c: 1,
+        why: "Adafruit's own page offers a 'Buy on DigiKey' button and lists DigiKey and Mouser as distributors. The 50 mm/200 mm cables are drop-in replacements for the out-of-stock 100 mm one." },
+      { q: "What is the DS2484 adapter's job in the concrete build?",
+        a: ["Amplifying the probe signal", "Letting the board read many DS18B20 probes over one shared 1-Wire wire, via I2C", "Heating the probes", "Converting Celsius to Fahrenheit"],
+        c: 1,
+        why: "It's an I2C-to-1-Wire bridge (address 0x18). All probes share one data wire; each answers only when called by its own serial number. The screw terminals are V+, 1W, GND." },
+      { q: "How accurate are the waterproof DS18B20 probes where it matters most?",
+        a: ["±0.1 °C everywhere", "±2 °C everywhere", "±0.5 °C from −10 to 85 °C (less exact below −10 °C)", "They only measure boiling water"],
+        c: 2,
+        why: "Adafruit rates them ±0.5 °C from −10 to +85 °C, total range −55 to 125 °C. Below −10 °C treat readings as less exact — important for winter concrete." },
+      { q: "Adafruit's warning about the probes in wet concrete means you should…",
+        a: ["Reuse them forever", "Treat each probe as used up after a pour (wet cement is corrosive)", "Paint them", "Only use them in dry concrete"],
+        c: 1,
+        why: "The probes are not IP rated and not guaranteed in corrosive environments — Adafruit says so on the product page. Budget them as consumables: one pour, one life." }
+    ],
+    software: [
+      { q: "In plain words, what does find_hotspots do?",
+        a: ["Sorts pixels by temperature", "Walks every temperature; when it finds a hot pixel nobody visited, it spreads through touching hot pixels and counts them as one hotspot", "Sends frames to the satellite", "Averages the whole frame"],
+        c: 1,
+        why: "That spreading is a flood fill — like paint spreading through touching squares, with a to-do list. Touching hot pixels become one hotspot; isolated ones become their own." },
+      { q: "Where does pixel (x, y) live in the flat frame list?",
+        a: ["x * height + y", "y * width + x", "randomly", "x + y"],
+        c: 1,
+        why: "The frame is row by row: position = y × width + x. Checking x and y bounds (not list positions) stops the right edge of one row wrapping to the left edge of the next." },
+      { q: "How does geo.py turn a pixel into a latitude/longitude?",
+        a: ["It asks the satellite", "From the camera height and lens angle it computes ground width, hence metres per pixel, then converts north/east metres to degrees", "It looks up the pixel in a database", "It guesses"],
+        c: 1,
+        why: "ground width = 2 × altitude × tan(FOV/2); ~111,320 m per degree of latitude; longitude degrees shrink by cos(latitude). Approximate by design — and the README says so." },
+      { q: "How does the AI briefing avoid inventing hotspots?",
+        a: ["The AI is smart enough", "It only receives the detected hotspot list, the prompt says to use only that data and say 'no hotspots found' when empty, and you can check every line against the list", "It can't invent things", "The map stops it"],
+        c: 1,
+        why: "Constrained input + explicit prompt rules + human comparison against the list. An alert (plain code) handles safety; the AI only writes words about data it was given." },
+      { q: "Why do hotspots.py and curing.py contain no hardware code?",
+        a: ["To save memory", "So the math can be tested with hand-worked numbers, no board or sensor needed", "Because Python can't talk to hardware", "To make it faster"],
+        c: 1,
+        why: "Pure logic modules can be verified with numbers you worked out yourself — that's how you test the math before the hardware exists, and how you prove the code does what you say." }
+    ],
+    concrete: [
+      { q: "What is 'maturity' in concrete?",
+        a: ["How old the concrete is in days", "A total of (temperature − stopping temperature) × hours — how much curing has happened", "The strength in MPa", "The amount of water in the mix"],
+        c: 1,
+        why: "The reaction that hardens concrete runs faster when warm, slower when cold. Adding up (temp − datum) × hours over time approximates total curing. Below the datum, time adds nothing." },
+      { q: "Why must a lab crush cylinders of YOUR mix?",
+        a: ["It's a legal ritual", "Temperature shows how much curing happened; only crushing samples of your exact mix connects that number to real strength", "To test the probes", "To dry the concrete"],
+        c: 1,
+        why: "Without the lab curve, a strength number is a guess. The strength table only holds for that exact mix — new mix, new table." },
+      { q: "A probe reads −3 °C. What does the maturity estimate do?",
+        a: ["Keeps working fine", "Becomes untrustworthy — the formula can't see frost damage and assumes proper curing", "Gets more accurate", "Automatically calls the lab"],
+        c: 1,
+        why: "Freezing damage is invisible to the formula. That's why the plan has a freezing alert (plain code, not AI) and why the calculator shows a freeze warning below 0 °C." },
+      { q: "Why write down predicted strength BEFORE each lab crush?",
+        a: ["For the lab's paperwork", "A dated prediction made ahead of time proves the system really worked — predicting after seeing the answer fools yourself", "To fill the notebook", "It speeds up curing"],
+        c: 1,
+        why: "Predict-first, verify-later is the honesty mechanism — the same reason you show where the estimate was wrong in the case study. Anyone can narrate a result after it lands." },
+      { q: "The freezing-strength pass mark in this guide is deliberately…",
+        a: ["3.5 MPa", "7 MPa", "absent — US sources say 3.5 MPa but Canadian sites quote 7 MPa from a paid standard, so ask the lab", "10 MPa"],
+        c: 2,
+        why: "Honesty beats a confident wrong number. Two Canadian websites quote CSA A23.1 (a paid standard this guide couldn't read) at 7 MPa; US guidance says 3.5 MPa. The lab — or your project spec — settles it." }
+    ],
+    career: [
+      { q: "For GoA Systems Analyst Level 1, which route is NOT on the official list?",
+        a: ["A related two-year diploma", "A related one-year certificate + 1 year related experience", "An industry certification (like ISC2) in place of the certificate", "A great project with no education or certification at all"],
+        c: 3,
+        why: "The official minimums are the diploma, the certificate+1yr, or the certification in place of the certificate (plus 'or equivalent as described'). Projects prove equivalency evidence — they don't erase the written minimum on their own." },
+      { q: "What does 'two-way equivalency' mean in Alberta's MRS?",
+        a: ["You apply twice", "Both education and experience can be considered as suitable, equal qualifications", "Only managers qualify", "Education is always required"],
+        c: 1,
+        why: "The alberta.ca page says exactly: 'In a two-way equivalency you can consider both education and experience as suitable equivalencies.' Some classifications allow only one-way — the hiring team decides what's 'related'." },
+      { q: "What is the verified median wage for data engineers in Alberta?",
+        a: ["$28.00/hr", "$43.27/hr (~$90k/yr)", "$72.05/hr", "$15/hr"],
+        c: 1,
+        why: "Job Bank Canada (NOC 21211, Alberta, 2023–24 data): low $28.00, median $43.27, high $57.69 per hour. Calgary's high is $72.05/hr. These drift — re-check before quoting." },
+      { q: "What is the correct first ask when meeting someone with hiring influence?",
+        a: ["Can you get me a job?", "Can I show you this for 3 minutes?", "Will you be my reference?", "Do you have openings?"],
+        c: 1,
+        why: "Show, don't ask. Criticism comes next ('What would make this useless?'), then you fix what they say and show the fix. Only after they've seen real work do you ask about references." },
+      { q: "The single most impressive artifact in the concrete case study is…",
+        a: ["The wiring photo", "The predicted-vs-lab comparison chart including where you were wrong", "The shopping list", "The CircuitPython installer"],
+        c: 1,
+        why: "Anyone can show a demo that works. Knowing exactly where it fails — and saying so — is what makes the rest believable. That chart is the star of the case study." }
+    ],
+    final: [
+      { q: "Total budget for the concrete track, and the biggest unknown in it?",
+        a: ["$600 cap; lab crushing cost", "$5,000 cap; the probes", "$100 cap; the concrete", "Unlimited; nothing is unknown"],
+        c: 0,
+        why: "The cap is $600 and lab crushing cost (placeholder $160) is the biggest unknown — that's why Week 4 calls for quotes before buying anything." },
+      { q: "Why does the board code use board.STEMMA_I2C() instead of board.I2C()?",
+        a: ["They're the same thing", "STEMMA_I2C() is the small QT socket the sensor plugs into; board.I2C() is a different set of pins on this board", "STEMMA is faster", "board.I2C() doesn't exist"],
+        c: 1,
+        why: "Verified in CircuitPython's own board definition: STEMMA_I2C() maps to the STEMMA QT socket (SDA1/SCL1). Adafruit's example even comments this. Using the wrong one silently reads nothing." },
+      { q: "Your two hotspot-finder builds (Desktop vs GitHub) have unrelated git histories. Your recorded decision is…",
+        a: ["Force-push and lose one", "Integrate: GitHub build as base, port the validation upgrade, both test suites gate the merge", "Delete both", "Never touch git again"],
+        c: 1,
+        why: "Option A (integrate), recorded 31 Oct: the GitHub build is the better base (offline Leaflet, fuller README, reproducible camera), and the Desktop build has the CWFIS validation upgrade. Both test suites gate the merge; nothing is thrown away." },
+      { q: "What is the 'done means' rule for a build step?",
+        a: ["When the code compiles", "When a specific, observable check passes (e.g. probes read near 0 °C in ice, 3 demo runs in a row)", "When you feel finished", "When the calendar week ends"],
+        c: 1,
+        why: "Every step in this guide has an observable done-check — that's what separates 'I think it works' from 'I've seen it work'. Same idea as the 3-in-a-row demo rehearsal rule." },
+      { q: "Why is the AI only ever a summarizer in these projects?",
+        a: ["AI can't do math", "Safety checks and detection stay in plain, testable code; the AI writes words about data it was given", "AI is too expensive", "The map requires it"],
+        c: 1,
+        why: "The alert is plain code comparing a number to a limit — predictable and testable. The AI writes a summary of given data for a person to read. Safety should never depend on the AI." },
+      { q: "What does the ice test prove?",
+        a: ["That probes survive freezing", "That each probe reads close to 0 °C in ice water — so its readings can be trusted and its cable labelled", "That water boils at 100 °C", "That the battery works"],
+        c: 1,
+        why: "Ice water is a known 0 °C reference. Each probe's ice reading becomes your calibration record, and holding each probe in hand reveals which serial number is which cable." },
+      { q: "The maturity method (ASTM C1074) estimate is only valid when…",
+        a: ["Always", "It's calibrated to your exact mix via lab crushes and used inside the tested range", "It's above 20 °C", "The AI approves it"],
+        c: 1,
+        why: "Calibration per mix, interpolation only inside the tested range (the calculator refuses to guess outside it), and no trust once freezing is possible. That's what the honest-limits section of your README will say too." },
+      { q: "Where do the guide's wage numbers come from and what must you do with them?",
+        a: ["Reddit; repost them", "Job Bank Canada (2023–24 survey, updated Nov 2025); re-check before quoting, since they update yearly", "Guesswork; average them", "The radio; memorize them"],
+        c: 1,
+        why: "Sources named, dates stamped, drift admitted. Everything in this guide carries its check-date for exactly this reason — facts expire, and saying so is what makes the rest credible." }
+    ]
+  };
+  /* ---------- Quiz engine: one question at a time, instant feedback ---------- */
+  const QUIZ_TITLES = {
+    parts: "Quiz: Parts & hardware (5 questions)",
+    software: "Quiz: The software & the math (5 questions)",
+    concrete: "Quiz: Concrete & maturity (5 questions)",
+    career: "Quiz: Career & rules (5 questions)",
+    final: "Final exam (8 questions)"
+  };
+  function renderQuiz(key) {
+    const box = document.querySelector('[data-quiz="' + key + '"]');
+    const questions = QUIZZES[key];
+    let index = 0, score = 0, answered = false;
+
+    function drawIntro() {
+      const best = saved.quizBest[key] || 0;
+      box.innerHTML =
+        '<div class="qnum">' + QUIZ_TITLES[key] + '</div>' +
+        '<p style="margin:10px 0 14px">Best score: <strong>' + best + '/' + questions.length +
+        '</strong> (' + (best >= Math.ceil(questions.length * 0.75) ? 'passed' : 'not passed yet') + ').</p>' +
+        '<button class="btn">Start quiz</button>';
+      box.querySelector("button").addEventListener("click", function () {
+        index = 0; score = 0; drawQuestion();
+      });
+    }
+
+    function drawQuestion() {
+      answered = false;
+      const q = questions[index];
+      box.innerHTML =
+        '<div class="qnum">Question ' + (index + 1) + ' of ' + questions.length + '</div>' +
+        '<div class="qtext">' + q.q + '</div>' +
+        q.a.map(function (text, i) {
+          return '<button class="choice" data-i="' + i + '">' + text + '</button>';
+        }).join("") +
+        '<div class="verdict" hidden aria-live="polite"></div>' +
+        '<div class="row" style="margin-top:12px"><button class="btn next" hidden>Next</button></div>';
+      box.querySelectorAll(".choice").forEach(function (btn) {
+        btn.addEventListener("click", function () { choose(Number(btn.dataset.i)); });
+      });
+      box.querySelector(".next").addEventListener("click", function () {
+        index++;
+        if (index < questions.length) drawQuestion(); else drawDone();
+      });
+    }
+
+    function choose(i) {
+      if (answered) return;
+      answered = true;
+      const q = questions[index];
+      const verdict = box.querySelector(".verdict");
+      box.querySelectorAll(".choice").forEach(function (btn) {
+        const bi = Number(btn.dataset.i);
+        btn.disabled = true;
+        if (bi === q.c) btn.classList.add("right");
+        else if (bi === i) btn.classList.add("wrong");
+        else btn.classList.add("dim");
+      });
+      if (i === q.c) {
+        score++;
+        verdict.className = "verdict good";
+        verdict.innerHTML = "<strong>Correct.</strong> " + q.why;
+      } else {
+        verdict.className = "verdict bad";
+        verdict.innerHTML = "<strong>Not quite.</strong> " + q.why;
+      }
+      verdict.hidden = false;
+      box.querySelector(".next").hidden = false;
+    }
+
+    function drawDone() {
+      const passMark = Math.ceil(questions.length * 0.75);
+      const passed = score >= passMark;
+      if (score > (saved.quizBest[key] || 0)) { saved.quizBest[key] = score; save(); }
+      paintGlobal();
+      box.innerHTML =
+        '<div class="quiz-done"><div class="big">' + score + ' / ' + questions.length + '</div>' +
+        '<p>' + (passed
+          ? '<span class="badge b-green">Passed</span> You need ' + passMark + ' to pass. Well done.'
+          : '<span class="badge b-amber">Not passed yet</span> You need ' + passMark +
+            ' to pass. Reread the explanations and try again.') + '</p>' +
+        '<div class="row" style="justify-content:center">' +
+        '<button class="btn retry">Retake quiz</button>' +
+        '<button class="btn ghost back">Back to start</button></div></div>';
+      box.querySelector(".retry").addEventListener("click", function () {
+        index = 0; score = 0; drawQuestion();
+      });
+      box.querySelector(".back").addEventListener("click", drawIntro);
+    }
+
+    drawIntro();
+  }
+  Object.keys(QUIZZES).forEach(renderQuiz);
+  /* ---------- Plain logic, kept apart so it can be tested ---------- */
+  function maturity(tempC, hours, datum) {
+    return Math.max(0, tempC - datum) * hours;
+  }
+  // Straight line between lab results. Outside the tested range it refuses to answer.
+  function strength(points, value) {
+    const sorted = points.slice().sort(function (a, b) { return a[0] - b[0]; });
+    if (sorted.length < 2 || value < sorted[0][0] || value > sorted[sorted.length - 1][0]) return null;
+    for (let i = 1; i < sorted.length; i++) {
+      const low = sorted[i - 1], high = sorted[i];
+      if (value <= high[0]) {
+        if (high[0] === low[0]) return high[1];
+        return low[1] + (high[1] - low[1]) * (value - low[0]) / (high[0] - low[0]);
+      }
+    }
+    return null;
+  }
+
+  /* ---------- Maturity calculator ---------- */
+  function currentB() {
+    return maturity(Number(document.getElementById("temp-b").value),
+                    Number(document.getElementById("days").value) * 24,
+                    Number(document.getElementById("datum").value));
+  }
+  function renderConcrete() {
+    const a = Number(document.getElementById("temp-a").value);
+    const b = Number(document.getElementById("temp-b").value);
+    const days = Math.max(1, Number(document.getElementById("days").value) || 1);
+    const datum = Number(document.getElementById("datum").value);
+    document.getElementById("total-a").textContent =
+      Math.round(maturity(a, days * 24, datum)).toLocaleString("en-CA") + " °C-hours";
+    document.getElementById("total-b").textContent =
+      Math.round(maturity(b, days * 24, datum)).toLocaleString("en-CA") + " °C-hours";
+    document.getElementById("freeze-note").hidden = !(a <= 0 || b <= 0);
+
+    const svg = document.getElementById("chart");
+    svg.textContent = "";
+    const NS = "http://www.w3.org/2000/svg";
+    const L = 60, R = 620, T = 15, B = 190;
+    const top = Math.max(maturity(a, days * 24, datum), maturity(b, days * 24, datum), 1);
+    function add(name, attrs, text) {
+      const el = document.createElementNS(NS, name);
+      Object.keys(attrs).forEach(function (k) { el.setAttribute(k, attrs[k]); });
+      if (text !== undefined) el.textContent = text;
+      svg.appendChild(el);
+    }
+    add("line", { x1: L, y1: B, x2: R, y2: B, stroke: "#b9b2a3" });
+    add("line", { x1: L, y1: T, x2: L, y2: B, stroke: "#b9b2a3" });
+    add("text", { x: L - 6, y: T + 10, "text-anchor": "end" }, Math.round(top).toLocaleString("en-CA"));
+    add("text", { x: L - 6, y: B, "text-anchor": "end" }, "0");
+    add("text", { x: L, y: B + 16 }, "Pour");
+    add("text", { x: R, y: B + 16, "text-anchor": "end" }, days + (days === 1 ? " day" : " days"));
+    add("text", { x: (L + R) / 2, y: B + 30, "text-anchor": "middle" },
+        "Time since pour, curing total in °C-hours");
+    function line(t, colour, name) {
+      const y = B - (maturity(t, days * 24, datum) / top) * (B - T);
+      add("line", { x1: L, y1: B, x2: R, y2: y, stroke: colour, "stroke-width": 3 });
+      add("text", { x: R - 4, y: Math.max(y - 6, T + 10), "text-anchor": "end",
+                    style: "fill:" + colour + ";font-weight:700" }, name);
+    }
+    line(a, "#1f5f8b", "Block A");
+    line(b, "#1b5e4f", "Block B");
+    renderStrength();
+  }
+  ["temp-a", "temp-b", "days", "datum"].forEach(function (id) {
+    document.getElementById(id).addEventListener("input", renderConcrete);
+  });
+  /* ---------- Lab table: your real calibration curve ---------- */
+  let exampleLoaded = false;
+  function renderLab() {
+    const box = document.getElementById("lab-rows");
+    box.textContent = "";
+    saved.lab.forEach(function (row, i) {
+      const line = document.createElement("div");
+      line.className = "row";
+      line.style.marginBottom = "6px";
+      [["Curing total (°C-hours)", 0], ["Lab strength (MPa)", 1]].forEach(function (field) {
+        const label = document.createElement("label"), input = document.createElement("input");
+        label.textContent = field[0] + " ";
+        input.type = "number";
+        input.min = "0";
+        input.value = row[field[1]];
+        input.addEventListener("input", function () {
+          saved.lab[i][field[1]] = input.value;
+          exampleLoaded = false;
+          save(); renderStrength();
+        });
+        label.appendChild(input);
+        line.appendChild(label);
+      });
+      box.appendChild(line);
+    });
+  }
+  function renderStrength() {
+    const points = saved.lab.filter(function (r) { return r[0] !== "" && r[1] !== ""; })
+      .map(function (r) { return [Number(r[0]), Number(r[1])]; });
+    const out = document.getElementById("strength-result");
+    if (points.length < 2) { out.textContent = "Enter at least 2 lab results."; return; }
+    const value = currentB(), est = strength(points, value);
+    if (est === null) {
+      out.textContent = "Block B's total (" + value.toLocaleString("en-CA") +
+        ") is outside your tested range, so no estimate." +
+        (exampleLoaded ? " These are made-up numbers." : "");
+      return;
+    }
+    out.textContent = "Block B estimate: " + est.toFixed(1) + " MPa" +
+      (exampleLoaded ? " (made-up numbers, not a real mix)" : "");
+  }
+  document.getElementById("load-example").addEventListener("click", function () {
+    saved.lab = [["500", "5"], ["1500", "12"], ["3000", "20"], ["8000", "30"]];
+    exampleLoaded = true;
+    save(); renderLab(); renderStrength();
+  });
+  document.getElementById("clear-lab").addEventListener("click", function () {
+    saved.lab = [["", ""], ["", ""], ["", ""], ["", ""]];
+    exampleLoaded = false;
+    save(); renderLab(); renderStrength();
+  });
+
+  /* ---------- Shopping list with budget cap ---------- */
+  const CAP = 600;
+  const ITEMS = [
+    ["camera", "MLX90640 thermal camera (Adafruit 4407)", "US$74.95. Out of stock at Adafruit 30 Oct — DigiKey carries it. Already ordered?", 105],
+    ["board2", "Second QT Py S3 (Adafruit 5700)", "US$12.50 list. Out of stock at Adafruit 30 Oct. Skip if you reuse your first board (it can't do both jobs at once).", 18],
+    ["adapter", "DS2484 sensor adapter (Adafruit 5976)", "US$7.50 list. 28 in stock at Adafruit 30 Oct.", 11],
+    ["cable", "STEMMA QT cable (Adafruit 4210 or similar)", "US$0.95 (50 mm) / $1.25 (200 mm). 100 mm out of stock — all compatible.", 3],
+    ["probes", "6 waterproof probes (Adafruit 381)", "US$9.95 each, in stock. One pour = one life per probe (corrosive warning).", 84],
+    ["shipping", "Electronics shipping, tax and duty", "Estimate.", 40],
+    ["wire", "3-wire cable, about 15 m", "Estimate. For reaching the board from outdoors.", 30],
+    ["connectors", "Lever wire connectors", "Estimate.", 15],
+    ["power", "USB wall charger and long USB cable", "Estimate. You may already own these.", 15],
+    ["mix", "About 8 bags of concrete mix", "Estimate. Use one brand for both pours.", 60],
+    ["tools", "Mixing tub, trowel and rod", "Estimate. You may already own these.", 30],
+    ["safety", "Gloves, eye protection and dust masks", "Estimate.", 25],
+    ["insulation", "Foam board or insulated blanket", "Estimate.", 25],
+    ["moulds", "12 plastic 4 × 8 inch cylinder moulds", "Estimate. Ask the lab first what they accept.", 50],
+    ["lab", "Lab crushing 8 cylinders", "Placeholder. No published price found — get a real quote before Week 7.", 160],
+    ["ai", "Claude API usage", "Pennies per briefing run; this leaves room.", 5]
+  ];
+  function priceOf(item) {
+    const custom = saved.prices[item[0]];
+    return custom === undefined || custom === "" ? item[3] : Number(custom);
+  }
+  function renderBudget() {
+    let total = 0;
+    ITEMS.forEach(function (item) { if (!saved.owned[item[0]]) total += priceOf(item); });
+    document.getElementById("budget-total").textContent = "$" + Math.round(total) + " CAD of $" + CAP;
+    const bar = document.getElementById("budget-bar");
+    bar.style.width = Math.min(100, total / CAP * 100) + "%";
+    bar.style.background = total > CAP ? "#b84a14" : "#1b5e4f";
+    document.getElementById("budget-note").textContent = total > CAP
+      ? "You're $" + Math.round(total - CAP) + " over the $600 concrete-track limit. Cut probes, moulds or cylinders first."
+      : "$" + Math.round(CAP - total) + " left under the $600 limit, not counting items you tick as owned or bought.";
+  }
+  ITEMS.forEach(function (item) {
+    const row = document.createElement("div");
+    row.className = "shop";
+    const box = document.createElement("input");
+    box.type = "checkbox";
+    box.checked = !!saved.owned[item[0]];
+    box.setAttribute("aria-label", "Already have " + item[1]);
+    box.addEventListener("change", function () {
+      saved.owned[item[0]] = box.checked;
+      save(); renderBudget();
+    });
+    const text = document.createElement("div");
+    const name = document.createElement("strong");
+    name.textContent = item[1];
+    const note = document.createElement("div");
+    note.className = "muted";
+    note.textContent = item[2];
+    text.appendChild(name);
+    text.appendChild(note);
+    const amount = document.createElement("div");
+    amount.className = "amount";
+    const dollar = document.createElement("span");
+    dollar.textContent = "$";
+    const price = document.createElement("input");
+    price.type = "number";
+    price.min = "0";
+    price.value = priceOf(item);
+    price.setAttribute("aria-label", "Price of " + item[1]);
+    price.addEventListener("input", function () {
+      saved.prices[item[0]] = price.value;
+      save(); renderBudget();
+    });
+    amount.appendChild(dollar);
+    amount.appendChild(price);
+    row.appendChild(box);
+    row.appendChild(text);
+    row.appendChild(amount);
+    document.getElementById("shopping").appendChild(row);
+  });
+
+  /* ---------- Level 1 eligibility picker (official MRS routes) ---------- */
+  const LEVEL1 = [
+    { id: "diploma", label: "I have a related two-year diploma",
+      answer: "yes", text: "Yes — that meets Level 1 by itself (related two-year diploma from a recognized institution)." },
+    { id: "certplus", label: "I have a related one-year certificate + 1 year of related experience",
+      answer: "yes", text: "Yes — if the hiring team agrees your experience is related. The standard requires exactly this combination." },
+    { id: "industryplus", label: "I have an industry certification (e.g. ISC2) + experience",
+      answer: "maybe", text: "Possibly. The standard says an industry-recognized certification from a credible source, such as ISC2, may replace the one-year certificate — you would still need 1 year of related experience. Confirm both with the hiring team before spending money." },
+    { id: "certonly", label: "I have a certificate or certification but no related experience yet",
+      answer: "no", text: "Not yet — the missing piece is 1 year of related experience. Paid tech work is the clearest way to build that, and these projects are how you get to the paid work." },
+    { id: "none", label: "I have none of these yet",
+      answer: "no", text: "Not yet. Fastest routes: paid tech work plus a qualifying certification, or a funded two-year diploma. This plan builds skill, evidence and references — it doesn't replace the written minimum on its own." }
+  ];
+  const l1box = document.getElementById("level1-options");
+  LEVEL1.forEach(function (opt) {
+    const b = document.createElement("button");
+    b.className = "choice";
+    b.style.margin = "8px 0";
+    b.textContent = opt.label;
+    b.addEventListener("click", function () {
+      l1box.querySelectorAll("button").forEach(function (x) {
+        x.classList.remove("right"); x.classList.remove("wrong");
+      });
+      b.classList.add(opt.answer === "no" ? "wrong" : "right");
+      const r = document.getElementById("level1-result");
+      r.className = "note " + (opt.answer === "yes" ? "ok" : opt.answer === "maybe" ? "gold" : "warn");
+      r.textContent = opt.text;
+      saved.level1 = opt.id;
+      save();
+    });
+    l1box.appendChild(b);
+  });
+  if (saved.level1) {
+    const match = LEVEL1.find(function (o) { return o.id === saved.level1; });
+    if (match) l1box.querySelectorAll("button").forEach(function (b) {
+      if (b.textContent === match.label) b.click();
+    });
+  }
+  /* ---------- The shared six-step chain (interactive) ---------- */
+  const CHAINS = {
+    station: [
+      ["Sense", "MLX90640 camera: 768 temperatures per frame", false],
+      ["Detect", "hotspots.py flood fill (shared math style)", true],
+      ["Place", "geo.py: pixel → lat/lon + footprint", true],
+      ["Fetch", "CWFIS satellite hotspots (shared with Build 3)", true],
+      ["Compare", "validation.py: honest match report", true],
+      ["Explain", "Claude briefing from the data only", true]
+    ],
+    concrete: [
+      ["Sense", "DS18B20 probes in wet concrete", false],
+      ["Log", "TEMPS lines over serial (shared reader style)", true],
+      ["Add up", "curing.py: maturity math (shared pure-logic rule)", true],
+      ["Calibrate", "lab crushes of your exact mix", false],
+      ["Compare", "predicted vs lab, worst miss named", true],
+      ["Explain", "AI site summary from the data only", true]
+    ],
+    pipeline: [
+      ["Collect", "Alberta CSV + daily CWFIS (shared feed)", true],
+      ["Store", "SQLite with run logs", true],
+      ["Check", "data quality + metadata + exceptions", true],
+      ["Chart", "Leaflet map + season vs 10-year average", true],
+      ["Deploy", "GitHub Pages public URL", true],
+      ["Explain", "AI weekly briefing from the data only", true]
+    ]
+  };
+  const CHAIN_NOTES = {
+    station: "The flagship. Real camera, real satellites, honest comparison — the software runs today in your hotspot-finder repo.",
+    concrete: "Same skeleton, different senses: the maturity math is pure logic like hotspots.py, and the lab is the ground truth like CWFIS.",
+    pipeline: "Zero hardware, zero cost — the build whose vocabulary matches data-job postings word for word."
+  };
+  function drawChain(which) {
+    const chain = document.getElementById("chain");
+    chain.textContent = "";
+    CHAINS[which].forEach(function (step, i) {
+      const b = document.createElement("button");
+      b.className = "btn" + (step[2] ? " ghost" : "");
+      b.style.cssText = "flex:1; min-width:120px; min-height:64px; border-style:" +
+        (step[2] ? "dashed" : "solid") + "; font-size:14px";
+      b.innerHTML = "<strong>" + (i + 1) + " · " + step[0] + "</strong>";
+      b.addEventListener("click", function () {
+        document.getElementById("chainDetail").innerHTML =
+          "<strong>" + step[0] + ":</strong> " + step[1];
+      });
+      chain.appendChild(b);
+    });
+    document.getElementById("chainDetail").textContent = CHAIN_NOTES[which];
+    ["station", "concrete", "pipeline"].forEach(function (w) {
+      document.getElementById("face-" + w).className = "btn" + (w === which ? "" : " ghost");
+    });
+  }
+  document.getElementById("face-station").addEventListener("click", function () { drawChain("station"); });
+  document.getElementById("face-concrete").addEventListener("click", function () { drawChain("concrete"); });
+  document.getElementById("face-pipeline").addEventListener("click", function () { drawChain("pipeline"); });
+  /* ---------- Flashcards ---------- */
+  const FLASHES = [
+    ["Explain the flood fill in one breath.",
+     "It walks every temperature. When it finds a hot pixel nobody has visited, it spreads through all the touching hot pixels and counts them as one hotspot — like paint, with a to-do list."],
+    ["How does a pixel become a latitude and longitude?",
+     "From the pretend height and the lens angle I work out how wide the ground is in view. That gives metres per pixel, so a pixel's distance from the centre becomes metres north and east, which I convert to degrees."],
+    ["How can several probes share one wire?",
+     "Each probe has its own serial number. The board calls them by serial number on the shared 1-Wire bus, so only that probe answers."],
+    ["Why does a lab have to crush cylinders?",
+     "Temperature only tells me how much curing happened. A lab has to crush samples of my exact mix to connect that number to real strength. Without that, a strength estimate is a guess."],
+    ["Why does curing.py have no hardware code in it?",
+     "So I can test the math with numbers I worked out by hand, without any board or sensor. It's the same reason hotspots.py is pure logic."],
+    ["Why write predictions down before the lab results?",
+     "If I predict after seeing the answer, I can fool myself. A dated prediction proves the system really worked ahead of time."],
+    ["How do you stop the AI from inventing a hotspot?",
+     "It only gets the list of detected hotspots, the prompt tells it to use only that data and say 'no hotspots found' when the list is empty, and I compare every line of the briefing against the list."],
+    ["What's the difference between the alert and the AI summary?",
+     "The alert is plain code comparing a number to a limit, so it's predictable. The AI only writes a summary of data for a person to read. Safety checks never depend on the AI."],
+    ["Why are you showing your failures?",
+     "Anyone can show a demo that works. Knowing exactly where it fails, and saying so, is what makes the rest believable."],
+    ["Why should we hire you without a degree?",
+     "Because you can see what I do. I found a real problem from my own work, built the whole system, tested it against a lab, reported where it failed, and I can explain every part. Then let them ask anything."]
+  ];
+  const flashBox = document.getElementById("flashcards");
+  FLASHES.forEach(function (pair, i) {
+    const wrap = document.createElement("div");
+    const card = document.createElement("div");
+    card.className = "flash" + (saved.flashes[i] ? " flip" : "");
+    card.innerHTML =
+      '<div class="flash-in">' +
+      '<div class="face front"><div class="tag">Question ' + (i + 1) + '</div><strong>' + pair[0] + '</strong></div>' +
+      '<div class="face back"><div class="tag">Say it out loud first</div>' + pair[1] + '</div></div>';
+    card.addEventListener("click", function () {
+      card.classList.toggle("flip");
+      saved.flashes[i] = card.classList.contains("flip");
+      save(); paintFlashes();
+    });
+    const hint = document.createElement("div");
+    hint.className = "hint";
+    hint.textContent = "tap to flip";
+    wrap.appendChild(card);
+    wrap.appendChild(hint);
+    flashBox.appendChild(wrap);
+  });
+  function paintFlashes() {
+    const seen = Object.keys(saved.flashes).filter(function (k) { return saved.flashes[k]; }).length;
+    document.getElementById("flash-progress").textContent = seen + " / " + FLASHES.length;
+  }
+
+  /* ---------- Go ---------- */
+  renderConcrete();
+  renderLab();
+  renderStrength();
+  renderBudget();
+  paintFlashes();
+  paintGlobal();
+  openTab("why");
+</script>
+</body>
+</html>
