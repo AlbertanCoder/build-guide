@@ -3,8 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Shad's Build Guide &mdash; One System, Three Builds, One Job Hunt</title>
+<title>Shad's Fire-Detecting Drone &mdash; Step-by-Step Build Guide</title>
 <style>
+
   :root {
     --bg: #f7f2e8; --card: #ffffff; --ink: #21332b; --soft: #5d6f66; --line: #e2d9c6;
     --pine: #1b5e4f; --pine-deep: #123a2e; --pine-pale: #e4f0ea;
@@ -184,20 +185,22 @@
   @media print { header [role="tablist"] { display: none; }
                  [role="tabpanel"][hidden] { display: block !important; }
                  details.acc > .acc-body { display: block !important; } }
+
 </style>
 </head>
 <body>
 <header class="hero">
   <div class="wrap">
     <p class="kicker">Built for Shad &middot; Edmonton &middot; Verified 30 October 2026</p>
-    <h1>Shad's Build Guide</h1>
-    <p class="sub">One system, three builds, one job hunt. Tap any card to open it &mdash;
-    every part, price, pin and rule was fact-checked against primary sources.</p>
+    <h1>Build a Fire-Detecting Drone</h1>
+    <p class="sub">A step-by-step guide to building a thermal-camera quadcopter that finds,
+    maps and reports heat sources from the air &mdash; every part, price, rule and line of code
+    checked against primary sources. Tap any card to open it.</p>
     <div class="pill-row">
-      <span class="pill">&#128293; Wildfire field station</span>
-      <span class="pill">&#10052;&#65039; Winter concrete monitor</span>
-      <span class="pill">&#128202; Wildfire data pipeline</span>
-      <span class="pill">&#128218; Quizzes in every topic</span>
+      <span class="pill">&#127841; ~CA$725 to build</span>
+      <span class="pill">&#9201; 6 weekends</span>
+      <span class="pill">&#128293; Detects fires &amp; hotspots</span>
+      <span class="pill">&#128218; Quizzes in every step</span>
     </div>
     <div class="progressrow">
       <div class="bar"><span id="globalBar"></span></div>
@@ -210,254 +213,173 @@
 <main class="wrap">
 <section role="tabpanel" id="p-why" aria-labelledby="t-why">
   <div class="sec-head">
-    <h2>1 &middot; Why you're building this</h2>
+    <h2>1 &middot; What you're building &amp; why</h2>
     <button class="expand-btn" data-panel="p-why">Expand all</button>
   </div>
 
   <div class="card">
-    <p>Because in Alberta tech, <strong>proof beats credentials</strong>. One system with three
-    faces = three finished, tested, demoable projects. When the degree question comes up, you
-    answer with a machine on the table that you can explain line by line.</p>
-    <div class="note ok"><strong>Official foundation, not a loophole:</strong> Alberta's
-    Minimum Recruitment Standards say &ldquo;In a &lsquo;two-way&rsquo; equivalency you can
-    consider both education and experience as suitable equivalencies.&rdquo;
-    <span class="muted">(verified alberta.ca, 30 Oct 2026)</span></div>
+    <p>A <strong>5-inch quadcopter you build yourself</strong>, carrying a
+    <strong>Raspberry Pi Zero 2 W + MLX90640 thermal camera</strong>. As it flies, the camera
+    reads 768 temperatures per frame, the Pi finds hotspots in the code <em>you</em> wrote, and
+    they land on a live map with GPS coordinates &mdash; an aerial fire-detection system in
+    miniature.</p>
+    <div class="note ok"><strong>Why this is worth building:</strong> it is the exact job
+    agencies pay for &mdash; Alberta Agriculture &amp; Forestry funded a research program on
+    using drones for wildfire hotspot detection, and Budget 2024 added $151M for wildfire tech
+    including drones and night-vision aircraft. Building one proves you can do the whole chain:
+    assemble, fly, sense, detect, map, report. Very few candidates can.</div>
     <div class="grid3">
-      <div class="stat"><div class="big">13 weeks</div><div class="lbl">10&ndash;15 hrs/week. Started 2 Nov 2026.</div></div>
-      <div class="stat"><div class="big">~$120&ndash;$600</div><div class="lbl">New spend, track by track (pipeline is free)</div></div>
-      <div class="stat"><div class="big">6 / 10</div><div class="lbl">Difficulty: the code is guided &amp; testable; wiring and lab logistics are the hard parts</div></div>
-      <div class="stat"><div class="big">Moderate</div><div class="lbl">Official job outlook, data engineers (NOC 21211), AB 2025&ndash;27 &mdash; Calgary &amp; Edmonton</div></div>
-      <div class="stat"><div class="big">$28 / hr</div><div class="lbl">Starting out (low end) &mdash; ~$58k/yr</div></div>
-      <div class="stat"><div class="big">$43.27 / hr</div><div class="lbl">Median ~$90k/yr &middot; high $57.69/hr ~$120k/yr <span class="muted">(Job Bank Canada)</span></div></div>
+      <div class="stat"><div class="big">~CA$725</div><div class="lbl">Total build (verified
+        parts prices, 30 Oct 2026 &mdash; ~US$520)</div></div>
+      <div class="stat"><div class="big">6 weekends</div><div class="lbl">Build &amp; test time;
+        legal to fly after a free online exam</div></div>
+      <div class="stat"><div class="big">7 / 10</div><div class="lbl">Difficulty: some soldering,
+        careful prop safety, but no code from scratch &mdash; the detection code comes tested</div></div>
+      <div class="stat"><div class="big">768</div><div class="lbl">Temperatures per frame from
+        the thermal camera &mdash; your code finds fire in them</div></div>
+      <div class="stat"><div class="big">$28&ndash;$58/hr</div><div class="lbl">Data/engineering
+        roles in Alberta (Job Bank, NOC 21211): median $43.27/hr</div></div>
+      <div class="stat"><div class="big">Night = legal</div><div class="lbl">CAR 901.39: fly at
+        night with visible lights on the drone &mdash; exactly when fires are found</div></div>
     </div>
   </div>
 
   <details class="acc">
-    <summary>Will this actually help me land a tech role?</summary>
+    <summary>What it can and cannot see (the honest capability line)</summary>
     <div class="acc-body">
-      <p>It helps in the way available to you. It does <strong>not</strong> waive written
-      minimums: GoA Systems Analyst Level 1 needs a two-year diploma, <em>or</em> a one-year
-      certificate + 1 year related experience, <em>or</em> an industry certification (the standard
-      names ISC2) in place of the certificate. What the projects give you: <strong>evidence of
-      equivalency</strong>, a reference who has seen you work, and real things to discuss.
-      Private companies set their own rules &mdash; there, a strong project can beat a missing
-      diploma.</p>
-      <p class="muted">Verified word-for-word in the official Systems Analyst MRS PDF
-      (last reviewed 20 May 2026).</p>
+      <p><strong>Can:</strong> detect a campfire-sized target (0.5&ndash;1 m) from ~30 m altitude,
+      map it with GPS coordinates, and report it &mdash; in daylight or at night. Spot a person
+      or vehicle, find a smouldering stump, prove a "cold" fire line is actually cold.</p>
+      <p><strong>Cannot:</strong> replace agency aircraft. Professional wildfire platforms carry
+      640&times;512 sensors (8&times; sharper) on $15,000+ airframes, fly for hours on certified
+      missions, and are crewed by trained operators. The MLX90640's 32&times;24 grid is a
+      learning-grade sensor &mdash; perfect for proving the pipeline, not for protecting a town.
+      Saying that out loud is what makes everything else you claim believable.</p>
+      <div class="note warn"><strong>The one legal line that never bends:</strong> no drone may
+      fly over or within <strong>5 nautical miles (9.3 km)</strong> of a wildfire below 3,000 ft
+      (CAR 601.15). Real fires are agency airspace &mdash; unauthorised drones ground air tankers
+      and endanger crews. You will train on <em>safe heat targets</em>: fire pits, burn barrels,
+      hot plates &mdash; on private land, with permission. That is exactly how professionals
+      calibrate their gear too.</div>
     </div>
   </details>
 
   <details class="acc">
-    <summary>Demand &amp; pay &mdash; the numbers</summary>
+    <summary>Why a drone beats the ground station for your portfolio</summary>
     <div class="acc-body">
-      <p><strong>Demand:</strong> Job Bank Canada rates the outlook <strong>Moderate</strong>
-      (2025&ndash;27), ~4,150 people in the occupation, most jobs in Calgary &amp; Edmonton.
-      Alberta is rebuilding its IT with AI-assisted teams and publishes its method free
-      (Velocity White Papers) plus a free Alberta AI Academy.</p>
-      <table>
-        <tr><th>Stage</th><th>Hourly</th><th>~Yearly</th></tr>
-        <tr><td>Starting out</td><td>$28.00</td><td>~$58,000</td></tr>
-        <tr><td>Average (median)</td><td>$43.27</td><td>~$90,000</td></tr>
-        <tr><td>High end</td><td>$57.69</td><td>~$120,000 <span class="muted">(Calgary high ~$150k)</span></td></tr>
-      </table>
-      <p class="muted">GoA postings found in research: data engineer $82,168&ndash;$107,710;
-      Systems Analyst 2 $83,258&ndash;$114,316. Postings close &mdash; re-check
-      <a href="https://jobpostings.alberta.ca">jobpostings.alberta.ca</a>. Wages: Job Bank NOC
-      21211, updated 19 Nov 2025 &mdash; they drift.</p>
+      <p>The same core skill &mdash; detect heat, georeference it, report honestly &mdash; but
+      demonstrated on the platform everyone imagines when you say "wildfire tech". In interviews,
+      "I built a thermal drone that maps hotspots" opens doors that "I built a ground sensor"
+      doesn't. And the FPInnovations research (funded by Alberta Agriculture &amp; Forestry) is
+      explicit: <em>"the RPA platform is only one small part of the solution&hellip; until the
+      firefighter on the ground receives a map of GPS-referenced hotspots, the mission is
+      incomplete."</em> That map-making is the software skill you'll own.</p>
     </div>
   </details>
 
   <details class="acc">
-    <summary>Would this impress people?</summary>
+    <summary>What you'll be able to say when it's true</summary>
     <div class="acc-body">
-      <p>More than a tutorial certificate, less than production experience &mdash; and the gap
-      closes the moment you show the honest parts. Anyone can demo what works. People lean in for
-      a lab comparison chart showing where you were <em>wrong</em>, passing tests, an honest-limits
-      README, and explaining every file without notes. Most juniors can't do that last part even
-      with a degree.</p>
-    </div>
-  </details>
-
-  <details class="acc">
-    <summary>How hard is it, really?</summary>
-    <div class="acc-body">
-      <p>The <strong>code is the easy part</strong> &mdash; small pure-logic modules tested on a
-      laptop. The hard parts: (1) wiring that must pass an ice test before you trust it,
-      (2) concrete logistics &mdash; a lab crushes cylinders on fixed dates you can't miss,
-      (3) honest self-review &mdash; a discipline, not a skill. Physically beginner-friendly:
-      no soldering, click-in cables, screw terminals.</p>
-    </div>
-  </details>
-
-  <details class="acc">
-    <summary>What exactly am I building &mdash; the three faces</summary>
-    <div class="acc-body">
-      <p><strong>1 &mdash; Wildfire field station:</strong> thermal camera finds hotspots,
-      maps them next to real CWFIS satellite data, AI writes a crew briefing.
-      <strong>2 &mdash; Winter concrete monitor:</strong> probes log concrete temperature;
-      the maturity method (ASTM C1074) estimates strength &mdash; checked against real lab
-      crushes. <strong>3 &mdash; Wildfire data pipeline:</strong> free Alberta open data + daily
-      hotspots, cleaned, documented, charted on a public dashboard. Same core skills &mdash;
-      sensors/data in, tested logic, map/chart out, honest reporting &mdash; three employers'
-      vocabularies.</p>
+      <div class="script">"I built a thermal-camera drone from parts &mdash; assembled the
+      airframe, configured the flight controller, wrote and tested the hotspot-detection code,
+      and flew night detection missions over safe targets. It finds a 1-metre heat source from
+      30 metres and puts it on a map with GPS coordinates. I can explain every part of it.
+      Want to see?"</div>
+      <p class="muted">The demo kit and pitch practice live in the Career tab. Never say any of
+      it until you've measured it.</p>
     </div>
   </details>
 </section>
 <section role="tabpanel" id="p-build" aria-labelledby="t-build" hidden>
   <div class="sec-head">
-    <h2>2 &middot; What you build</h2>
+    <h2>2 &middot; How it works</h2>
     <button class="expand-btn" data-panel="p-build">Expand all</button>
   </div>
 
   <div class="card">
-    <p><strong>One system, three faces.</strong> Each build follows the same six steps &mdash;
-    the middle steps are shared (dashed). Tap a face, then tap any step.</p>
-    <div class="row" style="gap:8px">
-      <button class="btn" id="face-station">1 &middot; Wildfire station</button>
-      <button class="btn ghost" id="face-concrete">2 &middot; Concrete monitor</button>
-      <button class="btn ghost" id="face-pipeline">3 &middot; Data pipeline</button>
-    </div>
-    <div class="row" id="chain" style="align-items:stretch;margin-top:12px"></div>
+    <p><strong>One pipeline, six steps.</strong> Airborne or on the bench, the chain is the
+    same. Tap any step.</p>
+    <div class="row" id="chain" style="align-items:stretch"></div>
     <div class="note info" id="chainDetail" aria-live="polite" style="margin-top:12px">Tap any step above.</div>
   </div>
 
-  <details class="acc">
-    <summary><span class="emoji">&#128293;</span> Build 1 &mdash; Wildfire field station
-      <span class="badge b-green">software runs today</span></summary>
+  <details class="acc" open>
+    <summary><span class="emoji">&#128200;</span> Try it &mdash; altitude &amp; coverage calculator</summary>
     <div class="acc-body">
-      <p>A <strong>$75 thermal camera + Python + real satellite data + an AI crew briefing</strong>
-      &mdash; the software side of night wildfire hotspot mapping. The software already runs in
-      your <code>hotspot-finder</code> repo: tests pass, heat frames draw, thousands of real CWFIS
-      satellite hotspots load. What's left: the hardware link and demo polish.</p>
-      <ul>
-        <li><strong>Input:</strong> MLX90640 &mdash; 32&times;24 = 768 readings/frame,
-        &plusmn;2 &deg;C (0&ndash;100 &deg;C), 55&deg;&times;35&deg; FOV</li>
-        <li><strong>Find:</strong> <code>hotspots.py</code> flood fill (pure logic, tested)</li>
-        <li><strong>Place:</strong> <code>geo.py</code> pixel &rarr; lat/lon + footprint</li>
-        <li><strong>Compare:</strong> <code>validation.py</code> vs real CWFIS data, honest report</li>
-        <li><strong>Explain:</strong> one button &rarr; Claude briefing from the data only</li>
-      </ul>
-      <div class="note gold"><strong>Repo to-do (your decision A, recorded 31 Oct):</strong>
-      integrate &mdash; GitHub build as base, port the validation upgrade, both test suites gate
-      the merge. Nothing gets thrown away.</div>
-    </div>
-  </details>
-
-  <details class="acc">
-    <summary><span class="emoji">&#10052;&#65039;</span> Build 2 &mdash; Winter concrete monitor</summary>
-    <div class="acc-body">
-      <p>Waterproof probes sit in poured concrete while an Alberta winter tries to freeze it. The
-      <strong>maturity method (ASTM C1074)</strong> turns temperature history into a strength
-      estimate &mdash; then a lab crushes your actual cylinders to check it. The reaction hardening
-      concrete runs faster warm, slower cold, so temperature history tracks curing &mdash;
-      <em>once calibrated for your exact mix</em>.</p>
-      <ul>
-        <li><strong>Input:</strong> up to 6 DS18B20 probes (&plusmn;0.5 &deg;C from &minus;10 to
-        85 &deg;C) on one shared wire</li>
-        <li><strong>Math:</strong> curing total = (temp &minus; datum) &times; hours</li>
-        <li><strong>Truth:</strong> lab crushes &rarr; strength table; the code refuses to guess
-        outside the tested range</li>
-      </ul>
-      <div class="note warn"><strong>Not a certified system</strong> &mdash; never use it to
-      decide when to strip forms or load real concrete. The formula can't see frost damage: if a
-      probe reads &le; 0 &deg;C, the estimate stops being trustworthy.
-      <a href="https://ascelibrary.org/doi/10.1061/%28ASCE%290733-9364%282007%29133%3A11%28827%29">A 2007 study</a>
-      ran this method on an industrial job in Edmonton.</div>
-    </div>
-  </details>
-
-  <details class="acc">
-    <summary><span class="emoji">&#128202;</span> Build 3 &mdash; Wildfire data pipeline
-      <span class="badge b-blue">free</span></summary>
-    <div class="acc-body">
-      <p>The build that speaks data-job postings word for word: automated pipelines, data-quality
-      checks, metadata, dashboards, analysis-ready datasets &mdash; all on free public data and
-      free hosting.</p>
-      <div class="grid3">
-        <div class="stat"><div class="big">2006&ndash;2025</div><div class="lbl">Official Alberta
-          Historical Wildfire CSV (plus a 1996&ndash;2005 companion set), free on
-          <a href="https://open.alberta.ca/dataset/wildfire-data">open.alberta.ca</a></div></div>
-        <div class="stat"><div class="big">Daily feed</div><div class="lbl">CWFIS satellite
-          hotspots &mdash; already live in Build 1</div></div>
-        <div class="stat"><div class="big">$0</div><div class="lbl">Data + hosting (GitHub Pages);
-          AI summaries cost pennies per run</div></div>
+      <p>Move the sliders: how high you fly decides how much ground one frame covers &mdash; and
+      how big a fire looks. This is the exact math <code>geo.py</code> uses.</p>
+      <div class="grid2">
+        <div><strong>Altitude above ground</strong><br>
+          <input type="range" id="alt" min="5" max="120" value="30"> metres
+          <div class="big" id="alt-out">30 m</div></div>
+        <div><strong>Camera lens</strong><br>
+          <select id="fov">
+            <option value="55">55&deg; lens (standard)</option>
+            <option value="110">110&deg; lens (wide)</option>
+          </select>
+        </div>
       </div>
-      <ul>
-        <li><strong>Pipeline:</strong> scripts pull CSV + daily hotspots into SQLite, every run logged</li>
-        <li><strong>Quality &amp; metadata:</strong> validation rules, exception reports, data
-        dictionary, lineage notes</li>
-        <li><strong>Output:</strong> clean datasets + dashboard (fires by year/region, Leaflet map,
-        season vs 10-year average) + AI weekly briefing, public URL</li>
-      </ul>
+      <div class="grid3" style="margin-top:12px">
+        <div class="stat"><div class="big" id="cover-w">&mdash;</div>
+          <div class="lbl">Ground width covered by one frame</div></div>
+        <div class="stat"><div class="big" id="mpp">&mdash;</div>
+          <div class="lbl">Metres per pixel &mdash; a 1 m fire is this many pixels</div></div>
+        <div class="stat"><div class="big" id="cover-a">&mdash;</div>
+          <div class="lbl">Ground area covered per frame</div></div>
+      </div>
+      <div class="note warn" id="alt-note" hidden><strong>Too high for a 1-metre target:</strong>
+      a campfire would be less than 2 pixels across &mdash; detectable, but hard to prove. Fly
+      lower, or sweep and confirm on a second pass.</div>
+      <p class="muted"><strong>Formulas (verified, from your geo.py):</strong> ground width =
+      2 &times; altitude &times; tan(FOV/2). Pixels are 32 across. Converting a pixel to
+      latitude/longitude uses ~111,320 m per degree of latitude; longitude degrees shrink by
+      cos(latitude). Approximate by design &mdash; and your README will say so.</p>
+    </div>
+  </details>
+
+  <details class="acc">
+    <summary><span class="emoji">&#128293;</span> What "detecting a fire" actually means</summary>
+    <div class="acc-body">
+      <p>Three layers, and only the third one is "the drone":</p>
+      <ol>
+        <li><strong>Sense:</strong> the MLX90640 returns 768 temperatures per frame. A fire is a
+        cluster of hot pixels &mdash; say 38 &deg;C background, 300+ &deg;C at the target.</li>
+        <li><strong>Detect:</strong> <code>hotspots.py</code> flood-fills touching hot pixels into
+        one hotspot with a centre, size and peak temperature. Threshold and minimum size are
+        <em>your</em> tuning knobs.</li>
+        <li><strong>Report:</strong> <code>geo.py</code> turns the pixel position into
+        latitude/longitude; the page draws it on a map with the drone's footprint rectangle; an
+        optional AI button writes a 5-line briefing from the data only.</li>
+      </ol>
+      <p>The same three layers work from the ground, the air, or a satellite feed &mdash; that's
+      why the pipeline is the career asset, not the airframe.</p>
     </div>
   </details>
     <details class="acc">
-    <summary><span class="emoji">&#128200;</span> Try it &mdash; the maturity calculator (Build 2's core math)</summary>
+    <summary><span class="emoji">&#9201;</span> Where &amp; when you may fly (verified TC rules)</summary>
     <div class="acc-body">
-      <p>Two blocks at different temperatures &mdash; watch warmth add &ldquo;curing total&rdquo;
-      over time. This is the exact math the probes will do with real readings.</p>
-      <div class="grid2">
-        <div><strong>Block A temperature</strong><br><input type="number" id="temp-a" value="5"> &deg;C</div>
-        <div><strong>Block B temperature</strong><br><input type="number" id="temp-b" value="18"> &deg;C</div>
-        <div><strong>Days since pour</strong><br><input type="number" id="days" value="7" min="1" max="28"></div>
-        <div><strong>Stopping temp (datum)</strong><br><input type="number" id="datum" value="-10"> &deg;C</div>
-      </div>
-      <div class="grid2" style="margin-top:12px">
-        <div class="note info"><span class="muted">Block A total</span><div class="big" id="total-a"></div></div>
-        <div class="note ok"><span class="muted">Block B total</span><div class="big" id="total-b"></div></div>
-      </div>
-      <div class="note warn" id="freeze-note" hidden><strong>Freezing risk:</strong> a block at or
-      below 0 &deg;C can freeze &mdash; the formula can't see that damage, so its number stops
-      being trustworthy.</div>
-      <svg id="chart" viewBox="0 0 640 230" role="img" aria-label="Curing total over time for both blocks" style="width:100%;height:auto"></svg>
-      <p class="muted"><strong>Formula:</strong> curing total = (temperature &minus; stopping
-      temperature) &times; hours. Below the stopping temperature, time adds nothing.</p>
-      <h3>Turn curing into strength</h3>
-      <p class="muted">Once a lab has crushed your cylinders, enter the results. It refuses to
-      guess outside your tested range.</p>
-      <div id="lab-rows"></div>
-      <div class="row" style="margin-top:8px">
-        <button class="btn ghost" id="load-example">Load a made-up example</button>
-        <button class="btn ghost" id="clear-lab">Clear table</button>
-      </div>
-      <p id="strength-result" class="big" style="margin-top:10px" aria-live="polite"></p>
-    </div>
-  </details>
-
-  <details class="acc">
-    <summary><span class="emoji">&#128745;&#65039;</span> Where's the drone? The rules &amp; the research</summary>
-    <div class="acc-body">
-      <p><strong>Short answer:</strong> the law keeps this build on the ground &mdash; and the
-      research says that's where your value is.</p>
-      <div class="note warn"><strong>CAR 601.15 / CASA 2021-11 (verified):</strong> no aircraft
-      &mdash; <em>including drones</em> &mdash; may operate over a wildfire or within
-      <strong>5 nautical miles (9.3 km)</strong> of one below 3,000 ft. Unauthorized drones ground
-      firefighting aircraft. Fines to $5,000 (individuals) / $25,000 (corporations) plus possible
-      imprisonment.</div>
-      <p><strong>FPInnovations research (funded by Alberta Agriculture &amp; Forestry):</strong>
-      drones do <strong>patrol &amp; mop-up at night</strong> &mdash; finding smouldering hotspots
-      after the fire is controlled. Pro platforms $15,000+, 20&ndash;50 min endurance, night
-      beyond-visual-line-of-sight needs an <strong>SFOC</strong>. And the killer line: &ldquo;the
-      RPA platform is only one small part of the solution&hellip; until the firefighter on the
-      ground receives a <strong>map of GPS-referenced hotspots</strong>, the mission is
-      incomplete.&rdquo; <em>That map is what Build 1 already makes.</em></p>
-      <table>
-        <tr><th>Option</th><th>Thermal sensor</th><th>Price (30 Oct 2026)</th></tr>
-        <tr><td>Your ground station</td><td>32&times;24, 768 readings</td><td><strong>~$120</strong></td></tr>
-        <tr><td>DJI Mavic 3 Thermal</td><td>640&times;512</td><td><strong>~$6,879 CAD</strong></td></tr>
-        <tr><td>Pro hotspot platform</td><td>gimbal thermal + software</td><td><strong>$15,000+</strong></td></tr>
-      </table>
-      <p><strong>Alberta does fund this:</strong> Budget 2024 added $151M over 3 years including
-      more drones for wildfire surveillance and night-vision helicopters &mdash; agency and
-      contractor work.</p>
-      <p><strong>Upgrade roadmap (later):</strong> 1) Transport Canada pilot certificate + drone
-      registration (Basic at 14+) &mdash; cheap and legal now. 2) Practise on private land, away
-      from smoke plumes &mdash; never a wildfire. 3) Mount the same sensor on an airframe later
-      &mdash; same <code>FRAME,</code> pipeline, no rewrite. 4) Night BVLOS = SFOC, with an
-      agency or contractor. 5) Your portfolio + certificate + legal night hours joins one of
-      those teams.</p>
-      <div class="note ok">The hireable skill is detection + georeferencing + honest reporting.
-      You prove it on the ground for ~$120 this winter. The drone is a later upgrade, not a gate.</div>
+      <p><strong>Basic operations</strong> &mdash; what this build flies under
+      <span class="muted">(TC page updated 19 Mar 2026)</span>:</p>
+      <ul>
+        <li>Drone under <strong>25 kg</strong> (yours will be ~1 kg) &middot; you must
+        <strong>always see it</strong> (visual line of sight)</li>
+        <li>More than <strong>30 m horizontally from any person</strong></li>
+        <li><strong>Uncontrolled airspace</strong>, more than 5.6 km from a certified airport,
+        more than 1.9 km from a heliport</li>
+        <li><strong>Register your drone</strong> (250 g+) and mark it &middot; carry your
+        <strong>Pilot Certificate &mdash; Basic Operations</strong> (free online exam, age 14+,
+        never expires)</li>
+      </ul>
+      <div class="note ok"><strong>Night flying is legal</strong> (CAR 901.39, quoted verbatim):
+      "No pilot shall operate a remotely piloted aircraft system at night unless the remotely
+      piloted aircraft is equipped with lights that are sufficient to allow the aircraft to be
+      visible to the pilot or a visual observer&hellip; and those lights are turned on." &mdash;
+      a $10 LED kit makes your drone legal for exactly the missions that matter.</div>
+      <div class="note warn"><strong>The wildfire rule that never bends (CAR 601.15):</strong>
+      never over or within <strong>5 nautical miles (9.3 km)</strong> of a wildfire below 3,000 ft
+      &mdash; fines to $25,000 and imprisonment possible. Before any summer flight, check for
+      smoke plumes and local fire bans. Your test targets: fire pits, burn barrels, hot plates
+      &mdash; on private land, with permission, fire bans checked, water/extinguisher on hand.</div>
     </div>
   </details>
 </section>
@@ -469,307 +391,217 @@
 
   <div class="card">
     <div class="row between">
-      <div><strong>Your running total</strong><br>
-        <span class="muted">Tick what you own &middot; type real prices as you get them</span></div>
+      <div><strong>Your build total</strong><br>
+        <span class="muted">Tick what you own &middot; edit prices as you shop</span></div>
       <div class="big" id="budget-total"></div>
     </div>
     <div class="bar" style="background:#e6e1d5;margin:10px 0"><span id="budget-bar" style="background:var(--pine)"></span></div>
     <p id="budget-note" aria-live="polite" class="muted"></p>
-    <div class="note gold">Adafruit prices are <strong>US dollars</strong>, read off live product
-    pages 30 Oct 2026; Canadian totals use a rough 1.4 &mdash; planning numbers, not quotes.
-    Stock changes daily.</div>
+    <div class="note gold">Prices in <strong>US dollars</strong> where marked, read off live
+    manufacturer/retailer pages 30 Oct 2026; Canadian totals use a rough 1.4. Planning numbers,
+    not quotes &mdash; edit them as you shop.</div>
     <div id="shopping"></div>
   </div>
 
   <details class="acc">
-    <summary>Verified parts detail &mdash; specs &amp; stock (30 Oct 2026)</summary>
+    <summary>The full build sheet &mdash; what each part does</summary>
     <div class="acc-body">
       <table>
-        <tr><th>Part</th><th>What it does</th><th>Price</th><th>Status</th></tr>
-        <tr><td><strong>MLX90640 camera (4407)</strong></td>
-          <td>32&times;24 = 768 temps/frame, &plusmn;2 &deg;C (0&ndash;100 &deg;C), 55&deg;&times;35&deg; FOV</td>
+        <tr><th>Part</th><th>Job on the drone</th><th>Price</th><th>Status (30 Oct 2026)</th></tr>
+        <tr><td><strong>5" freestyle frame</strong></td>
+          <td>The skeleton. 5-inch props, room for a 30.5 mm stack + payload deck</td>
+          <td>US$25&ndash;40</td>
+          <td><span class="badge b-blue">Shop around</span> SpeedyBee Master 5-class frames; any 5" freestyle frame works</td></tr>
+        <tr><td><strong>SpeedyBee F405 V4 BLS 55A stack</strong></td>
+          <td>Flight controller + 4-in-1 ESC: flies the drone, powers everything (3&ndash;6S)</td>
+          <td>US$65.99</td>
+          <td><span class="badge b-green">Verified, SpeedyBee store</span> Betaflight/INAV, 30.5 mm mounting, Bluetooth config</td></tr>
+        <tr><td><strong>2306.5 motors &times;4</strong></td>
+          <td>Thrust. 1800&ndash;1950 KV class for 4S/5-inch props</td>
+          <td>US$19.99 ea</td>
+          <td><span class="badge b-green">Verified, SpeedyBee store</span></td></tr>
+        <tr><td><strong>RadioMaster Pocket (ELRS)</strong></td>
+          <td>Your controller. 16 channels, EdgeTX, hall gimbals, 288 g</td>
+          <td>US$76.99</td>
+          <td><span class="badge b-green">Verified, Motion RC</span> needs 2&times; 18650 cells (US$13.39/2-pk)</td></tr>
+        <tr><td><strong>ELRS receiver (e.g. ER4)</strong></td>
+          <td>Onboard radio link to your controller</td>
+          <td>US$16.99</td>
+          <td><span class="badge b-green">Verified, Motion RC</span></td></tr>
+        <tr><td><strong>Raspberry Pi Zero 2 W</strong></td>
+          <td>The brain: runs your detection code in flight (quad-core 1 GHz, 512 MB, WiFi, 10 g!)</td>
+          <td>US$19.05</td>
+          <td><span class="badge b-green">Verified, Adafruit</span></td></tr>
+        <tr><td><strong>MLX90640 thermal camera (4407)</strong></td>
+          <td>The eye: 32&times;24 = 768 temps/frame, &plusmn;2 &deg;C, 55&deg;&times;35&deg; FOV</td>
           <td>US$74.95</td>
           <td><span class="badge b-amber">Adafruit out of stock</span> <span class="badge b-green">DigiKey link on page</span></td></tr>
-        <tr><td><strong>QT Py ESP32-S3 (5700)</strong></td>
-          <td>The brain: 4 MB flash + 2 MB PSRAM, CircuitPython, USB serial</td>
-          <td>US$12.50</td>
-          <td><span class="badge b-amber">Adafruit out of stock</span> <span class="badge b-blue">DigiKey/Mouser carry it</span></td></tr>
-        <tr><td><strong>STEMMA QT cable (4210)</strong></td>
-          <td>Camera/adapter to board &mdash; zero soldering</td>
-          <td>US$0.95&ndash;$1.25</td>
-          <td><span class="badge b-green">50/200 mm in stock</span> <span class="badge b-amber">100 mm out</span> all compatible</td></tr>
-        <tr><td><strong>DS2484 adapter (5976)</strong></td>
-          <td>Reads many DS18B20 probes over one wire (V+ / 1W / GND screws)</td>
-          <td>US$7.50</td>
-          <td><span class="badge b-green">28 in stock</span></td></tr>
-        <tr><td><strong>Waterproof probe (381)</strong> &times;6</td>
-          <td>&plusmn;0.5 &deg;C (&minus;10&ndash;85 &deg;C), rated &minus;55&ndash;125 &deg;C, 91 cm cable, unique serial each</td>
-          <td>US$9.95 ea</td>
-          <td><span class="badge b-green">In stock</span> <span class="badge b-amber">wet cement is corrosive &mdash; one pour, one life</span></td></tr>
+        <tr><td><strong>STEMMA QT cable</strong></td>
+          <td>Camera &rarr; Pi, no soldering on the payload</td>
+          <td>US$0.95&ndash;1.25</td>
+          <td><span class="badge b-green">Verified</span></td></tr>
+        <tr><td><strong>4S LiPo batteries &times;3 + charger</strong></td>
+          <td>Power. ~1500&ndash;1800 mAh. Budget 3 &mdash; one to fly, two to keep flying</td>
+          <td>US$60&ndash;90</td>
+          <td><span class="badge b-amber">Estimate</span> prices vary; get a balance charger</td></tr>
+        <tr><td><strong>Propellers + small parts</strong></td>
+          <td>Props (buy spares &mdash; you'll break some), battery straps, LED night kit</td>
+          <td>US$25&ndash;40</td>
+          <td><span class="badge b-amber">Estimate</span></td></tr>
       </table>
     </div>
   </details>
 
   <details class="acc">
-    <summary>Where to buy (Edmonton) &amp; the $600 rule</summary>
+    <summary>Buying notes &amp; the two-battery rule</summary>
     <div class="acc-body">
       <ul>
-        <li><strong>Electronics:</strong> DigiKey or Mouser Canada first, then Adafruit.</li>
-        <li><strong>Wire, concrete, safety gear:</strong> any Edmonton hardware store.</li>
-        <li><strong>Cylinder moulds:</strong> ask the lab what they accept first.</li>
-        <li><strong>Lab crushing:</strong> Parkland Geotechnical (1-888-252-1638) and Inline Group
-        list concrete testing in Edmonton. Neither publishes prices &mdash; call and ask: do you
-        serve individuals, price per cylinder, which sizes, how do I deliver?</li>
+        <li><strong>Canada shops:</strong> RotorVillage, Great Hobbies, Drone Dynamics, EpicFPV
+        &mdash; or SpeedyBee/Motion RC direct (add shipping + possible duty).</li>
+        <li><strong>The Pi + camera are the payload</strong> &mdash; they're identical to the
+        ground-station build's parts, so if you already ordered them, tick them off.</li>
+        <li><strong>Soldering iron required</strong> for the airframe (motor wires &rarr; ESC).
+        A $30 adjustable iron + rosin-core solder is fine. The payload itself is solder-free.</li>
+        <li><strong>LiPo safety:</strong> never charge unattended, charge in a LiPo bag, never
+        fly a swollen or damaged pack. This is the one part of the hobby that genuinely bites.</li>
       </ul>
-      <div class="note warn"><strong>Buy nothing for the concrete track until Week 4</strong>
-      &mdash; after you have a lab quote. Budget cap $600; the bar above warns you when you cross
-      it. Biggest unknown: lab crushing (placeholder $160).</div>
     </div>
   </details>
 </section>
 <section role="tabpanel" id="p-steps" aria-labelledby="t-steps" hidden>
   <div class="sec-head">
-    <h2>4 &middot; Build it step by step</h2>
+    <h2>4 &middot; Build it &mdash; step by step</h2>
     <button class="expand-btn" data-panel="p-steps">Expand all</button>
   </div>
 
   <div class="card">
-    <div class="note gold" style="margin:0"><strong>Teach-back rule (this is the interview
-    training):</strong> after each step, explain every changed file out loud, then take that
-    topic's quiz. The step isn't done until you pass.</div>
+    <div class="note gold" style="margin:0"><strong>Done-means rule:</strong> every step has an
+    observable check. Don't move on until it passes &mdash; and after each step, explain out loud
+    what you did, then take the quizzes in tab 7.</div>
   </div>
 
   <details class="acc" open>
-    <summary>Build 1 &mdash; the six steps (tick as you go)</summary>
+    <summary>Weekend 1 &mdash; build the airframe (tick as you go)</summary>
     <div class="acc-body">
       <ul class="tasks">
-        <li><label><input type="checkbox" data-key="s-1"><span><strong>Step 1 &mdash; hotspot finder (DONE &amp; tested)</strong>
-          <small>Flood fill groups touching hot pixels. Done: 9/9 tests pass &amp; you can explain the flood fill.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="s-2"><span><strong>Step 2 &mdash; board code + CircuitPython</strong>
-          <small>Latest CircuitPython for QT Py ESP32-S3 (4MB/2MB build), copy adafruit_mlx90640 + adafruit_bus_device to CIRCUITPY/lib, flash. Done: FRAME, lines on serial &amp; numbers jump when you wave a hand.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="s-3"><span><strong>Step 3 &mdash; live camera on the page</strong>
-          <small>SerialCamera reads FRAME lines, skips bad ones, never crashes the server. Add record + replay. Done: real heat image in the browser.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="s-4"><span><strong>Step 4 &mdash; pixels onto the map (geo.py DONE)</strong>
-          <small>Done: hot mug in a dark room shows as a red marker inside the footprint rectangle. Record a demo run as backup.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="s-5"><span><strong>Step 5 &mdash; validation + AI briefing</strong>
-          <small>validation.py compares to real CWFIS data (500 m radius). Briefing gets only the hotspot list &mdash; key in .env, .env never reaches GitHub. Done: briefing matches the numbers on screen.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="s-6"><span><strong>Step 6 &mdash; demo-ready</strong>
-          <small>README with honest limits. Done: 3-minute demo runs 3&times; in a row without touching code.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-1"><span><strong>1 &middot; Bench inventory</strong>
+          <small>Every part on the table, manuals downloaded (stack, radio, receiver). Done: you can name each part's job.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-2"><span><strong>2 &middot; Frame assembly</strong>
+          <small>Standoffs, arms, stack mounts. Motors onto the four arms with the screws supplied &mdash; snug, not stripped. Done: frame rigid, motors spin freely by hand.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-3"><span><strong>3 &middot; Solder the stack</strong>
+          <small>ESC onto the frame, motor wires to the ESC pads (order per the manual). Battery lead + capacitor on the ESC. Done: joints shiny and solid, no bridges.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-4"><span><strong>4 &middot; Receiver + flight controller</strong>
+          <small>FC on the standoffs, receiver wired to a UART, antenna secured away from carbon. Done: receiver binds to your RadioMaster Pocket (ELRS: bind on receiver, then from the radio's ExpressLRS script).</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-5"><span><strong>5 &middot; Betaflight setup (props OFF!)</strong>
+          <small>USB &rarr; Betaflight Configurator: motor directions (props off!), arm switch, receiver protocol (CRSF), mode ranges, failsafe. Done: motors idle when armed, arm switch works, throttle cut triggers failsafe.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-6"><span><strong>6 &middot; First hover &mdash; safe area, no payload</strong>
+          <small>Open field, no people within 30 m (the Basic-ops rule). 1 m hover, land. Done: stable hover, clean landing, nothing hot.</small></span></label></li>
       </ul>
     </div>
   </details>
-
-  <details class="acc">
-    <summary>Build 1 board code &mdash; API verified against Adafruit's libraries</summary>
+    <details class="acc">
+    <summary>Weekend 2 &mdash; build the thermal payload</summary>
     <div class="acc-body">
-      <pre><code>import time
-import board
+      <ul class="tasks">
+        <li><label><input type="checkbox" data-key="s-7"><span><strong>7 &middot; Pi Zero 2 W on the bench</strong>
+          <small>Raspberry Pi OS on microSD, boot, enable I2C (raspi-config). Done: Pi boots on WiFi.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-8"><span><strong>8 &middot; Plug in the thermal camera</strong>
+          <small>STEMMA QT cable: camera &rarr; Pi. Install the Adafruit MLX90640 library. Done: test code prints 768 numbers that warm when you bring a hand near the lens.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-9"><span><strong>9 &middot; The detection code (the important part)</strong>
+          <small>Port the tested hotspots.py flood fill to the Pi. Tune threshold + min pixels against a candle or hot mug at 2 m. Done: exactly one hotspot reported, sensible temperature.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-10"><span><strong>10 &middot; Mount the payload</strong>
+          <small>Pi + camera on the top plate, lens down, balanced over centre. Night LED kit fitted (CAR 901.39). Done: hovers with payload aboard.</small></span></label></li>
+      </ul>
+      <h3>Payload code &mdash; tested API, adapted for the Pi</h3>
+      <pre><code>import time, board, busio
 import adafruit_mlx90640
+from hotspots import find_hotspots   # your tested flood fill
 
-# The STEMMA QT socket on this board is board.STEMMA_I2C() (SDA1/SCL1).
-# Adafruit's example uses board.I2C(), which is the *other* pins here.
-i2c = board.STEMMA_I2C()
+i2c = busio.I2C(board.SCL, board.SDA, frequency=800000)
 mlx = adafruit_mlx90640.MLX90640(i2c)
 mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_2_HZ
 
-frame = [0] * 768            # 32 x 24 = 768 temperatures per frame
+frame = [0] * 768
 while True:
     try:
         mlx.getFrame(frame)
     except ValueError:
-        continue             # busy frames happen; just retry
-    print("FRAME," + ",".join("%.2f" % t for t in frame))
+        continue
+    for h in find_hotspots(frame, 60, 3):   # threshold 60C, 3+ pixels
+        print("HOTSPOT,%.1f,%.1f,%d,%.1f" %
+              (h["x"], h["y"], h["pixels"], h["max_c"]))
     time.sleep(0.5)</code></pre>
-      <p class="muted">Adafruit's own simpletest pattern with the FRAME, print your
-      SerialCamera reader expects. Still has to pass on your real parts &mdash; the Week 5 test.</p>
+      <p class="muted">Same library API as the verified ground code (<code>getFrame</code>, 768
+      values) &mdash; but on real Linux Python, no serial bridge. The flood-fill module is the one
+      already passing 9/9 tests.</p>
     </div>
   </details>
-    <details class="acc">
-    <summary>Build 2 &mdash; wiring the probes (no soldering) + board code</summary>
-    <div class="acc-body">
-      <ol>
-        <li>STEMMA QT cable: QT Py small socket &harr; DS2484 adapter.</li>
-        <li>All probes share the adapter's 3 screws &mdash; that's the point of 1-Wire.</li>
-        <li>Install CircuitPython; copy <code>adafruit_ds248x.mpy</code> + <code>adafruit_bus_device</code> into <code>CIRCUITPY/lib</code>.</li>
-        <li>Copy the code below to <code>CIRCUITPY/code.py</code>, open a serial monitor.</li>
-      </ol>
-      <div class="wire">
-        <div style="background:#b3261e">V+<small>Red (3&ndash;5 V)</small></div>
-        <div style="background:#8a6d00">1W<small>Yellow or white &mdash; data</small></div>
-        <div style="background:#2b3a42">GND<small>Blue or black (4-wire: black)</small></div>
-      </div>
-      <p class="muted">4-wire version: red = 3&ndash;5 V, black = GND, white = data, bare copper =
-      shield. The bag's 4.7k resistor is for wiring straight to a bare pin &mdash; keep it in the
-      bag; add it between V+ and 1W only if the code finds no sensors. Board stays warm and dry
-      indoors; test your full cable length on the bench before any pour.</p>
-      <pre><code>import time
-import board
-from adafruit_ds248x import Adafruit_DS248x
-
-bus = Adafruit_DS248x(board.STEMMA_I2C())
-
-probes = []
-bus.onewire_search_reset()
-while True:
-    serial_number = bytearray(8)
-    if not bus.onewire_search(serial_number):
-        break
-    probes.append(serial_number)
-print("FOUND,", len(probes))
-
-# Each probe takes about 3/4 of a second to read.
-while True:
-    readings = [bus.ds18b20_temperature(p) for p in probes]
-    print("TEMPS," + ",".join("%.2f" % t for t in readings))
-    time.sleep(60)</code></pre>
-      <p class="muted">Every call verified against the published adafruit_ds248x source
-      (constructor takes an I2C bus, default 0x18). Not yet run on real hardware &mdash;
-      that's the Week 5 bench test.</p>
-    </div>
-  </details>
-
   <details class="acc">
-    <summary>Prove the probes &amp; pour safely</summary>
-    <div class="acc-body">
-      <ul>
-        <li><strong>Ice test:</strong> every probe in crushed ice + a little water, stirred.
-        Good probes read near 0 &deg;C. Hold each in hand to learn which serial is which cable;
-        label them; write down each ice reading &mdash; your calibration record.</li>
-        <li><strong>Safety:</strong> waterproof gloves + eye protection (wet cement burns skin);
-        dust mask when mixing; board and power stay away from water; nothing goes on a real job
-        without written approval.</li>
-      </ul>
-      <div class="note warn"><strong>One number to settle with the lab:</strong> what strength
-      protects concrete from freezing. US sources say 3.5 MPa; Canadian sites quote 7 MPa from a
-      paid standard this guide couldn't read &mdash; so there's no built-in pass mark. Ask the lab.</div>
-    </div>
-  </details>
-</section>
-<section role="tabpanel" id="p-plan" aria-labelledby="t-plan" hidden>
-  <div class="sec-head">
-    <h2>5 &middot; The 13 weeks</h2>
-    <button class="expand-btn" data-panel="p-plan">Expand all</button>
-  </div>
-
-  <div class="card">
-    <div class="note info" style="margin:0"><strong>Key dates:</strong> applications start week 4
-    (GoA hiring runs 4&ndash;8+ weeks). Tech Wednesdays meets weekly in Edmonton &mdash; 11 Nov is
-    Remembrance Day, so confirm which Wednesday first.</div>
-  </div>
-
-  <details class="acc" open>
-    <summary>Weeks 1&ndash;4 &mdash; get it running, get it seen</summary>
+    <summary>Weekend 3 &mdash; link it up: coordinates on a map</summary>
     <div class="acc-body">
       <ul class="tasks">
-        <li><label><input type="checkbox" data-key="w1-1"><span><strong>Week 1 &mdash; hardware alive + application in</strong>
-          <small>Pass the Step 1 quiz. Board prints FRAME lines. Start the free Alberta AI Academy. If a GoA posting closes soon, finish the application yourself &mdash; only you can press Apply.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="w2-1"><span><strong>Week 2 &mdash; live camera, live map</strong>
-          <small>Real heat image; record a demo backup. Pixels &rarr; coordinates; hot-mug test. Start the AI briefing button with the .env key.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="w3-1"><span><strong>Week 3 &mdash; validation + demo week</strong>
-          <small>CWFIS comparison working. README + honest limits. Rehearse the 3-minute demo 3&times;. Demo at Tech Wednesdays &mdash; ask: &ldquo;What would make this useless?&rdquo; Write down everyone's name and exact words.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="w4-1"><span><strong>Week 4 &mdash; record, apply, quote the lab</strong>
-          <small>5-minute demo video. Polish README. First applications with the case study linked. Call Parkland and Inline for cylinder quotes. Ask a superintendent to watch a pour &mdash; watching only. Type real prices into the Shopping tab.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-11"><span><strong>11 &middot; GPS or position feed</strong>
+          <small>Add a GPS module to the Pi (or log your tablet position at launch). Every hotspot needs the camera's lat/lon + altitude to land on the map.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-12"><span><strong>12 &middot; geo.py in the loop</strong>
+          <small>Pixel &rarr; metres north/east &rarr; degrees, using the verified formula. Done: a marked target lands within ~2 m of its real position on the map.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-13"><span><strong>13 &middot; The live map</strong>
+          <small>Rebuild the web page: heat frame + red hotspot markers + footprint rectangle + optional AI briefing button (data only, .env key, never on GitHub). Done: flying over a heat target pops a marker.</small></span></label></li>
       </ul>
     </div>
   </details>
 
   <details class="acc">
-    <summary>Weeks 5&ndash;9 &mdash; the concrete proves the point</summary>
+    <summary>Weekend 4&ndash;5 &mdash; flight tests over heat targets (the fun part)</summary>
     <div class="acc-body">
+      <div class="note warn"><strong>Safety first, every time:</strong> private land, owner's
+      permission, fire bans checked, water/extinguisher at the target, no people within 30 m of
+      the aircraft, weather checked. If any fail, reschedule &mdash; the targets aren't going
+      anywhere.</div>
       <ul class="tasks">
-        <li><label><input type="checkbox" data-key="w5-1"><span><strong>Week 5 &mdash; probes on the bench</strong>
-          <small>Wire probes; FOUND + TEMPS lines. Ice test and label every probe. Test full cable length. Real camera test for Build 1 when it arrives.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="w6-1"><span><strong>Week 6 &mdash; reuse the system</strong>
-          <small>TEMPS reader on the server. Write curing.py + tests (pure math). Live chart. Board logs with the laptop off (fallback: laptop stays awake). 24-hour outdoor test.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="w7-1"><span><strong>Week 7 &mdash; first pour</strong>
-          <small>Book lab dates before pouring. &ge;10 cylinders from one batch (water measured exactly; two hold probes, uncrushed). Two blocks with probes: one protected, one colder. Log pour time, water, mix, weather. Photos.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="w8-1"><span><strong>Week 8 &mdash; early results + AI summary</strong>
-          <small>Deliver cylinders on time. Enter lab results. Freezing alert in plain code (not AI). Site summary with the same no-invention rules.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="w9-1"><span><strong>Week 9 &mdash; second pour, predictions first</strong>
-          <small>Same mix, new cylinders. Write predicted strength before each crush &mdash; dated predictions are what make this honest.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-14"><span><strong>14 &middot; Calibration pass (day)</strong>
+          <small>Three known targets (hot plate, BBQ, hot water bucket) in a triangle, flown at 20&ndash;30 m. Done: 3/3 detected, zero false alarms on cold ground. Record it.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-15"><span><strong>15 &middot; The night pass (legal: lights on)</strong>
+          <small>Same targets after dark, LED kit glowing &mdash; the real mission profile: thermal contrast is best at night. Done: 3/3 at night, coordinates within ~2&ndash;3 m.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-16"><span><strong>16 &middot; The demo mission</strong>
+          <small>One marked &ldquo;fire&rdquo; (fire pit or burn barrel, owner's permission) among cold decoys. Fly a grid, land, open the map. Done: the marker lands on the fire and nothing else &mdash; rehearsed 3 times in a row.</small></span></label></li>
       </ul>
     </div>
   </details>
 
   <details class="acc">
-    <summary>Weeks 10&ndash;13 &mdash; pipeline, proof, and the push</summary>
+    <summary>Weekend 6 &mdash; make it undeniable</summary>
     <div class="acc-body">
       <ul class="tasks">
-        <li><label><input type="checkbox" data-key="w10-1"><span><strong>Weeks 10&ndash;11 &mdash; Build 3 pipeline</strong>
-          <small>Download scripts for the Alberta wildfire CSV + daily CWFIS into SQLite. Data-quality checks, metadata, exception reports. Charts + Leaflet map. 1 application per week.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="w12-1"><span><strong>Week 12 &mdash; deploy + compare</strong>
-          <small>AI weekly briefing; deploy to a public URL. Enter second batch lab results. Percent error per prediction. Find one reason for your worst miss. If approved, watch a real pour.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="w13-1"><span><strong>Week 13 &mdash; case study + vouching</strong>
-          <small>One-page case study with the predicted-vs-lab chart as the star and the prototype disclaimer up front. Show one concrete person and fix what they catch. Clean repo, 3-minute video, resume/LinkedIn with real results (you read every word).</small></span></label></li>
-        <li><label><input type="checkbox" data-key="w13-2"><span><strong>Then &mdash; show it and ask</strong>
-          <small>Demo to 5 people who know the work. Ask those who've seen it to be references (words on the Career tab). Apply to 5 real jobs linking the case study.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-17"><span><strong>17 &middot; README + honest limits</strong>
+          <small>What it does, how to run it, what it can't do (32&times;24 resolution, approximate position, prototype), sources. The limits section makes the rest believable.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-18"><span><strong>18 &middot; Record the evidence</strong>
+          <small>5-minute video: bench test &rarr; night takeoff &rarr; detection &rarr; map with marker on target. Plus a build photo and the flight log.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="s-19"><span><strong>19 &middot; Quizzes + story</strong>
+          <small>Pass every quiz in tab 7. Practise explaining any part without notes. Then start the vouching loop in the Career tab.</small></span></label></li>
       </ul>
-      <div class="note ok" style="margin:10px 0 0"><strong>Plan done means:</strong> one reference
-      agreed, 5+ applications sent, three clean demo runs in a row, and any file explainable
-      without notes.</div>
     </div>
   </details>
+
 </section>
 <section role="tabpanel" id="p-career" aria-labelledby="t-career" hidden>
   <div class="sec-head">
-    <h2>6 &middot; Career &amp; pay</h2>
+    <h2>5 &middot; Career &amp; pay</h2>
     <button class="expand-btn" data-panel="p-career">Expand all</button>
   </div>
 
   <div class="card">
-    <div class="note ok"><strong>The fact that makes this legitimate:</strong> the Alberta Public
-    Service officially treats experience as equal to education for most classifications
-    (&ldquo;two-way equivalency&rdquo;). Your route needs <strong>proof of equivalency</strong>
-    &mdash; portfolio, documented hours, people who vouch.</div>
-    <h3 style="margin-top:4px">Where do you stand for GoA Systems Analyst Level 1?</h3>
-    <p class="muted">Pick what's true (official MRS PDF, reviewed 20 May 2026):</p>
-    <div id="level1-options"></div>
-    <div class="note info" id="level1-result" aria-live="polite">Pick one above.</div>
-    <p class="muted">Level 2 needs: degree + 2 yrs, <em>or</em> diploma + 4 yrs, <em>or</em>
-    certificate + 5 yrs. The hiring team decides what counts as &ldquo;related&rdquo; &mdash;
-    never automatic. No project or reference waives a written minimum on its own.</p>
+    <div class="note ok"><strong>Why this build travels well:</strong> wildfire tech is
+    unmistakably Alberta &mdash; and the drone is a story interviewers remember. The Alberta
+    Public Service officially treats experience as equal to education for most classifications
+    ("two-way equivalency", verified alberta.ca) &mdash; what you need is proof: portfolio,
+    documented hours, people who vouch.</div>
+    <div class="grid3">
+      <div class="stat"><div class="big">$28.00/hr</div><div class="lbl">Starting out (low) &mdash; ~$58k/yr</div></div>
+      <div class="stat"><div class="big">$43.27/hr</div><div class="lbl">Median &mdash; ~$90k/yr</div></div>
+      <div class="stat"><div class="big">$57.69/hr</div><div class="lbl">High end &mdash; ~$120k/yr
+        <span class="muted">(Job Bank, NOC 21211, AB)</span></div></div>
+    </div>
   </div>
-
-  <details class="acc">
-    <summary>The cover-letter formula &amp; your 30-second pitch</summary>
-    <div class="acc-body">
-      <p>Address the education line in one confident sentence:</p>
-      <div class="script">"I offer equivalent, demonstrated experience in place of formal
-      education: production-grade data systems I designed, built, tested and demoed, documented at
-      [portfolio URL], with references who can speak to the work. The Alberta Public Service's
-      Minimum Recruitment Standards recognize such equivalencies."</div>
-      <p>Then spend the letter on <em>evidence</em>: specific numbers, specific tools, specific
-      outcomes.</p>
-      <div class="script">"I come from concrete work on Alberta jobsites, and I'm moving into tech.
-      I built a low-cost sensor system that estimates concrete strength in the cold, and checked it
-      against lab results. It was off by [your real number]. The same system also maps wildfire
-      hotspots. I can explain every part of it. Want to see?"</div>
-      <p class="muted">Fill in your real number. Never say it until you've measured it.</p>
-    </div>
-  </details>
-
-  <details class="acc">
-    <summary>Earning a vouch &amp; the 3-minute demo structure</summary>
-    <div class="acc-body">
-      <ol>
-        <li><strong>Show, don't ask.</strong> First ask: &ldquo;can I show you this for 3
-        minutes?&rdquo; never &ldquo;can you get me a job?&rdquo;</li>
-        <li><strong>Pick people who know the work</strong> &mdash; superintendent, lab tech, Tech
-        Wednesdays regular, AI lead.</li>
-        <li><strong>Ask for criticism:</strong> &ldquo;What would make this useless on a real
-        site?&rdquo; Then fix what they say.</li>
-        <li><strong>Go back with the fix.</strong> That's what turns critics into supporters.</li>
-        <li><strong>Then ask plainly:</strong></li>
-      </ol>
-      <div class="script">"You've seen how I worked on this, including what went wrong. Would you
-      be comfortable being a reference for me? It's completely fine if not."</div>
-      <p><strong>Demo flow:</strong> 0:00 the problem &middot; 0:30 the machine (heat frame
-      &rarr; hotspots &rarr; map &rarr; satellite comparison) &middot; 2:15 the AI briefing
-      &middot; 2:45 <strong>the honest limits, first</strong>: &ldquo;not certified, approximate
-      position, 32&times;24 &mdash; a prototype, and the pros already do this. But it runs, and
-      every line is tested.&rdquo; Saying that first is what makes the rest believable.</p>
-    </div>
-  </details>
 
   <details class="acc">
     <summary>Where to apply (check weekly)</summary>
@@ -777,38 +609,64 @@ while True:
       <table>
         <tr><th>Where</th><th>Look for</th><th>Why</th></tr>
         <tr><td><a href="https://jobpostings.alberta.ca">jobpostings.alberta.ca</a></td>
-          <td>Program Services 3&ndash;4, data/engineering analyst, &ldquo;data&rdquo; in Forestry, Environment, Agriculture</td>
+          <td>Program Services 3&ndash;4, data/engineering analyst, anything "data" in Forestry/Environment</td>
           <td>Official route &mdash; MRS equivalency applies</td></tr>
         <tr><td><a href="https://ca.linkedin.com/jobs">LinkedIn &mdash; Edmonton + Remote</a></td>
-          <td>&ldquo;Junior data scientist&rdquo;, &ldquo;ML developer&rdquo;, &ldquo;data engineer&rdquo;</td>
+          <td>"Junior data scientist", "ML developer", "drone pilot", "data engineer"</td>
           <td>Private rules; portfolios welcome</td></tr>
         <tr><td>AltaML, Amii, InnoTech Alberta, Alberta Innovates</td>
           <td>Associate/ML developer, data scientist</td>
-          <td>AI-specific; AltaML accepts portfolio work</td></tr>
-        <tr><td>Construction &amp; forestry tech (PCL, Stantec, wildfire-tech startups)</td>
-          <td>Data/analytics/automation roles</td>
-          <td>Your concrete + wildfire lane is a direct fit</td></tr>
+          <td>AI-specific; portfolio work accepted</td></tr>
+        <tr><td>Drone &amp; wildfire services (RPAS contractors, forestry tech)</td>
+          <td>RPAS pilot, remote sensing tech, data analyst</td>
+          <td>Your certificate + build + night mission logs are a direct fit</td></tr>
       </table>
       <div class="note gold">Free fluency builders: the
       <a href="https://github.com/GovAlta/Alberta-AI-Academy">Alberta AI Academy</a> and GovAlta's
-      <a href="https://github.com/GovAlta/THE-VELOCITY-WHITE-PAPERS">Velocity White Papers</a>
-      &mdash; speak the government's own language at meetups.</div>
-      <div class="note info"><strong>Two rules:</strong> one application per week from week 4
-      (steady beats a binge). Track everything: date, role, contact, status, follow-up date. The
-      follow-up is where offers come from.</div>
+      <a href="https://github.com/GovAlta/THE-VELOCITY-WHITE-PAPERS">Velocity White Papers</a>.</div>
+    </div>
+  </details>
+
+  <details class="acc">
+    <summary>The pitch, the ask, and the 3-minute demo</summary>
+    <div class="acc-body">
+      <div class="script">"I built a thermal-camera drone from parts &mdash; airframe, flight
+      controller, a Raspberry Pi running my own hotspot-detection code. At night, with the lights
+      on like the rules require, it finds a 1-metre heat source from 30 metres and puts it on a
+      map with GPS coordinates. I can explain every part of it. Want to see?"</div>
+      <p><strong>Demo flow (3 min):</strong> 0:00 the problem &middot; 0:30 bench: the 768-number
+      frame and the flood fill finding a candle &middot; 1:30 the night flight footage &middot;
+      2:15 the map marker landing on the target &middot; 2:45 <strong>honest limits first</strong>:
+      "32&times;24 sensor, approximate position, prototype &mdash; agencies do this with $15k
+      platforms and certified crews. But the pipeline works, and I can explain every line."</p>
+      <p><strong>Earning a vouch:</strong> show don't ask &middot; ask "what would make this
+      useless?" &middot; fix what they say &middot; come back with the fix &middot; then, once
+      they've seen real work: "Would you be comfortable being a reference for me? It's completely
+      fine if not."</p>
+    </div>
+  </details>
+
+  <details class="acc">
+    <summary>Where you stand for GoA Systems Analyst Level 1 (official MRS)</summary>
+    <div class="acc-body">
+      <p class="muted">Pick what's true (official MRS PDF, reviewed 20 May 2026):</p>
+      <div id="level1-options"></div>
+      <div class="note info" id="level1-result" aria-live="polite">Pick one above.</div>
+      <p class="muted">Level 2 needs: degree + 2 yrs, <em>or</em> diploma + 4 yrs, <em>or</em>
+      certificate + 5 yrs. The hiring team decides what counts as "related" &mdash; never
+      automatic. No project waives a written minimum on its own.</p>
     </div>
   </details>
 </section>
 <section role="tabpanel" id="p-quiz" aria-labelledby="t-quiz" hidden>
   <div class="sec-head">
-    <h2>7 &middot; Prove you know it</h2>
+    <h2>6 &middot; Prove you know it</h2>
     <button class="expand-btn" data-panel="p-quiz">Expand all</button>
   </div>
 
   <div class="card">
-    <p>One question at a time, instant feedback with the reason. Wrong answers come with
-    explanations &mdash; that's where the learning is. Best scores save in this browser.
-    <strong>Your rule: a topic isn't done until you pass its quiz.</strong></p>
+    <p>One question at a time, instant feedback with the reason. <strong>Each build step isn't
+    done until you pass its quiz.</strong> Best scores save in this browser.</p>
     <div class="grid2">
       <div class="stat"><div class="big" id="score-overview">&mdash;</div>
         <div class="lbl">Overall quiz mastery (best scores)</div></div>
@@ -817,11 +675,10 @@ while True:
     </div>
   </div>
 
-  <div id="quiz-parts" class="quiz" data-quiz="parts"></div>
-  <div id="quiz-software" class="quiz" data-quiz="software"></div>
-  <div id="quiz-concrete" class="quiz" data-quiz="concrete"></div>
-  <div id="quiz-drone" class="quiz" data-quiz="drone"></div>
-  <div id="quiz-career" class="quiz" data-quiz="career"></div>
+  <div id="quiz-airframe" class="quiz" data-quiz="airframe"></div>
+  <div id="quiz-payload" class="quiz" data-quiz="payload"></div>
+  <div id="quiz-detect" class="quiz" data-quiz="detect"></div>
+  <div id="quiz-rules" class="quiz" data-quiz="rules"></div>
   <div id="quiz-final" class="quiz" data-quiz="final"></div>
 
   <details class="acc">
@@ -833,9 +690,10 @@ while True:
     </div>
   </details>
 </section>
+
 <section role="tabpanel" id="p-limits" aria-labelledby="t-limits" hidden>
   <div class="sec-head">
-    <h2>8 &middot; Honest limits &amp; sources</h2>
+    <h2>7 &middot; Honest limits &amp; sources</h2>
     <button class="expand-btn" data-panel="p-limits">Expand all</button>
   </div>
 
@@ -843,45 +701,35 @@ while True:
     <summary>Checked at the source (30 Oct 2026)</summary>
     <div class="acc-body">
       <ul>
-        <li><span class="badge b-green">Checked</span> Every part, price and spec &mdash; Adafruit's
-        live product pages (4407, 5700, 4210, 5976, 381), including stock.</li>
-        <li><span class="badge b-green">Checked</span> Screw terminals V+, 1W, GND and probe wire
-        colour codes (Adafruit's DS2484 pinouts page).</li>
-        <li><span class="badge b-green">Checked</span> Every code call against Adafruit's published
-        library source; <code>board.STEMMA_I2C()</code> confirmed in CircuitPython's own board
-        definition for this exact board.</li>
-        <li><span class="badge b-green">Checked</span> GoA MRS &mdash; the two-way-equivalency
-        quote and Level 1/2/3 minimums, word-for-word from official sources.</li>
-        <li><span class="badge b-green">Checked</span> Wages and outlook &mdash; Job Bank Canada
-        (NOC 21211): $28.00 / $43.27 / $57.69 per hour; Moderate outlook 2025&ndash;27.</li>
-        <li><span class="badge b-green">Checked</span> Drone rules (CAR 601.15 / CASA 2021-11),
-        FPInnovations hotspot-detection review (TR-2020-N29), Budget 2024 funding, Mavic 3
-        Thermal dealer price ($6,879 CAD).</li>
-        <li><span class="badge b-green">Checked</span> Maturity method and its limits &mdash;
-        NRMCA CIP 39, Nebraska DOT procedure, FHWA brief. The standard name is ASTM C1074.</li>
-        <li><span class="badge b-green">Checked</span> Alberta wildfire dataset &mdash;
-        &ldquo;Historical wildfire data: 2006 to 2025&rdquo; CSV + data dictionary on
-        <a href="https://open.alberta.ca/dataset/wildfire-data">open.alberta.ca</a> (updated
-        17 Feb 2026; a 1996&ndash;2005 companion set exists; provincial records date to 1931).</li>
+        <li><span class="badge b-green">Checked</span> Every price &mdash; SpeedyBee store
+        (stack US$65.99, motors US$19.99), Motion RC (Pocket US$76.99, ER4 US$16.99), Adafruit
+        (Pi Zero 2 W US$19.05, MLX90640 US$74.95).</li>
+        <li><span class="badge b-green">Checked</span> Flight rules &mdash; Basic operations
+        page (TC, updated 19 Mar 2026) and CAR 901.39 night-lighting rule quoted verbatim from
+        laws-lois.justice.gc.ca (current to 30 Sep 2026).</li>
+        <li><span class="badge b-green">Checked</span> The wildfire exclusion &mdash; CAR 601.15
+        / CASA 2021-11: 5 nautical miles (9.3 km) at altitudes below 3,000 ft.</li>
+        <li><span class="badge b-green">Checked</span> Camera API &mdash; <code>getFrame</code>
+        (768 values) and the flood-fill design against your 9/9 passing test suite.</li>
+        <li><span class="badge b-green">Checked</span> Wages &mdash; Job Bank Canada (NOC 21211,
+        AB): $28.00 / $43.27 / $57.69 hourly; outlook Moderate 2025&ndash;27.</li>
       </ul>
     </div>
   </details>
 
   <details class="acc">
-    <summary>Still to prove (your tests, or a phone call)</summary>
+    <summary>Still to prove (your tests)</summary>
     <div class="acc-body">
       <ul>
-        <li><span class="badge b-amber">To prove</span> The sensor chain on your parts &mdash;
-        Week 5. Board code is Adafruit's documented pattern but hasn't run on your hardware.</li>
-        <li><span class="badge b-amber">To prove</span> Logging for weeks with the laptop off
-        &mdash; Week 6. Fallback: laptop stays awake during pours.</li>
-        <li><span class="badge b-amber">To prove</span> Which lab takes your cylinders, and the
-        price.</li>
-        <li><span class="badge b-amber">To prove</span> Freezing-strength pass mark (3.5 vs 7 MPa
-        &mdash; ask the lab) and test ages (suggest 1, 3, 7, 28 days &mdash; agree with the lab).</li>
-        <li><span class="badge b-amber">Re-check</span> Job postings before relying on them &mdash;
-        the GoA numbers came from live postings the week of 30 Oct 2026 and they close. Wages
-        update yearly.</li>
+        <li><span class="badge b-amber">To prove</span> Detection range for 1-metre targets
+        &mdash; the calculator gives the theory; your calibration pass gives the truth. Record
+        what you measure.</li>
+        <li><span class="badge b-amber">To prove</span> GPS accuracy of your setup (~2&ndash;3 m
+        is typical for consumer GPS; measure yours on a marked target).</li>
+        <li><span class="badge b-amber">To prove</span> Flight time with the payload aboard
+        (expect 4&ndash;6 min per battery on a 5" build &mdash; measure, don't assume).</li>
+        <li><span class="badge b-amber">Re-check</span> Wages and postings before quoting them
+        &mdash; they drift and close.</li>
       </ul>
     </div>
   </details>
@@ -890,30 +738,23 @@ while True:
     <summary>Sources (all links live, checked 30 Oct 2026)</summary>
     <div class="acc-body">
       <ul>
-        <li><a href="https://www.alberta.ca/alberta-public-service-minimum-recruitment-standards">Alberta MRS</a>
-        &middot; <a href="https://www.alberta.ca/system/files/custom_downloaded_images/psc-recruitment-standards-systems-analyst.pdf">Systems Analyst MRS PDF</a>
-        &middot; <a href="https://open.alberta.ca/dataset/wildfire-data">Alberta historical wildfire data</a></li>
-        <li><a href="https://www.jobbank.gc.ca/marketreport/wages-occupation/24510/AB">Job Bank wages</a>
-        &middot; <a href="https://www.jobbank.gc.ca/marketreport/outlook-occupation/24510/AB">job prospects</a></li>
-        <li><a href="https://www.adafruit.com/product/4407">Adafruit 4407</a> &middot;
-        <a href="https://www.adafruit.com/product/5700">5700</a> &middot;
-        <a href="https://www.adafruit.com/product/5976">5976</a> &middot;
-        <a href="https://www.adafruit.com/product/381">381</a> &middot;
-        <a href="https://learn.adafruit.com/adafruit-ds2484-i2c-to-1-wire-bus-adapter-breakout">DS2484 guide</a></li>
-        <li><a href="https://github.com/adafruit/Adafruit_CircuitPython_DS248x">DS248x library</a>
-        &middot; <a href="https://github.com/adafruit/Adafruit_CircuitPython_MLX90640">MLX90640 library</a></li>
-        <li><a href="https://www.nrmca.org/wp-content/uploads/2021/01/39pr.pdf">NRMCA CIP 39</a>
-        &middot; <a href="https://dot.nebraska.gov/media/ti0oflr5/method-development-maturity-curve.pdf">Nebraska DOT</a></li>
-        <li><a href="https://cwfis.cfs.nrcan.gc.ca">CWFIS</a> &middot;
-        <a href="https://leafletjs.com">Leaflet</a></li>
+        <li><a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations">TC: Basic operations</a>
+        &middot; <a href="https://laws-lois.justice.gc.ca/eng/regulations/SOR-96-433/section-901.39.html">CAR 901.39 (night flying)</a>
+        &middot; <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/flying-your-drone-safely-legally">TC drone rules &amp; penalties</a></li>
         <li><a href="https://tc.canada.ca/en/aviation/reference-centre/civil-aviation-safety-alerts/operation-remotely-piloted-aircraft-systems-rpas-near-wildfires-civil-aviation-safety-alert-casa-no-2021-11">TC: RPAS near wildfires (CASA 2021-11)</a>
-        &middot; <a href="https://library.fpinnovations.ca/media/FOP/TR2020N29.PDF">FPInnovations TR-2020-N29</a>
-        &middot; <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/flying-your-drone-safely-legally">TC drone rules</a></li>
-        <li><a href="https://github.com/GovAlta/THE-VELOCITY-WHITE-PAPERS">Velocity White Papers</a>
-        &middot; <a href="https://github.com/GovAlta/Alberta-AI-Academy">Alberta AI Academy</a></li>
+        &middot; <a href="https://library.fpinnovations.ca/media/FOP/TR2020N29.PDF">FPInnovations TR-2020-N29 (hotspot detection research)</a></li>
+        <li><a href="https://www.speedybee.com/speedybee-f405-v4-bls-55a-30x30-fc-esc-stack/">SpeedyBee F405 V4 stack</a>
+        &middot; <a href="https://www.speedybee.com/motors/">SpeedyBee motors</a>
+        &middot; <a href="https://motionrc.com/products/radiomaster-pocket-16-channel-elrs-transmitter-charcoal-hp0157-0054-m2">RadioMaster Pocket</a></li>
+        <li><a href="https://www.adafruit.com/piz2w">Raspberry Pi Zero 2 W</a> &middot;
+        <a href="https://www.adafruit.com/product/4407">MLX90640 (4407)</a> &middot;
+        <a href="https://github.com/adafruit/Adafruit_CircuitPython_MLX90640">MLX90640 library</a></li>
+        <li><a href="https://www.alberta.ca/alberta-public-service-minimum-recruitment-standards">Alberta MRS</a>
+        &middot; <a href="https://www.jobbank.gc.ca/marketreport/wages-occupation/24510/AB">Job Bank wages</a>
+        &middot; <a href="https://open.alberta.ca/dataset/wildfire-data">Alberta historical wildfire data</a></li>
       </ul>
-      <p class="muted">Merged from: Shad's Build Plan, GoA Career Roadmap, Two Builds One Repo,
-      and the wildfire-station skeleton &mdash; consolidated 30 Oct 2026. One file, one topic.</p>
+      <p class="muted">Rebuilt from the earlier ground-station guide on request &mdash; the drone
+      edition, 30 Oct 2026. One file, one topic.</p>
     </div>
   </details>
 </section>
@@ -921,22 +762,20 @@ while True:
 
 <footer>
   <p><strong>Honesty box:</strong> a prototype builder's roadmap, not career or legal advice.
-  Prices drift and postings close &mdash; re-check before you spend or quote anything.</p>
+  You will fly only over safe targets on private land &mdash; never near a real wildfire.</p>
   <p>Made for Shad &middot; Edmonton &middot; progress and quiz scores save in this browser only.</p>
 </footer>
 
 <script>
-
   "use strict";
   /* ---------- Saving: everything lives in this browser ---------- */
-  const STORE = "shad-build-guide-v1";
+  const STORE = "shad-drone-guide-v1";
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(STORE)) || {}; } catch (e) { saved = {}; }
   saved.ticks = saved.ticks || {};
   saved.prices = saved.prices || {};
   saved.owned = saved.owned || {};
   saved.quizBest = saved.quizBest || {};
-  saved.lab = saved.lab || [["", ""], ["", ""], ["", ""], ["", ""]];
   saved.level1 = saved.level1 || "";
   saved.flashes = saved.flashes || {};
   function save() {
@@ -944,9 +783,9 @@ while True:
   }
 
   /* ---------- Tabs ---------- */
-  const TABS = [["why", "1 Why?"], ["build", "2 What You Build"], ["parts", "3 Parts & Budget"],
-                ["steps", "4 Build Steps"], ["plan", "5 The 13 Weeks"], ["career", "6 Career & Pay"],
-                ["quiz", "7 Quizzes"], ["limits", "8 Honest Limits"]];
+  const TABS = [["why", "1 What & Why"], ["build", "2 How It Works"], ["parts", "3 Parts & Budget"],
+                ["steps", "4 Build Steps"], ["career", "5 Career & Pay"],
+                ["quiz", "6 Quizzes"], ["limits", "7 Limits & Sources"]];
   const tabBar = document.getElementById("tabs");
   function openTab(id) {
     TABS.forEach(function (t) {
@@ -997,169 +836,148 @@ while True:
     const pct = Math.round(((done + q.got) / (boxes.length + q.total)) * 100);
     document.getElementById("globalBar").style.width = pct + "%";
     document.getElementById("globalLabel").textContent =
-      pct + "% complete (" + done + "/" + boxes.length + " tasks, " +
+      pct + "% complete (" + done + "/" + boxes.length + " steps, " +
       q.got + "/" + q.total + " quiz points)";
-    const best = saved.quizBest || {};
     let pass = 0;
     Object.keys(QUIZZES).forEach(function (k) {
-      if ((best[k] || 0) >= Math.ceil(QUIZZES[k].length * 0.75)) pass++;
+      if ((saved.quizBest[k] || 0) >= Math.ceil(QUIZZES[k].length * 0.75)) pass++;
     });
-    document.getElementById("score-overview").textContent = pass + " of " + Object.keys(QUIZZES).length + " passed";
+    document.getElementById("score-overview").textContent =
+      pass + " of " + Object.keys(QUIZZES).length + " passed";
   }
-  /* ---------- Quiz bank: answers verified against this guide's sources ---------- */
+  /* ---------- Quiz bank: answers verified against sources ---------- */
   const QUIZZES = {
-    parts: [
-      { q: "How many temperature readings does the MLX90640 give per frame?",
-        a: ["768 (32 Ã— 24)", "64", "1,024", "It depends on the refresh rate"],
-        c: 0,
-        why: "32 Ã— 24 = 768 infrared readings per frame â€” confirmed on Adafruit's product page. The refresh rate changes how often you get a frame, never its size." },
-      { q: "The camera is out of stock at Adafruit. What is the verified backup?",
-        a: ["Wait restock only", "The same page has a 'Buy on DigiKey' button, and DigiKey carries it", "Buy a different camera with a different library", "There is no backup"],
+    airframe: [
+      { q: "What does the flight controller + ESC stack actually do?",
+        a: ["Stores the camera images", "The FC flies the drone (reading the receiver, stabilising) and the ESC turns battery power into motor speed", "Charges the battery", "Talks to satellites"],
         c: 1,
-        why: "Adafruit's own page offers a 'Buy on DigiKey' button and lists DigiKey and Mouser as distributors. The 50 mm/200 mm cables are drop-in replacements for the out-of-stock 100 mm one." },
-      { q: "What is the DS2484 adapter's job in the concrete build?",
-        a: ["Amplifying the probe signal", "Letting the board read many DS18B20 probes over one shared 1-Wire wire, via I2C", "Heating the probes", "Converting Celsius to Fahrenheit"],
+        why: "The SpeedyBee F405 V4 stack is two boards: the flight controller (the pilot's autopilot brain) and a 55A 4-in-1 ESC that drives the four motors. Everything else plugs into it." },
+      { q: "Why must props be OFF during bench setup?",
+        a: ["They're heavy", "Armed motors spin with enough force to cause serious injury — configure motor direction, receiver and modes with props off, always", "To save battery", "Betaflight requires it"],
         c: 1,
-        why: "It's an I2C-to-1-Wire bridge (address 0x18). All probes share one data wire; each answers only when called by its own serial number. The screw terminals are V+, 1W, GND." },
-      { q: "How accurate are the waterproof DS18B20 probes where it matters most?",
-        a: ["Â±0.1 Â°C everywhere", "Â±2 Â°C everywhere", "Â±0.5 Â°C from âˆ’10 to 85 Â°C (less exact below âˆ’10 Â°C)", "They only measure boiling water"],
-        c: 2,
-        why: "Adafruit rates them Â±0.5 Â°C from âˆ’10 to +85 Â°C, total range âˆ’55 to 125 Â°C. Below âˆ’10 Â°C treat readings as less exact â€” important for winter concrete." },
-      { q: "Adafruit's warning about the probes in wet concrete means you shouldâ€¦",
-        a: ["Reuse them forever", "Treat each probe as used up after a pour (wet cement is corrosive)", "Paint them", "Only use them in dry concrete"],
+        why: "This is the cardinal rule of the hobby. A 5-inch prop at idle can cut skin; at power it can injure badly. Props go on last, after everything works, and come off first before any config." },
+      { q: "Under Basic operations, how far must the drone stay from any person?",
+        a: ["5 metres", "30 metres (100 feet) horizontally", "100 metres", "No limit if you're careful"],
         c: 1,
-        why: "The probes are not IP rated and not guaranteed in corrosive environments â€” Adafruit says so on the product page. Budget them as consumables: one pour, one life." }
+        why: "Transport Canada Basic operations: more than 30 m horizontally from any person. Closer than that is Advanced operations territory. That's why test flights happen in empty fields." },
+      { q: "What do the 18650 batteries in the RadioMaster Pocket power?",
+        a: ["The drone", "Your hand controller — the drone has its own LiPo battery", "The thermal camera", "The GPS"],
+        c: 1,
+        why: "Two systems, two power sources: 18650 cells in your hand controller, a 4S LiPo on the drone. The Pi and camera run off the drone's power (via the stack's 5V output)." },
+      { q: "What is the LiPo safety rule that actually matters?",
+        a: ["Charge fast", "Never charge unattended, charge in a LiPo bag, and never fly a swollen or damaged pack", "Store in the freezer", "Discharge fully after every flight"],
+        c: 1,
+        why: "LiPo fires are the genuine hazard in this hobby. Charge attended and bagged, storage-charge packs you're not using, and retire swollen packs to a battery recycling depot." }
     ],
-    software: [
-      { q: "In plain words, what does find_hotspots do?",
-        a: ["Sorts pixels by temperature", "Walks every temperature; when it finds a hot pixel nobody visited, it spreads through touching hot pixels and counts them as one hotspot", "Sends frames to the satellite", "Averages the whole frame"],
+    payload: [
+      { q: "Why the Raspberry Pi Zero 2 W as the drone's brain?",
+        a: ["It's the cheapest computer anywhere", "Quad-core CPU and WiFi at 10 grams — light enough to fly, powerful enough to run detection code in real time", "It has a built-in thermal camera", "It flies the drone"],
         c: 1,
-        why: "That spreading is a flood fill â€” like paint spreading through touching squares, with a to-do list. Touching hot pixels become one hotspot; isolated ones become their own." },
-      { q: "Where does pixel (x, y) live in the flat frame list?",
-        a: ["x * height + y", "y * width + x", "randomly", "x + y"],
+        why: "10 grams (Adafruit spec) and 512MB RAM with 2.4GHz WiFi. The flight controller flies the aircraft; the Pi runs your Python detection code and streams results to the ground." },
+      { q: "How does the thermal camera connect to the Pi?",
+        a: ["HDMI", "STEMMA QT / Qwiic cable — plug and play, no soldering", "WiFi", "USB-C"],
         c: 1,
-        why: "The frame is row by row: position = y Ã— width + x. Checking x and y bounds (not list positions) stops the right edge of one row wrapping to the left edge of the next." },
-      { q: "How does geo.py turn a pixel into a latitude/longitude?",
-        a: ["It asks the satellite", "From the camera height and lens angle it computes ground width, hence metres per pixel, then converts north/east metres to degrees", "It looks up the pixel in a database", "It guesses"],
+        why: "The JST-SH 4-pin STEMMA QT cable carries I2C. On the Pi you enable I2C in raspi-config, install Adafruit's MLX90640 library, and get frames. Same camera, same library as the ground station build." },
+      { q: "How many temperature readings per frame, and at what accuracy?",
+        a: ["64 readings, ±5 °C", "768 readings (32×24), ±2 °C in the 0–100 °C range", "1,024 readings, ±0.1 °C", "One reading"],
         c: 1,
-        why: "ground width = 2 Ã— altitude Ã— tan(FOV/2); ~111,320 m per degree of latitude; longitude degrees shrink by cos(latitude). Approximate by design â€” and the README says so." },
-      { q: "How does the AI briefing avoid inventing hotspots?",
-        a: ["The AI is smart enough", "It only receives the detected hotspot list, the prompt says to use only that data and say 'no hotspots found' when empty, and you can check every line against the list", "It can't invent things", "The map stops it"],
+        why: "Verified on Adafruit's product page: the MLX90640 returns 768 infrared readings per frame with ±2 °C accuracy in the 0–100 °C range (wider range, wider error)." },
+      { q: "Where should the payload sit on the drone?",
+        a: ["Hanging off one arm", "On the top plate, lens facing down, balanced over the centre of gravity", "Taped to the battery", "Anywhere small"],
         c: 1,
-        why: "Constrained input + explicit prompt rules + human comparison against the list. An alert (plain code) handles safety; the AI only writes words about data it was given." },
-      { q: "Why do hotspots.py and curing.py contain no hardware code?",
-        a: ["To save memory", "So the math can be tested with hand-worked numbers, no board or sensor needed", "Because Python can't talk to hardware", "To make it faster"],
+        why: "Weight placement changes how the drone flies. Centred and balanced over the battery strap keeps handling predictable — and a downward lens is what the geo projection assumes." },
+      { q: "The night LED kit isn't decoration — what is it?",
+        a: ["Style", "A legal requirement: CAR 901.39 says the drone must carry lights sufficient to keep it visible to the pilot at night, turned on", "A heat source", "A GPS antenna"],
         c: 1,
-        why: "Pure logic modules can be verified with numbers you worked out yourself â€” that's how you test the math before the hardware exists, and how you prove the code does what you say." }
+        why: "Night is when thermal detection works best — and CAR 901.39 makes visible lighting the condition for flying legally after dark." }
     ],
-    concrete: [
-      { q: "What is 'maturity' in concrete?",
-        a: ["How old the concrete is in days", "A total of (temperature âˆ’ stopping temperature) Ã— hours â€” how much curing has happened", "The strength in MPa", "The amount of water in the mix"],
+        detect: [
+      { q: "How does the code find a fire in 768 numbers?",
+        a: ["It averages them", "Flood fill: every hot pixel above a threshold spreads through touching hot pixels; the connected blob is one hotspot with a centre, size and peak temperature", "It asks the AI", "It compares frames"],
         c: 1,
-        why: "The reaction that hardens concrete runs faster when warm, slower when cold. Adding up (temp âˆ’ datum) Ã— hours over time approximates total curing. Below the datum, time adds nothing." },
-      { q: "Why must a lab crush cylinders of YOUR mix?",
-        a: ["It's a legal ritual", "Temperature shows how much curing happened; only crushing samples of your exact mix connects that number to real strength", "To test the probes", "To dry the concrete"],
+        why: "The same tested hotspots.py flood fill from the ground build. Your two tuning knobs: the temperature threshold (what counts as hot) and minimum pixels (how big a blob counts as a real target)." },
+      { q: "How does a pixel become a map coordinate?",
+        a: ["It doesn't", "Ground width = 2 × altitude × tan(FOV/2) gives metres per pixel; distance from frame centre becomes metres north/east, converted at ~111,320 m per degree", "GPS inside the camera", "The AI guesses"],
         c: 1,
-        why: "Without the lab curve, a strength number is a guess. The strength table only holds for that exact mix â€” new mix, new table." },
-      { q: "A probe reads âˆ’3 Â°C. What does the maturity estimate do?",
-        a: ["Keeps working fine", "Becomes untrustworthy â€” the formula can't see frost damage and assumes proper curing", "Gets more accurate", "Automatically calls the lab"],
+        why: "That's geo.py's verified math. Longitude degrees also shrink by cos(latitude) — important at Edmonton's 53° north. Approximate by design, and honest about it." },
+      { q: "Why fly the night pass for real testing?",
+        a: ["It looks dramatic", "Thermal contrast is best at night — no solar gain or reflectance creating false positives (the FPInnovations report names these as daytime problems)", "Drones fly better at night", "It's illegal in daylight"],
         c: 1,
-        why: "Freezing damage is invisible to the formula. That's why the plan has a freezing alert (plain code, not AI) and why the calculator shows a freeze warning below 0 Â°C." },
-      { q: "Why write down predicted strength BEFORE each lab crush?",
-        a: ["For the lab's paperwork", "A dated prediction made ahead of time proves the system really worked â€” predicting after seeing the answer fools yourself", "To fill the notebook", "It speeds up curing"],
+        why: "Alberta's own infrared imaging guidance says solar gain and reflectance confound daytime thermal imaging with false positives. Night is the operational profile — which is why agencies scan at night too." },
+      { q: "What is the '3/3 with zero false alarms' rule in the calibration pass?",
+        a: ["Luck", "A done-means check: every planted target detected AND no cold background flagged — proves sensitivity AND specificity before you trust the system", "A flight regulation", "Battery spec"],
         c: 1,
-        why: "Predict-first, verify-later is the honesty mechanism â€” the same reason you show where the estimate was wrong in the case study. Anyone can narrate a result after it lands." },
-      { q: "The freezing-strength pass mark in this guide is deliberatelyâ€¦",
-        a: ["3.5 MPa", "7 MPa", "absent â€” US sources say 3.5 MPa but Canadian sites quote 7 MPa from a paid standard, so ask the lab", "10 MPa"],
-        c: 2,
-        why: "Honesty beats a confident wrong number. Two Canadian websites quote CSA A23.1 (a paid standard this guide couldn't read) at 7 MPa; US guidance says 3.5 MPa. The lab â€” or your project spec â€” settles it." }
+        why: "Detecting what's there is only half; NOT detecting what isn't is the other half. Measure both, record both." },
+      { q: "How does the AI briefing stay honest?",
+        a: ["AI is always right", "It only receives the detected hotspot list with instructions to use just that data — and you check every line against the map", "It's certified", "The drone verifies it"],
+        c: 1,
+        why: "Constrained input + explicit prompt + human verification. The map is ground truth; the AI only writes words about the data it was given. Safety checks stay in plain code." }
     ],
-    drone: [
-      { q: "How close to a wildfire may you legally fly a drone in Canada?",
-        a: ["Right over it, if you're careful", "Nowhere within 5 nautical miles (9.3 km) below 3,000 ft â€” the airspace is closed to drones", "100 metres away", "Only at night"],
+    rules: [
+      { q: "May you fly over or near a real wildfire to test this drone?",
+        a: ["Yes, if careful", "Absolutely not — no aircraft including drones within 5 nautical miles (9.3 km) of a wildfire below 3,000 ft (CAR 601.15)", "Only at night", "Only with a radio"],
         c: 1,
-        why: "CAR 601.15 / Transport Canada CASA 2021-11: no person shall operate an aircraft, including drones, over a wildfire or within 5 NM (9.3 km) of one below 3,000 ft AGL. Unauthorized drones force firefighting aircraft to ground operations â€” fines reach $5,000 for individuals and $25,000 for corporations." },
-      { q: "According to the FPInnovations review (funded by Alberta Agriculture and Forestry), what is a thermal drone's actual job on a wildfire?",
-        a: ["Dropping water", "Patrol and mop-up at night: finding smouldering hotspots after the fire is controlled, so ground crews get GPS locations", "Replacing air tankers", "Scouting new fire starts from anywhere in the province"],
+        why: "Unauthorized drones force air tankers and helicopters to ground operations. Fines reach $25,000 and imprisonment is possible. Real fires are agency airspace — you test on safe targets instead." },
+      { q: "What makes night flying legal?",
+        a: ["Nothing does — it's banned", "Lights on the drone sufficient to keep it visible to the pilot or visual observer, turned on (CAR 901.39)", "A special night certificate", "Flying below trees"],
         c: 1,
-        why: "The research describes hotspot detection as a late-stage, nighttime tactical mission. Daytime sun creates false positives; night is when manned aircraft are down and thermal imaging works best. No hobbyist can do this legally near a real fire â€” agencies and contracted services do." },
-      { q: "What does the research say is the most valuable part of the system?",
-        a: ["The aircraft itself", "The map of GPS-referenced hotspots the firefighter on the ground receives â€” the platform is only 'one small part of the solution'", "The battery endurance", "The camera's colour palette"],
+        why: "CAR 901.39 quoted verbatim in the guide. A simple LED kit satisfies it — and night is exactly when the mission happens." },
+      { q: "What do you need before your first legal flight?",
+        a: ["A pilot licence", "Drone registration + marking (250 g+) and a Pilot Certificate — Basic Operations (free online exam, 14+, never expires)", "A fire department permit only", "Insurance"],
         c: 1,
-        why: "FPInnovations TR-2020-N29: 'The RPA platform is only one small part of the solutionâ€¦ until this data have been interpreted and the firefighter on the ground receives a map of GPS-referenced hotspots, the mission is incomplete.' That map is exactly what Build 1 already makes â€” which is why the ground station builds the hireable skill first." },
-      { q: "What would you need before doing legitimate night hotspot work beyond visual line of sight?",
-        a: ["Nothing special", "A bigger battery", "A Special Flight Operations Certificate (SFOC) from Transport Canada, plus a drone pilot certificate and registration", "Permission from the fire chief only"],
-        c: 2,
-        why: "Night, remote, beyond-visual-line-of-sight operations need an SFOC from Transport Canada. All drones 250 g+ must be registered and marked, and every pilot needs a valid drone pilot certificate (Basic at 14+, Advanced at 16+). This work is done with agencies/contractors â€” not alone near a fire." },
-      { q: "What does a real thermal drone cost vs. your ground-station sensor (verified 30 Oct 2026)?",
-        a: ["About the same", "~$200 vs $6,879 CAD", "$6,879 CAD (DJI Mavic 3 Thermal, 640Ã—512) vs ~$120 CAD for the ground station", "$50,000 vs $120"],
-        c: 2,
-        why: "The DJI Mavic 3 Thermal is $6,879 CAD from a Canadian dealer (640Ã—512 thermal); pro hotspot platforms run $15,000+. Your MLX90640 ground station (32Ã—24) is ~$120 CAD total. The research says the platform is 'one small part' â€” so you prove the software skill cheaply and legally first, and the drone becomes a later upgrade." }
+        why: "Both verified on Transport Canada's site: register/mark the drone, pass the Small Basic Exam online, carry both while flying. No other form of certification is accepted." },
+      { q: "Basic operations requires flying…",
+        a: ["Over crowds", "Within visual line of sight, in uncontrolled airspace, 5.6+ km from certified airports, 1.9+ km from heliports", "At any altitude", "Beyond visual line of sight"],
+        c: 1,
+        why: "The full Basic-conditions list from TC's page (updated 19 Mar 2026). Breach any one and you're into Advanced/Complex territory with more paperwork." },
+      { q: "Before any test flight, the safety ritual is…",
+        a: ["Just look up", "Private land + permission, fire bans checked, water/extinguisher at target, no people within 30 m, weather checked — any failure = reschedule", "Charge batteries overnight", "Tell neighbours after"],
+        c: 1,
+        why: "Every item is a hard gate, not a preference. Fires, people and aircraft are what go wrong — rescheduling is free; an incident isn't." }
     ],
-    career: [
-      { q: "For GoA Systems Analyst Level 1, which route is NOT on the official list?",
-        a: ["A related two-year diploma", "A related one-year certificate + 1 year related experience", "An industry certification (like ISC2) in place of the certificate", "A great project with no education or certification at all"],
-        c: 3,
-        why: "The official minimums are the diploma, the certificate+1yr, or the certification in place of the certificate (plus 'or equivalent as described'). Projects prove equivalency evidence â€” they don't erase the written minimum on their own." },
-      { q: "What does 'two-way equivalency' mean in Alberta's MRS?",
-        a: ["You apply twice", "Both education and experience can be considered as suitable, equal qualifications", "Only managers qualify", "Education is always required"],
-        c: 1,
-        why: "The alberta.ca page says exactly: 'In a two-way equivalency you can consider both education and experience as suitable equivalencies.' Some classifications allow only one-way â€” the hiring team decides what's 'related'." },
-      { q: "What is the verified median wage for data engineers in Alberta?",
-        a: ["$28.00/hr", "$43.27/hr (~$90k/yr)", "$72.05/hr", "$15/hr"],
-        c: 1,
-        why: "Job Bank Canada (NOC 21211, Alberta, 2023â€“24 data): low $28.00, median $43.27, high $57.69 per hour. Calgary's high is $72.05/hr. These drift â€” re-check before quoting." },
-      { q: "What is the correct first ask when meeting someone with hiring influence?",
-        a: ["Can you get me a job?", "Can I show you this for 3 minutes?", "Will you be my reference?", "Do you have openings?"],
-        c: 1,
-        why: "Show, don't ask. Criticism comes next ('What would make this useless?'), then you fix what they say and show the fix. Only after they've seen real work do you ask about references." },
-      { q: "The single most impressive artifact in the concrete case study isâ€¦",
-        a: ["The wiring photo", "The predicted-vs-lab comparison chart including where you were wrong", "The shopping list", "The CircuitPython installer"],
-        c: 1,
-        why: "Anyone can show a demo that works. Knowing exactly where it fails â€” and saying so â€” is what makes the rest believable. That chart is the star of the case study." }
-    ],
+    
     final: [
-      { q: "Total budget for the concrete track, and the biggest unknown in it?",
-        a: ["$600 cap; lab crushing cost", "$5,000 cap; the probes", "$100 cap; the concrete", "Unlimited; nothing is unknown"],
+      { q: "Total build cost and the two priciest parts?",
+        a: ["~CA$725; the thermal camera and the motors/stack", "~CA$5,000; motors and batteries", "~CA$100; the Pi", "Free; it's all software"],
         c: 0,
-        why: "The cap is $600 and lab crushing cost (placeholder $160) is the biggest unknown â€” that's why Week 4 calls for quotes before buying anything." },
-      { q: "Why does the board code use board.STEMMA_I2C() instead of board.I2C()?",
-        a: ["They're the same thing", "STEMMA_I2C() is the small QT socket the sensor plugs into; board.I2C() is a different set of pins on this board", "STEMMA is faster", "board.I2C() doesn't exist"],
+        why: "~US$520 / ~CA$725 at verified 30 Oct 2026 prices: the MLX90640 camera ($74.95), motors ×4 ($80) and the F405 stack ($65.99) are the big lines." },
+      { q: "What is the single legal line that never bends?",
+        a: ["Night flying", "Never near a wildfire: 5 NM (9.3 km) exclusion below 3,000 ft", "Battery size", "Altitude"],
         c: 1,
-        why: "Verified in CircuitPython's own board definition: STEMMA_I2C() maps to the STEMMA QT socket (SDA1/SCL1). Adafruit's example even comments this. Using the wrong one silently reads nothing." },
-      { q: "Your two hotspot-finder builds (Desktop vs GitHub) have unrelated git histories. Your recorded decision isâ€¦",
-        a: ["Force-push and lose one", "Integrate: GitHub build as base, port the validation upgrade, both test suites gate the merge", "Delete both", "Never touch git again"],
+        why: "CAR 601.15. Real fires are agency airspace; unauthorised drones ground air tankers and endanger crews. Safe targets on private land are how you train instead." },
+      { q: "A 1-metre target at 30 m altitude with the 55° lens covers roughly…",
+        a: ["Half the screen", "About 31 m of ground per frame ≈ 1 m per pixel — the target is ~1 pixel: fly lower or sweep twice", "10 pixels", "Impossible to see"],
         c: 1,
-        why: "Option A (integrate), recorded 31 Oct: the GitHub build is the better base (offline Leaflet, fuller README, reproducible camera), and the Desktop build has the CWFIS validation upgrade. Both test suites gate the merge; nothing is thrown away." },
-      { q: "What is the 'done means' rule for a build step?",
-        a: ["When the code compiles", "When a specific, observable check passes (e.g. probes read near 0 Â°C in ice, 3 demo runs in a row)", "When you feel finished", "When the calendar week ends"],
+        why: "Ground width = 2 × 30 × tan(27.5°) ≈ 31 m over 32 pixels ≈ 0.98 m/pixel. The calculator in tab 2 does this live — and honest limits like this are why people trust the rest." },
+      { q: "Why does the detection code contain no flight code?",
+        a: ["Drones can't run Python", "Pure logic is testable on the bench with hand-worked numbers — proven before hardware exists, reused across ground, air and pipelines", "To save battery", "Legal reasons"],
         c: 1,
-        why: "Every step in this guide has an observable done-check â€” that's what separates 'I think it works' from 'I've seen it work'. Same idea as the 3-in-a-row demo rehearsal rule." },
-      { q: "Why is the AI only ever a summarizer in these projects?",
-        a: ["AI can't do math", "Safety checks and detection stay in plain, testable code; the AI writes words about data it was given", "AI is too expensive", "The map requires it"],
+        why: "Same principle as every build in your portfolio: separate the math from the hardware so you can test the math." },
+      { q: "What does the FPInnovations research say is the real product of a detection mission?",
+        a: ["The aircraft", "The map of GPS-referenced hotspots delivered to the firefighter — the platform is 'one small part of the solution'", "The video", "The battery log"],
         c: 1,
-        why: "The alert is plain code comparing a number to a limit â€” predictable and testable. The AI writes a summary of given data for a person to read. Safety should never depend on the AI." },
-      { q: "What does the ice test prove?",
-        a: ["That probes survive freezing", "That each probe reads close to 0 Â°C in ice water â€” so its readings can be trusted and its cable labelled", "That water boils at 100 Â°C", "That the battery works"],
+        why: "The Alberta-funded report's own words. That map pipeline is what you've built and can explain end-to-end — which is exactly what makes you hirable." },
+      { q: "Why is the night pass with LEDs the real demo?",
+        a: ["It's prettier", "It's the legal, operational profile of actual hotspot work (night + lights per CAR 901.39), with the best thermal contrast and zero solar false positives", "It flies faster", "Daylight is banned"],
         c: 1,
-        why: "Ice water is a known 0 Â°C reference. Each probe's ice reading becomes your calibration record, and holding each probe in hand reveals which serial number is which cable." },
-      { q: "The maturity method (ASTM C1074) estimate is only valid whenâ€¦",
-        a: ["Always", "It's calibrated to your exact mix via lab crushes and used inside the tested range", "It's above 20 Â°C", "The AI approves it"],
+        why: "Night + lights is both the regulation and the physics — and a rehearsed night mission on video is the story that lands in interviews." },
+      { q: "What must the README always include?",
+        a: ["Only features", "Honest limits: sensor resolution, position accuracy, prototype status, and sources", "Contact info only", "A sales pitch"],
         c: 1,
-        why: "Calibration per mix, interpolation only inside the tested range (the calculator refuses to guess outside it), and no trust once freezing is possible. That's what the honest-limits section of your README will say too." },
-      { q: "Where do the guide's wage numbers come from and what must you do with them?",
-        a: ["Reddit; repost them", "Job Bank Canada (2023â€“24 survey, updated Nov 2025); re-check before quoting, since they update yearly", "Guesswork; average them", "The radio; memorize them"],
+        why: "32×24 resolution, approximate position, prototype — saying it first is what makes every other claim believable." },
+      { q: "Where do the wage numbers in this guide come from?",
+        a: ["Reddit", "Job Bank Canada (NOC 21211, AB, updated Nov 2025) — and they drift, so re-check before quoting", "A friend", "They're guesses"],
         c: 1,
-        why: "Sources named, dates stamped, drift admitted. Everything in this guide carries its check-date for exactly this reason â€” facts expire, and saying so is what makes the rest credible." }
+        why: "Sources named, dates stamped, drift admitted. Facts expire; saying so is what makes the rest credible." }
     ]
   };
+
   /* ---------- Quiz engine: one question at a time, instant feedback ---------- */
   const QUIZ_TITLES = {
-    parts: "Quiz: Parts & hardware (5 questions)",
-    software: "Quiz: The software & the math (5 questions)",
-    concrete: "Quiz: Concrete & maturity (5 questions)",
-    drone: "Quiz: The drone question (5 questions)",
-    career: "Quiz: Career & rules (5 questions)",
+    airframe: "Quiz: Build the airframe (5 questions)",
+    payload: "Quiz: The thermal payload (5 questions)",
+    detect: "Quiz: Detection & mapping (5 questions)",
+    rules: "Quiz: Flight rules & safety (5 questions)",
     final: "Final exam (8 questions)"
   };
   function renderQuiz(key) {
@@ -1246,144 +1064,64 @@ while True:
     drawIntro();
   }
   Object.keys(QUIZZES).forEach(renderQuiz);
-  /* ---------- Plain logic, kept apart so it can be tested ---------- */
-  function maturity(tempC, hours, datum) {
-    return Math.max(0, tempC - datum) * hours;
-  }
-  // Straight line between lab results. Outside the tested range it refuses to answer.
-  function strength(points, value) {
-    const sorted = points.slice().sort(function (a, b) { return a[0] - b[0]; });
-    if (sorted.length < 2 || value < sorted[0][0] || value > sorted[sorted.length - 1][0]) return null;
-    for (let i = 1; i < sorted.length; i++) {
-      const low = sorted[i - 1], high = sorted[i];
-      if (value <= high[0]) {
-        if (high[0] === low[0]) return high[1];
-        return low[1] + (high[1] - low[1]) * (value - low[0]) / (high[0] - low[0]);
-      }
-    }
-    return null;
-  }
-
-  /* ---------- Maturity calculator ---------- */
-  function currentB() {
-    return maturity(Number(document.getElementById("temp-b").value),
-                    Number(document.getElementById("days").value) * 24,
-                    Number(document.getElementById("datum").value));
-  }
-  function renderConcrete() {
-    const a = Number(document.getElementById("temp-a").value);
-    const b = Number(document.getElementById("temp-b").value);
-    const days = Math.max(1, Number(document.getElementById("days").value) || 1);
-    const datum = Number(document.getElementById("datum").value);
-    document.getElementById("total-a").textContent =
-      Math.round(maturity(a, days * 24, datum)).toLocaleString("en-CA") + " Â°C-hours";
-    document.getElementById("total-b").textContent =
-      Math.round(maturity(b, days * 24, datum)).toLocaleString("en-CA") + " Â°C-hours";
-    document.getElementById("freeze-note").hidden = !(a <= 0 || b <= 0);
-
-    const svg = document.getElementById("chart");
-    svg.textContent = "";
-    const NS = "http://www.w3.org/2000/svg";
-    const L = 60, R = 620, T = 15, B = 190;
-    const top = Math.max(maturity(a, days * 24, datum), maturity(b, days * 24, datum), 1);
-    function add(name, attrs, text) {
-      const el = document.createElementNS(NS, name);
-      Object.keys(attrs).forEach(function (k) { el.setAttribute(k, attrs[k]); });
-      if (text !== undefined) el.textContent = text;
-      svg.appendChild(el);
-    }
-    add("line", { x1: L, y1: B, x2: R, y2: B, stroke: "#b9b2a3" });
-    add("line", { x1: L, y1: T, x2: L, y2: B, stroke: "#b9b2a3" });
-    add("text", { x: L - 6, y: T + 10, "text-anchor": "end" }, Math.round(top).toLocaleString("en-CA"));
-    add("text", { x: L - 6, y: B, "text-anchor": "end" }, "0");
-    add("text", { x: L, y: B + 16 }, "Pour");
-    add("text", { x: R, y: B + 16, "text-anchor": "end" }, days + (days === 1 ? " day" : " days"));
-    add("text", { x: (L + R) / 2, y: B + 30, "text-anchor": "middle" },
-        "Time since pour, curing total in Â°C-hours");
-    function line(t, colour, name) {
-      const y = B - (maturity(t, days * 24, datum) / top) * (B - T);
-      add("line", { x1: L, y1: B, x2: R, y2: y, stroke: colour, "stroke-width": 3 });
-      add("text", { x: R - 4, y: Math.max(y - 6, T + 10), "text-anchor": "end",
-                    style: "fill:" + colour + ";font-weight:700" }, name);
-    }
-    line(a, "#1f5f8b", "Block A");
-    line(b, "#1b5e4f", "Block B");
-    renderStrength();
-  }
-  ["temp-a", "temp-b", "days", "datum"].forEach(function (id) {
-    document.getElementById(id).addEventListener("input", renderConcrete);
-  });
-  /* ---------- Lab table: your real calibration curve ---------- */
-  let exampleLoaded = false;
-  function renderLab() {
-    const box = document.getElementById("lab-rows");
-    box.textContent = "";
-    saved.lab.forEach(function (row, i) {
-      const line = document.createElement("div");
-      line.className = "row";
-      line.style.marginBottom = "6px";
-      [["Curing total (Â°C-hours)", 0], ["Lab strength (MPa)", 1]].forEach(function (field) {
-        const label = document.createElement("label"), input = document.createElement("input");
-        label.textContent = field[0] + " ";
-        input.type = "number";
-        input.min = "0";
-        input.value = row[field[1]];
-        input.addEventListener("input", function () {
-          saved.lab[i][field[1]] = input.value;
-          exampleLoaded = false;
-          save(); renderStrength();
-        });
-        label.appendChild(input);
-        line.appendChild(label);
+  /* ---------- The six-step chain ---------- */
+  const CHAIN = [
+    ["1 Sense", "MLX90640: 768 temperatures per frame, in the air or on the bench"],
+    ["2 Detect", "hotspots.py flood fill: hot pixels above threshold become one hotspot"],
+    ["3 Locate", "geo.py: pixel + altitude + lens angle → metres → latitude/longitude"],
+    ["4 Map", "red markers + the camera's ground footprint rectangle on a live map"],
+    ["5 Report", "optional AI briefing written from the hotspot list only"],
+    ["6 Prove", "calibration pass 3/3, night pass 3/3, README with honest limits"]
+  ];
+  (function () {
+    const chain = document.getElementById("chain");
+    CHAIN.forEach(function (step) {
+      const b = document.createElement("button");
+      b.className = "btn ghost";
+      b.style.cssText = "flex:1; min-width:118px; min-height:60px; font-size:14px";
+      b.innerHTML = "<strong>" + step[0] + "</strong>";
+      b.addEventListener("click", function () {
+        document.getElementById("chainDetail").innerHTML =
+          "<strong>" + step[0] + ":</strong> " + step[1];
       });
-      box.appendChild(line);
+      chain.appendChild(b);
     });
-  }
-  function renderStrength() {
-    const points = saved.lab.filter(function (r) { return r[0] !== "" && r[1] !== ""; })
-      .map(function (r) { return [Number(r[0]), Number(r[1])]; });
-    const out = document.getElementById("strength-result");
-    if (points.length < 2) { out.textContent = "Enter at least 2 lab results."; return; }
-    const value = currentB(), est = strength(points, value);
-    if (est === null) {
-      out.textContent = "Block B's total (" + value.toLocaleString("en-CA") +
-        ") is outside your tested range, so no estimate." +
-        (exampleLoaded ? " These are made-up numbers." : "");
-      return;
-    }
-    out.textContent = "Block B estimate: " + est.toFixed(1) + " MPa" +
-      (exampleLoaded ? " (made-up numbers, not a real mix)" : "");
-  }
-  document.getElementById("load-example").addEventListener("click", function () {
-    saved.lab = [["500", "5"], ["1500", "12"], ["3000", "20"], ["8000", "30"]];
-    exampleLoaded = true;
-    save(); renderLab(); renderStrength();
-  });
-  document.getElementById("clear-lab").addEventListener("click", function () {
-    saved.lab = [["", ""], ["", ""], ["", ""], ["", ""]];
-    exampleLoaded = false;
-    save(); renderLab(); renderStrength();
-  });
+  })();
 
+  /* ---------- Altitude & coverage calculator ---------- */
+  function renderCoverage() {
+    const alt = Number(document.getElementById("alt").value);
+    const fov = Number(document.getElementById("fov").value);
+    const widthM = 2 * alt * Math.tan((fov * Math.PI / 180) / 2);
+    const mpp = widthM / 32;
+    const areaM = widthM * (widthM * 24 / 32);
+    document.getElementById("alt-out").textContent = alt + " m";
+    document.getElementById("cover-w").textContent = widthM.toFixed(1) + " m wide";
+    document.getElementById("mpp").textContent = mpp.toFixed(2) + " m";
+    document.getElementById("cover-a").textContent =
+      areaM >= 10000 ? (areaM / 10000).toFixed(2) + " ha" : Math.round(areaM).toLocaleString("en-CA") + " m²";
+    document.getElementById("alt-note").hidden = !(mpp > 0.5);
+  }
+  document.getElementById("alt").addEventListener("input", renderCoverage);
+  document.getElementById("fov").addEventListener("change", renderCoverage);
+  renderCoverage();
   /* ---------- Shopping list with budget cap ---------- */
-  const CAP = 600;
+  const CAP = 1100;
   const ITEMS = [
-    ["camera", "MLX90640 thermal camera (Adafruit 4407)", "US$74.95. Out of stock at Adafruit 30 Oct â€” DigiKey carries it. Already ordered?", 105],
-    ["board2", "Second QT Py S3 (Adafruit 5700)", "US$12.50 list. Out of stock at Adafruit 30 Oct. Skip if you reuse your first board (it can't do both jobs at once).", 18],
-    ["adapter", "DS2484 sensor adapter (Adafruit 5976)", "US$7.50 list. 28 in stock at Adafruit 30 Oct.", 11],
-    ["cable", "STEMMA QT cable (Adafruit 4210 or similar)", "US$0.95 (50 mm) / $1.25 (200 mm). 100 mm out of stock â€” all compatible.", 3],
-    ["probes", "6 waterproof probes (Adafruit 381)", "US$9.95 each, in stock. One pour = one life per probe (corrosive warning).", 84],
-    ["shipping", "Electronics shipping, tax and duty", "Estimate.", 40],
-    ["wire", "3-wire cable, about 15 m", "Estimate. For reaching the board from outdoors.", 30],
-    ["connectors", "Lever wire connectors", "Estimate.", 15],
-    ["power", "USB wall charger and long USB cable", "Estimate. You may already own these.", 15],
-    ["mix", "About 8 bags of concrete mix", "Estimate. Use one brand for both pours.", 60],
-    ["tools", "Mixing tub, trowel and rod", "Estimate. You may already own these.", 30],
-    ["safety", "Gloves, eye protection and dust masks", "Estimate.", 25],
-    ["insulation", "Foam board or insulated blanket", "Estimate.", 25],
-    ["moulds", "12 plastic 4 Ã— 8 inch cylinder moulds", "Estimate. Ask the lab first what they accept.", 50],
-    ["lab", "Lab crushing 8 cylinders", "Placeholder. No published price found â€” get a real quote before Week 7.", 160],
-    ["ai", "Claude API usage", "Pennies per briefing run; this leaves room.", 5]
+    ["frame", "5\" freestyle frame", "US$25-40. Any 5\" freestyle frame with 30.5 mm stack mounts.", 48],
+    ["stack", "SpeedyBee F405 V4 BLS 55A stack", "US$65.99 verified, SpeedyBee store. FC + 4-in-1 ESC, 3-6S.", 92],
+    ["motors", "2306.5 motors ×4", "US$19.99 each verified, SpeedyBee store. 1800-1950 KV class.", 112],
+    ["radio", "RadioMaster Pocket ELRS + 2× 18650", "US$76.99 + $13.39 verified, Motion RC. 16ch, EdgeTX, 288 g.", 126],
+    ["receiver", "ELRS receiver (ER4 class)", "US$16.99 verified, Motion RC.", 24],
+    ["pi", "Raspberry Pi Zero 2 W", "US$19.05 verified, Adafruit. The 10 g brain.", 27],
+    ["camera", "MLX90640 thermal camera (4407)", "US$74.95. Out of stock at Adafruit 30 Oct — DigiKey link on the page. Already ordered?", 105],
+    ["cable", "STEMMA QT cable", "US$0.95-1.25 verified. Camera → Pi, no soldering.", 3],
+    ["batteries", "4S LiPo ×3 + balance charger", "Estimate US$60-90. One to fly, two to keep flying.", 125],
+    ["gps", "GPS module for the Pi", "Estimate ~US$20. Needed for map coordinates.", 28],
+    ["props", "Propellers (spares!)", "Estimate US$10-15. You will break some.", 18],
+    ["led", "Night LED kit + battery straps + wire", "Estimate US$15-25. The LEDs make night flights legal (CAR 901.39).", 28],
+    ["iron", "Soldering iron + solder", "Estimate US$30-40 if you don't own one. For motor wires only.", 48],
+    ["misc", "Heat shrink, standoffs, tape, velcro", "Estimate US$15. The unglamorous half of every build.", 21]
   ];
   function priceOf(item) {
     const custom = saved.prices[item[0]];
@@ -1395,10 +1133,10 @@ while True:
     document.getElementById("budget-total").textContent = "$" + Math.round(total) + " CAD of $" + CAP;
     const bar = document.getElementById("budget-bar");
     bar.style.width = Math.min(100, total / CAP * 100) + "%";
-    bar.style.background = total > CAP ? "#b84a14" : "#1b5e4f";
+    bar.style.background = total > CAP ? "#c2571b" : "#1b5e4f";
     document.getElementById("budget-note").textContent = total > CAP
-      ? "You're $" + Math.round(total - CAP) + " over the $600 concrete-track limit. Cut probes, moulds or cylinders first."
-      : "$" + Math.round(CAP - total) + " left under the $600 limit, not counting items you tick as owned or bought.";
+      ? "You're $" + Math.round(total - CAP) + " over the $1,100 ceiling. Shop the used market or skip the second battery set first."
+      : "$" + Math.round(CAP - total) + " left under the $1,100 ceiling, not counting items you tick as owned.";
   }
   ITEMS.forEach(function (item) {
     const row = document.createElement("div");
@@ -1443,15 +1181,15 @@ while True:
   /* ---------- Level 1 eligibility picker (official MRS routes) ---------- */
   const LEVEL1 = [
     { id: "diploma", label: "I have a related two-year diploma",
-      answer: "yes", text: "Yes â€” that meets Level 1 by itself (related two-year diploma from a recognized institution)." },
+      answer: "yes", text: "Yes — that meets Level 1 by itself (related two-year diploma from a recognized institution)." },
     { id: "certplus", label: "I have a related one-year certificate + 1 year of related experience",
-      answer: "yes", text: "Yes â€” if the hiring team agrees your experience is related. The standard requires exactly this combination." },
+      answer: "yes", text: "Yes — if the hiring team agrees your experience is related. The standard requires exactly this combination." },
     { id: "industryplus", label: "I have an industry certification (e.g. ISC2) + experience",
-      answer: "maybe", text: "Possibly. The standard says an industry-recognized certification from a credible source, such as ISC2, may replace the one-year certificate â€” you would still need 1 year of related experience. Confirm both with the hiring team before spending money." },
+      answer: "maybe", text: "Possibly. The standard says an industry-recognized certification from a credible source, such as ISC2, may replace the one-year certificate — you would still need 1 year of related experience. Confirm both with the hiring team before spending money." },
     { id: "certonly", label: "I have a certificate or certification but no related experience yet",
-      answer: "no", text: "Not yet â€” the missing piece is 1 year of related experience. Paid tech work is the clearest way to build that, and these projects are how you get to the paid work." },
+      answer: "no", text: "Not yet — the missing piece is 1 year of related experience. Paid tech work is the clearest way to build that." },
     { id: "none", label: "I have none of these yet",
-      answer: "no", text: "Not yet. Fastest routes: paid tech work plus a qualifying certification, or a funded two-year diploma. This plan builds skill, evidence and references â€” it doesn't replace the written minimum on its own." }
+      answer: "no", text: "Not yet. Fastest routes: paid tech work plus a qualifying certification, or a funded two-year diploma. This build proves skill and earns references — it doesn't replace the written minimum." }
   ];
   const l1box = document.getElementById("level1-options");
   LEVEL1.forEach(function (opt) {
@@ -1478,83 +1216,28 @@ while True:
       if (b.textContent === match.label) b.click();
     });
   }
-  /* ---------- The shared six-step chain (interactive) ---------- */
-  const CHAINS = {
-    station: [
-      ["Sense", "MLX90640 camera: 768 temperatures per frame", false],
-      ["Detect", "hotspots.py flood fill (shared math style)", true],
-      ["Place", "geo.py: pixel â†’ lat/lon + footprint", true],
-      ["Fetch", "CWFIS satellite hotspots (shared with Build 3)", true],
-      ["Compare", "validation.py: honest match report", true],
-      ["Explain", "Claude briefing from the data only", true]
-    ],
-    concrete: [
-      ["Sense", "DS18B20 probes in wet concrete", false],
-      ["Log", "TEMPS lines over serial (shared reader style)", true],
-      ["Add up", "curing.py: maturity math (shared pure-logic rule)", true],
-      ["Calibrate", "lab crushes of your exact mix", false],
-      ["Compare", "predicted vs lab, worst miss named", true],
-      ["Explain", "AI site summary from the data only", true]
-    ],
-    pipeline: [
-      ["Collect", "Alberta CSV + daily CWFIS (shared feed)", true],
-      ["Store", "SQLite with run logs", true],
-      ["Check", "data quality + metadata + exceptions", true],
-      ["Chart", "Leaflet map + season vs 10-year average", true],
-      ["Deploy", "GitHub Pages public URL", true],
-      ["Explain", "AI weekly briefing from the data only", true]
-    ]
-  };
-  const CHAIN_NOTES = {
-    station: "The flagship. Real camera, real satellites, honest comparison â€” the software runs today in your hotspot-finder repo.",
-    concrete: "Same skeleton, different senses: the maturity math is pure logic like hotspots.py, and the lab is the ground truth like CWFIS.",
-    pipeline: "Zero hardware, zero cost â€” the build whose vocabulary matches data-job postings word for word."
-  };
-  function drawChain(which) {
-    const chain = document.getElementById("chain");
-    chain.textContent = "";
-    CHAINS[which].forEach(function (step, i) {
-      const b = document.createElement("button");
-      b.className = "btn" + (step[2] ? " ghost" : "");
-      b.style.cssText = "flex:1; min-width:120px; min-height:64px; border-style:" +
-        (step[2] ? "dashed" : "solid") + "; font-size:14px";
-      b.innerHTML = "<strong>" + (i + 1) + " Â· " + step[0] + "</strong>";
-      b.addEventListener("click", function () {
-        document.getElementById("chainDetail").innerHTML =
-          "<strong>" + step[0] + ":</strong> " + step[1];
-      });
-      chain.appendChild(b);
-    });
-    document.getElementById("chainDetail").textContent = CHAIN_NOTES[which];
-    ["station", "concrete", "pipeline"].forEach(function (w) {
-      document.getElementById("face-" + w).className = "btn" + (w === which ? "" : " ghost");
-    });
-  }
-  document.getElementById("face-station").addEventListener("click", function () { drawChain("station"); });
-  document.getElementById("face-concrete").addEventListener("click", function () { drawChain("concrete"); });
-  document.getElementById("face-pipeline").addEventListener("click", function () { drawChain("pipeline"); });
   /* ---------- Flashcards ---------- */
   const FLASHES = [
-    ["Explain the flood fill in one breath.",
-     "It walks every temperature. When it finds a hot pixel nobody has visited, it spreads through all the touching hot pixels and counts them as one hotspot â€” like paint, with a to-do list."],
-    ["How does a pixel become a latitude and longitude?",
-     "From the pretend height and the lens angle I work out how wide the ground is in view. That gives metres per pixel, so a pixel's distance from the centre becomes metres north and east, which I convert to degrees."],
-    ["How can several probes share one wire?",
-     "Each probe has its own serial number. The board calls them by serial number on the shared 1-Wire bus, so only that probe answers."],
-    ["Why does a lab have to crush cylinders?",
-     "Temperature only tells me how much curing happened. A lab has to crush samples of my exact mix to connect that number to real strength. Without that, a strength estimate is a guess."],
-    ["Why does curing.py have no hardware code in it?",
-     "So I can test the math with numbers I worked out by hand, without any board or sensor. It's the same reason hotspots.py is pure logic."],
-    ["Why write predictions down before the lab results?",
-     "If I predict after seeing the answer, I can fool myself. A dated prediction proves the system really worked ahead of time."],
-    ["How do you stop the AI from inventing a hotspot?",
-     "It only gets the list of detected hotspots, the prompt tells it to use only that data and say 'no hotspots found' when the list is empty, and I compare every line of the briefing against the list."],
-    ["What's the difference between the alert and the AI summary?",
-     "The alert is plain code comparing a number to a limit, so it's predictable. The AI only writes a summary of data for a person to read. Safety checks never depend on the AI."],
-    ["Why are you showing your failures?",
-     "Anyone can show a demo that works. Knowing exactly where it fails, and saying so, is what makes the rest believable."],
+    ["Walk me through your drone build.",
+     "5-inch freestyle frame, SpeedyBee F405 stack, 2306 motors, ELRS radio link. On top: a Raspberry Pi Zero 2 W and an MLX90640 thermal camera on I2C. The flight controller flies it; the Pi runs the detection code."],
+    ["How does it detect fire?",
+     "768 temperatures per frame. The flood fill collects hot pixels above a threshold into one hotspot with centre, size and peak temperature. geo.py turns that pixel into latitude/longitude using altitude and the lens angle."],
+    ["What does one pixel cover?",
+     "Ground width is 2 × altitude × tan(lens/2). At 30 m with the 55° lens that's about 31 m across 32 pixels — roughly a metre per pixel. A campfire is about one pixel there, so I fly lower for small targets."],
+    ["Why do you test at night?",
+     "Thermal contrast is best at night — no solar gain or reflectance causing false positives. And it's the real mission profile: agencies scan at night too. It's legal because the drone carries visible lights, per CAR 901.39."],
+    ["What can't it do?",
+     "It's a 32×24 learning-grade sensor with approximate positions — a prototype. Agency platforms carry 640×512 sensors on certified aircraft. What I own is the pipeline: sense, detect, georeference, report honestly."],
+    ["What's the rule that never bends?",
+     "Never near a real wildfire — no drones within 5 nautical miles (9.3 km) below 3,000 feet. Real fires are agency airspace; unauthorised drones ground air tankers. I train on safe targets on private land."],
+    ["How do you know the detections are real?",
+     "Calibration: three known targets in a triangle, flown at 20–30 m. It must find 3 of 3 AND flag nothing on cold ground. Sensitivity and specificity — both measured, both recorded."],
+    ["Why is the detection code separate from the flight code?",
+     "Pure logic can be tested on the bench with numbers I worked out by hand, before the hardware exists. Same flood fill that passed 9/9 tests on the ground runs on the Pi in the air."],
+    ["How do you keep the AI briefing honest?",
+     "It only receives the detected hotspot list and is told to use just that data. I check every line against the map. Safety checks stay in plain code — the AI never decides anything."],
     ["Why should we hire you without a degree?",
-     "Because you can see what I do. I found a real problem from my own work, built the whole system, tested it against a lab, reported where it failed, and I can explain every part. Then let them ask anything."]
+     "Because you can see what I do. I designed the system, built the airframe, wrote and tested the detection code, flew legal night missions, and I can explain every part — including where it fails."]
   ];
   const flashBox = document.getElementById("flashcards");
   FLASHES.forEach(function (pair, i) {
@@ -1583,15 +1266,10 @@ while True:
   }
 
   /* ---------- Go ---------- */
-  renderConcrete();
-  renderLab();
-  renderStrength();
   renderBudget();
   paintFlashes();
   paintGlobal();
   openTab("why");
-
-
 </script>
 <script>
   "use strict";
