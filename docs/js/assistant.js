@@ -1230,6 +1230,13 @@
     close.type = "button";
     close.setAttribute("aria-label", "Close assistant");
     close.addEventListener("click", function () { setOpen(false); launcher.focus(); });
+    const gear = el("button", "ga-icon-btn", "\u2699");
+    gear.type = "button";
+    gear.id = "ga-settings-btn";
+    gear.title = "Settings: API key and daily budget";
+    gear.setAttribute("aria-label", "Settings");
+    gear.setAttribute("aria-expanded", "false");
+    btns.appendChild(gear);
     btns.appendChild(clear);
     btns.appendChild(close);
     head.appendChild(btns);
@@ -1255,7 +1262,20 @@
     form.appendChild(input);
     form.appendChild(send);
 
+    const settings = buildSettings();
+    let settingsOpen = false;
+    function showSettings(on) {
+      settingsOpen = !!on;
+      settings.node.hidden = !settingsOpen;
+      log.hidden = settingsOpen;
+      form.hidden = settingsOpen;
+      gear.setAttribute("aria-expanded", settingsOpen ? "true" : "false");
+      if (settingsOpen) { settings.refresh(); }
+    }
+    gear.addEventListener("click", function () { showSettings(!settingsOpen); });
+
     panel.appendChild(head);
+    panel.appendChild(settings.node);
     panel.appendChild(log);
     panel.appendChild(form);
     root.appendChild(panel);
@@ -1263,6 +1283,7 @@
     document.body.appendChild(root);
 
     UI.root = root; UI.panel = panel; UI.log = log; UI.input = input;
+    UI.showSettings = showSettings;
     setOpen(false);
 
     launcher.addEventListener("click", function () {
@@ -1286,6 +1307,173 @@
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && !panel.hidden) { setOpen(false); launcher.focus(); }
     });
+  }
+
+  /* ======================================================================
+     SETTINGS — the API key and the daily budget.
+
+     The key is POSTed to the local server once, stored in a git-ignored file,
+     and never read back: the field is disabled when there is no local server,
+     because on file:// or the public site there is nowhere safe to keep it.
+     The budget is server state too — a cap enforced only in the page is a
+     suggestion, not a cap.
+     ====================================================================== */
+  function settingsAvailable() {
+    /* "/api/ask" means our local server answered /api/health. An absolute URL
+       means a Cloudflare Worker, which has no settings endpoint. */
+    return ENDPOINT === "/api/ask";
+  }
+
+  function buildSettings() {
+    const node = el("div", "ga-settings");
+    node.id = "ga-settings";
+    node.hidden = true;
+
+    const note = el("p", "ga-note");
+    note.id = "ga-settings-note";
+    note.hidden = true;
+
+    const keyLabel = el("label", null, "API key");
+    const keyState = el("span", "ga-sub");
+    keyState.id = "ga-key-state";
+    keyState.textContent = "not set";
+    keyLabel.appendChild(keyState);
+
+    const keyInput = el("input", "ga-key-input");
+    keyInput.type = "password";
+    keyInput.id = "ga-key";
+    keyInput.autocomplete = "off";
+    keyInput.placeholder = "paste your provider key (stored on this machine only)";
+
+    const keyRow = el("div", "ga-row");
+    const saveKey = el("button", "ga-chip", "Save key");
+    saveKey.type = "button";
+    const testKey = el("button", "ga-chip", "Test key");
+    testKey.type = "button";
+    const clearKey = el("button", "ga-chip", "Clear");
+    clearKey.type = "button";
+    keyRow.appendChild(saveKey);
+    keyRow.appendChild(testKey);
+    keyRow.appendChild(clearKey);
+
+    const budgetLabel = el("label", null, "Daily budget");
+    const budgetVal = el("b", null, "\u2014");
+    budgetLabel.appendChild(budgetVal);
+    const budget = el("input", "ga-budget");
+    budget.type = "range";
+    budget.id = "ga-budget";
+    budget.min = "0.1";
+    budget.max = "2";
+    budget.step = "0.05";
+    budget.value = "0.25";
+    const scaleNote = el("p", "ga-sub");
+
+    node.appendChild(el("h4", null, "Settings"));
+    node.appendChild(keyLabel);
+    node.appendChild(keyInput);
+    node.appendChild(keyRow);
+    node.appendChild(budgetLabel);
+    node.appendChild(budget);
+    node.appendChild(scaleNote);
+    node.appendChild(note);
+
+    function setNote(text, bad) {
+      note.textContent = text || "";
+      note.hidden = !text;
+      note.className = bad ? "ga-note" : "ga-note ok";
+    }
+
+    function setDisabled(on) {
+      [keyInput, saveKey, testKey, clearKey, budget].forEach(function (n) {
+        n.disabled = !!on;
+      });
+    }
+
+    function paint(s) {
+      keyState.textContent = s.keyConfigured ? "saved, ending " + s.keyHint : "not set";
+      budget.min = String(s.budgetMin);
+      budget.max = String(s.budgetMax);
+      if (document.activeElement !== budget) { budget.value = String(s.dailyUsdMax); }
+      budgetVal.textContent = "  $" + Number(s.dailyUsdMax).toFixed(2) + " / day";
+      scaleNote.textContent =
+        "A research job is capped at $" + Number(s.jobBudgetUsd).toFixed(2) +
+        " so it can never eat a whole day." +
+        (s.blocked ? " Today's budget is spent: answers fall back to the offline engine." : "");
+    }
+
+    function load() {
+      if (!settingsAvailable()) {
+        setDisabled(true);
+        budgetVal.textContent = "  not available";
+        scaleNote.textContent = "";
+        setNote("Settings need the local server. Run node server/assistant-server.js and open " +
+          "http://localhost:8790/ \u2014 the key is never stored in this page.", true);
+        return;
+      }
+      setDisabled(false);
+      fetch("/api/settings", { cache: "no-store" })
+        .then(function (r) { return r.json(); })
+        .then(function (s) { paint(s); setNote(""); })
+        .catch(function () { setNote("Could not read settings from the server.", true); });
+    }
+
+    function post(payload) {
+      return fetch("/api/settings", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload)
+      }).then(function (r) {
+        return r.json().then(function (j) {
+          if (!r.ok) { throw new Error(j && j.error ? j.error : "HTTP " + r.status); }
+          return j;
+        });
+      });
+    }
+
+    saveKey.addEventListener("click", function () {
+      const v = keyInput.value.trim();
+      if (!v) { setNote("Paste a key first, or use Clear to remove the saved one.", true); return; }
+      saveKey.disabled = true;
+      post({ apiKey: v })
+        .then(function (s) {
+          keyInput.value = "";
+          paint(s);
+          setNote("Key saved on this machine only. Press Test key to prove it works.");
+        })
+        .catch(function (e) { setNote(e.message, true); })
+        .then(function () { saveKey.disabled = false; });
+    });
+
+    clearKey.addEventListener("click", function () {
+      post({ apiKey: "" })
+        .then(function (s) {
+          paint(s);
+          setNote("Key cleared. The assistant falls back to the offline engine.");
+        })
+        .catch(function (e) { setNote(e.message, true); });
+    });
+
+    testKey.addEventListener("click", function () {
+      if (!settingsAvailable()) { return; }
+      testKey.disabled = true;
+      setNote("Testing the key\u2026");
+      fetch("/api/settings/verify", { method: "POST" })
+        .then(function (r) { return r.json(); })
+        .then(function (j) { setNote(j.detail || "", !j.verified); })
+        .catch(function () { setNote("Could not reach the server to test the key.", true); })
+        .then(function () { testKey.disabled = false; });
+    });
+
+    budget.addEventListener("input", function () {
+      budgetVal.textContent = "  $" + Number(budget.value).toFixed(2) + " / day";
+    });
+    budget.addEventListener("change", function () {
+      post({ dailyUsdMax: Number(budget.value) })
+        .then(function (s) { paint(s); setNote("Daily budget saved on the server."); })
+        .catch(function (e) { setNote(e.message, true); });
+    });
+
+    return { node: node, refresh: load };
   }
 
   /* ======================================================================
@@ -1613,6 +1801,26 @@
       PASSAGES.some(function (p) { return /^Domain/.test(p.label || ""); }) &&
       domainHits.some(function (h) { return /^Domain/.test(h.p.label || ""); }),
       PASSAGES.length + " passages, " + domainHits.length + " hits");
+
+    /* 11. the settings drawer exists, starts closed, and never offers a key
+       field when there is no local server to keep one. */
+    const gearBtn = document.getElementById("ga-settings-btn");
+    const drawer = document.getElementById("ga-settings");
+    add("settings drawer present and closed by default",
+      !!gearBtn && !!drawer && drawer.hidden === true, "ok");
+
+    /* Opening the drawer with no local server must disable the key field rather
+       than offer a box whose value has nowhere safe to go. */
+    let keyDisabled = null;
+    if (UI.showSettings) {
+      UI.showSettings(true);
+      const keyEl = document.getElementById("ga-key");
+      keyDisabled = !!keyEl && keyEl.disabled;
+      UI.showSettings(false);
+    }
+    add("no local server means the key field is disabled",
+      ENDPOINT === "/api/ask" ? keyDisabled === false : keyDisabled === true,
+      "endpoint=" + (ENDPOINT || "none") + " disabled=" + keyDisabled);
 
     return out;
   }

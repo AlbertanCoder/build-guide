@@ -430,6 +430,22 @@
     clip: rect(0 0 0 0); white-space: nowrap; }
   .ga-flash { animation: ga-flash 1.8s ease-out; }
   @keyframes ga-flash { 0%, 30% { box-shadow: 0 0 0 4px rgba(194, 87, 27, .45); } 100% { box-shadow: none; } }
+  /* Settings drawer: the API key and the daily budget.
+     `[hidden]` needs !important inside the panel because .ga-form sets
+     display:flex, which otherwise beats the hidden attribute. */
+  .ga-panel [hidden] { display: none !important; }
+  .ga-settings { padding: 12px; border-top: 1px solid var(--line); background: var(--card); overflow-y: auto; }
+  .ga-settings h4 { margin: 0 0 4px; font-size: 14px; color: var(--pine-deep); }
+  .ga-settings label { display: block; margin: 12px 0 5px; font-size: 11.5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .5px; color: var(--soft); }
+  .ga-settings label .ga-sub { text-transform: none; letter-spacing: 0; font-weight: 400; margin-left: 6px; }
+  .ga-key-input { width: 100%; box-sizing: border-box; padding: 9px 11px; border: 1px solid var(--line);
+    border-radius: 10px; font-size: 13px; background: var(--bg); }
+  .ga-key-input:focus { outline: none; border-color: var(--pine); box-shadow: 0 0 0 3px rgba(27, 94, 79, .15); }
+  .ga-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .ga-budget { width: 100%; margin: 2px 0 4px; accent-color: var(--pine); }
+  .ga-settings .ga-sub { margin: 2px 0 0; }
+  .ga-settings .ga-note.ok { background: var(--pine-pale); }
   #ga-selftest { position: fixed; inset: 0; z-index: 999; margin: 0; background: #fff; color: #123a2e;
     padding: 20px; overflow: auto; font: 13px/1.55 Consolas, monospace; white-space: pre-wrap; }
   @media (max-width: 560px) {

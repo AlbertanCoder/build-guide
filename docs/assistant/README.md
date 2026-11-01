@@ -101,6 +101,29 @@ typed question
 Conversation history (last 6 turns) travels with each request, so follow-ups work. If anything in
 that chain fails, the answer comes from the offline engine with a one-line note saying why.
 
+## The settings drawer (key and daily budget)
+
+Open the panel and press the gear. Both settings are **server state**, not page
+state.
+
+| Setting | Range | Notes |
+|---|---|---|
+| **API key** | — | POSTed once to the local server, written to `server/.settings.json` (git-ignored). The endpoint returns only `keyConfigured` plus the last four characters — **the key is never sent back to the page** |
+| **Daily budget** | $0.10 – $2.00 | Enforced by the server. Out-of-range values are clamped, not trusted. A research job's own budget is `min($0.05, cap ÷ 2)`, so one job can never eat a whole day |
+
+**Test key** asks the provider whether the key resolves and reports the verdict
+honestly — including "could not check", which is not the same as "invalid".
+
+On `file://` or the public GitHub Pages site there is no server, so the drawer
+disables the key field and says why. That is deliberate: a key in `localStorage`
+on a machine that also opens the public site is a key you no longer control. The
+endpoints also refuse a non-JSON content type (`415`) and a mismatched `Origin`
+(`403`), which is what stops a hostile page from rewriting your budget.
+
+At the verified rates, **$0.10/day is about 500 cheap questions** and
+**$2.00/day about 3,200 mixed ones** — the slider's minimum is already more than
+a demo needs.
+
 ## Keeping it cheap without making it dumb
 
 Five layers, cheapest first. Each is checked by a script, not asserted here.
@@ -207,6 +230,7 @@ unsourced number cannot reach the page:
 ```powershell
 node scripts/dev/build-domain.js           # regenerate docs/js/domain.js
 node scripts/dev/build-domain.js --check   # fail if it is stale or any claim is unsourced
+node scripts/dev/check-settings.js         # 23 checks: key never returned, budget clamped, CSRF refused
 ```
 
 `check-cost-path.js` measures the savings at the *provider*: it asserts that a

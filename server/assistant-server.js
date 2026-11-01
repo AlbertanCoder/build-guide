@@ -47,6 +47,33 @@ function loadEnv() {
 const ENV = Object.assign({}, loadEnv(), process.env);
 const PORT = Number(ENV.PORT || 8790);
 const PROVIDER = String(ENV.PROVIDER || "openai").toLowerCase();
+
+/* ---------- settings the page may change (git-ignored) ----------
+   The API key is accepted through the UI, written to disk here, and never sent
+   back to the browser. Reading it out would put a key in localStorage on a
+   machine that also opens the public site; so the endpoint reports only a masked
+   hint. The daily budget is stored here too, because a cap enforced in the page
+   is a suggestion, not a cap. */
+const SETTINGS_FILE = ENV.SETTINGS_FILE || path.join(__dirname, ".settings.json");
+const BUDGET_MIN = 0.1; /* USD/day - about 500 cheap questions */
+const BUDGET_MAX = 2.0; /* USD/day - about 3,200 mixed questions */
+
+function readSettings() {
+  try {
+    const raw = JSON.parse(fs.readFileSync(SETTINGS_FILE, "utf8"));
+    return raw && typeof raw === "object" ? raw : {};
+  } catch (e) {
+    return {}; /* missing or corrupt: fall back to .env, never fail to start */
+  }
+}
+
+function writeSettings(patch) {
+  const next = Object.assign(readSettings(), patch);
+  fs.writeFileSync(SETTINGS_FILE, JSON.stringify(next, null, 2), "utf8");
+  return next;
+}
+
+const SETTINGS = readSettings();
 /* Two tiers, so the cheap model does the ordinary work and the strong one is
    reserved for questions that need it. If MODEL is set explicitly we do NOT
    invent a second, pricier model behind your back: both tiers become MODEL,
@@ -62,7 +89,10 @@ const CAN_ESCALATE = STRONG_MODEL !== CHEAP_MODEL;
 const BASE_URL = (ENV.BASE_URL || (PROVIDER === "anthropic"
   ? "https://api.anthropic.com"
   : "https://api.openai.com/v1")).replace(/\/$/, "");
-const API_KEY = ENV.API_KEY || ENV.OPENAI_API_KEY || ENV.ANTHROPIC_API_KEY || "";
+/* `let`, not `const`: the settings endpoint can replace it while the server runs.
+   A key saved through the UI wins over one in .env, so the page is the source of
+   truth once it has been used. */
+let API_KEY = SETTINGS.apiKey || ENV.API_KEY || ENV.OPENAI_API_KEY || ENV.ANTHROPIC_API_KEY || "";
 const MAX_QUESTION = 500;
 const MAX_PASSAGES = 6;
 const MAX_TOKENS = 700;
@@ -76,7 +106,7 @@ const HISTORY_TURNS = Number(ENV.HISTORY_TURNS || 2);
 /* Cost control. DAILY_USD_MAX=0 means no cap; set it and the server degrades to
    the page's offline engine instead of spending past it. */
 const TEST_MODE = ENV.GA_TEST === "1";
-const DAILY_USD_MAX = Number(ENV.DAILY_USD_MAX || 0);
+const DAILY_USD_MAX = Number(SETTINGS.dailyUsdMax || ENV.DAILY_USD_MAX || 0);
 const CACHE_OFF = String(ENV.CACHE || "").toLowerCase() === "off";
 const CACHE_FILE = ENV.CACHE_FILE || path.join(__dirname, ".cache", "answers.json");
 const meter = new ENGINE.CostMeter({ dailyUsdMax: DAILY_USD_MAX });
@@ -340,6 +370,46 @@ const MIME = {
   ".txt": "text/plain; charset=utf-8"
 };
 
+/* The settings shape sent to the page. Deliberately does NOT include the key. */
+function settingsPayload() {
+  const cap = Number(meter.dailyUsdMax || 0);
+  const snap = meter.snapshot();
+  return {
+    ok: true,
+    keyConfigured: !!API_KEY,
+    keyHint: API_KEY ? "\u2026" + String(API_KEY).slice(-4) : "",
+    dailyUsdMax: cap,
+    budgetMin: BUDGET_MIN,
+    budgetMax: BUDGET_MAX,
+    /* A research job must never be able to eat the whole day. */
+    jobBudgetUsd: Number(Math.min(0.05, Math.max(0.02, cap / 2)).toFixed(3)),
+    remainingUsd: snap.remainingUsd,
+    spentTodayUsd: snap.totals.usd,
+    blocked: snap.blocked,
+    local: /127\.0\.0\.1|localhost/.test(BASE_URL)
+  };
+}
+
+/* Ask the provider whether this key resolves. Never throws: a verification that
+   crashes is worse than one that honestly reports "could not check". */
+async function verifyKey() {
+  if (!API_KEY) { return { ok: true, verified: false, detail: "No key saved yet." }; }
+  const url = PROVIDER === "anthropic" ? BASE_URL + "/v1/models" : BASE_URL + "/models";
+  try {
+    const headers = PROVIDER === "anthropic"
+      ? { "x-api-key": API_KEY, "anthropic-version": "2023-06-01" }
+      : { authorization: "Bearer " + API_KEY };
+    const res = await fetch(url, { method: "GET", headers: headers });
+    if (res.ok) { return { ok: true, verified: true, detail: "The provider accepted the key." }; }
+    if (res.status === 401 || res.status === 403) {
+      return { ok: true, verified: false, detail: "The provider rejected this key (" + res.status + ")." };
+    }
+    return { ok: true, verified: false, detail: "Could not check (HTTP " + res.status + ")." };
+  } catch (e) {
+    return { ok: true, verified: false, detail: "Could not reach the provider: " + String(e.message || e) };
+  }
+}
+
 function sendJson(res, code, obj) {
   const body = JSON.stringify(obj);
   res.writeHead(code, {
@@ -578,6 +648,75 @@ async function handleAsk(req, res) {
 
 const server = http.createServer((req, res) => {
   const u = (req.url || "/").split("?")[0];
+
+  /* ---------- settings: the key and the daily cap, set from the page ----------
+     Guarded three ways: the server binds loopback, the JSON content type forces a
+     preflight that this server never approves (so a hostile page cannot POST),
+     and a same-origin check rejects a mismatched Origin. The response never
+     contains the key — only whether one is set and its last four characters. */
+  if (u === "/api/settings") {
+    if (req.method === "GET") { sendJson(res, 200, settingsPayload()); return; }
+    if (req.method !== "POST") { sendJson(res, 405, { error: "GET or POST." }); return; }
+
+    const origin = String(req.headers.origin || "");
+    const host = String(req.headers.host || "");
+    const type = String(req.headers["content-type"] || "");
+    if (type.indexOf("application/json") === -1) {
+      sendJson(res, 415, { error: "Send application/json." }); return;
+    }
+    if (origin && host && origin.replace(/^https?:\/\//, "") !== host) {
+      sendJson(res, 403, { error: "Cross-origin settings change refused." }); return;
+    }
+
+    let raw = "";
+    let tooBig = false;
+    req.on("data", (c) => {
+      raw += c;
+      if (raw.length > 8000) { tooBig = true; req.destroy(); }
+    });
+    req.on("end", () => {
+      if (tooBig) { sendJson(res, 413, { error: "Body too large." }); return; }
+      let body;
+      try { body = JSON.parse(raw || "{}"); } catch (e) {
+        sendJson(res, 400, { error: "Bad JSON." }); return;
+      }
+
+      const patch = {};
+      if (typeof body.apiKey === "string") {
+        const key = body.apiKey.trim();
+        if (key && key.length < 8) {
+          sendJson(res, 400, { error: "That key looks too short to be real." }); return;
+        }
+        patch.apiKey = key; /* an empty string clears it */
+        API_KEY = key;
+      }
+      if (body.dailyUsdMax != null) {
+        const n = Number(body.dailyUsdMax);
+        if (!Number.isFinite(n)) {
+          sendJson(res, 400, { error: "The daily budget must be a number." }); return;
+        }
+        /* Clamped, not rejected: a slider can only send values in range, so an
+           out-of-range number means someone hand-rolled a request. */
+        const clamped = Math.min(BUDGET_MAX, Math.max(BUDGET_MIN, n));
+        patch.dailyUsdMax = Number(clamped.toFixed(2));
+        meter.dailyUsdMax = patch.dailyUsdMax;
+      }
+      try { writeSettings(patch); } catch (e) {
+        sendJson(res, 500, { error: "Could not save settings: " + String(e.message || e) });
+        return;
+      }
+
+      sendJson(res, 200, settingsPayload());
+    });
+    return;
+  }
+
+  /* Optional: prove the key works before trusting it. Only runs when asked, so a
+     normal save costs nothing. */
+  if (u === "/api/settings/verify" && req.method === "POST") {
+    verifyKey().then((result) => sendJson(res, 200, result));
+    return;
+  }
 
   if (u === "/api/health") {
     sendJson(res, 200, {
