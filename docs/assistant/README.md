@@ -200,6 +200,15 @@ node scripts/dev/check-cost-engine.js   # 26 unit checks: cache, router, meter, 
 node scripts/dev/check-cost-path.js     # 30 end-to-end checks against a mock provider
 ```
 
+The curated domain pack is built from `docs/domain/*.md`. The build **refuses to
+publish a claim that has no `source::` line or no `verified::` date**, so an
+unsourced number cannot reach the page:
+
+```powershell
+node scripts/dev/build-domain.js           # regenerate docs/js/domain.js
+node scripts/dev/build-domain.js --check   # fail if it is stale or any claim is unsourced
+```
+
 `check-cost-path.js` measures the savings at the *provider*: it asserts that a
 repeat question produces zero upstream calls, that the passages sent are smaller
 than the ones handed over, that the daily cap returns 402 without spending, and

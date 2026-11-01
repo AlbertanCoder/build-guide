@@ -82,6 +82,18 @@ html = html.replace(moduleTag,
   + 'new Function(new TextDecoder().decode(a))();})();</script>');
 log.push('viewer bundle inlined (base64)');
 
+const domainTag = '<script src="docs/js/domain.js"></script>';
+if (html.includes(domainTag)) {
+  const domain = fs.readFileSync(path.join(REPO, 'docs/js/domain.js'), 'utf8');
+  if (domain.includes('</script')) {
+    throw new Error('docs/js/domain.js contains a </script sequence; it cannot be inlined verbatim');
+  }
+  html = html.replace(domainTag, '<script>' + domain + '</script>');
+  log.push('domain pack inlined');
+} else {
+  log.push('domain pack tag not found (skipped)');
+}
+
 // ---- 6. inline the Guide Assistant (classic script, no imports) -----------
 // It must live inside the single file: the assistant is offline-first, and a
 // relative <script src> would 404 once the HTML is copied anywhere else.

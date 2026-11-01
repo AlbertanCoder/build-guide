@@ -134,6 +134,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/dev/check-assistant.
 node scripts/dev/check-kb-prices.js          # every KB price must also appear in the guide
 node scripts/dev/check-cost-engine.js        # cache, router, meter, compression (26 checks)
 node scripts/dev/check-cost-path.js          # zero-cost repeat, cap, escalation (30 checks)
+node scripts/dev/build-domain.js --check     # domain pack is current and every claim is sourced
 ```
 
 *These are previews of the HTML guide, not a completed aircraft. Click any image to view it full-size.*

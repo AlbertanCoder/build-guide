@@ -592,6 +592,19 @@
         addPassage(tab, null, TABS[tab] || tab, panel, plain(panel).slice(0, 1400));
       }
     });
+    /* The curated domain pack (docs/domain/, generated into docs/js/domain.js)
+       is indexed by the same BM25 as the page, so one retrieval pass serves the
+       build and the wider drone/AI material. Each chunk carries its source and
+       date in the passage text, so the model can label a claim per-claim
+       instead of inventing a citation. */
+    const domain = typeof window !== "undefined" ? window.GUIDE_DOMAIN : null;
+    if (domain && domain.chunks && domain.chunks.length) {
+      domain.chunks.forEach(function (c) {
+        addPassage("", null, "Domain \u00b7 " + c.heading, null,
+          c.text + " Source: " + c.source + " (verified " + c.verified + ").");
+      });
+    }
+
     return PASSAGES.length;
   }
 
@@ -1592,6 +1605,14 @@
       freeHit ? freeHit.title : "no local answer");
     add("an unanswerable question is not answered for free",
       curatedAnswer("what is the airspeed of an unladen swallow") === null, "not answered locally");
+
+    /* 10. the domain pack must be indexed AND retrievable. Loading the file
+       without it reaching BM25 would look fine in every other check. */
+    const domainHits = searchPassages("thermal contrast sensitivity", 5);
+    add("domain pack is indexed and searchable",
+      PASSAGES.some(function (p) { return /^Domain/.test(p.label || ""); }) &&
+      domainHits.some(function (h) { return /^Domain/.test(h.p.label || ""); }),
+      PASSAGES.length + " passages, " + domainHits.length + " hits");
 
     return out;
   }
