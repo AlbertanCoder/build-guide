@@ -46,7 +46,7 @@ function loadEnv() {
 
 const ENV = Object.assign({}, loadEnv(), process.env);
 const PORT = Number(ENV.PORT || 8790);
-const PROVIDER = String(ENV.PROVIDER || "openai").toLowerCase();
+let PROVIDER = String(ENV.PROVIDER || "openai").toLowerCase();
 
 /* ---------- settings the page may change (git-ignored) ----------
    The API key is accepted through the UI, written to disk here, and never sent
@@ -74,6 +74,10 @@ function writeSettings(patch) {
 }
 
 const SETTINGS = readSettings();
+
+/* .settings.json wins over .env once the page has been used to configure things,
+   so the drawer is the source of truth after the first save. */
+if (SETTINGS.provider) { PROVIDER = String(SETTINGS.provider).toLowerCase(); }
 /* Two tiers, so the cheap model does the ordinary work and the strong one is
    reserved for questions that need it. If MODEL is set explicitly we do NOT
    invent a second, pricier model behind your back: both tiers become MODEL,
@@ -82,11 +86,48 @@ const SETTINGS = readSettings();
 const MODEL_EXPLICIT = !!ENV.MODEL;
 const DEFAULT_CHEAP = PROVIDER === "anthropic" ? "claude-haiku-5.5" : "gpt-6-luna";
 const DEFAULT_STRONG = PROVIDER === "anthropic" ? "claude-sonnet-5.5" : "gpt-6.1-terra";
-const MODEL = ENV.MODEL || DEFAULT_CHEAP;
-const CHEAP_MODEL = ENV.CHEAP_MODEL || MODEL;
-const STRONG_MODEL = ENV.STRONG_MODEL || (MODEL_EXPLICIT ? MODEL : DEFAULT_STRONG);
-const CAN_ESCALATE = STRONG_MODEL !== CHEAP_MODEL;
-const BASE_URL = (ENV.BASE_URL || (PROVIDER === "anthropic"
+let MODEL = SETTINGS.cheapModel || ENV.MODEL || DEFAULT_CHEAP;
+let CHEAP_MODEL = SETTINGS.cheapModel || ENV.CHEAP_MODEL || MODEL;
+let STRONG_MODEL = SETTINGS.strongModel || ENV.STRONG_MODEL || (MODEL_EXPLICIT ? MODEL : DEFAULT_STRONG);
+/* Derived, never stored: escalation only exists when the two tiers differ. */
+function canEscalate() { return STRONG_MODEL !== CHEAP_MODEL; }
+
+/* Provider presets. `kind` is the adapter — anything OpenAI-compatible is
+   "openai", the Messages API is "anthropic". This exists so the drawer can offer
+   a choice instead of making you hand-edit .env to use a non-OpenAI key. */
+const PRESETS = [
+  { id: "openai", label: "OpenAI", kind: "openai", baseUrl: "https://api.openai.com/v1",
+    cheap: "gpt-6-luna", strong: "gpt-6.1-terra" },
+  { id: "anthropic", label: "Anthropic (Claude)", kind: "anthropic", baseUrl: "https://api.anthropic.com",
+    cheap: "claude-haiku-5.5", strong: "claude-sonnet-5.5" },
+  { id: "groq", label: "Groq", kind: "openai", baseUrl: "https://api.groq.com/openai/v1",
+    cheap: "llama-3.3-70b-versatile", strong: "llama-3.3-70b-versatile" },
+  { id: "openrouter", label: "OpenRouter", kind: "openai", baseUrl: "https://openrouter.ai/api/v1",
+    cheap: "anthropic/claude-3.5-haiku", strong: "anthropic/claude-sonnet-4.5" },
+  { id: "deepseek", label: "DeepSeek", kind: "openai", baseUrl: "https://api.deepseek.com/v1",
+    cheap: "deepseek-chat", strong: "deepseek-chat" },
+  { id: "mistral", label: "Mistral", kind: "openai", baseUrl: "https://api.mistral.ai/v1",
+    cheap: "mistral-small-latest", strong: "mistral-large-latest" },
+  { id: "ollama", label: "Ollama (local, free, no key)", kind: "openai",
+    baseUrl: "http://127.0.0.1:11434/v1", cheap: "qwen2.5:7b", strong: "qwen2.5:7b" }
+];
+
+function presetFor() {
+  const hit = PRESETS.find((p) => p.kind === PROVIDER && p.baseUrl === BASE_URL);
+  return hit ? hit.id : "";
+}
+
+function applyPreset(id) {
+  const p = PRESETS.find((x) => x.id === id);
+  if (!p) { return null; }
+  PROVIDER = p.kind;
+  BASE_URL = p.baseUrl;
+  MODEL = p.cheap;
+  CHEAP_MODEL = p.cheap;
+  STRONG_MODEL = p.strong;
+  return p;
+}
+let BASE_URL = (SETTINGS.baseUrl || ENV.BASE_URL || (PROVIDER === "anthropic"
   ? "https://api.anthropic.com"
   : "https://api.openai.com/v1")).replace(/\/$/, "");
 /* `let`, not `const`: the settings endpoint can replace it while the server runs.
@@ -378,6 +419,12 @@ function settingsPayload() {
     ok: true,
     keyConfigured: !!API_KEY,
     keyHint: API_KEY ? "\u2026" + String(API_KEY).slice(-4) : "",
+    provider: PROVIDER,
+    baseUrl: BASE_URL,
+    cheapModel: CHEAP_MODEL,
+    strongModel: STRONG_MODEL,
+    preset: presetFor(),
+    presets: PRESETS.map(function (p) { return { id: p.id, label: p.label }; }),
     dailyUsdMax: cap,
     budgetMin: BUDGET_MIN,
     budgetMax: BUDGET_MAX,
@@ -598,7 +645,7 @@ async function handleAsk(req, res) {
     /* Escalation, bounded to one retry and only when a second model is actually
        configured. The cheap answer has already streamed, so a better one is
        swapped in with `replace` rather than shown as a second message. */
-    if (CAN_ESCALATE && decision.tier === "cheap" && REFUSAL.test(full)) {
+    if (canEscalate() && decision.tier === "cheap" && REFUSAL.test(full)) {
       meter.count("escalated");
       try {
         const second = await callStream(messages, STRONG_MODEL, false);
@@ -682,6 +729,17 @@ const server = http.createServer((req, res) => {
       }
 
       const patch = {};
+      if (typeof body.preset === "string" && body.preset) {
+        const applied = applyPreset(body.preset);
+        if (!applied) {
+          sendJson(res, 400, { error: 'unknown provider preset "' + body.preset + '"' });
+          return;
+        }
+        patch.provider = applied.kind;
+        patch.baseUrl = applied.baseUrl;
+        patch.cheapModel = applied.cheap;
+        patch.strongModel = applied.strong;
+      }
       if (typeof body.apiKey === "string") {
         const key = body.apiKey.trim();
         if (key && key.length < 8) {
@@ -725,7 +783,7 @@ const server = http.createServer((req, res) => {
       model: MODEL,
       cheapModel: CHEAP_MODEL,
       strongModel: STRONG_MODEL,
-      canEscalate: CAN_ESCALATE,
+      canEscalate: canEscalate(),
       baseUrl: BASE_URL,
       keyConfigured: !!API_KEY,
       local: /127\.0\.0\.1|localhost/.test(BASE_URL),
@@ -777,7 +835,7 @@ server.listen(PORT, "127.0.0.1", () => {
   console.log("  provider : " + PROVIDER);
   console.log("  model    : " + MODEL);
   console.log("  cheap    : " + CHEAP_MODEL);
-  console.log("  strong   : " + STRONG_MODEL + (CAN_ESCALATE ? "" : "   (no escalation; set STRONG_MODEL to enable)"));
+  console.log("  strong   : " + STRONG_MODEL + (canEscalate() ? "" : "   (no escalation; set STRONG_MODEL to enable)"));
   console.log("  budget   : " + (DAILY_USD_MAX > 0 ? "$" + DAILY_USD_MAX + "/day" : "no cap (set DAILY_USD_MAX)"));
   console.log("  cache    : " + (CACHE_OFF ? "off" : CACHE_FILE + "  (" + cache.stats().entries + " entries)"));
   console.log("  base url : " + BASE_URL);

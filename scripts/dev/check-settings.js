@@ -135,6 +135,26 @@ async function postSettings(payload, headers) {
     const verify = await (await fetch("http://127.0.0.1:" + APP_PORT + "/api/settings/verify",
       { method: "POST" })).json();
     check("key verification reports a verdict", verify.ok === true && verify.verified === true, verify.detail);
+
+    /* ---- provider presets ------------------------------------------------ */
+    const withPresets = JSON.parse((await getSettings()).body);
+    check("the drawer is offered provider presets",
+      Array.isArray(withPresets.presets) && withPresets.presets.length >= 5,
+      (withPresets.presets || []).length + " presets");
+
+    const groq = JSON.parse((await postSettings({ preset: "groq" })).body);
+    check("choosing a preset moves the base URL", /groq\.com/.test(groq.baseUrl), groq.baseUrl);
+    check("choosing a preset changes the models",
+      groq.cheapModel === "llama-3.3-70b-versatile", groq.cheapModel);
+    check("the key is kept when the provider changes", groq.keyConfigured === true);
+
+    const anth = JSON.parse((await postSettings({ preset: "anthropic" })).body);
+    check("anthropic switches the adapter, not just the address",
+      anth.provider === "anthropic" && /anthropic\.com/.test(anth.baseUrl),
+      anth.provider + " " + anth.baseUrl);
+
+    const badPreset = await postSettings({ preset: "not-a-provider" });
+    check("an unknown preset is refused", badPreset.status === 400, "status=" + badPreset.status);
   } catch (err) {
     check("the test ran without throwing", false, String(err && err.message ? err.message : err));
   } finally {

@@ -1333,6 +1333,12 @@
     note.id = "ga-settings-note";
     note.hidden = true;
 
+    const providerLabel = el("label", null, "Provider");
+    const providerSel = el("select", "ga-select");
+    providerSel.id = "ga-provider";
+    const providerNote = el("p", "ga-sub");
+    providerNote.id = "ga-provider-note";
+
     const keyLabel = el("label", null, "API key");
     const keyState = el("span", "ga-sub");
     keyState.id = "ga-key-state";
@@ -1373,6 +1379,9 @@
     const scaleNote = el("p", "ga-sub");
 
     node.appendChild(el("h4", null, "Settings"));
+    node.appendChild(providerLabel);
+    node.appendChild(providerSel);
+    node.appendChild(providerNote);
     node.appendChild(keyLabel);
     node.appendChild(keyInput);
     node.appendChild(keyRow);
@@ -1388,13 +1397,25 @@
     }
 
     function setDisabled(on) {
-      [keyInput, saveKey, testKey, clearKey, budget].forEach(function (n) {
+      [providerSel, keyInput, saveKey, testKey, clearKey, budget].forEach(function (n) {
         n.disabled = !!on;
       });
     }
 
     function paint(s) {
       keyState.textContent = s.keyConfigured ? "saved, ending " + s.keyHint : "not set";
+      if (!providerSel.options.length && s.presets) {
+        s.presets.forEach(function (p) {
+          const opt = document.createElement("option");
+          opt.value = p.id;
+          opt.textContent = p.label;
+          providerSel.appendChild(opt);
+        });
+      }
+      if (s.preset) { providerSel.value = s.preset; }
+      providerNote.textContent = (s.baseUrl || "") +
+        (s.cheapModel ? "  ·  cheap " + s.cheapModel : "") +
+        (s.strongModel && s.strongModel !== s.cheapModel ? "  ·  strong " + s.strongModel : "");
       budget.min = String(s.budgetMin);
       budget.max = String(s.budgetMax);
       /* dailyUsdMax 0 means "no cap", not "zero dollars" — a slider cannot show
@@ -1440,6 +1461,15 @@
         });
       });
     }
+
+    providerSel.addEventListener("change", function () {
+      post({ preset: providerSel.value })
+        .then(function (s) {
+          paint(s);
+          setNote("Provider set. Press Test key — a key only works with the provider that issued it.");
+        })
+        .catch(function (e) { setNote(e.message, true); });
+    });
 
     saveKey.addEventListener("click", function () {
       const v = keyInput.value.trim();
