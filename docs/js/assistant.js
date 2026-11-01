@@ -1120,6 +1120,60 @@
         messages: MESSAGES.slice(-MAX_TURNS)
       }));
     } catch (e) { /* private mode: the chat simply does not persist */ }
+    syncThread();
+  }
+
+  /* ---- conversation memory (decisions 11's spirit: kept, never trained on) --
+     One thread per browser, mirrored to the server when one is present, so the
+     phone and the desktop see the same conversations. The local copy always
+     survives; the mirror is best-effort. */
+  const THREAD_KEY = "ga-thread";
+  function threadId() {
+    try {
+      let id = localStorage.getItem(THREAD_KEY);
+      if (!id) {
+        id = "t-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7);
+        localStorage.setItem(THREAD_KEY, id);
+      }
+      return id;
+    } catch (e) { return "t-ephemeral"; }
+  }
+  function threadTitle() {
+    const first = MESSAGES.filter(function (m) { return m.role === "user"; })[0];
+    return String((first && (first.text || first.title)) || "conversation").slice(0, 70);
+  }
+  function syncThread() {
+    if (!ENDPOINT || typeof fetch !== "function") { return; }
+    try {
+      fetch("/api/conversations/" + threadId(), {
+        method: "PUT",
+        headers: writeTokenHeaders({ "content-type": "application/json" }),
+        body: JSON.stringify({
+          title: threadTitle(),
+          messages: MESSAGES.slice(-200),
+          history: ctx.history.slice(-12),
+          lastId: ctx.lastId
+        })
+      }).catch(function () { /* offline: the localStorage copy keeps it */ });
+    } catch (e) { /* ignore */ }
+  }
+  function loadThread(id) {
+    return fetch("/api/conversations/" + encodeURIComponent(id), { cache: "no-store" })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (!j || !j.ok) { return; }
+        MESSAGES.length = 0;
+        UI.log.textContent = "";
+        (j.thread.messages || []).forEach(function (m) {
+          MESSAGES.push(m);
+          UI.log.appendChild(renderMessage(m));
+        });
+        ctx.history = (j.thread.history || []).slice(-12);
+        ctx.lastId = j.thread.lastId || "";
+        try { localStorage.setItem(THREAD_KEY, id); } catch (e) { /* ignore */ }
+        UI.log.scrollTop = UI.log.scrollHeight;
+      })
+      .catch(function () { /* leave the view alone */ });
   }
 
   function modeLabel() {
@@ -1219,6 +1273,69 @@
     }
   }
 
+  /* ---- the History panel: every conversation, on every device -------------- */
+  function buildHistory() {
+    const node = el("div", "ga-settings");
+    node.id = "ga-history";
+    node.hidden = true;
+    node.appendChild(el("h4", null, "Conversation history"));
+    node.appendChild(el("p", "ga-sub",
+      "Stored on your own server only. Never used for training."));
+    const list = el("div", null);
+    list.id = "ga-history-list";
+    node.appendChild(list);
+    const row = el("div", "ga-row");
+    const fresh = el("button", "ga-chip", "New chat");
+    fresh.type = "button";
+    fresh.id = "ga-history-new";
+    fresh.addEventListener("click", function () {
+      try { localStorage.removeItem(THREAD_KEY); } catch (e) { /* ignore */ }
+      MESSAGES.length = 0;
+      ctx.lastId = "";
+      ctx.history.length = 0;
+      UI.log.textContent = "";
+      push(introMessage());
+      renderHistory();
+    });
+    row.appendChild(fresh);
+    node.appendChild(row);
+    return {
+      node: node,
+      refresh: renderHistory
+    };
+  }
+
+  function renderHistory() {
+    const list = document.getElementById("ga-history-list");
+    if (!list) { return; }
+    list.textContent = "";
+    if (!ENDPOINT) {
+      list.appendChild(el("p", "ga-sub",
+        "History lives on the local server. Run node server/assistant-server.js and reload."));
+      return;
+    }
+    fetch("/api/conversations", { cache: "no-store" })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        list.textContent = "";
+        const threads = (j && j.threads) || [];
+        if (!threads.length) {
+          list.appendChild(el("p", "ga-sub", "No conversations yet. Ask something."));
+          return;
+        }
+        threads.slice(0, 40).forEach(function (t) {
+          const btn = el("button", "ga-chip");
+          btn.style.cssText = "display:block;width:100%;text-align:left;margin:0 0 6px";
+          btn.textContent = t.title + "  \u00b7  " + t.count + " messages";
+          btn.addEventListener("click", function () { loadThread(t.id); });
+          list.appendChild(btn);
+        });
+      })
+      .catch(function () {
+        list.appendChild(el("p", "ga-sub", "Could not reach the server."));
+      });
+  }
+
   function mount() {
     if (document.getElementById("ga-root")) { return; }
     const root = el("div", null);
@@ -1280,6 +1397,13 @@
     gear.title = "Settings: API key and daily budget";
     gear.setAttribute("aria-label", "Settings");
     gear.setAttribute("aria-expanded", "false");
+    const hist = el("button", "ga-icon-btn", "\u2318");
+    hist.type = "button";
+    hist.id = "ga-history-btn";
+    hist.title = "Conversation history";
+    hist.setAttribute("aria-label", "History");
+    hist.setAttribute("aria-expanded", "false");
+    btns.appendChild(hist);
     btns.appendChild(gear);
     btns.appendChild(clear);
     btns.appendChild(close);
@@ -1307,16 +1431,29 @@
     form.appendChild(send);
 
     const settings = buildSettings();
+    const history = buildHistory();
     let settingsOpen = false;
+    let historyOpen = false;
     function showSettings(on) {
       settingsOpen = !!on;
+      if (settingsOpen) { historyOpen = false; history.node.hidden = true; hist.setAttribute("aria-expanded", "false"); }
       settings.node.hidden = !settingsOpen;
-      log.hidden = settingsOpen;
-      form.hidden = settingsOpen;
+      log.hidden = settingsOpen || historyOpen;
+      form.hidden = settingsOpen || historyOpen;
       gear.setAttribute("aria-expanded", settingsOpen ? "true" : "false");
       if (settingsOpen) { settings.refresh(); }
     }
+    function showHistory(on) {
+      historyOpen = !!on;
+      if (historyOpen) { settingsOpen = false; settings.node.hidden = true; gear.setAttribute("aria-expanded", "false"); }
+      history.node.hidden = !historyOpen;
+      log.hidden = settingsOpen || historyOpen;
+      form.hidden = settingsOpen || historyOpen;
+      hist.setAttribute("aria-expanded", historyOpen ? "true" : "false");
+      if (historyOpen) { history.refresh(); }
+    }
     gear.addEventListener("click", function () { showSettings(!settingsOpen); });
+    hist.addEventListener("click", function () { showHistory(!historyOpen); });
 
     const offlineNote = el("p", "ga-offline-note");
     offlineNote.id = "ga-offline-note";
@@ -1325,6 +1462,7 @@
     panel.appendChild(head);
     panel.appendChild(offlineNote);
     panel.appendChild(settings.node);
+    panel.appendChild(history.node);
     panel.appendChild(log);
     panel.appendChild(form);
     root.appendChild(panel);
@@ -2097,6 +2235,15 @@
       !!document.getElementById("ga-write-token") &&
       !!document.getElementById("ga-write-token-save"), "ok");
     if (UI.showSettings) { UI.showSettings(false); }
+
+    /* Conversation memory: the history surface exists, and every browser holds
+       a stable thread id its conversations sync under. */
+    add("the history button and panel exist",
+      !!document.getElementById("ga-history-btn") &&
+      !!document.getElementById("ga-history") &&
+      !!document.getElementById("ga-history-new"), "ok");
+    add("each browser keeps a stable thread id",
+      /^t-/.test(threadId()) && threadId() === threadId(), threadId().slice(0, 14));
 
     /* When there is no AI, the panel has to SAY so in words. Behaving differently
        in silence is what made the offline copy look broken. */

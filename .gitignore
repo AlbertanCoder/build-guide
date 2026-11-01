@@ -17,3 +17,6 @@ server/.settings.json
 
 # Answers already paid for: useful locally, never committed
 server/.cache/
+
+# Conversation memory: the user's own threads, mirrored from the page
+server/.conversations/

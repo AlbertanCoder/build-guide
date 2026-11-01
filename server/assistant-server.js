@@ -973,6 +973,118 @@ async function handleAsk(req, res) {
   }
 }
 
+/* ---------- conversation memory (Item B; decisions 11's spirit: kept, never
+   trained on) -------------------------------------------------------------
+   Threads live in server/.conversations/ (git-ignored): one JSON file per
+   thread, mirrored from the page so the phone and the desktop share the same
+   conversations. Writes ride through the same three write gates as settings and
+   proposals; reads are open, because reading is not writing. A corrupt or
+   missing file is never fatal — the page's localStorage copy keeps it. */
+const CONVERSATIONS_DIR = ENV.CONVERSATIONS_DIR || path.join(__dirname, ".conversations");
+const THREAD_ID = /^[a-z0-9-]{1,64}$/i;
+
+function convFile(id) {
+  return path.join(CONVERSATIONS_DIR, id + ".json");
+}
+
+function listThreads() {
+  let names = [];
+  try { names = fs.readdirSync(CONVERSATIONS_DIR); } catch (e) { return []; }
+  const out = [];
+  names.forEach(function (n) {
+    if (!/\.json$/.test(n)) { return; }
+    try {
+      const t = JSON.parse(fs.readFileSync(path.join(CONVERSATIONS_DIR, n), "utf8"));
+      out.push({
+        id: n.replace(/\.json$/, ""),
+        title: String(t.title || "conversation").slice(0, 70),
+        count: Array.isArray(t.messages) ? t.messages.length : 0,
+        updatedAt: Number(t.updatedAt || 0)
+      });
+    } catch (e) { /* a corrupt thread is skipped, never fatal */ }
+  });
+  out.sort(function (a, b) { return b.updatedAt - a.updatedAt; });
+  return out;
+}
+
+async function handleConversations(req, res, u) {
+  const m = /^\/api\/conversations\/([^/]+)$/.exec(u);
+
+  /* GET the list — a read, so no gate. */
+  if (!m && req.method === "GET") {
+    sendJson(res, 200, { ok: true, threads: listThreads() });
+    return;
+  }
+  if (!m) { sendJson(res, 405, { error: "GET only on the list." }); return; }
+
+  const id = m[1];
+  if (!THREAD_ID.test(id)) { sendJson(res, 400, { error: "Bad thread id." }); return; }
+
+  /* GET one thread — also a read. */
+  if (req.method === "GET") {
+    try {
+      const t = JSON.parse(fs.readFileSync(convFile(id), "utf8"));
+      sendJson(res, 200, {
+        ok: true,
+        thread: {
+          title: t.title || "conversation",
+          messages: Array.isArray(t.messages) ? t.messages : [],
+          history: Array.isArray(t.history) ? t.history : [],
+          lastId: String(t.lastId || "")
+        }
+      });
+    } catch (e) {
+      sendJson(res, 404, { ok: false, error: "no such thread" });
+    }
+    return;
+  }
+
+  if (req.method !== "PUT") { sendJson(res, 405, { error: "GET or PUT." }); return; }
+
+  /* PUT: the page's mirror. The same three guards as every other write. */
+  const origin = String(req.headers.origin || "");
+  const host = String(req.headers.host || "");
+  if (String(req.headers["content-type"] || "").indexOf("application/json") === -1) {
+    sendJson(res, 415, { error: "Send application/json." }); return;
+  }
+  if (origin && host && origin.replace(/^https?:\/\//, "") !== host) {
+    sendJson(res, 403, { error: "Cross-origin change refused." }); return;
+  }
+  const gate = writeGate(req);
+  if (!gate.ok) { sendJson(res, gate.status, { error: gate.error }); return; }
+
+  let raw = "";
+  let tooBig = false;
+  await new Promise((resolve) => {
+    req.on("data", (c) => {
+      if (tooBig) { return; }
+      raw += c;
+      if (Buffer.byteLength(raw, "utf8") > 262144) { tooBig = true; raw = ""; }
+    });
+    req.on("end", resolve);
+    req.on("error", resolve);
+  });
+  if (tooBig) { sendJson(res, 413, { error: "Request too large." }); return; }
+
+  let body;
+  try { body = JSON.parse(raw || "{}"); } catch (e) { sendJson(res, 400, { error: "Bad JSON." }); return; }
+
+  const thread = {
+    title: String(body.title || "conversation").slice(0, 70),
+    messages: Array.isArray(body.messages) ? body.messages.slice(-200) : [],
+    history: Array.isArray(body.history) ? body.history.slice(-12) : [],
+    lastId: String(body.lastId || "").slice(0, 200),
+    updatedAt: Date.now()
+  };
+  try {
+    fs.mkdirSync(CONVERSATIONS_DIR, { recursive: true });
+    fs.writeFileSync(convFile(id), JSON.stringify(thread), "utf8");
+    sendJson(res, 200, { ok: true });
+  } catch (e) {
+    sendJson(res, 500, { error: "could not save the thread: " + String(e.message || e).slice(0, 200) });
+  }
+}
+
 const server = http.createServer((req, res) => {
   const u = (req.url || "/").split("?")[0];
 
@@ -1131,6 +1243,13 @@ const server = http.createServer((req, res) => {
       };
     });
     sendJson(res, 200, { ok: true, proposals: names, details: details });
+    return;
+  }
+
+  /* Conversation memory: threads mirrored from every device (Item B).
+     Writes are gated like settings and proposals; reads are open. */
+  if (u === "/api/conversations" || /^\/api\/conversations\/[^/]+$/.test(u)) {
+    handleConversations(req, res, u);
     return;
   }
 
