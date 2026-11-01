@@ -166,14 +166,19 @@ function propose(opPath, opts) {
   let r = git(["checkout", "-b", slug]);
   if (!r.ok) { return fail("could not create the branch: " + r.out.trim()); }
 
-  /* From here on, every failure path must put main back and delete the branch. */
+  /* From here on, every failure path must put main back and delete the branch —
+     including paths no one wrote a message for. reset --hard clears the staged
+     copy too: git checkout -- . does not touch the index, and a crash after
+     git add once smuggled a staged edit into an unrelated commit (2026-11-01). */
   const abortBranch = function (message) {
-    git(["checkout", "--", "."]);
+    git(["reset", "--hard"]);
     git(["checkout", "main"]);
     git(["branch", "-D", slug]);
     return fail(message);
   };
 
+  /* The try wraps the rest of the function body. */
+  try {
   const applied = spec.mod.apply(op, html);
   if (!applied.ok) { return abortBranch("the change could not be applied: " + applied.error); }
   fs.writeFileSync(indexPath, applied.html, "utf8");
@@ -211,6 +216,10 @@ function propose(opPath, opts) {
       "node server/ops/reject.js " + slug
     ]
   };
+  } catch (e) {
+    return abortBranch("an unexpected error stopped the proposal: " +
+      (e && e.message ? e.message : String(e)));
+  }
 }
 
 function syncTotalReport(synced) {
@@ -280,12 +289,14 @@ function proposeMany(ops, opts) {
   if (!r.ok) { return fail("could not create the branch: " + r.out.trim()); }
 
   const abortBranch = function (message) {
-    git(["checkout", "--", "."]);
+    git(["reset", "--hard"]);
     git(["checkout", "main"]);
     git(["branch", "-D", slug]);
     return fail(message);
   };
 
+  /* The try wraps the rest of the function body. */
+  try {
   const changes = [];
   for (const op of list) {
     const applied = quizAdd.apply(op, html);
@@ -322,6 +333,10 @@ function proposeMany(ops, opts) {
     synced: syncTotalReport(synced),
     next: ["node server/ops/accept.js " + slug, "node server/ops/reject.js " + slug]
   };
+  } catch (e) {
+    return abortBranch("an unexpected error stopped the proposal: " +
+      (e && e.message ? e.message : String(e)));
+  }
 }
 
 /**

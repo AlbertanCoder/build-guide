@@ -257,6 +257,32 @@ const OP = {
     const guard = run(process.execPath, ["server/ops/reject.js", "main"], CLONE);
     check("reject refuses to delete anything that is not a proposal",
       guard.status !== 0, guard.out.split(/\r?\n/)[0].slice(0, 80));
+
+    /* ---- fault injection: a crash must not strand the repo ---------------- */
+    /* Patch the clone's copy of propose() to throw AFTER the edit is staged —
+       the exact accident this hardening was paid for. */
+    const clonePropose = path.join(CLONE, "server", "ops", "propose.js");
+    const proposeSrc = fs.readFileSync(clonePropose, "utf8");
+    const marker = 'const message = "Proposal: " + applied.changes.join("; ");';
+    fs.writeFileSync(clonePropose,
+      proposeSrc.split(marker).join('throw new Error("fault injection");\n    ' + marker), "utf8");
+    /* Commit the patch inside the clone, or the clean-tree guard fires before the
+       injected crash can happen. */
+    run("git", ["add", "-A"], CLONE);
+    run("git", ["commit", "--quiet", "-m", "fault injection"], CLONE);
+    fs.writeFileSync(path.join(CLONE, "fault.json"), JSON.stringify(
+      { op: "prose-rewrite", section: "p-build", oldText: PROSE_ANCHOR, newText: PROSE_NEW },
+      null, 2), "utf8");
+    const faultBefore = fs.readFileSync(indexPath, "utf8");
+    const faultBranches = gitOut(["branch", "--list", "proposal/*"]);
+    r = node(["server/ops/propose.js", "fault.json"]);
+    check("an unexpected crash during propose leaves no branch and puts you back on main",
+      r.status !== 0 && /unexpected error/.test(r.out) &&
+      gitOut(["rev-parse", "--abbrev-ref", "HEAD"]).trim() === "main" &&
+      gitOut(["branch", "--list", "proposal/*"]) === faultBranches &&
+      gitOut(["status", "--porcelain", "--untracked-files=no"]).trim() === "" &&
+      fs.readFileSync(indexPath, "utf8") === faultBefore,
+      r.out.split(/\r?\n/)[0].slice(0, 90));
   } catch (err) {
     check("the test ran without throwing", false, String(err && err.message ? err.message : err));
   } finally {
