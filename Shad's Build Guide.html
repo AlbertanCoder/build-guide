@@ -441,11 +441,15 @@
   .ga-settings label .ga-sub { text-transform: none; letter-spacing: 0; font-weight: 400; margin-left: 6px; }
   .ga-key-input { width: 100%; box-sizing: border-box; padding: 9px 11px; border: 1px solid var(--line);
     border-radius: 10px; font-size: 13px; background: var(--bg); }
+  .ga-select { width: 100%; box-sizing: border-box; padding: 8px 10px; border: 1px solid var(--line);
+    border-radius: 10px; font-size: 13px; background: var(--bg); }
   .ga-key-input:focus { outline: none; border-color: var(--pine); box-shadow: 0 0 0 3px rgba(27, 94, 79, .15); }
   .ga-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
   .ga-budget { width: 100%; margin: 2px 0 4px; accent-color: var(--pine); }
   .ga-settings .ga-sub { margin: 2px 0 0; }
   .ga-settings .ga-note.ok { background: var(--pine-pale); }
+  .ga-offline-note { margin: 0; padding: 9px 12px; background: var(--ember-pale); color: #5a2a08;
+    font-size: 12.5px; line-height: 1.45; border-bottom: 1px solid var(--line); }
   #ga-selftest { position: fixed; inset: 0; z-index: 999; margin: 0; background: #fff; color: #123a2e;
     padding: 20px; overflow: auto; font: 13px/1.55 Consolas, monospace; white-space: pre-wrap; }
   @media (max-width: 560px) {
@@ -648,8 +652,14 @@
   </div>
 
   <div class="card">
-    <p><strong>One pipeline, six steps.</strong> Airborne or on the bench, the chain is the
-    same. Tap any step.</p>
+    <p><strong>One pipeline, six steps.</strong> The chain is the same airborne or on
+    the bench &mdash; tap any step to see what it does. <strong>1 Sense:</strong> the
+    MLX90640 reads 768 temperatures per frame. <strong>2 Detect:</strong> the included
+    hotspots.py, backed by 19 passing synthetic tests. <strong>3 Locate:</strong> geo.py
+    adds position, altitude and heading. <strong>4 Map:</strong> JSONL logging and an
+    offline coordinate viewer. <strong>5 Report:</strong> logs keep measured values and
+    limitations. <strong>6 Prove:</strong> repeated controlled tests against acceptance
+    targets.</p>
     <div class="row" id="chain" style="align-items:stretch"></div>
     <div class="note info" id="chainDetail" aria-live="polite" style="margin-top:12px">Tap any step above.</div>
   </div>
@@ -2186,11 +2196,7 @@ while True:
       { q: "How should a future AI briefing be checked?",
         a: ["Assume it is always right", "Compare every statement with the measured hotspot log; no AI briefing is implemented in this HTML", "Treat it as certified", "Let it control the drone"],
         c: 1,
-        why: "Generated prose is not ground truth. Use recorded measurements, human verification and plain-code safety checks." },
-      { q: "At 30 m with the 55 degree lens, roughly how much ground does one pixel cover?",
-        a: ["About 10 cm", "About 1 m", "About 10 m", "About 30 m"],
-        c: 1,
-        why: "2 x 30 m x tan(27.5 deg) is about 31.2 m across; over 32 pixels that is about 0.98 m." }
+        why: "Generated prose is not ground truth. Use recorded measurements, human verification and plain-code safety checks." }
     ],
     rules: [
       { q: "What does CAR 601.15 restrict around a forest fire?",
@@ -2260,7 +2266,7 @@ while True:
   const QUIZ_TITLES = {
     airframe: "Quiz: Build the airframe (5 questions)",
     payload: "Quiz: The thermal payload (5 questions)",
-    detect: "Quiz: Detection & mapping (6 questions)",
+    detect: "Quiz: Detection & mapping (5 questions)",
     rules: "Quiz: Flight rules & safety (5 questions)",
     final: "Final exam (8 questions)"
   };
@@ -4111,14 +4117,28 @@ window.GUIDE_DOMAIN = {
   }
 
   function modeLabel() {
-    return ENDPOINT
-      ? "AI answers \u00b7 grounded in this guide"
-      : "Grounded in this guide \u00b7 works offline";
+    if (ENDPOINT) { return "AI answers \u00b7 grounded in this guide"; }
+    if (typeof location !== "undefined" && location.protocol === "file:") {
+      return "Offline copy \u00b7 44 written answers \u00b7 no AI";
+    }
+    return "Grounded in this guide \u00b7 works offline";
   }
 
   function setMode() {
     const sub = document.getElementById("ga-sub");
     if (sub) { sub.textContent = modeLabel(); }
+    /* Say it out loud, in the panel, rather than leaving the user to work out why
+       the answers are canned and the key field is disabled. */
+    const note = document.getElementById("ga-offline-note");
+    if (note) {
+      const isFile = typeof location !== "undefined" && location.protocol === "file:";
+      note.hidden = !!ENDPOINT;
+      note.textContent = isFile
+        ? "This is the offline copy: 44 written answers, no AI, and no API key can be entered here. " +
+          "For AI, run  node server/assistant-server.js  then open  http://localhost:8790/"
+        : "No local server, so these are the 44 written answers only. " +
+          "For AI, run  node server/assistant-server.js  and reload.";
+    }
   }
 
   /* If the page is being served by server/assistant-server.js, use it without
@@ -4292,7 +4312,12 @@ window.GUIDE_DOMAIN = {
     }
     gear.addEventListener("click", function () { showSettings(!settingsOpen); });
 
+    const offlineNote = el("p", "ga-offline-note");
+    offlineNote.id = "ga-offline-note";
+    offlineNote.hidden = true;
+
     panel.appendChild(head);
+    panel.appendChild(offlineNote);
     panel.appendChild(settings.node);
     panel.appendChild(log);
     panel.appendChild(form);
@@ -4351,6 +4376,23 @@ window.GUIDE_DOMAIN = {
     note.id = "ga-settings-note";
     note.hidden = true;
 
+    const providerLabel = el("label", null, "Provider");
+    const providerSel = el("select", "ga-select");
+    providerSel.id = "ga-provider";
+    const providerNote = el("p", "ga-sub");
+    providerNote.id = "ga-provider-note";
+
+    const modelLabel = el("label", null, "Model");
+    const modelInput = el("input", "ga-key-input");
+    modelInput.id = "ga-model";
+    modelInput.autocomplete = "off";
+    modelInput.placeholder = "exact model id, e.g. vendor/model-name";
+    const modelRow = el("div", "ga-row");
+    const saveModel = el("button", "ga-chip", "Use this model");
+    saveModel.type = "button";
+    saveModel.id = "ga-model-save";
+    modelRow.appendChild(saveModel);
+
     const keyLabel = el("label", null, "API key");
     const keyState = el("span", "ga-sub");
     keyState.id = "ga-key-state";
@@ -4391,6 +4433,12 @@ window.GUIDE_DOMAIN = {
     const scaleNote = el("p", "ga-sub");
 
     node.appendChild(el("h4", null, "Settings"));
+    node.appendChild(providerLabel);
+    node.appendChild(providerSel);
+    node.appendChild(providerNote);
+    node.appendChild(modelLabel);
+    node.appendChild(modelInput);
+    node.appendChild(modelRow);
     node.appendChild(keyLabel);
     node.appendChild(keyInput);
     node.appendChild(keyRow);
@@ -4406,17 +4454,37 @@ window.GUIDE_DOMAIN = {
     }
 
     function setDisabled(on) {
-      [keyInput, saveKey, testKey, clearKey, budget].forEach(function (n) {
+      [providerSel, modelInput, saveModel, keyInput, saveKey, testKey, clearKey, budget].forEach(function (n) {
         n.disabled = !!on;
       });
     }
 
     function paint(s) {
       keyState.textContent = s.keyConfigured ? "saved, ending " + s.keyHint : "not set";
+      if (!providerSel.options.length && s.presets) {
+        s.presets.forEach(function (p) {
+          const opt = document.createElement("option");
+          opt.value = p.id;
+          opt.textContent = p.label;
+          providerSel.appendChild(opt);
+        });
+      }
+      if (s.preset) { providerSel.value = s.preset; }
+      if (document.activeElement !== modelInput) { modelInput.value = s.cheapModel || ""; }
+      providerNote.textContent = (s.baseUrl || "") +
+        (s.cheapModel ? "  ·  cheap " + s.cheapModel : "") +
+        (s.strongModel && s.strongModel !== s.cheapModel ? "  ·  strong " + s.strongModel : "");
       budget.min = String(s.budgetMin);
       budget.max = String(s.budgetMax);
-      if (document.activeElement !== budget) { budget.value = String(s.dailyUsdMax); }
-      budgetVal.textContent = "  $" + Number(s.dailyUsdMax).toFixed(2) + " / day";
+      /* dailyUsdMax 0 means "no cap", not "zero dollars" — a slider cannot show
+         zero, and "$0.00 / day" reads like the assistant is switched off. */
+      const capped = Number(s.dailyUsdMax) > 0;
+      if (document.activeElement !== budget) {
+        budget.value = String(capped ? s.dailyUsdMax : s.budgetMin);
+      }
+      budgetVal.textContent = capped
+        ? "  $" + Number(s.dailyUsdMax).toFixed(2) + " / day"
+        : "  no cap set";
       scaleNote.textContent =
         "A research job is capped at $" + Number(s.jobBudgetUsd).toFixed(2) +
         " so it can never eat a whole day." +
@@ -4451,6 +4519,28 @@ window.GUIDE_DOMAIN = {
         });
       });
     }
+
+    providerSel.addEventListener("change", function () {
+      post({ preset: providerSel.value })
+        .then(function (s) {
+          paint(s);
+          setNote("Provider set. Press Test key — a key only works with the provider that issued it.");
+        })
+        .catch(function (e) { setNote(e.message, true); });
+    });
+
+    saveModel.addEventListener("click", function () {
+      const v = modelInput.value.trim();
+      if (!v) { setNote("Type an exact model id first, e.g. vendor/model-name.", true); return; }
+      saveModel.disabled = true;
+      post({ model: v })
+        .then(function (s) {
+          paint(s);
+          setNote("Model set to " + s.cheapModel + ". Press Test key, then ask a real question.");
+        })
+        .catch(function (e) { setNote(e.message, true); })
+        .then(function () { saveModel.disabled = false; });
+    });
 
     saveKey.addEventListener("click", function () {
       const v = keyInput.value.trim();
@@ -4646,6 +4736,69 @@ window.GUIDE_DOMAIN = {
      a model here would be paying to reword a paragraph we already own.
      opts.forceModel exists for the test hook and for askAI(), which spend on
      purpose. */
+  /* ======================================================================
+     ACTING — the chat asking for a change, not just answering
+     ====================================================================== */
+
+  /* "add 3 harder detect questions" is a request to DO something, not a question.
+     The server has the real parser; this only decides which door to knock on. */
+  function looksLikeEdit(text) {
+    const t = String(text || "").toLowerCase();
+    if (!/^\s*(add|create|write|draft|make|give me)\b/.test(t)) { return false; }
+    return /\b(questions?|quizzes|quiz|exam)\b/.test(t);
+  }
+
+  function proposeChange(sentence) {
+    return fetch("/api/propose", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ sentence: sentence })
+    }).then(function (r) {
+      return r.json().then(function (j) {
+        if (!r.ok) { throw new Error((j && j.error) || ("HTTP " + r.status)); }
+        return j;
+      });
+    }).then(function (j) {
+      if (!j.ok) {
+        /* The server refused, and it says why. Do not dress that up as success. */
+        const why = (j.rejected && j.rejected.length)
+          ? j.rejected.map(function (r) { return "\u201c" + r.question.slice(0, 55) + "\u201d \u2014 " + r.reasons[0]; })
+          : [];
+        return push({
+          role: "bot",
+          title: "Nothing was drafted",
+          body: [j.error || "the drafter produced nothing usable"],
+          steps: why,
+          src: "",
+          chips: ["Open the gear and add a key", "Try a different request"]
+        });
+      }
+      const refused = (j.rejected || []).length;
+      return push({
+        role: "bot",
+        title: "Proposal ready: " + j.proposal.slug,
+        body: [
+          "I drafted " + j.drafted + " question" + (j.drafted === 1 ? "" : "s") + " for the " +
+            j.job.target + " quiz" + (refused ? " and refused " + refused + " of my own drafts." : "."),
+          "Your real guide has not changed. The work is on a branch, waiting for you to accept or reject it."
+        ],
+        steps: (j.rejected || []).map(function (r) {
+          return "refused \u201c" + r.question.slice(0, 55) + "\u201d \u2014 " + r.reasons[0];
+        }),
+        src: "every kept question must be provable from a cited passage",
+        chips: ["Review it: node server/ops/accept.js " + j.proposal.slug]
+      });
+    }).catch(function (e) {
+      return push({
+        role: "bot",
+        title: "Could not propose that",
+        body: [String(e.message || e)],
+        steps: [],
+        src: ""
+      });
+    });
+  }
+
   function curatedAnswer(text) {
     const q = norm(text);
     if (!q) { return null; }
@@ -4670,6 +4823,9 @@ window.GUIDE_DOMAIN = {
     }
 
     if (!(opts && opts.forceModel)) {
+      if (settingsAvailable() && looksLikeEdit(t)) {
+        return proposeChange(t).then(function (msg) { UI.busy = false; return msg; });
+      }
       const free = curatedAnswer(t);
       if (free) {
         ctx.history.push({ role: "assistant", content: historyText(free) });
@@ -4843,6 +4999,14 @@ window.GUIDE_DOMAIN = {
     add("no local server means the key field is disabled",
       ENDPOINT === "/api/ask" ? keyDisabled === false : keyDisabled === true,
       "endpoint=" + (ENDPOINT || "none") + " disabled=" + keyDisabled);
+
+    /* When there is no AI, the panel has to SAY so in words. Behaving differently
+       in silence is what made the offline copy look broken. */
+    const offNote = document.getElementById("ga-offline-note");
+    add("the panel explains how to get AI when there is none",
+      !!offNote && (ENDPOINT ? offNote.hidden === true
+        : (offNote.hidden === false && /assistant-server/.test(offNote.textContent))),
+      ENDPOINT ? "AI is on, note hidden" : (offNote ? offNote.textContent.slice(0, 45) : "missing"));
 
     return out;
   }
