@@ -163,6 +163,8 @@
   .shop input[type="checkbox"] { width: 20px; height: 20px; margin-top: 4px; accent-color: var(--pine); }
   .shop .amount { display: flex; align-items: center; gap: 3px; }
   .shop input[type="number"] { width: 74px; padding: 5px 7px; border: 1px solid var(--line); border-radius: 8px; }
+  .shop-links { margin: 4px 0 0; font-size: 12.5px; }
+  .shop-links a { font-weight: 600; white-space: nowrap; }
 
   .wire { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; text-align: center; }
   .wire div { border-radius: 10px; padding: 11px 4px; color: #fff; font-weight: 700; font-size: 15px; }
@@ -639,7 +641,7 @@
       Editable amounts match the selected items checked on 31 Oct 2026. SparkFun's US$10.85 is converted
       at the Bank of Canada rate of CA$1.3960/US$1 (30 Oct). The CA$1,673.00 subtotal includes the shown
       laptop freight and CA$15 compliance allowance; CA$81.10 GST gives CA$1,754.10 before remaining
-      retailer freight. Use the <a href="Shad-Drone-Order-List.md">line-by-line order document</a> for stock and freight.</div>
+      retailer freight. Every row below links to its live retailer listing. Use the <a href="Shad-Drone-Order-List.md">line-by-line order document</a> for stock and freight.</div>
     <div id="shopping"></div>
   </div>
 
@@ -1998,6 +2000,45 @@ while True:
     ["glasses", "3M SecureFit 200 safety glasses", "CA$12.98; clear anti-fog lenses.", 12.98],
     ["compliance", "Small Basic exam + registration allowance", "CA$15 planning allowance; confirm live portal fees.", 15]
   ];
+  /* Live retailer links per budget row (checked 31 Oct 2026; same as Shad-Drone-Order-List.md) */
+  const LINKS = {
+    "frame": [["Rotor Village", "https://rotorvillage.ca/tbs-source-one-v6-5/"]],
+    "stack": [["Rotor Village", "https://rotorvillage.ca/geprc-taker-f405-bls-50a-combo-stack/"]],
+    "motors": [["Rotor Village", "https://rotorvillage.ca/emax-eco-iii-series-2207-1900kv-motor/"]],
+    "props": [["Rotor Village", "https://rotorvillage.ca/gemfan-51499-hurricane-tri-blade-prop-2cw-2ccw/"]],
+    "radio": [["Rotor Village", "https://rotorvillage.ca/radiomaster-pocket-transmitter-elrs-charcoal-edition/"]],
+    "radio-cells": [["Rotor Village", "https://rotorvillage.ca/radiomaster-pocket-18650-3200mah-3-7v-battery-2pcs/"]],
+    "receiver": [["Rotor Village", "https://rotorvillage.ca/radiomaster-rp1-v2-tcxo-expresslrs-2-4ghz-receiver/"]],
+    "batteries": [["Rotor Village", "https://rotorvillage.ca/gnb-1500mah-4s-120c-hv-lipo-xt60/"]],
+    "charger": [["Rotor Village", "https://rotorvillage.ca/toolkitrc-m4ac-charger-30w-2-5a/"]],
+    "fpv-camera": [["Rotor Village", "https://rotorvillage.ca/runcam-phoenix-2-special-edition/"]],
+    "vtx": [["Rotor Village", "https://rotorvillage.ca/tbs-unify-pro-5g8-hv-vtx/"]],
+    "vtx-antenna": [["Rotor Village", "https://rotorvillage.ca/tbs-diamond-antenna-sma/"]],
+    "monitor": [["Rotor Village", "https://rotorvillage.ca/skyzone-m5-diversity-fpv-monitor/"]],
+    "straps": [["Rotor Village", "https://rotorvillage.ca/rvs-kevlar-battery-strap-2pk/"]],
+    "lights": [["Rotor Village", "https://rotorvillage.ca/led-cob-strip-4s-1m/"]],
+    "battery-pad": [["Rotor Village", "https://rotorvillage.ca/flywoo-ultra-grip-super-sticky-battery-pad/"]],
+    "tools": [["Rotor Village", "https://rotorvillage.ca/flywoo-fpv-quad-tool-kit-w-multimeter-and-soldering-iron/"]],
+    "smoke-stopper": [["Rotor Village", "https://rotorvillage.ca/iflight-smart-smoke-stopper-xt30-xt60/"]],
+    "lipo-bag": [["Rotor Village", "https://rotorvillage.ca/rvs-lipo-storage-bag/"]],
+    "heat-shrink": [["6mm black", "https://rotorvillage.ca/heat-shrink-6mm-x-150mm-black/"],
+                    ["38mm clear", "https://rotorvillage.ca/pvc-heat-shrink-38mm-x-150mm-clear/"]],
+    "zip-ties": [["Rotor Village", "https://rotorvillage.ca/zip-ties-100pcs-3mm-x-100mm/"]],
+    "standoffs": [["PiShop", "https://www.pishop.ca/product/nylon-11mm-m2-5-standoff-set-pack-of-4/"]],
+    "micro-usb": [["PiShop", "https://www.pishop.ca/product/micro-usb-cable-mm-right-angle-micro-usb-24-awg-2-m-6-ft/"]],
+    "pi": [["PiShop", "https://www.pishop.ca/product/raspberry-pi-zero-2wh-pi-hole-kit/"]],
+    "thermal": [["PiShop", "https://www.pishop.ca/product/mlx90640-thermal-camera-breakout/"]],
+    "gps": [["PiShop", "https://www.pishop.ca/product/pa1010d-gps-breakout/"]],
+    "qwiic": [["SparkFun Qwiic HAT", "https://www.sparkfun.com/sparkfun-qwiic-hat-for-raspberry-pi.html"],
+              ["SparkFun PRT-17912", "https://www.sparkfun.com/flexible-qwiic-cable-breadboard-jumper-4-pin.html"]],
+    "laptop": [["Walmart", "https://www.walmart.ca/en/ip/Acer-Aspire-1-FHD-15-6-Laptop-Intel-Celeron-N4500-4GB-DDR4-64GB-eMMC-UHD-Graphics-W11-S-mode-Excellent-Recertified-Year-Manufacturer-Warranty/7ICF4XI4BCLN"]],
+    "laptop-freight": [["Walmart listing", "https://www.walmart.ca/en/ip/Acer-Aspire-1-FHD-15-6-Laptop-Intel-Celeron-N4500-4GB-DDR4-64GB-eMMC-UHD-Graphics-W11-S-mode-Excellent-Recertified-Year-Manufacturer-Warranty/7ICF4XI4BCLN"]],
+    "threadlock": [["Walmart", "https://www.walmart.ca/en/ip/Permatex-Blue-Medium-Strength-242-Threadlocker/10045329"]],
+    "aaa": [["Walmart", "https://www.walmart.ca/en/ip/Energizer-MAX-AAA-Batteries-8-Pack-Triple-A-Alkaline-Batteries/4MNIVQS3GCTW"]],
+    "glasses": [["Walmart", "https://www.walmart.ca/en/ip/3M-SecureFit-200-Eyewear-SF200P1-DC-Clear-Clear-Lens-Anti-Fog/6000207407268"]],
+    "compliance": [["TC exam portal", "https://tc.canada.ca/en/aviation/drone-safety/drone-pilot-licensing/take-drone-pilot-online-exam"],
+                   ["TC Basic rules", "https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations"]]
+  };
   function priceOf(item) {
     const custom = saved.prices[item[0]];
     return custom === undefined || custom === "" ? item[3] : Number(custom);
@@ -2032,6 +2073,22 @@ while True:
     note.textContent = item[2];
     text.appendChild(name);
     text.appendChild(note);
+    const shopLinks = LINKS[item[0]] || [];
+    if (shopLinks.length) {
+      const lp = document.createElement("div");
+      lp.className = "shop-links";
+      shopLinks.forEach(function (lk, i) {
+        if (i) lp.appendChild(document.createTextNode(" \u00b7 "));
+        const a = document.createElement("a");
+        a.href = lk[1];
+        a.target = "_blank";
+        a.rel = "noopener";
+        a.textContent = lk[0] + " \u2197";
+        a.title = "Live listing checked 31 Oct 2026 \u2014 confirm stock and price at checkout";
+        lp.appendChild(a);
+      });
+      text.appendChild(lp);
+    }
     const amount = document.createElement("div");
     amount.className = "amount";
     const dollar = document.createElement("span");
