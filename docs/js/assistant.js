@@ -1358,6 +1358,17 @@
     const providerNote = el("p", "ga-sub");
     providerNote.id = "ga-provider-note";
 
+    const modelLabel = el("label", null, "Model");
+    const modelInput = el("input", "ga-key-input");
+    modelInput.id = "ga-model";
+    modelInput.autocomplete = "off";
+    modelInput.placeholder = "exact model id, e.g. vendor/model-name";
+    const modelRow = el("div", "ga-row");
+    const saveModel = el("button", "ga-chip", "Use this model");
+    saveModel.type = "button";
+    saveModel.id = "ga-model-save";
+    modelRow.appendChild(saveModel);
+
     const keyLabel = el("label", null, "API key");
     const keyState = el("span", "ga-sub");
     keyState.id = "ga-key-state";
@@ -1401,6 +1412,9 @@
     node.appendChild(providerLabel);
     node.appendChild(providerSel);
     node.appendChild(providerNote);
+    node.appendChild(modelLabel);
+    node.appendChild(modelInput);
+    node.appendChild(modelRow);
     node.appendChild(keyLabel);
     node.appendChild(keyInput);
     node.appendChild(keyRow);
@@ -1416,7 +1430,7 @@
     }
 
     function setDisabled(on) {
-      [providerSel, keyInput, saveKey, testKey, clearKey, budget].forEach(function (n) {
+      [providerSel, modelInput, saveModel, keyInput, saveKey, testKey, clearKey, budget].forEach(function (n) {
         n.disabled = !!on;
       });
     }
@@ -1432,6 +1446,7 @@
         });
       }
       if (s.preset) { providerSel.value = s.preset; }
+      if (document.activeElement !== modelInput) { modelInput.value = s.cheapModel || ""; }
       providerNote.textContent = (s.baseUrl || "") +
         (s.cheapModel ? "  ·  cheap " + s.cheapModel : "") +
         (s.strongModel && s.strongModel !== s.cheapModel ? "  ·  strong " + s.strongModel : "");
@@ -1488,6 +1503,19 @@
           setNote("Provider set. Press Test key — a key only works with the provider that issued it.");
         })
         .catch(function (e) { setNote(e.message, true); });
+    });
+
+    saveModel.addEventListener("click", function () {
+      const v = modelInput.value.trim();
+      if (!v) { setNote("Type an exact model id first, e.g. vendor/model-name.", true); return; }
+      saveModel.disabled = true;
+      post({ model: v })
+        .then(function (s) {
+          paint(s);
+          setNote("Model set to " + s.cheapModel + ". Press Test key, then ask a real question.");
+        })
+        .catch(function (e) { setNote(e.message, true); })
+        .then(function () { saveModel.disabled = false; });
     });
 
     saveKey.addEventListener("click", function () {

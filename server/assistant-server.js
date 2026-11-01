@@ -740,6 +740,17 @@ const server = http.createServer((req, res) => {
         patch.cheapModel = applied.cheap;
         patch.strongModel = applied.strong;
       }
+      if (typeof body.model === "string" && body.model.trim()) {
+        /* A free-text model field, because a preset's hardcoded model name is the
+           fastest way to get a confusing "model not found" on day one. Setting it
+           here collapses both tiers to one model, which is the honest default. */
+        const model = body.model.trim().slice(0, 120);
+        MODEL = model;
+        CHEAP_MODEL = model;
+        STRONG_MODEL = model;
+        patch.cheapModel = model;
+        patch.strongModel = model;
+      }
       if (typeof body.apiKey === "string") {
         const key = body.apiKey.trim();
         if (key && key.length < 8) {

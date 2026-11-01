@@ -155,6 +155,12 @@ async function postSettings(payload, headers) {
 
     const badPreset = await postSettings({ preset: "not-a-provider" });
     check("an unknown preset is refused", badPreset.status === 400, "status=" + badPreset.status);
+
+    const custom = JSON.parse((await postSettings({ model: "vendor/some-model-v2" })).body);
+    check("a model typed into the drawer is applied",
+      custom.cheapModel === "vendor/some-model-v2", custom.cheapModel);
+    check("and it collapses both tiers to that one model",
+      custom.strongModel === "vendor/some-model-v2", custom.strongModel);
   } catch (err) {
     check("the test ran without throwing", false, String(err && err.message ? err.message : err));
   } finally {
