@@ -105,7 +105,8 @@ node server/assistant-server.js             # http://localhost:8790/
 `server/assistant-server.js` is a zero-dependency proxy: it serves the guide and streams answers from
 any OpenAI-compatible provider or Anthropic, with the key kept server-side. The page detects the
 server and switches itself on. No key at all? Put the same `.env` on Ollama or LM Studio and it runs
-free and offline.
+free and offline. While the server runs, `http://localhost:8790/review` is a read-only review
+page: any open proposal shown as a diff next to a live rendering of the change.
 
 **Grounding is enforced, not requested.** Every request carries passages retrieved from the guide
 plus curated troubleshooting entries for the exact parts ordered; the proxy refuses to call a model
@@ -129,7 +130,7 @@ on spend, falling back to the offline engine rather than billing past it.
 Run the tests:
 
 ```powershell
-# Everything at once: 301 named checks, one exit code.
+# Everything at once: 321 named checks, one exit code.
 node scripts/dev/gate.js
 node scripts/dev/gate.js --quick    # skip the browser suite (needs Chrome)
 node scripts/dev/gate.js --json     # machine-readable

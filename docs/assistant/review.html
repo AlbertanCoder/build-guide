@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Review proposals &middot; Shad's Build Guide</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { margin: 0; font: 15px/1.5 system-ui, sans-serif; }
+  header { padding: 14px 20px; border-bottom: 1px solid rgba(128,128,128,.35); }
+  header h1 { margin: 0 0 4px; font-size: 19px; }
+  header p { margin: 0; opacity: .75; font-size: 13px; }
+  .wrap { display: grid; grid-template-columns: 260px 1fr 1fr; gap: 0; height: calc(100vh - 84px); }
+  #review-list { overflow: auto; border-right: 1px solid rgba(128,128,128,.35); padding: 10px; }
+  .proposal-item { display: block; width: 100%; text-align: left; margin: 0 0 8px; padding: 8px 10px;
+    border: 1px solid rgba(128,128,128,.4); border-radius: 8px; background: transparent; cursor: pointer; }
+  .proposal-item:hover { border-color: #2f7d4f; }
+  .pi-name { font-weight: 600; font-size: 13px; word-break: break-all; }
+  .pi-subject { font-size: 12px; opacity: .8; margin-top: 2px; }
+  .pi-stat { font-size: 11px; opacity: .6; margin-top: 2px; font-family: ui-monospace, monospace; }
+  .empty { opacity: .7; font-size: 13px; padding: 8px 4px; }
+  .pane { display: flex; flex-direction: column; min-width: 0; border-right: 1px solid rgba(128,128,128,.35); }
+  .pane-head { padding: 10px 14px; border-bottom: 1px solid rgba(128,128,128,.25); }
+  #review-title { font-weight: 600; font-size: 14px; word-break: break-all; }
+  #review-stat { font-family: ui-monospace, monospace; font-size: 12px; opacity: .7; }
+  #review-diff { flex: 1; overflow: auto; margin: 0; padding: 10px 14px; background: rgba(128,128,128,.07);
+    font: 12px/1.55 ui-monospace, monospace; }
+  .dl { white-space: pre-wrap; word-break: break-word; }
+  .dl-add { background: rgba(40,160,80,.18); }
+  .dl-del { background: rgba(200,60,60,.16); }
+  .dl-hunk { color: #2f6fd0; opacity: .9; }
+  .dl-meta { opacity: .55; }
+  #review-preview { flex: 1; border: 0; width: 100%; background: #fff; }
+  .error { color: #c0392b; padding: 4px 0; }
+  code { font-family: ui-monospace, monospace; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Review a proposal</h1>
+  <p>Read-only. This page shows what a proposal would change &mdash; the diff and the live
+  result, side by side &mdash; and can do nothing else. To act on it, from the repo folder:
+  <code>node server/ops/accept.js &lt;name&gt;</code> or <code>node server/ops/reject.js &lt;name&gt;</code>.
+  A full quiz can be taken in the preview.</p>
+</header>
+<div class="wrap">
+  <div id="review-list" aria-label="Open proposals"></div>
+  <div class="pane">
+    <div class="pane-head">
+      <div id="review-title">select a proposal</div>
+      <div id="review-stat"></div>
+    </div>
+    <div id="review-diff" role="region" aria-label="Diff against main"></div>
+  </div>
+  <div class="pane">
+    <div class="pane-head">
+      <div id="review-title-preview" style="font-weight:600;font-size:14px">rendered preview</div>
+    </div>
+    <iframe id="review-preview" title="Rendered preview of the proposal"></iframe>
+  </div>
+</div>
+<script src="/docs/js/review.js"></script>
+</body>
+</html>

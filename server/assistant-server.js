@@ -20,6 +20,7 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const { execFileSync } = require("child_process");
 
 const REPO = path.resolve(__dirname, "..");
 const ENGINE = require("./cost-engine.js");
@@ -608,6 +609,61 @@ function sendJson(res, code, obj) {
   res.end(body);
 }
 
+/* ---------- the read-only review surface (R14) ----------
+   A proposal can be INSPECTED here, never acted on: diff and rendered preview
+   only. Accept and reject stay CLI commands, so this server gains no write path
+   and there is nothing here to secure. */
+function git(args) {
+  try {
+    return {
+      ok: true,
+      out: String(execFileSync("git", args, {
+        cwd: REPO, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], maxBuffer: 64 * 1024 * 1024
+      }) || "")
+    };
+  } catch (e) {
+    return { ok: false, out: String((e.stdout || "") + (e.stderr || "") || e.message) };
+  }
+}
+
+/* A review target must be an OPEN proposal branch and nothing else. The name is
+   decoded once, matched against a strict pattern, and then against the real
+   branch list — three gates before any git command sees it, and git is invoked
+   with an argument array, never a shell string. */
+function proposalRef(raw) {
+  let decoded = String(raw || "");
+  try { decoded = decodeURIComponent(decoded); } catch (e) { return null; }
+  if (!/^proposal\/[A-Za-z0-9._-]+$/.test(decoded)) { return null; }
+  if (PROPOSE.listProposals().indexOf(decoded) === -1) { return null; }
+  return decoded;
+}
+
+function handleProposalDiff(res, rawName) {
+  const name = proposalRef(rawName);
+  if (!name) { sendJson(res, 404, { error: "no such proposal" }); return; }
+  const diff = git(["diff", "main..." + name]);
+  if (!diff.ok) { sendJson(res, 500, { error: "could not read the diff" }); return; }
+  const stat = git(["diff", "--stat", "main..." + name]);
+  const head = git(["log", "-1", "--format=%s", name]);
+  sendJson(res, 200, {
+    ok: true, name: name, subject: head.out.trim(), diff: diff.out, stat: stat.out.trim()
+  });
+}
+
+function handleProposalPreview(res, rawName) {
+  const name = proposalRef(rawName);
+  if (!name) { res.writeHead(404); res.end("no such proposal"); return; }
+  const show = git(["show", name + ":index.html"]);
+  if (!show.ok) { res.writeHead(404); res.end("this proposal does not carry an index.html"); return; }
+  const body = show.out;
+  res.writeHead(200, {
+    "content-type": "text/html; charset=utf-8",
+    "content-length": Buffer.byteLength(body),
+    "cache-control": "no-store"
+  });
+  res.end(body);
+}
+
 function serveStatic(req, res) {
   const clean = decodeURIComponent((req.url || "/").split("?")[0]);
   const rel = clean === "/" ? "index.html" : clean.replace(/^\/+/, "");
@@ -974,11 +1030,40 @@ const server = http.createServer((req, res) => {
   if (u === "/api/propose" && req.method === "POST") { handlePropose(req, res); return; }
   if (u === "/api/propose") { sendJson(res, 405, { error: "POST only." }); return; }
 
-  /* Open proposals, so the panel can tell the user what is waiting for them. */
+  /* Open proposals, so the panel can tell the user what is waiting for them,
+     and the review page can list them with what each one changes. */
   if (u === "/api/proposals") {
-    sendJson(res, 200, { ok: true, proposals: PROPOSE.listProposals() });
+    const names = PROPOSE.listProposals();
+    const details = names.map(function (n) {
+      const head = git(["log", "-1", "--format=%H%x09%s", n]);
+      const parts = head.out.trim().split("\t");
+      const stat = git(["diff", "--shortstat", "main..." + n]);
+      return {
+        name: n,
+        sha: (parts[0] || "").slice(0, 8),
+        subject: parts.slice(1).join("\t"),
+        shortstat: stat.out.trim()
+      };
+    });
+    sendJson(res, 200, { ok: true, proposals: names, details: details });
     return;
   }
+
+  /* Review: the diff and the rendered proposal, side by side. Read-only. */
+  const diffMatch = /^\/api\/proposals\/([^/]+)\/diff$/.exec(u);
+  if (diffMatch) {
+    if (req.method !== "GET") { sendJson(res, 405, { error: "GET only - review is read-only." }); return; }
+    handleProposalDiff(res, diffMatch[1]);
+    return;
+  }
+  const previewMatch = /^\/proposals\/([^/]+)\/preview$/.exec(u);
+  if (previewMatch) {
+    if (req.method !== "GET") { res.writeHead(405); res.end("GET only - review is read-only."); return; }
+    handleProposalPreview(res, previewMatch[1]);
+    return;
+  }
+  if (u === "/review") { req.url = "/docs/assistant/review.html"; serveStatic(req, res); return; }
+
   serveStatic(req, res);
 });
 

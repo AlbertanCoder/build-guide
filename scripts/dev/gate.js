@@ -84,6 +84,11 @@ const SUITES = [
     expect: 31
   },
   {
+    name: "review api",
+    cmd: ["node", ["scripts/dev/check-review.js"]],
+    expect: 20
+  },
+  {
     name: "browser",
     cmd: ["node", ["scripts/dev/check-browser.js"]],
     expect: 28,

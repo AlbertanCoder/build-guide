@@ -57,7 +57,7 @@ to a later stage of the approved plan.
 | R11 | Research corpus = guide + pack + git history, no web | PARTIAL — guide and pack are read; git history and the audit report are not |
 | R12 | Earned quiz passes survive the bank growing | BUILT |
 | R13 | Proposal branches; main stays clean | BUILT |
-| R14 | Rendered preview **and** diff | NOT BUILT |
+| R14 | Rendered preview **and** diff | BUILT — `/review`: the diff and a live rendering side by side, read-only, 20 checks |
 | R15 | Per-item acceptance | NOT BUILT — accept takes the whole branch |
 | R16 | Background job with visible progress | NOT BUILT |
 | R17 | Per-job sub-budget | PARTIAL — the number is exposed; there is no job to spend it |
@@ -73,9 +73,9 @@ to a later stage of the approved plan.
 
 | | Count |
 |---|---|
-| BUILT | 22 |
+| BUILT | 23 |
 | PARTIAL | 16 |
-| NOT BUILT | 12 |
+| NOT BUILT | 11 |
 
 Counted by hand off the two tables above, row by row — the first version of this
 file said 20 / 13 / 17, which was a guess dressed as a summary. It is corrected
@@ -88,7 +88,7 @@ The questions bought **rules**, and the rules are why the gate exists, why a
 question cannot be added without a citation, and why an accepted change can be
 undone byte-for-byte. That part is real.
 
-What they did **not** buy is a finished assistant. **Twelve decisions are still
+What they did **not** buy is a finished assistant. **Eleven decisions are still
 paper, and a further sixteen are half-built.** The largest gaps, in the order
 they hurt:
 
@@ -96,9 +96,8 @@ they hurt:
    text is the thing this project has repeatedly proven cannot be trusted alone.
 2. **The corrections memory** (R11/R12) — "it learns when you correct it" is the
    feature most likely to be mistaken for "it is finished".
-3. **Per-item acceptance and the preview/diff view** (R14/R15) — the difference
-   between "I can accept a branch" and "I can pick which three of ten questions I
-   actually want".
+3. **Per-item acceptance** (R15) — the difference between "I can accept a branch"
+   and "I can pick which three of ten questions I actually want".
 4. **The eval set** (R16 round 1) — without it, "it got better" is an opinion.
 5. **5 of 6 domain pages** — the assistant's answer quality is capped by these.
 
