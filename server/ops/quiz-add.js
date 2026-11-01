@@ -17,6 +17,7 @@
 "use strict";
 
 const ENG = require("../cost-engine.js");
+const BANS = require("../bans.js");
 
 const OPTION_COUNT = 4;
 const MIN_LEVEL = 1;
@@ -143,6 +144,13 @@ function validate(op, ctx) {
     if (clash) {
       errors.push('option ' + (i + 1) + ' "' + o + '" is a value the corpus treats as correct');
     }
+  });
+
+  /* The five bans (decision 25): a question or explanation carrying a banned
+     claim is refused here, so direct ops and drafted candidates both pass
+     through the same net. */
+  BANS.screenText(text + " " + String(q.why || "")).hits.forEach(function (h) {
+    errors.push("banned claim (" + h.id + "): " + h.say);
   });
 
   /* R18: the declared intent has to be arithmetic, not a claim. */

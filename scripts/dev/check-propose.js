@@ -94,6 +94,7 @@ const OP = {
       fs.copyFileSync(path.join(ROOT, "server", "ops", f), path.join(CLONE, "server", "ops", f));
     });
     fs.copyFileSync(path.join(ROOT, "server", "cost-engine.js"), path.join(CLONE, "server", "cost-engine.js"));
+    fs.copyFileSync(path.join(ROOT, "server", "bans.js"), path.join(CLONE, "server", "bans.js"));
     run("git", ["add", "-A"], CLONE);
     run("git", ["commit", "--quiet", "-m", "code under test (working tree, placed by check-propose)"], CLONE);
 

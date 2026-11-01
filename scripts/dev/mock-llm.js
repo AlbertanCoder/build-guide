@@ -103,9 +103,14 @@ const server = http.createServer((req, res) => {
        path can be tested without a real model refusing. The strong tier answers
        properly, which is how the test proves escalation actually happened. */
     const refuse = /refuse/i.test(content) && String(body.model || "") !== "mock-strong";
-    const text = refuse
-      ? "That is not in this guide. Check the step 6 notes instead."
-      : ANSWER.replace("Passages received: ", "Passages received: " + passageCount + ".");
+    /* A question containing "banned-sample" returns an answer that trips the
+       five bans, so the block-and-replace path can be tested end to end. */
+    const banned = /banned-sample/i.test(content);
+    const text = banned
+      ? "This drone detects a 1 m target at 40 m every time, with 95% accuracy in all conditions."
+      : refuse
+        ? "That is not in this guide. Check the step 6 notes instead."
+        : ANSWER.replace("Passages received: ", "Passages received: " + passageCount + ".");
 
     /* A non-streaming request is the drafter asking for JSON. Answer with the two
        canned candidates so /api/propose can be exercised end to end. */

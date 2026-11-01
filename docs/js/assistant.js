@@ -372,7 +372,7 @@
      "110°: a much wider swath but each pixel covers far more ground, so small targets disappear.",
      "For finding small hot spots, narrower wins every time. For covering a field fast, wider wins — and you pay for it in detection.",
      "The tab 2 calculator does the arithmetic for both, including the 55°×35° vertical coverage. Move the altitude slider rather than trusting a table.",
-     "The 55° version is the one in this order plan (CA$86.95 at PiShop)."],
+     "The 55° version is the one in this order plan (CA$86.95 at PiShop, checked 2026-10-31)."],
     { src: "Guide tab 2 calculator · parts list", see: [["Altitude & coverage calculator", "build"], ["Parts & budget", "parts"]] })
     .next = "detect-reality";
 
@@ -406,7 +406,7 @@
   kb("certification", "Do I need a licence or registration to fly this?", "licence,license,certificate,basic,advanced,registration,tc,canada,law,legal,pilot,exam,fees",
     ["Yes. A drone between 250 g and 25 kg needs a Pilot Certificate — Basic Operations and registration/marking, with the proof of registration on you when you fly.",
      "Basic conditions the guide lists: VLOS, ≤25 kg, more than 30 m horizontally from any person, uncontrolled airspace, more than 5.6 km from certified airports and 1.9 km from heliports.",
-     "Fees: the plan allows CA$20 — exam CA$10 plus registration CA$10 on the 2025 schedule. Confirm the live portal fees before you pay, because they change.",
+     "Fees: the plan allows CA$20 (checked 2026-10-31) — exam CA$10 plus registration CA$10 on the 2025 schedule. Confirm the live portal fees before you pay, because they change.",
      "Night flying needs lights sufficient for you or a visual observer to see the aircraft (CAR 901.39) — and that does not waive any other rule.",
      "Beyond Visual Line of Sight, over people, or in controlled airspace puts you in Advanced operations, which is a different certificate and a different project.",
      "This build is 5-inch class and well over 250 g, so assume you are in scope and get the certificate before the first hover."],

@@ -28,6 +28,7 @@ const QUIZ = require("./ops/quiz-add.js");
 const JOBSPEC = require("./ops/job-spec.js");
 const DRAFT = require("./ops/draft.js");
 const PROPOSE = require("./ops/propose.js");
+const BANS = require("./bans.js");
 
 /* ---------- .env (no dependency) ---------- */
 function loadEnv() {
@@ -788,16 +789,19 @@ async function handleAsk(req, res) {
   const cached = cache.get(question);
   if (cached) {
     meter.count("cacheHits");
-    send({ type: "delta", text: cached.answer });
+    /* A cached answer passes the five bans like any other: an old cache entry
+       must not smuggle a banned claim past a check that post-dates it. */
+    const cachedBans = BANS.screenText(cached.answer);
+    send({ type: "delta", text: cachedBans.ok ? cached.answer : BANS.blockNotice(cachedBans.hits) });
     send({
       type: "meta",
-      sources: cached.sources.length ? cached.sources : ["Retrieved from this guide"],
-      see: cached.see,
+      sources: cachedBans.ok ? (cached.sources.length ? cached.sources : ["Retrieved from this guide"]) : [],
+      see: cachedBans.ok ? cached.see : null,
       model: cached.model || "cache",
       cached: true,
       cost: 0,
       tier: "cache",
-      reason: "answered before"
+      reason: cachedBans.ok ? "answered before" : "blocked by the five bans"
     });
     send({ type: "done" });
     res.end();
@@ -858,6 +862,14 @@ async function handleAsk(req, res) {
     const nav = extractNav(full);
     if (nav.text !== full) { send({ type: "replace", text: nav.text }); }
 
+    /* The five code-enforced bans: a banned claim is REPLACED with a block
+       notice before the response completes, and never cached. The replacement
+       is loud and names the ban - never a silent rewrite (decision 4). */
+    const bans = BANS.screenText(nav.text);
+    if (!bans.ok) {
+      send({ type: "replace", text: BANS.blockNotice(bans.hits) });
+    }
+
     send({
       type: "meta",
       sources: ["Retrieved from this guide"],
@@ -866,15 +878,16 @@ async function handleAsk(req, res) {
       cached: false,
       cost: Number(spent.toFixed(6)),
       tier: decision.tier,
-      reason: decision.reason,
+      reason: bans.ok ? decision.reason : "blocked by the five bans",
       compressedChars: packed.savedChars,
       estimated: !first.usage
     });
     send({ type: "done" });
 
     /* Never cache a refusal: "not in this guide" is exactly the answer that
-       deserves a second opinion next time, not a stored verdict. */
-    if (!REFUSAL.test(nav.text)) {
+       deserves a second opinion next time, not a stored verdict. And never
+       cache a banned answer - the check must run again next time. */
+    if (bans.ok && !REFUSAL.test(nav.text)) {
       cache.set(question, {
         answer: nav.text,
         model: model,

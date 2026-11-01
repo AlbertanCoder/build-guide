@@ -37,7 +37,7 @@ to a later stage of the approved plan.
 | 22 | Keep the panel, add an "Ask" tab | PARTIAL — panel only |
 | 23 | Only question + passages + 2 turns leave the machine | BUILT |
 | 24 | Guide voice + "why it matters for your build" line | PARTIAL — voice is prompted; the line is not enforced |
-| 25 | Five code-enforced bans | NOT BUILT — prompt-level only |
+| 25 | Five code-enforced bans | BUILT — `server/bans.js` screens answers, drafts and edits; every ban proven not inert, 33 checks |
 | 26 | Build in four slices | PARTIAL — slice 1 done; 2–4 in progress |
 
 ## Round 2 — the living-document agent (24)
@@ -73,9 +73,9 @@ to a later stage of the approved plan.
 
 | | Count |
 |---|---|
-| BUILT | 24 |
+| BUILT | 25 |
 | PARTIAL | 16 |
-| NOT BUILT | 10 |
+| NOT BUILT | 9 |
 
 Counted by hand off the two tables above, row by row — the first version of this
 file said 20 / 13 / 17, which was a guess dressed as a summary. It is corrected
@@ -88,16 +88,14 @@ The questions bought **rules**, and the rules are why the gate exists, why a
 question cannot be added without a citation, and why an accepted change can be
 undone byte-for-byte. That part is real.
 
-What they did **not** buy is a finished assistant. **Ten decisions are still
+What they did **not** buy is a finished assistant. **Nine decisions are still
 paper, and a further sixteen are half-built.** The largest gaps, in the order
 they hurt:
 
-1. **The five code-enforced bans** (R25) — they are prompt text today, and prompt
-   text is the thing this project has repeatedly proven cannot be trusted alone.
-2. **The corrections memory** (R11/R12) — "it learns when you correct it" is the
+1. **The corrections memory** (R11/R12) — "it learns when you correct it" is the
    feature most likely to be mistaken for "it is finished".
-3. **The eval set** (R16 round 1) — without it, "it got better" is an opinion.
-4. **5 of 6 domain pages** — the assistant's answer quality is capped by these.
+2. **The eval set** (R16 round 1) — without it, "it got better" is an opinion.
+3. **5 of 6 domain pages** — the assistant's answer quality is capped by these.
 
 Nothing here is hidden: every PARTIAL and NOT BUILT above is checkable by opening
 the named file, which is why this list is committed rather than described.

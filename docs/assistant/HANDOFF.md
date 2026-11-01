@@ -12,7 +12,7 @@ running the gate.
 | Repo | `C:\Users\SHADHUNTER\Desktop\build-guide-repo`, branch `main` |
 | State | clean, pushed, **0 ahead** |
 | Head at handoff | written at `27e5a05`; run `git log -1` — committing this file necessarily moved it, and any later commit should leave the gate green |
-| Gate | `node scripts/dev/gate.js` → **339/339 named checks**, seventeen suites |
+| Gate | `node scripts/dev/gate.js` → **372/372 named checks**, eighteen suites |
 | The file the user opens | `C:\Users\SHADHUNTER\Desktop\Shad's Build Guide.html` — a **generated** single file. Never edit it; edit source and rebuild |
 | The user's API key | **not saved yet** (`keyConfigured: false`) |
 
@@ -33,7 +33,7 @@ running the gate.
 (cache, model tiers, compression, budget, `/api/stats`), the settings drawer
 (provider, key, model, budget — all server-side), domain pack slice 1 of 6 with a
 build that **refuses an unsourced claim**, two named edit operations (`quiz-add`,
-`prose-rewrite`), the proposal branch loop, undo, and a 339-check gate that cannot
+`prose-rewrite`), the proposal branch loop, undo, and a 372-check gate that cannot
 be made green by deleting a check.
 
 **Not built — say so plainly if asked:**
@@ -41,10 +41,10 @@ be made green by deleting a check.
 - **The chatbot cannot edit anything.** No button, no sentence, changes the page.
   Editing is the CLI above, driven by a human, and only adds quiz questions or
   rewrites one named paragraph per op.
-- Also missing: corrections memory, eval set, the "Ask" tab, the five
-  code-enforced bans, background jobs, and 5 of 6 domain pages.
+- Also missing: corrections memory, eval set, the "Ask" tab, background jobs, and
+  5 of 6 domain pages.
 
-`STATUS.md` has the row-by-row audit: **24 built / 16 partial / 10 still paper.**
+`STATUS.md` has the row-by-row audit: **25 built / 16 partial / 9 still paper.**
 
 ## Rules that must not be broken
 
@@ -70,9 +70,14 @@ The drafter that earlier versions of this file called "Stage 3" is **built**:
 like `quiz-add` (exact-once anchor inside the section's span, `<p>`-only surface,
 banned-language scan, post-conditions) — is also built. 38 checks.
 
-What remains, in order:
+What remains beyond the original priority list, in the order `STATUS.md` ranks
+them: the corrections memory, the eval set, the "Ask" tab, and 5 of 6 domain
+pages.
 
-1. **The five code-enforced bans**, which are currently prompt text only.
+The five code-enforced bans are built: `server/bans.js` screens every AI answer
+(a banned claim is replaced with a loud block notice and never cached), every
+quiz question and draft candidate (`quiz-add.validate`), every prose rewrite,
+and the shipped offline answers (the gate screens all 44). 33 checks.
 
 Per-item acceptance is built: a multi-item proposal commits **one item per
 commit** plus an item record, and

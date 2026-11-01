@@ -27,6 +27,8 @@
 const MAX_TEXT = 4000;
 const MIN_TEXT = 20;
 
+const BANS = require("../bans.js");
+
 /* Tags allowed inside the new paragraph: inline prose markup only. Anything not
    on this list is refused — a whitelist, because a blacklist of dangerous tags
    is exactly the list that grows one tag per incident. */
@@ -171,6 +173,10 @@ function contentErrors(op) {
     }
     BANNED_LANGUAGE.forEach(function (b) {
       if (b.re.test(newShape.inner) && errors.indexOf(b.say) === -1) { errors.push(b.say); }
+    });
+    /* The five code-enforced bans (decision 25), on the visible text. */
+    BANS.screenText(newShape.inner.replace(/<[^>]+>/g, " ")).hits.forEach(function (h) {
+      errors.push("banned claim (" + h.id + "): " + h.say);
     });
   }
   if (/<[a-zA-Z][^>]*\son[a-z]+\s*=/i.test(newText)) {
