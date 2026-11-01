@@ -39,8 +39,11 @@ check("reads the real section list",
 check("finds a real paragraph to work with", ANCHOR.length > 50, ANCHOR.length + " chars");
 
 const NONCE = "fixture" + Date.now().toString(36);
+/* Three <strong> tags against the anchor's one: inline tag counts may change in
+   a legitimate rewrite, structural ones may not (that distinction is checked
+   below). */
 const NEW = "<p><strong>Fixture</strong> rewrite " + NONCE +
-  " keeps this paragraph long enough to be a real one.</p>";
+  " <strong>keeps</strong> this paragraph long enough to be a <strong>real</strong> one.</p>";
 
 const OP = {
   op: "prose-rewrite",
@@ -78,6 +81,11 @@ const res = op.apply(OP, html);
 const after = hash(fs.readFileSync(INDEX));
 
 check("apply accepts the op", res.ok === true, res.ok ? "ok" : res.error);
+check("a rewrite may change the number of inline tags",
+  res.ok && (html.match(/<strong\b/g) || []).length !== (res.html.match(/<strong\b/g) || []).length,
+  res.ok
+    ? "strongs " + (html.match(/<strong\b/g) || []).length + " -> " + (res.html.match(/<strong\b/g) || []).length
+    : "apply refused");
 check("the old paragraph is gone from the result",
   res.ok && op.countOf(res.html, ANCHOR) === 0);
 check("the new paragraph appears exactly once",

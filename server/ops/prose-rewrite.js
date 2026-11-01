@@ -294,7 +294,11 @@ function apply(op, source) {
   if (at < spanAfter.start || at + newText.length > spanAfter.end) {
     return { ok: false, error: "post-check: the new paragraph landed outside the named section" };
   }
-  const tagCounts = ["p", "section", "script", "style", "strong", "em", "a", "div"];
+  /* Structural tags only: a rewritten paragraph may add or drop INLINE markup
+     (strong, em, links) as part of its new content, but the number of paragraphs,
+     sections, scripts, style blocks and block containers must not move. A
+     paragraph carrying block structure cannot be rewritten by this op at all. */
+  const tagCounts = ["p", "section", "script", "style", "div"];
   for (const tag of tagCounts) {
     const openRe = new RegExp("<" + tag + "\\b[^>]*>", "gi");
     const closeRe = new RegExp("</" + tag + ">", "gi");

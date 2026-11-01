@@ -61,7 +61,7 @@ const SUITES = [
   {
     name: "prose operation",
     cmd: ["node", ["scripts/dev/check-prose-op.js"]],
-    expect: 37
+    expect: 38
   },
   {
     name: "job spec",
