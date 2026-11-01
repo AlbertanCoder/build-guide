@@ -38,7 +38,11 @@ function currentBranch() {
 }
 
 function isClean() {
-  const r = git(["status", "--porcelain"]);
+  /* --untracked-files=no on purpose: the op file itself is usually untracked, and
+     a proposal must not be blocked by its own input. Uncommitted changes to
+     tracked files still block, which is the case that matters — a proposal must
+     never mix with your own in-progress edits. */
+  const r = git(["status", "--porcelain", "--untracked-files=no"]);
   return r.ok && r.out.trim() === "";
 }
 
@@ -219,6 +223,32 @@ function syncTotal(before, after) {
     files.push(rel);
   });
   return { files: files, from: from, to: to };
+}
+
+/* ---------- command line: node server/ops/propose.js <op.json> | --list ---------- */
+if (require.main === module) {
+  const arg = process.argv[2];
+  if (!arg || arg === "--list") {
+    const list = listProposals();
+    console.log(list.length ? list.join("\n") : "no open proposals");
+    process.exit(0);
+  }
+  const res = propose(arg, { log: function (m) { console.log(m); } });
+  if (!res.ok) {
+    console.error("REFUSED: " + res.error);
+    (res.errors || []).forEach(function (e) { console.error("  - " + e); });
+    process.exit(1);
+  }
+  console.log("");
+  console.log("  " + res.message);
+  res.changes.forEach(function (c) { console.log("   - " + c); });
+  if (res.synced) { console.log("   - " + res.synced); }
+  console.log("");
+  console.log("  main is untouched. Review with:");
+  console.log("    git diff main " + res.slug);
+  console.log("  Accept:  " + res.next[0]);
+  console.log("  Reject:  " + res.next[1]);
+  process.exit(0);
 }
 
 function syncTotal(file, before, after) {
