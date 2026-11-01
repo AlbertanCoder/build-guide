@@ -108,6 +108,13 @@ const OP = {
     check("a second proposal is numbered -2",
       /proposal\/quiz-add-detect-2/.test(gitOut(["branch", "--list", "proposal/*"])));
 
+    /* ---- a hand-written op file with a UTF-8 BOM must still work --------- */
+    const bomFile = path.join(CLONE, "bom-op.json");
+    fs.writeFileSync(bomFile, "\ufeff" + JSON.stringify(OP, null, 2), "utf8");
+    r = node(["server/ops/propose.js", "bom-op.json"]);
+    check("an op file saved with a UTF-8 BOM is accepted",
+      r.status === 0, r.out.split(/\r?\n/)[0].slice(0, 90));
+
     /* ---- refusals leave no residue ------------------------------------- */
     const dup = JSON.parse(JSON.stringify(OP));
     dup.question.q = "How does the code find a fire in 768 numbers?";

@@ -78,7 +78,13 @@ function loadKnownValues() {
 
 function readOp(file) {
   const full = path.resolve(process.cwd(), file);
-  return JSON.parse(fs.readFileSync(full, "utf8"));
+  let raw = fs.readFileSync(full, "utf8");
+  /* Strip a UTF-8 BOM. PowerShell's Set-Content and Windows Notepad both write
+     one, and JSON.parse rejects it with a confusing "Unexpected token" error
+     even though the JSON is perfectly valid. Round-tripping a hand-written op
+     file should not require knowing this. */
+  if (raw.charCodeAt(0) === 0xfeff) { raw = raw.slice(1); }
+  return JSON.parse(raw);
 }
 
 function slugFor(op, existing) {
