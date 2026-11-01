@@ -1113,7 +1113,7 @@
      actually rendered so scripts/dev/check-llm-path.ps1 can assert on it. The
      report is only accepted by a server started with GA_TEST=1. */
   function runAskProbe(question) {
-    return ask(question).then(function (msg) {
+    return ask(question, { forceModel: true }).then(function (msg) {
       const text = msg && msg.md ? (msg.body || []).join("\n\n") : historyText(msg);
       const report = {
         endpoint: ENDPOINT || "offline",
@@ -1331,7 +1331,15 @@
       body: JSON.stringify({
         question: question,
         passages: passages,
-        history: ctx.history.slice(-6)
+        history: ctx.history.slice(-6),
+        /* Routing hints for the server: a confident curated answer is the
+           cheapest and most reliable case, and the retrieval score says whether
+           the evidence is strong enough for a small model. */
+        curated: !!((matchEntry(norm(question)) || {}).confident),
+        topScore: (function () {
+          const top = searchPassages(question, 1);
+          return top.length ? Number(top[0].score.toFixed(3)) : 0;
+        })()
       })
     }).then(function (res) {
       const type = res.headers.get("content-type") || "";
@@ -1410,7 +1418,20 @@
       });
   }
 
-  function ask(text) {
+  /* Layer 0 of the cost plan: when a curated entry matches confidently, the
+     answer is already written by hand for this build and costs nothing. Calling
+     a model here would be paying to reword a paragraph we already own.
+     opts.forceModel exists for the test hook and for askAI(), which spend on
+     purpose. */
+  function curatedAnswer(text) {
+    const q = norm(text);
+    if (!q) { return null; }
+    if (anyStarts(q, GREETING) || anyStarts(q, THANKS)) { return answerLocal(text); }
+    const hit = matchEntry(q);
+    return hit && hit.confident ? answerLocal(text) : null;
+  }
+
+  function ask(text, opts) {
     const t = String(text == null ? "" : text).trim();
     if (!t || UI.busy) { return Promise.resolve(null); }
     if (UI.panel.hidden) { setOpen(true); }
@@ -1424,6 +1445,16 @@
       UI.busy = false;
       return Promise.resolve(push(local));
     }
+
+    if (!(opts && opts.forceModel)) {
+      const free = curatedAnswer(t);
+      if (free) {
+        ctx.history.push({ role: "assistant", content: historyText(free) });
+        UI.busy = false;
+        return Promise.resolve(push(free));
+      }
+    }
+
     return modelAnswer(t).then(function (msg) {
       UI.busy = false;
       return msg;
@@ -1552,6 +1583,16 @@
     add("panel mounted and closed by default",
       !!document.getElementById("ga-panel") && document.getElementById("ga-panel").hidden, "ok");
 
+    /* 9. Layer 0 of the cost plan: a confident curated entry must be answered
+       locally, so the panel never pays a model to reword a paragraph it already
+       has. The second case is the guard against that being too eager. */
+    const freeHit = curatedAnswer("what does this cost");
+    add("a confident curated question is answered for free",
+      !!freeHit && freeHit.role === "bot" && (freeHit.steps || []).length > 0,
+      freeHit ? freeHit.title : "no local answer");
+    add("an unanswerable question is not answered for free",
+      curatedAnswer("what is the airspeed of an unladen swallow") === null, "not answered locally");
+
     return out;
   }
 
@@ -1617,6 +1658,9 @@
 
   window.GuideAssistant = {
     ask: ask,
+    /* Force the paid path for one question, even when the curated entry could
+       answer it for free:  GuideAssistant.askAI("how much does this cost") */
+    askAI: function (text) { return ask(text, { forceModel: true }); },
     answer: answerLocal,
     jump: jump,
     match: matchEntry,

@@ -13,3 +13,6 @@ dist/
 # API keys live here and must never be committed
 server/.env
 *.env.local
+
+# Answers already paid for: useful locally, never committed
+server/.cache/

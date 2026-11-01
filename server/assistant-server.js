@@ -22,6 +22,7 @@ const fs = require("fs");
 const path = require("path");
 
 const REPO = path.resolve(__dirname, "..");
+const ENGINE = require("./cost-engine.js");
 
 /* ---------- .env (no dependency) ---------- */
 function loadEnv() {
@@ -46,7 +47,18 @@ function loadEnv() {
 const ENV = Object.assign({}, loadEnv(), process.env);
 const PORT = Number(ENV.PORT || 8790);
 const PROVIDER = String(ENV.PROVIDER || "openai").toLowerCase();
-const MODEL = ENV.MODEL || (PROVIDER === "anthropic" ? "claude-3-5-haiku-latest" : "gpt-4o-mini");
+/* Two tiers, so the cheap model does the ordinary work and the strong one is
+   reserved for questions that need it. If MODEL is set explicitly we do NOT
+   invent a second, pricier model behind your back: both tiers become MODEL,
+   which is exactly the old behaviour. Leave MODEL unset to get the cheap
+   default plus an escalation path. */
+const MODEL_EXPLICIT = !!ENV.MODEL;
+const DEFAULT_CHEAP = PROVIDER === "anthropic" ? "claude-haiku-5.5" : "gpt-6-luna";
+const DEFAULT_STRONG = PROVIDER === "anthropic" ? "claude-sonnet-5.5" : "gpt-6.1-terra";
+const MODEL = ENV.MODEL || DEFAULT_CHEAP;
+const CHEAP_MODEL = ENV.CHEAP_MODEL || MODEL;
+const STRONG_MODEL = ENV.STRONG_MODEL || (MODEL_EXPLICIT ? MODEL : DEFAULT_STRONG);
+const CAN_ESCALATE = STRONG_MODEL !== CHEAP_MODEL;
 const BASE_URL = (ENV.BASE_URL || (PROVIDER === "anthropic"
   ? "https://api.anthropic.com"
   : "https://api.openai.com/v1")).replace(/\/$/, "");
@@ -54,6 +66,28 @@ const API_KEY = ENV.API_KEY || ENV.OPENAI_API_KEY || ENV.ANTHROPIC_API_KEY || ""
 const MAX_QUESTION = 500;
 const MAX_PASSAGES = 6;
 const MAX_TOKENS = 700;
+/* Passage budget after compression. The browser sends up to 6 x 1,400 chars;
+   these caps are what actually decides how many tokens get paid for. */
+const PASSAGE_CHARS = Number(ENV.PASSAGE_CHARS || 600);
+const PASSAGE_TOTAL = Number(ENV.PASSAGE_TOTAL || 2600);
+const PASSAGE_COUNT = Number(ENV.PASSAGE_COUNT || 3);
+const HISTORY_TURNS = Number(ENV.HISTORY_TURNS || 2);
+
+/* Cost control. DAILY_USD_MAX=0 means no cap; set it and the server degrades to
+   the page's offline engine instead of spending past it. */
+const TEST_MODE = ENV.GA_TEST === "1";
+const DAILY_USD_MAX = Number(ENV.DAILY_USD_MAX || 0);
+const CACHE_OFF = String(ENV.CACHE || "").toLowerCase() === "off";
+const CACHE_FILE = ENV.CACHE_FILE || path.join(__dirname, ".cache", "answers.json");
+const meter = new ENGINE.CostMeter({ dailyUsdMax: DAILY_USD_MAX });
+const cache = new ENGINE.AnswerCache({
+  /* tests always start with an empty cache, so a second run of a test still
+     exercises the provider instead of replaying the first run's answer */
+  file: TEST_MODE || CACHE_OFF ? "" : CACHE_FILE,
+  ttlMs: Number(ENV.CACHE_TTL_DAYS || 30) * 86400000,
+  maxEntries: Number(ENV.CACHE_MAX || 400),
+  persist: !(TEST_MODE || CACHE_OFF)
+});
 const RATE_LIMIT = 20;               // requests per window per IP
 const RATE_WINDOW = 5 * 60 * 1000;
 const rate = new Map();
@@ -120,17 +154,45 @@ function userPrompt(question, passages, history) {
 }
 
 /* ---------- provider adapters (streaming) ---------- */
-async function streamOpenAI(messages, onDelta) {
-  const res = await fetch(BASE_URL + "/chat/completions", {
+/* Ask OpenAI-compatible providers for the usage frame so the bill is measured
+   rather than guessed. stream_options is OpenAI-specific: Ollama and LM Studio
+   may reject it, so a 400 naming it is retried once without it. Losing usage
+   costs an estimate; losing the answer would cost the feature. */
+async function streamOpenAI(messages, onDelta, opts) {
+  const o = opts || {};
+  const body = {
+    model: o.model || CHEAP_MODEL,
+    stream: true,
+    temperature: 0.2,
+    max_tokens: o.maxTokens || MAX_TOKENS,
+    stream_options: { include_usage: true },
+    messages: messages
+  };
+
+  let res = await fetch(BASE_URL + "/chat/completions", {
     method: "POST",
     headers: {
       "content-type": "application/json",
       authorization: "Bearer " + (API_KEY || "local")
     },
-    body: JSON.stringify({
-      model: MODEL, stream: true, temperature: 0.2, max_tokens: MAX_TOKENS, messages: messages
-    })
+    body: JSON.stringify(body)
   });
+  if (!res.ok && res.status === 400 && body.stream_options) {
+    const detail = await res.text().catch(() => "");
+    if (/stream_options|unrecognized|unknown|unexpected/i.test(detail)) {
+      delete body.stream_options;
+      res = await fetch(BASE_URL + "/chat/completions", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: "Bearer " + (API_KEY || "local")
+        },
+        body: JSON.stringify(body)
+      });
+    } else {
+      throw new Error("provider " + res.status + ": " + detail.slice(0, 200));
+    }
+  }
   if (!res.ok || !res.body) {
     const detail = await res.text().catch(() => "");
     throw new Error("provider " + res.status + ": " + detail.slice(0, 200));
@@ -151,6 +213,16 @@ async function streamOpenAI(messages, onDelta) {
       if (payload === "[DONE]") { return; }
       try {
         const json = JSON.parse(payload);
+        if (json.usage) {
+          if (typeof o.onUsage === "function") {
+            const details = json.usage.prompt_tokens_details || {};
+            o.onUsage({
+              inputTokens: Number(json.usage.prompt_tokens || 0),
+              cachedTokens: Number(details.cached_tokens || 0),
+              outputTokens: Number(json.usage.completion_tokens || 0)
+            });
+          }
+        }
         const choice = json.choices && json.choices[0];
         const piece = choice && choice.delta ? choice.delta.content : "";
         if (piece) { onDelta(piece); }
@@ -159,8 +231,20 @@ async function streamOpenAI(messages, onDelta) {
   }
 }
 
-async function streamAnthropic(messages, onDelta) {
+/* Anthropic adapter. Reports usage too, because cache reads are billed at 0.1x
+   input and a guess would hide the saving that makes caching worth doing.
+   PROMPT_CACHE=1 marks the system prompt cacheable — worth it only when that
+   block clears the provider's minimum cacheable length (1024 tokens for most
+   models, 2048 for Haiku 3.5); below that the API accepts it but caches nothing,
+   so it is off unless you ask. */
+async function streamAnthropic(messages, onDelta, opts) {
+  const o = opts || {};
   const rest = messages.slice(1);
+  const cacheOn = o.promptCache == null ? ENV.PROMPT_CACHE === "1" : !!o.promptCache;
+  const system = cacheOn
+    ? [{ type: "text", text: messages[0].content, cache_control: { type: "ephemeral" } }]
+    : messages[0].content;
+  const usage = { inputTokens: 0, cachedTokens: 0, cacheWriteTokens: 0, outputTokens: 0 };
   const res = await fetch(BASE_URL + "/v1/messages", {
     method: "POST",
     headers: {
@@ -169,8 +253,8 @@ async function streamAnthropic(messages, onDelta) {
       "anthropic-version": "2023-06-01"
     },
     body: JSON.stringify({
-      model: MODEL, max_tokens: MAX_TOKENS, temperature: 0.2,
-      system: messages[0].content, stream: true, messages: rest
+      model: o.model || CHEAP_MODEL, max_tokens: o.maxTokens || MAX_TOKENS, temperature: 0.2,
+      system: system, stream: true, messages: rest
     })
   });
   if (!res.ok || !res.body) {
@@ -194,7 +278,19 @@ async function streamAnthropic(messages, onDelta) {
         if (json.type === "content_block_delta" && json.delta && json.delta.text) {
           onDelta(json.delta.text);
         }
-        if (json.type === "message_stop") { return; }
+        if (json.type === "message_start" && json.message && json.message.usage) {
+          const u = json.message.usage;
+          usage.inputTokens = Number(u.input_tokens || 0);
+          usage.cachedTokens = Number(u.cache_read_input_tokens || 0);
+          usage.cacheWriteTokens = Number(u.cache_creation_input_tokens || 0);
+        }
+        if (json.type === "message_delta" && json.usage && json.usage.output_tokens) {
+          usage.outputTokens = Number(json.usage.output_tokens);
+        }
+        if (json.type === "message_stop") {
+          if (typeof o.onUsage === "function") { o.onUsage(usage); }
+          return;
+        }
       } catch (e) { /* ignore */ }
     }
   }
@@ -298,7 +394,23 @@ async function handleAsk(req, res) {
   }
 
   const question = String(body.question || "").trim().slice(0, MAX_QUESTION);
-  const passages = (Array.isArray(body.passages) ? body.passages : [])
+  if (!question) { sendJson(res, 400, { error: "A question is required." }); return; }
+
+  meter.count("questions");
+
+  /* Layer 5, budget guard. Degrade to the page's own offline engine rather than
+     spending past the cap. A non-OK status is deliberate: the page treats any
+     failure as "answer it yourself", so the assistant keeps working for free. */
+  if (meter.blocked()) {
+    meter.count("blocked");
+    sendJson(res, 402, {
+      error: "Daily AI budget reached; answering from the offline engine.",
+      budget: meter.snapshot()
+    });
+    return;
+  }
+
+  const rawPassages = (Array.isArray(body.passages) ? body.passages : [])
     .slice(0, MAX_PASSAGES)
     .map((p) => ({
       label: String(p.label || "").slice(0, 160),
@@ -308,9 +420,9 @@ async function handleAsk(req, res) {
     }))
     .filter((p) => p.text.length > 40);
 
-  if (!question) { sendJson(res, 400, { error: "A question is required." }); return; }
-  if (!passages.length) {
-    /* No evidence, no call. This is the anti-hallucination tripwire. */
+  if (!rawPassages.length) {
+    /* No evidence, no call. This is the anti-hallucination tripwire, and it is
+       checked before the cache so a cached answer can never bypass it. */
     sendJson(res, 422, { error: "No guide passages were supplied for that question." });
     return;
   }
@@ -319,14 +431,33 @@ async function handleAsk(req, res) {
     return;
   }
 
-  const history = (Array.isArray(body.history) ? body.history : [])
-    .slice(-6)
-    .filter((m) => m && (m.role === "user" || m.role === "assistant"))
-    .map((m) => ({ role: m.role, content: String(m.content || "").slice(0, 1500) }));
+  /* Layer 4, compression. The browser sends up to 6 x 1,400 chars; this is what
+     decides how many of those characters are actually paid for. */
+  const packed = ENGINE.compressPassages(rawPassages, question, {
+    perPassageChars: PASSAGE_CHARS,
+    totalChars: PASSAGE_TOTAL,
+    maxCount: PASSAGE_COUNT
+  });
+  const passages = packed.passages.length ? packed.passages : rawPassages.slice(0, 1);
+
+  /* The page pushes the current question onto history before asking, so the
+     last entry is this question and must not be sent back as context. */
+  const prior = (Array.isArray(body.history) ? body.history : []).slice(0, -1);
+  const history = ENGINE.compressHistory(prior, { keepTurns: HISTORY_TURNS, charCap: 400 });
+
+  /* Layer 2, routing. Cheap unless the question earns the strong model. */
+  const curatedHit = body.curated === true;
+  const decision = ENGINE.routeDecision({
+    question: question,
+    curatedHit: curatedHit,
+    topScore: Number(body.topScore || 0),
+    forceStrong: body.strong === true
+  });
+  let model = decision.tier === "strong" ? STRONG_MODEL : CHEAP_MODEL;
 
   const messages = [
     { role: "system", content: systemPrompt() },
-    { role: "user", content: userPrompt(question, passages, history.slice(0, -1)) }
+    { role: "user", content: userPrompt(question, passages, history) }
   ];
 
   res.writeHead(200, {
@@ -337,25 +468,107 @@ async function handleAsk(req, res) {
   });
   const send = (obj) => res.write("data: " + JSON.stringify(obj) + "\n\n");
 
-  let full = "";
-  const onDelta = (piece) => {
-    full += piece;
-    send({ type: "delta", text: piece });
+  /* Layer 1, the cache. A question already answered is replayed, not re-bought.
+     Checked after the 422 tripwire so a cached answer cannot dodge the rule that
+     no evidence means no answer. */
+  const cached = cache.get(question);
+  if (cached) {
+    meter.count("cacheHits");
+    send({ type: "delta", text: cached.answer });
+    send({
+      type: "meta",
+      sources: cached.sources.length ? cached.sources : ["Retrieved from this guide"],
+      see: cached.see,
+      model: cached.model || "cache",
+      cached: true,
+      cost: 0,
+      tier: "cache",
+      reason: "answered before"
+    });
+    send({ type: "done" });
+    res.end();
+    return;
+  }
+
+  /* Some compatible providers (Ollama, LM Studio) report no usage at all. Rather
+     than claim a cost of zero, fall back to ~4 chars per token and say so. */
+  const approxTokens = (text) => Math.max(0, Math.round(String(text || "").length / 4));
+  const fallbackUsage = (msgs, out) => ({
+    inputTokens: approxTokens(msgs.map((m) => m.content).join(" ")),
+    cachedTokens: 0,
+    outputTokens: approxTokens(out)
+  });
+
+  /* One call to one model. `live` decides whether the user watches it arrive:
+     a speculative escalation must not be shown until it wins. */
+  const callStream = async (msgs, name, live) => {
+    let text = "";
+    let usage = null;
+    const onDelta = (piece) => {
+      text += piece;
+      if (live) { send({ type: "delta", text: piece }); }
+    };
+    const onUsage = (u) => { usage = u; };
+    if (PROVIDER === "anthropic") {
+      await streamAnthropic(msgs, onDelta, { model: name, onUsage: onUsage });
+    } else {
+      await streamOpenAI(msgs, onDelta, { model: name, onUsage: onUsage });
+    }
+    return { text: text, usage: usage };
   };
 
+  const REFUSAL = /that is not in this guide/i;
+  let spent = 0;
+
   try {
-    if (PROVIDER === "anthropic") { await streamAnthropic(messages, onDelta); }
-    else { await streamOpenAI(messages, onDelta); }
+    const first = await callStream(messages, model, true);
+    spent += meter.record(model, first.usage || fallbackUsage(messages, first.text));
+    let full = first.text;
+
+    /* Escalation, bounded to one retry and only when a second model is actually
+       configured. The cheap answer has already streamed, so a better one is
+       swapped in with `replace` rather than shown as a second message. */
+    if (CAN_ESCALATE && decision.tier === "cheap" && REFUSAL.test(full)) {
+      meter.count("escalated");
+      try {
+        const second = await callStream(messages, STRONG_MODEL, false);
+        spent += meter.record(STRONG_MODEL, second.usage || fallbackUsage(messages, second.text));
+        if (second.text && !REFUSAL.test(second.text)) {
+          full = second.text;
+          model = STRONG_MODEL;
+          send({ type: "replace", text: extractNav(full).text });
+        }
+      } catch (e) { /* the cheap answer stands; the escalation was a bonus */ }
+    }
 
     const nav = extractNav(full);
     if (nav.text !== full) { send({ type: "replace", text: nav.text }); }
+
     send({
       type: "meta",
       sources: ["Retrieved from this guide"],
       see: nav.see,
-      model: MODEL
+      model: model,
+      cached: false,
+      cost: Number(spent.toFixed(6)),
+      tier: decision.tier,
+      reason: decision.reason,
+      compressedChars: packed.savedChars,
+      estimated: !first.usage
     });
     send({ type: "done" });
+
+    /* Never cache a refusal: "not in this guide" is exactly the answer that
+       deserves a second opinion next time, not a stored verdict. */
+    if (!REFUSAL.test(nav.text)) {
+      cache.set(question, {
+        answer: nav.text,
+        model: model,
+        sources: ["Retrieved from this guide"],
+        see: nav.see,
+        usd: spent
+      });
+    }
   } catch (err) {
     send({ type: "error", error: String(err && err.message ? err.message : err).slice(0, 300) });
   } finally {
@@ -371,10 +584,22 @@ const server = http.createServer((req, res) => {
       ok: true,
       provider: PROVIDER,
       model: MODEL,
+      cheapModel: CHEAP_MODEL,
+      strongModel: STRONG_MODEL,
+      canEscalate: CAN_ESCALATE,
       baseUrl: BASE_URL,
       keyConfigured: !!API_KEY,
-      local: /127\.0\.0\.1|localhost/.test(BASE_URL)
+      local: /127\.0\.0\.1|localhost/.test(BASE_URL),
+      budget: meter.blocked() ? "reached" : "ok",
+      cacheEntries: cache.stats().entries
     });
+    return;
+  }
+
+  /* What today has cost, and how much of it was free. This is the number that
+     makes "very low" verifiable instead of hopeful. */
+  if (u === "/api/stats") {
+    sendJson(res, 200, { ok: true, cost: meter.snapshot(), cache: cache.stats() });
     return;
   }
 
@@ -398,6 +623,11 @@ const server = http.createServer((req, res) => {
   serveStatic(req, res);
 });
 
+/* Persist the cache on the way out: a Ctrl-C should not cost the answers that
+   were already paid for. */
+process.on("exit", () => { cache.flush(); });
+process.on("SIGINT", () => { cache.flush(); process.exit(0); });
+
 server.listen(PORT, "127.0.0.1", () => {
   const keyState = API_KEY ? "set" : (/(127\.0\.0\.1|localhost)/.test(BASE_URL) ? "not needed (local model)" : "MISSING");
   console.log("");
@@ -407,6 +637,10 @@ server.listen(PORT, "127.0.0.1", () => {
   console.log("");
   console.log("  provider : " + PROVIDER);
   console.log("  model    : " + MODEL);
+  console.log("  cheap    : " + CHEAP_MODEL);
+  console.log("  strong   : " + STRONG_MODEL + (CAN_ESCALATE ? "" : "   (no escalation; set STRONG_MODEL to enable)"));
+  console.log("  budget   : " + (DAILY_USD_MAX > 0 ? "$" + DAILY_USD_MAX + "/day" : "no cap (set DAILY_USD_MAX)"));
+  console.log("  cache    : " + (CACHE_OFF ? "off" : CACHE_FILE + "  (" + cache.stats().entries + " entries)"));
   console.log("  base url : " + BASE_URL);
   console.log("  api key  : " + keyState);
   if (keyState === "MISSING") {

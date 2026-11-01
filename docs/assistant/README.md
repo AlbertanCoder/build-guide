@@ -101,6 +101,62 @@ typed question
 Conversation history (last 6 turns) travels with each request, so follow-ups work. If anything in
 that chain fails, the answer comes from the offline engine with a one-line note saying why.
 
+## Keeping it cheap without making it dumb
+
+Five layers, cheapest first. Each is checked by a script, not asserted here.
+
+| Layer | What it does | Effect |
+|---|---|---|
+| **0. Don't ask** | A *confident* curated entry answers locally, on the user's machine | 0 tokens, instant |
+| **1. Don't re-ask** | Stemmed-signature cache: exact match, plus near-duplicates; LRU + TTL | a repeat question costs $0 |
+| **2. Ask cheaply** | Cheap tier by default; the strong tier is reached only for low retrieval scores, multi-hop questions, or a cheap-tier refusal | ~10x on the ordinary case |
+| **3. Ask less** | Extractive sentence selection, duplicate-passage removal, 2 turns + a one-line recap | 2,308 → 698 characters in the test |
+| **4. Never surprise** | `DAILY_USD_MAX`, `/api/stats`, and a `cost` field on every answer | a hard ceiling you set |
+
+The router is deliberately conservative: a wrong cheap answer costs more than a
+right expensive one, so a refusal escalates once rather than being cached. A
+refusal is never stored, because "not in this guide" deserves a second opinion
+next time.
+
+**Tiers.** Leave `MODEL` unset and you get a cheap default plus an escalation
+path. Set `MODEL` and both tiers collapse to it — no second vendor appears
+behind your back.
+
+**Verified prices** (2026-11-01, USD per 1M tokens, from
+[OpenAI](https://developers.openai.com/api/docs/pricing) and
+[Claude](https://platform.claude.com/docs/en/about-claude/pricing)):
+
+| Model | Input | Cached input | Output |
+|---|---|---|---|
+| `gpt-5-nano` | $0.05 | $0.005 | $0.40 |
+| `gpt-6-luna` (default cheap) | $0.10 | $0.01 | $0.50 |
+| `claude-haiku-5.5` (default cheap, Anthropic) | $0.10 | $0.01 | $0.50 |
+| `gpt-5-mini` | $0.25 | $0.025 | $2.00 |
+| `gpt-6.1-terra` (default strong) | $1.00 | $0.05 | $5.00 |
+| `claude-sonnet-5.5` (default strong, Anthropic) | $2.00 | $0.10 | $10.00 |
+
+`server/cost-engine.js` holds this table only to *estimate* spend for the guard
+and the stats page. The provider's invoice is the truth; re-check the table when
+you change model.
+
+**Watch it work:**
+
+```powershell
+curl http://localhost:8790/api/stats
+```
+
+```json
+{"ok":true,
+ "cost":{"totals":{"calls":3,"inputTokens":912,"cachedTokens":200,"outputTokens":540,"usd":0.0007},
+         "counters":{"questions":11,"cacheHits":6,"localAnswers":2,"escalated":0},
+         "models":{"gpt-6-luna":{"calls":3,"usd":0.0007}}},
+ "cache":{"entries":6,"hits":6,"misses":5,"hitRate":0.545}}
+```
+
+`questions` counts everything asked; `localAnswers` is what the page answered for
+free before it ever reached this server; `cacheHits` is what this server answered
+from storage.
+
 ## Files
 
 | File | Purpose |
@@ -114,6 +170,9 @@ that chain fails, the answer comes from the offline engine with a one-line note 
 | `scripts/dev/check-assistant.ps1` | 12-check test of the offline engine, on any copy of the page |
 | `scripts/dev/check-encoding.js` | fails if a shipped file has double-encoded UTF-8 |
 | `scripts/dev/check-kb-prices.js` | fails if a knowledge-base price drifts from the guide, if the budget arithmetic stops closing, or if the superseded total returns |
+| `server/cost-engine.js` | the zero-dependency cost engine: cache, router, compression, meter |
+| `scripts/dev/check-cost-engine.js` | 26 unit checks on the engine |
+| `scripts/dev/check-cost-path.js` | 30 end-to-end checks: cache, compression, stats, budget, escalation |
 
 ## Tests
 
@@ -133,6 +192,18 @@ A price edit has to reach two files, so one more check guards the join:
 # every figure the assistant knows must also appear in the guide
 node scripts/dev/check-kb-prices.js
 ```
+
+The cost path has its own two suites, and neither needs a key or a network:
+
+```powershell
+node scripts/dev/check-cost-engine.js   # 26 unit checks: cache, router, meter, compression
+node scripts/dev/check-cost-path.js     # 30 end-to-end checks against a mock provider
+```
+
+`check-cost-path.js` measures the savings at the *provider*: it asserts that a
+repeat question produces zero upstream calls, that the passages sent are smaller
+than the ones handed over, that the daily cap returns 402 without spending, and
+that a cheap-tier refusal escalates exactly once.
 
 The AI test opens a real browser, waits for the page to report what it rendered, and asserts:
 streaming finished, markdown became real list items, the `[[NAV]]` directive became a one-button

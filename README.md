@@ -117,12 +117,23 @@ For the public GitHub Pages site, deploy `docs/assistant/worker.js` to Cloudflar
 Node) and point the page at it. Everything — routes, costs, the evaluation checklist for trusting a
 model — is in [docs/assistant/README.md](docs/assistant/README.md).
 
+**It is built to be cheap as well as good.** Five layers, cheapest first: a
+confident curated entry answers locally with no model call at all; a repeat
+question is replayed from a signature cache; the cheap tier answers by default and
+the strong tier is reached only when a question needs it; passages are compressed
+to the sentences that answer the question; and `DAILY_USD_MAX` puts a hard ceiling
+on spend, falling back to the offline engine rather than billing past it.
+`/api/stats` shows the real numbers. Everything is in
+[docs/assistant/README.md](docs/assistant/README.md).
+
 Run the tests:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/dev/check-llm-path.ps1   # AI path, mock provider, no key
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/dev/check-assistant.ps1 -Target "dist/Shad's Build Guide.html"
 node scripts/dev/check-kb-prices.js          # every KB price must also appear in the guide
+node scripts/dev/check-cost-engine.js        # cache, router, meter, compression (26 checks)
+node scripts/dev/check-cost-path.js          # zero-cost repeat, cap, escalation (30 checks)
 ```
 
 *These are previews of the HTML guide, not a completed aircraft. Click any image to view it full-size.*
@@ -167,6 +178,13 @@ The viewer defaults to `http://127.0.0.1:8000` and the append-only log is `fligh
   (CA$1,694.94 × 5% = CA$84.75; CA$1,714.94 + CA$84.75 = CA$1,799.69), and the superseded
   CA$1,678.00 total is absent. Verified non-vacuous by re-running it against a deliberately
   reverted copy, where it failed as intended.
+- 26/26 cost-engine unit checks passed (`scripts/dev/check-cost-engine.js`), and 30/30 cost-path
+  checks passed end to end (`scripts/dev/check-cost-path.js`) against a mock provider: a repeat
+  question produced **zero** upstream calls, passages were compressed 2,308 → 698 characters,
+  duplicates were dropped, `/api/stats` accounted the spend, the daily cap returned `402` without
+  calling the provider, and a cheap-tier refusal escalated exactly once to the strong tier.
+- 14/14 Guide Assistant offline self-tests passed, including that a confident curated question is
+  answered with no model call and an unanswerable one is not.
 - `node --check` clean on `docs/js/assistant.js`, `server/assistant-server.js` and the mock provider;
   UTF-8 integrity verified for every shipped file.
 - 19/19 payload unit tests passed.

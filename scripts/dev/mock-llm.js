@@ -16,6 +16,13 @@
 const http = require("http");
 
 const PORT = Number(process.argv[2] || 8791);
+
+/* Test instrumentation: how many times a model was actually asked, and what it
+   was asked with. scripts/dev/check-cost-path.js asserts that a cache hit and a
+   budget refusal both leave `calls` untouched. */
+let calls = 0;
+let last = null;
+
 const ANSWER = [
   "Drop the refresh rate first: 8 Hz is faster than a marginal I2C link can service, so half-frames get dropped and the image looks speckled.",
   "",
@@ -33,6 +40,18 @@ const server = http.createServer((req, res) => {
     res.end(JSON.stringify({ data: [{ id: "mock-model" }] }));
     return;
   }
+  if (req.url === "/__stats") {
+    res.writeHead(200, { "content-type": "application/json" });
+    res.end(JSON.stringify({ calls: calls, last: last }));
+    return;
+  }
+  if (req.url === "/__reset") {
+    calls = 0;
+    last = null;
+    res.writeHead(200, { "content-type": "application/json" });
+    res.end(JSON.stringify({ ok: true }));
+    return;
+  }
   if (req.url !== "/v1/chat/completions" || req.method !== "POST") {
     res.writeHead(404, { "content-type": "application/json" });
     res.end(JSON.stringify({ error: "not found" }));
@@ -47,7 +66,24 @@ const server = http.createServer((req, res) => {
     const userMsg = (body.messages || []).filter((m) => m.role === "user").pop() || {};
     const content = String(userMsg.content || "");
     const passageCount = (content.match(/^\[P\d+\]/gm) || []).length;
-    const text = ANSWER.replace("Passages received: ", "Passages received: " + passageCount + ".");
+    const systems = (body.messages || []).filter((m) => m.role === "system").pop() || {};
+    calls += 1;
+    last = {
+      model: String(body.model || ""),
+      userChars: content.length,
+      systemChars: String(systems.content || "").length,
+      passageCount: passageCount,
+      streamOptions: body.stream_options || null
+    };
+
+    /* A question containing "refuse" returns the exact sentence the prompt tells
+       the model to use when the passages do not answer it, so the escalation
+       path can be tested without a real model refusing. The strong tier answers
+       properly, which is how the test proves escalation actually happened. */
+    const refuse = /refuse/i.test(content) && String(body.model || "") !== "mock-strong";
+    const text = refuse
+      ? "That is not in this guide. Check the step 6 notes instead."
+      : ANSWER.replace("Passages received: ", "Passages received: " + passageCount + ".");
 
     res.writeHead(200, {
       "content-type": "text/event-stream; charset=utf-8",
@@ -59,6 +95,19 @@ const server = http.createServer((req, res) => {
     let i = 0;
     const tick = () => {
       if (i >= chunks.length) {
+        /* A usage frame, as OpenAI sends when stream_options.include_usage is
+           set. The server bills from this, so the test proves real accounting
+           instead of a character guess. */
+        res.write("data: " + JSON.stringify({
+          id: "chatcmpl-mock",
+          object: "chat.completion.chunk",
+          choices: [],
+          usage: {
+            prompt_tokens: 1234,
+            completion_tokens: 210,
+            prompt_tokens_details: { cached_tokens: 1000 }
+          }
+        }) + "\n\n");
         res.write("data: [DONE]\n\n");
         res.end();
         return;
