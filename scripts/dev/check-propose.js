@@ -32,12 +32,18 @@ function run(cmd, args, cwd, env) {
 const node = (args) => run(process.execPath, args, CLONE);
 const gitOut = (args) => run("git", args, CLONE).out;
 
+/* A nonce keeps this fixture unique across runs. Without it, accepting the
+   proposal in the real repo would leave the question in the bank, and the next
+   test run would be refused as a duplicate — the test would fail forever after
+   a successful acceptance. */
+const NONCE = "probe" + Date.now().toString(36);
+
 const OP = {
   op: "quiz-add",
   target: "detect",
   intent: { add: 1, minLevel: 3 },
   question: {
-    q: "At 30 m with the 55 degree lens, roughly how much ground does one pixel cover?",
+    q: "At 30 m with the 55 degree lens, roughly how much ground does one pixel cover? (" + NONCE + ")",
     a: ["About 10 cm", "About 1 m", "About 10 m", "About 30 m"],
     c: 1,
     why: "2 x 30 m x tan(27.5 deg) is about 31.2 m across; over 32 pixels that is about 0.98 m."

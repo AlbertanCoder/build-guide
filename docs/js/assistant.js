@@ -2007,30 +2007,34 @@
     add("the quiz hooks are exposed", true);
 
     /* 1. an old bare-number save. The migration has to run while the bank is
-          still 5, which is exactly what the page does on load. */
+          still the size it was played at, which is what the page does on load.
+          Everything here is derived, because hardcoding "of 5" made this test go
+          red the moment a real question was accepted. */
+    const before = Q.length("detect");
+    const needBefore = Math.ceil(before * 0.75);
     Q.clearBest("detect");
-    Q.setBest("detect", 4); /* a bare number, as old saves held */
+    Q.setBest("detect", needBefore); /* a bare number, exactly on the pass mark */
     const didMigrate = Q.migrate();
     add("a legacy bare score is migrated to {score, of, passed}",
-      didMigrate === true && Q.best("detect").of === 5, JSON.stringify(Q.best("detect")));
-    add("and it still counts as a pass at 4/5", Q.best("detect").passed === true,
-      JSON.stringify(Q.best("detect")));
+      didMigrate === true && Q.best("detect").of === before, JSON.stringify(Q.best("detect")));
+    add("and it still counts as a pass at " + needBefore + "/" + before,
+      Q.best("detect").passed === true, JSON.stringify(Q.best("detect")));
 
     /* 2. grow the bank in memory */
-    const before = Q.length("detect");
     Q.grow("detect");
-    add("the bank grew for the test", Q.length("detect") === before + 1,
-      before + " -> " + Q.length("detect"));
+    const grown = Q.length("detect");
+    add("the bank grew for the test", grown === before + 1, before + " -> " + grown);
 
     /* 3. the earned pass survives, and the counter still credits it */
     add("the earned pass survives the bank growing", Q.best("detect").passed === true,
       JSON.stringify(Q.best("detect")));
     add("the pass count still credits detect", Q.passCount() >= 1, "passes=" + Q.passCount());
 
-    /* 4. the rule is not blanket-true: a fresh 4 out of 6 must fail (ceil(4.5) = 5) */
-    Q.setBest("detect", { score: 4, of: 6, passed: false });
-    add("a fresh 4/6 is not a pass", Q.best("detect").passed === false,
-      JSON.stringify(Q.best("detect")));
+    /* 4. the rule is not blanket-true: one mark short of the NEW bar must fail */
+    const needGrown = Math.ceil(grown * 0.75);
+    Q.setBest("detect", { score: needGrown - 1, of: grown, passed: false });
+    add("a fresh score one short of the new bar is not a pass",
+      Q.best("detect").passed === false, JSON.stringify(Q.best("detect")));
 
     /* 5. leave the page as we found it */
     Q.shrink("detect");

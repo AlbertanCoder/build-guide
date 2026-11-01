@@ -28,17 +28,22 @@ const corpus = fs.readFileSync(
   path.join(ROOT, "docs", "domain", "01-thermal-detection-limits.md"), "utf8");
 
 const parsed = op.readQuizzes(html);
-const total = Object.keys(parsed.quizzes).reduce((n, k) => n + parsed.quizzes[k].length, 0);
+const START_TOTAL = Object.keys(parsed.quizzes).reduce((n, k) => n + parsed.quizzes[k].length, 0);
+const START_DETECT = parsed.quizzes.detect.length;
+const NEED_BEFORE = Math.ceil(START_DETECT * 0.75);
+const NEED_AFTER = Math.ceil((START_DETECT + 1) * 0.75);
 
 check("reads the real quizzes out of index.html", Object.keys(parsed.quizzes).length === 5,
   Object.keys(parsed.quizzes).join(", "));
-check("the guide has 28 questions today", total === 28, String(total));
-check("detect has 5 questions today", parsed.quizzes.detect.length === 5);
+/* These used to assert "28 questions" and "5 detect", which meant a legitimate
+   accepted question turned the whole gate red. Read the baseline instead. */
+check("the guide has questions to work with", START_TOTAL > 0, String(START_TOTAL));
+check("the detect quiz has questions to work with", START_DETECT > 0, String(START_DETECT));
 
 const OP = {
   op: "quiz-add",
   target: "detect",
-  intent: { add: 1, minLevel: 3, totalBefore: 28, totalAfter: 29 },
+  intent: { add: 1, minLevel: 3, totalBefore: START_TOTAL, totalAfter: START_TOTAL + 1 },
   question: {
     q: "At 30 m with the 55 degree lens, roughly how much ground does one pixel cover?",
     a: ["About 10 cm", "About 1 m", "About 10 m", "About 30 m"],
@@ -57,11 +62,15 @@ const CTX = { quizzes: parsed.quizzes, corpus: corpus, correctValues: ["0.98 m p
 
 /* ---- the numbers the proposal must declare, computed not claimed ---------- */
 const d = op.describe(OP, CTX);
-check("derived totals are 28 -> 29", d.totalBefore === 28 && d.totalAfter === 29,
+check("derived totals step by exactly one",
+  d.totalBefore === START_TOTAL && d.totalAfter === START_TOTAL + 1,
   d.totalBefore + " -> " + d.totalAfter);
-check("the pass bar for detect is 4/5 today", d.thresholdBefore === 4, "need " + d.thresholdBefore);
-check("the pass bar becomes 5/6 after the change", d.thresholdAfter === 5, "need " + d.thresholdAfter);
-check("and that is a regression for an earned 4/5 pass", d.regression === true);
+check("the pass bar today is " + NEED_BEFORE + "/" + START_DETECT,
+  d.thresholdBefore === NEED_BEFORE, "got " + d.thresholdBefore);
+check("the pass bar after the change is " + NEED_AFTER + "/" + (START_DETECT + 1),
+  d.thresholdAfter === NEED_AFTER, "got " + d.thresholdAfter);
+check("the regression flag matches the arithmetic",
+  d.regression === (NEED_AFTER > NEED_BEFORE), String(d.regression));
 
 /* ---- the good case ------------------------------------------------------- */
 const good = op.validate(OP, CTX);
@@ -101,7 +110,7 @@ const res = op.apply(OP, html);
 const after = hash(fs.readFileSync(INDEX));
 
 check("apply accepts the op", res.ok === true, res.ok ? "ok" : res.error);
-check("the question count goes to 6", res.count === 6, String(res.count));
+check("the question count goes to " + (START_DETECT + 1), res.count === START_DETECT + 1, String(res.count));
 check("apply reports both edits", res.changes.length === 2, res.changes.join(" ; "));
 
 let reparsed = null;
@@ -110,11 +119,12 @@ check("the edited source still parses", !!reparsed);
 if (reparsed) {
   const list = reparsed.quizzes.detect;
   const newTotal = Object.keys(reparsed.quizzes).reduce((n, k) => n + reparsed.quizzes[k].length, 0);
-  check("detect now has 6 questions", list.length === 6, String(list.length));
-  check("the guide total is now 29", newTotal === 29, String(newTotal));
+  check("detect now has " + (START_DETECT + 1) + " questions", list.length === START_DETECT + 1, String(list.length));
+  check("the guide total is now " + (START_TOTAL + 1), newTotal === START_TOTAL + 1, String(newTotal));
   check("the new question was appended last", list[list.length - 1].q === OP.question.q);
   check("the first existing question is untouched", list[0].q === parsed.quizzes.detect[0].q);
-  check("the title now advertises 6 questions", /\(6 questions\)/.test(res.html));
+  check("the title now advertises the new count",
+    new RegExp("\\(" + (START_DETECT + 1) + " questions\\)").test(res.html));
 }
 check("INDEX.HTML ON DISK IS BYTE-IDENTICAL", before === after,
   before === after ? "sha256 unchanged" : "APPLY WROTE TO THE FILE");
