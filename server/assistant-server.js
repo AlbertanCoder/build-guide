@@ -53,6 +53,32 @@ function loadEnv() {
 
 const ENV = Object.assign({}, loadEnv(), process.env);
 const PORT = Number(ENV.PORT || 8790);
+const BIND = String(ENV.BIND || "127.0.0.1");
+
+/* Decision 14's three write gates: a loopback-only bind (the default — the
+   machine itself is the gate), a token in server/.env, and an explicit
+   --allow-write flag. On a loopback bind nothing else is needed; anywhere the
+   server is REACHABLE (a VPS on a tailnet), the other two gates are mandatory,
+   and each one alone is enough to stop an accident. */
+const WRITE_TOKEN = String(ENV.GA_WRITE_TOKEN || "");
+const ALLOW_WRITE = process.argv.includes("--allow-write") || ENV.ALLOW_WRITE === "1";
+const REMOTE = !/^(127\.0\.0\.1|localhost|::1)$/.test(BIND);
+
+function writeGate(req) {
+  if (!REMOTE) { return { ok: true }; }
+  if (!ALLOW_WRITE) {
+    return { ok: false, status: 403, error: "write is disabled on this server; start it with --allow-write to enable it" };
+  }
+  if (!WRITE_TOKEN) {
+    return { ok: false, status: 403, error: "no write token configured; set GA_WRITE_TOKEN in server/.env" };
+  }
+  const auth = String(req.headers.authorization || "");
+  const got = auth.indexOf("Bearer ") === 0 ? auth.slice(7) : String(req.headers["x-write-token"] || "");
+  if (got !== WRITE_TOKEN) {
+    return { ok: false, status: 401, error: "write token missing or wrong" };
+  }
+  return { ok: true };
+}
 let PROVIDER = String(ENV.PROVIDER || "openai").toLowerCase();
 
 /* ---------- settings the page may change (git-ignored) ----------
@@ -537,6 +563,8 @@ async function handlePropose(req, res) {
   if (origin && host && origin.replace(/^https?:\/\//, "") !== host) {
     sendJson(res, 403, { error: "Cross-origin change refused." }); return;
   }
+  const gate = writeGate(req);
+  if (!gate.ok) { sendJson(res, gate.status, { error: gate.error }); return; }
 
   let raw = "";
   let tooBig = false;
@@ -966,6 +994,8 @@ const server = http.createServer((req, res) => {
     if (origin && host && origin.replace(/^https?:\/\//, "") !== host) {
       sendJson(res, 403, { error: "Cross-origin settings change refused." }); return;
     }
+    const gate = writeGate(req);
+    if (!gate.ok) { sendJson(res, gate.status, { error: gate.error }); return; }
 
     let raw = "";
     let tooBig = false;
@@ -1127,8 +1157,13 @@ const server = http.createServer((req, res) => {
 process.on("exit", () => { cache.flush(); });
 process.on("SIGINT", () => { cache.flush(); process.exit(0); });
 
-server.listen(PORT, "127.0.0.1", () => {
+server.listen(PORT, BIND, () => {
   const keyState = API_KEY ? "set" : (/(127\.0\.0\.1|localhost)/.test(BASE_URL) ? "not needed (local model)" : "MISSING");
+  const writeState = REMOTE
+    ? (ALLOW_WRITE
+      ? (WRITE_TOKEN ? "gated: --allow-write + token required" : "REFUSED: --allow-write given but GA_WRITE_TOKEN is not set")
+      : "read-only (start with --allow-write to enable edits)")
+    : "enabled on this machine only";
   console.log("");
   console.log("  Guide Assistant server");
   console.log("  → http://localhost:" + PORT + "/            (the guide, with a live assistant)");
@@ -1141,6 +1176,8 @@ server.listen(PORT, "127.0.0.1", () => {
   console.log("  budget   : " + (DAILY_USD_MAX > 0 ? "$" + DAILY_USD_MAX + "/day" : "no cap (set DAILY_USD_MAX)"));
   console.log("  cache    : " + (CACHE_OFF ? "off" : CACHE_FILE + "  (" + cache.stats().entries + " entries)"));
   console.log("  base url : " + BASE_URL);
+  console.log("  bind     : " + BIND);
+  console.log("  writes   : " + writeState);
   console.log("  api key  : " + keyState);
   if (keyState === "MISSING") {
     console.log("");

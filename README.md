@@ -131,7 +131,7 @@ on spend, falling back to the offline engine rather than billing past it.
 Run the tests:
 
 ```powershell
-# Everything at once: 404 named checks, one exit code.
+# Everything at once: 419 named checks, one exit code.
 node scripts/dev/gate.js
 node scripts/dev/gate.js --quick    # skip the browser suite (needs Chrome)
 node scripts/dev/gate.js --json     # machine-readable
@@ -149,6 +149,7 @@ node scripts/dev/check-quiz-op.js            # the quiz-add operation: 29 checks
 node scripts/dev/check-prose-op.js           # the prose-rewrite operation: 38 checks, incl. refusals
 node scripts/dev/check-bans.js              # the five code-enforced bans: 37 checks, none inert
 node scripts/dev/check-corrections.js       # the corrections memory: 22 checks, reviewed and pure
+node scripts/dev/check-write-gates.js      # the three write gates: 13 checks, each gate alone stops a write
 ```
 
 *These are previews of the HTML guide, not a completed aircraft. Click any image to view it full-size.*

@@ -1437,6 +1437,42 @@
     keyRow.appendChild(testKey);
     keyRow.appendChild(clearKey);
 
+    /* The write token (decision 14's gate 3): needed only when the server is
+       reachable beyond this machine. Stored in this browser alone; the server
+       never echoes it back. */
+    const tokenLabel = el("label", null, "Write token");
+    const tokenState = el("span", "ga-sub");
+    tokenState.id = "ga-write-token-state";
+    tokenState.textContent = "not set";
+    tokenLabel.appendChild(tokenState);
+    const tokenInput = el("input", "ga-key-input");
+    tokenInput.type = "password";
+    tokenInput.id = "ga-write-token";
+    tokenInput.autocomplete = "off";
+    tokenInput.placeholder = "needed only when the server is shared over your network";
+    const tokenRow = el("div", "ga-row");
+    const saveToken = el("button", "ga-chip", "Save token");
+    saveToken.type = "button";
+    saveToken.id = "ga-write-token-save";
+    const clearToken = el("button", "ga-chip", "Clear");
+    clearToken.type = "button";
+    clearToken.id = "ga-write-token-clear";
+    tokenRow.appendChild(saveToken);
+    tokenRow.appendChild(clearToken);
+    saveToken.addEventListener("click", function () {
+      try {
+        localStorage.setItem("ga-write-token", tokenInput.value.trim());
+        tokenInput.value = "";
+        tokenState.textContent = tokenInput.value ? "" : "saved on this device";
+        setNote("Write token saved in this browser.", false);
+      } catch (e) { setNote("This browser will not store the token.", true); }
+    });
+    clearToken.addEventListener("click", function () {
+      try { localStorage.removeItem("ga-write-token"); } catch (e) { /* ignore */ }
+      tokenState.textContent = "not set";
+      setNote("Write token cleared.", false);
+    });
+
     const budgetLabel = el("label", null, "Daily budget");
     const budgetVal = el("b", null, "\u2014");
     budgetVal.id = "ga-budget-val";
@@ -1460,6 +1496,9 @@
     node.appendChild(keyLabel);
     node.appendChild(keyInput);
     node.appendChild(keyRow);
+    node.appendChild(tokenLabel);
+    node.appendChild(tokenInput);
+    node.appendChild(tokenRow);
     node.appendChild(budgetLabel);
     node.appendChild(budget);
     node.appendChild(scaleNote);
@@ -1480,6 +1519,10 @@
 
     function paint(s) {
       keyState.textContent = s.keyConfigured ? "saved, ending " + s.keyHint : "not set";
+      try {
+        tokenState.textContent = (localStorage.getItem("ga-write-token") || "")
+          ? "saved on this device" : "not set";
+      } catch (e) { tokenState.textContent = "not set"; }
       if (!providerSel.options.length && s.presets) {
         s.presets.forEach(function (p) {
           const opt = document.createElement("option");
@@ -1533,7 +1576,7 @@
     function post(payload) {
       return fetch("/api/settings", {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: writeTokenHeaders({ "content-type": "application/json" }),
         body: JSON.stringify(payload)
       }).then(function (r) {
         return r.json().then(function (j) {
@@ -1765,6 +1808,17 @@
 
   /* "add 3 harder detect questions" is a request to DO something, not a question.
      The server has the real parser; this only decides which door to knock on. */
+  /* The write token (decision 14's gate 3, client side): kept in this browser
+     only, sent with every write request, never echoed back by the server. */
+  function writeTokenHeaders(extra) {
+    const h = Object.assign({}, extra || {});
+    try {
+      const t = window.localStorage ? (localStorage.getItem("ga-write-token") || "") : "";
+      if (t) { h["x-write-token"] = t; }
+    } catch (e) { /* storage unavailable */ }
+    return h;
+  }
+
   function looksLikeEdit(text) {
     const t = String(text || "").toLowerCase();
     if (/^\s*(correction|correct|remember|wrong)\s*[:\-]/.test(t)) { return true; }
@@ -1775,7 +1829,7 @@
   function proposeChange(sentence) {
     return fetch("/api/propose", {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: writeTokenHeaders({ "content-type": "application/json" }),
       body: JSON.stringify({ sentence: sentence })
     }).then(function (r) {
       return r.json().then(function (j) {
@@ -2036,6 +2090,13 @@
     add("the offline drawer routes to the working copy",
       ENDPOINT === "/api/ask" ? openBtnShown === false : openBtnShown === true,
       "endpoint=" + (ENDPOINT || "none") + " shown=" + openBtnShown);
+
+    /* The write token field (decision 14's gate 3, client side). */
+    if (UI.showSettings) { UI.showSettings(true); }
+    add("the drawer offers a write token field",
+      !!document.getElementById("ga-write-token") &&
+      !!document.getElementById("ga-write-token-save"), "ok");
+    if (UI.showSettings) { UI.showSettings(false); }
 
     /* When there is no AI, the panel has to SAY so in words. Behaving differently
        in silence is what made the offline copy look broken. */

@@ -26,7 +26,7 @@ to a later stage of the approved plan.
 | 11 | Corrections memory (learning, no training) | BUILT — `correction-add` through the proposal loop; reviewed, never auto-ingested, 22 checks |
 | 12 | Corrections stored in `docs/domain/corrections.md` | BUILT — committed, labelled "Correction on file", retrieved by the same BM25 |
 | 13 | Full gate before accepting | BUILT |
-| 14 | Three write gates (local + token + `--allow-write`) | PARTIAL — loopback bind and origin/content-type guards exist; no token, no flag |
+| 14 | Three write gates (local + token + `--allow-write`) | BUILT — loopback bind, `--allow-write` flag, `GA_WRITE_TOKEN` header; each gate alone stops a write, 13 checks |
 | 15 | Edit limits: 10/session, budget, kill switch | NOT BUILT |
 | 16 | Labelled domain eval (~50 Q) | NOT BUILT — no `EVAL.md` |
 | 17 | Never a confidence percentage | BUILT — no percentages anywhere |
@@ -73,8 +73,8 @@ to a later stage of the approved plan.
 
 | | Count |
 |---|---|
-| BUILT | 28 |
-| PARTIAL | 15 |
+| BUILT | 29 |
+| PARTIAL | 14 |
 | NOT BUILT | 7 |
 
 Counted by hand off the two tables above, row by row — the first version of this
@@ -89,7 +89,7 @@ question cannot be added without a citation, and why an accepted change can be
 undone byte-for-byte. That part is real.
 
 What they did **not** buy is a finished assistant. **Seven decisions are still
-paper, and a further fifteen are half-built.** The largest gaps, in the order
+paper, and a further fourteen are half-built.** The largest gaps, in the order
 they hurt:
 
 1. **The eval set** (R16 round 1) — without it, "it got better" is an opinion.
