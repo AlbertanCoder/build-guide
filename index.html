@@ -2194,11 +2194,7 @@ while True:
       { q: "How should a future AI briefing be checked?",
         a: ["Assume it is always right", "Compare every statement with the measured hotspot log; no AI briefing is implemented in this HTML", "Treat it as certified", "Let it control the drone"],
         c: 1,
-        why: "Generated prose is not ground truth. Use recorded measurements, human verification and plain-code safety checks." },
-      { q: "At 30 m with the 55 degree lens, roughly how much ground does one pixel cover?",
-        a: ["About 10 cm", "About 1 m", "About 10 m", "About 30 m"],
-        c: 1,
-        why: "2 x 30 m x tan(27.5 deg) is about 31.2 m across; over 32 pixels that is about 0.98 m." }
+        why: "Generated prose is not ground truth. Use recorded measurements, human verification and plain-code safety checks." }
     ],
     rules: [
       { q: "What does CAR 601.15 restrict around a forest fire?",
@@ -2268,7 +2264,7 @@ while True:
   const QUIZ_TITLES = {
     airframe: "Quiz: Build the airframe (5 questions)",
     payload: "Quiz: The thermal payload (5 questions)",
-    detect: "Quiz: Detection & mapping (6 questions)",
+    detect: "Quiz: Detection & mapping (5 questions)",
     rules: "Quiz: Flight rules & safety (5 questions)",
     final: "Final exam (8 questions)"
   };
