@@ -1348,16 +1348,20 @@
     const keyRow = el("div", "ga-row");
     const saveKey = el("button", "ga-chip", "Save key");
     saveKey.type = "button";
+    saveKey.id = "ga-key-save";
     const testKey = el("button", "ga-chip", "Test key");
     testKey.type = "button";
+    testKey.id = "ga-key-test";
     const clearKey = el("button", "ga-chip", "Clear");
     clearKey.type = "button";
+    clearKey.id = "ga-key-clear";
     keyRow.appendChild(saveKey);
     keyRow.appendChild(testKey);
     keyRow.appendChild(clearKey);
 
     const budgetLabel = el("label", null, "Daily budget");
     const budgetVal = el("b", null, "\u2014");
+    budgetVal.id = "ga-budget-val";
     budgetLabel.appendChild(budgetVal);
     const budget = el("input", "ga-budget");
     budget.type = "range";
@@ -1858,6 +1862,117 @@
   }
 
   /* ======================================================================
+     DRAWER PROBE — ?ga-drawer-test
+
+     Types a key into the settings drawer, clicks Save, drags the slider, and
+     writes the outcome to a <pre> so a command-line test can assert on it. This
+     exists because the settings API was tested 23/23 while the *clicking* was
+     never exercised at all — and an unproven UI path on shipped code is a
+     liability, not a feature.
+     ====================================================================== */
+  function runDrawerProbe() {
+    const lines = [];
+    const add = function (name, ok, info) {
+      lines.push((ok ? "PASS " : "FAIL ") + name + (info ? "  [" + info + "]" : ""));
+      return ok;
+    };
+    const pageErrors = [];
+    window.addEventListener("error", function (e) { pageErrors.push(String(e.message || e)); });
+
+    function finish() {
+      add("no uncaught page errors", pageErrors.length === 0, pageErrors.join(" | ").slice(0, 200));
+      const pre = document.createElement("pre");
+      pre.id = "ga-drawer-test";
+      pre.textContent = lines.join("\n");
+      document.body.appendChild(pre);
+      /* Also post the result to the test server. Polling that is far more
+         reliable than --dump-dom against an async probe, because virtual time
+         and pending fetches interact badly. */
+      try {
+        fetch("/api/probe", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ drawer: lines })
+        }).catch(function () { /* test server not enabled: harmless */ });
+      } catch (e) { /* ignore */ }
+      return lines;
+    }
+
+    const waitFor = function (test, ms) {
+      const until = Date.now() + (ms || 5000);
+      return new Promise(function (resolve) {
+        const tick = function () {
+          let ok = false;
+          try { ok = !!test(); } catch (e) { ok = false; }
+          if (ok) { resolve(true); return; }
+          if (Date.now() > until) { resolve(false); return; }
+          setTimeout(tick, 80);
+        };
+        tick();
+      });
+    };
+
+    /* Every tab must render real content, not an empty shell. This is also the
+       smoke test a JS edit has to pass, so it lives here rather than in a
+       second harness. */
+    const tabs = document.querySelectorAll("main section[role='tabpanel']");
+    let rendered = 0;
+    Array.prototype.forEach.call(tabs, function (t) {
+      if (String(t.textContent || "").trim().length > 200) { rendered += 1; }
+    });
+    add("every tab panel renders content", tabs.length >= 7 && rendered === tabs.length,
+      rendered + "/" + tabs.length);
+
+    if (!settingsAvailable()) {
+      add("a local server is present", false, "endpoint=" + (ENDPOINT || "none"));
+      finish();
+      return Promise.resolve(lines);
+    }
+    add("a local server is present", true, ENDPOINT);
+
+    UI.showSettings(true);
+    const drawer = document.getElementById("ga-settings");
+    add("the drawer opens", !!drawer && drawer.hidden === false);
+
+    const input = document.getElementById("ga-key");
+    const save = document.getElementById("ga-key-save");
+    const budget = document.getElementById("ga-budget");
+    const state = document.getElementById("ga-key-state");
+    const budgetVal = document.getElementById("ga-budget-val");
+    add("the drawer has a key field, a save button and a slider",
+      !!input && !!save && !!budget, "ok");
+
+    const KEY = "sk-drawer-probe-0000wxyz";
+    input.value = KEY;
+    save.click();
+
+    return waitFor(function () { return /ending \u2026wxyz/.test(state.textContent); })
+      .then(function (saved) {
+        /* The server prefixes the hint with a real ellipsis character, so the
+           pattern has to include it — the earlier version of this assertion
+           looked for "ending wxyz" and could never match, which cost 5s of
+           timeout and one misleading FAIL. */
+        add("saving from the drawer reaches the server", saved, state.textContent);
+        add("the key field is cleared after saving", input.value === "", "len=" + input.value.length);
+        add("the key is not echoed anywhere in the panel",
+          UI.panel.textContent.indexOf(KEY) === -1, "searched " + UI.panel.textContent.length + " chars");
+        budget.value = "0.55";
+        budget.dispatchEvent(new Event("change", { bubbles: true }));
+        return waitFor(function () { return /0\.55/.test(budgetVal.textContent); });
+      })
+      .then(function () {
+        add("the slider updates its label", /0\.55/.test(budgetVal.textContent), budgetVal.textContent);
+        return fetch("/api/settings", { cache: "no-store" }).then(function (r) { return r.json(); });
+      })
+      .then(function (srv) {
+        add("the slider value reached the server", Number(srv.dailyUsdMax) === 0.55, "$" + srv.dailyUsdMax);
+        add("the server still will not return the key", JSON.stringify(srv).indexOf(KEY) === -1);
+        UI.showSettings(false);
+        return finish();
+      });
+  }
+
+  /* ======================================================================
      INIT
      ====================================================================== */
   function init() {
@@ -1875,7 +1990,10 @@
     /* ?ga-ask=<question> asks one question and writes the outcome to a <pre>,
        so the whole model path can be regression-tested from the command line. */
     const askFlag = String(location.search).match(/[?&]ga-ask=([^&#]+)/);
-    if (askFlag) {
+    if (/ga-drawer-test/.test(flags)) {
+      /* Drives the settings drawer for real. See runDrawerProbe. */
+      probeEndpoint().then(function () { return runDrawerProbe(); });
+    } else if (askFlag) {
       const question = decodeURIComponent(askFlag[1].replace(/\+/g, " "));
       probeEndpoint().then(function () { return runAskProbe(question); });
     } else {

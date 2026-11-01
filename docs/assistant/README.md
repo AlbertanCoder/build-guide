@@ -196,6 +196,8 @@ from storage.
 | `server/cost-engine.js` | the zero-dependency cost engine: cache, router, compression, meter |
 | `scripts/dev/check-cost-engine.js` | 26 unit checks on the engine |
 | `scripts/dev/check-cost-path.js` | 30 end-to-end checks: cache, compression, stats, budget, escalation |
+| `scripts/dev/check-settings.js` | 23 checks on the key and budget endpoints |
+| `scripts/dev/check-browser.js` | 18 checks in a real browser: the settings drawer, all 7 tabs render, zero page errors |
 
 ## Tests
 
@@ -231,7 +233,14 @@ unsourced number cannot reach the page:
 node scripts/dev/build-domain.js           # regenerate docs/js/domain.js
 node scripts/dev/build-domain.js --check   # fail if it is stale or any claim is unsourced
 node scripts/dev/check-settings.js         # 23 checks: key never returned, budget clamped, CSRF refused
+node scripts/dev/check-browser.js          # 18 checks in headless Chrome: drawer clicks, tabs, no errors
 ```
+
+`check-browser.js` is the one that proves the *clicking*, not just the API: it
+types a key into the drawer, clicks Save, drags the slider, and then confirms
+against the server that both actually landed. It also asserts all seven tabs
+render and that no uncaught error occurred — which is the same smoke test any
+future JavaScript edit has to pass.
 
 `check-cost-path.js` measures the savings at the *provider*: it asserts that a
 repeat question produces zero upstream calls, that the passages sent are smaller

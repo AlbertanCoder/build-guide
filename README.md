@@ -136,6 +136,7 @@ node scripts/dev/check-cost-engine.js        # cache, router, meter, compression
 node scripts/dev/check-cost-path.js          # zero-cost repeat, cap, escalation (30 checks)
 node scripts/dev/build-domain.js --check     # domain pack is current and every claim is sourced
 node scripts/dev/check-settings.js           # key never returned, budget clamped (23 checks)
+node scripts/dev/check-browser.js            # real Chrome: drawer clicks, all tabs render, no errors (18)
 ```
 
 *These are previews of the HTML guide, not a completed aircraft. Click any image to view it full-size.*
