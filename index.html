@@ -165,6 +165,10 @@
   .shop input[type="number"] { width: 74px; padding: 5px 7px; border: 1px solid var(--line); border-radius: 8px; }
   .shop-links { margin: 4px 0 0; font-size: 12.5px; }
   .shop-links a { font-weight: 600; white-space: nowrap; }
+.buy-check { margin-right: 8px; accent-color: #1b5e4f; vertical-align: -1px; cursor: pointer; }
+.asm-parts li.bought > a { text-decoration: line-through; opacity: .5; }
+.asm-parts li.bought { color: var(--soft); }
+.stg-bought { margin: 8px 0 0; font-size: 12px; font-weight: 700; color: var(--pine); }
   /* ---- Staged buying plan (tab 3) ---- */
   .stage { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
            padding: 16px 18px; margin: 0 0 12px; box-shadow: var(--shadow); }
@@ -2315,7 +2319,28 @@ while True:
     const custom = saved.prices[item[0]];
     return custom === undefined || custom === "" ? item[3] : Number(custom);
   }
+  function syncOwnedUI() {
+    Array.prototype.forEach.call(document.querySelectorAll("[data-own]"), function (el) {
+      const on = !!saved.owned[el.getAttribute("data-own")];
+      el.checked = on;
+      const li = el.closest("li[data-item]");
+      if (li) li.classList.toggle("bought", on);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll(".stage .asm-parts"), function (wrap) {
+      let cnt = wrap.querySelector(".stg-bought");
+      if (!cnt) {
+        cnt = document.createElement("div");
+        cnt.className = "stg-bought";
+        wrap.appendChild(cnt);
+      }
+      const boxes = wrap.querySelectorAll("li[data-item] input[data-own]");
+      let done = 0;
+      Array.prototype.forEach.call(boxes, function (b) { if (b.checked) done += 1; });
+      cnt.textContent = done + " of " + boxes.length + " bought";
+    });
+  }
   function renderBudget() {
+    syncOwnedUI();
     let total = 0;
     ITEMS.forEach(function (item) { if (!saved.owned[item[0]]) total += priceOf(item); });
     document.getElementById("budget-total").textContent = "$" + Math.round(total) + " CAD of $" + CAP;
@@ -2394,6 +2419,16 @@ while True:
     const bits = li.textContent.split("\u2014");
     const name = bits.shift().trim();
     const rest = bits.length ? " \u2014" + bits.join("\u2014") : "";
+    const chk = document.createElement("input");
+    chk.type = "checkbox";
+    chk.className = "buy-check";
+    chk.setAttribute("data-own", key);
+    chk.checked = !!saved.owned[key];
+    chk.setAttribute("aria-label", "Bought " + name);
+    chk.addEventListener("change", function () {
+      saved.owned[key] = chk.checked;
+      save(); renderBudget();
+    });
     const a = document.createElement("a");
     a.href = links[0][1];
     a.target = "_blank";
@@ -2401,6 +2436,8 @@ while True:
     a.textContent = name;
     a.title = "Live listing checked 31 Oct 2026 \u2014 confirm stock and price at checkout";
     li.textContent = "";
+    li.classList.toggle("bought", chk.checked);
+    li.appendChild(chk);
     li.appendChild(a);
     li.appendChild(document.createTextNode(rest));
     const extra = links.slice(1);
