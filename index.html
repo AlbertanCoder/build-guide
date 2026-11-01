@@ -649,7 +649,7 @@
       Editable amounts match the selected items checked on 31 Oct 2026. SparkFun's US$10.85 is converted
       at the Bank of Canada rate of CA$1.3960/US$1 (30 Oct). The CA$1,678.00 subtotal includes the shown
       laptop freight and CA$20 compliance allowance; CA$81.10 GST gives CA$1,759.10 before remaining
-      retailer freight. Every row below links to its live retailer listing. Use the <a href="Shad-Drone-Order-List.md">line-by-line order document</a> for stock and freight.</div>
+      retailer freight. Every row below links to its live retailer listing, plus a backup source in case the first is sold out. Use the <a href="Shad-Drone-Order-List.md">line-by-line order document</a> for stock and freight.</div>
     <div id="shopping"></div>
   </div>
 
@@ -2271,6 +2271,40 @@ while True:
     "compliance": [["TC exam portal", "https://tc.canada.ca/en/aviation/drone-safety/drone-pilot-licensing/take-drone-pilot-online-exam"],
                    ["TC Basic rules", "https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations"]]
   };
+  const BACKUPS = {
+    "frame": [["Backup · GetFPV", "https://www.getfpv.com/tbs-source-one-v6-5-frame-kit.html"]],
+    "stack": [["Backup · Pyrodrone", "https://pyrodrone.com/products/geprc-taker-f405-stack-with-bls-50a-4in1-esc-30-30mm"]],
+    "motors": [["Backup · RaceDayQuads", "https://www.racedayquads.com/products/emax-e3-series-2207-motor-1700kv-1900kv-2400kv"]],
+    "props": [["Backup · RaceDayQuads", "https://www.racedayquads.com/products/gemfan-hurricane-durable-3-blade-51499-propeller-choose-your-color"]],
+    "radio": [["Backup · Amazon", "https://www.amazon.ca/Radiomaster-Pocket-Controller-Transmitter-Helicopter/dp/B0F3D5Z531"]],
+    "radio-cells": [["Backup · Amazon", "https://www.amazon.ca/s?k=RadioMaster+18650+3200mAh"]],
+    "receiver": [["Backup · RaceDayQuads", "https://www.racedayquads.com/products/radiomaster-rp1-v2-2-4ghz-elrs-nano-receiver"]],
+    "batteries": [["Backup · EpicFPV (CA)", "https://epicfpv.ca/products/gnb-lihv-4s-15-2v-1500mah-120c-xt60-lipo-battery-longrange"]],
+    "charger": [["Backup · RaceDayQuads", "https://www.racedayquads.com/products/toolkitrc-m4ac-30w-2-5a-2-4s-ac-smart-charger-xt60"]],
+    "fpv-camera": [["Backup · RaceDayQuads", "https://www.racedayquads.com/products/runcam-phoenix-2-special-edition-micro-1000tvl-cmos-4-3-16-9-ntsc-pal-fpv-camera"]],
+    "vtx": [["Backup · TBS official", "https://www.team-blacksheep.com/products/prod:unify_pro_hv_sma"]],
+    "vtx-antenna": [["Backup · TBS official", "https://www.team-blacksheep.com/products/prod:diamond_antenna"]],
+    "monitor": [["Backup · Amazon", "https://www.amazon.com/SKYZONE-Monitor-5inch-5-8Ghz-Receiver/dp/B0F2MT7VZN"]],
+    "straps": [["Backup · Amazon", "https://www.amazon.ca/s?k=kevlar+battery+strap"]],
+    "lights": [["Backup · Amazon", "https://www.amazon.ca/s?k=4S+COB+LED+strip"]],
+    "battery-pad": [["Backup · Amazon", "https://www.amazon.ca/s?k=fpv+battery+grip+pad"]],
+    "tools": [["Backup · GetFPV", "https://www.getfpv.com/flywoo-fpv-quad-tool-kit-w-multimeter-and-soldering-iron.html"]],
+    "smoke-stopper": [["Backup · Pyrodrone", "https://pyrodrone.com/products/iflight-smart-smoke-stopper-xt60-xt30"]],
+    "lipo-bag": [["Backup · Amazon", "https://www.amazon.ca/s?k=lipo+battery+safe+bag"]],
+    "heat-shrink": [["Backup · Amazon", "https://www.amazon.ca/s?k=heat+shrink+tubing+assortment"]],
+    "zip-ties": [["Backup · Amazon", "https://www.amazon.ca/s?k=3mm+zip+ties"]],
+    "standoffs": [["Backup · Amazon", "https://www.amazon.ca/s?k=nylon+M2.5+standoff"]],
+    "micro-usb": [["Backup · Amazon", "https://www.amazon.ca/s?k=right+angle+micro+usb+cable"]],
+    "pi": [["Backup · Amazon kit", "https://www.amazon.ca/WH-Kit-Aluminum-Alloy-MicroSD/dp/B0G69QHBYN"]],
+    "thermal": [["Backup · Adafruit", "https://www.adafruit.com/product/4407"]],
+    "gps": [["Backup · Adafruit", "https://www.adafruit.com/product/4415"]],
+    "qwiic": [["Backup HAT · Amazon", "https://www.amazon.ca/s?k=SparkFun+Qwiic+HAT"], ["Backup cable · Amazon", "https://www.amazon.ca/s?k=SparkFun+Qwiic+jumper+cable"]],
+    "laptop": [["Backup · Amazon", "https://www.amazon.ca/s?k=recertified+windows+laptop"]],
+    "threadlock": [["Backup · Amazon", "https://www.amazon.ca/s?k=Permatex+242"]],
+    "aaa": [["Backup · Amazon", "https://www.amazon.ca/s?k=Energizer+MAX+AAA"]],
+    "glasses": [["Backup · Amazon", "https://www.amazon.ca/s?k=3M+SecureFit+200"]]
+  };
+
   function priceOf(item) {
     const custom = saved.prices[item[0]];
     return custom === undefined || custom === "" ? item[3] : Number(custom);
@@ -2305,7 +2339,7 @@ while True:
     note.textContent = item[2];
     text.appendChild(name);
     text.appendChild(note);
-    const shopLinks = LINKS[item[0]] || [];
+    const shopLinks = (LINKS[item[0]] || []).concat(BACKUPS[item[0]] || []);
     if (shopLinks.length) {
       const lp = document.createElement("div");
       lp.className = "shop-links";

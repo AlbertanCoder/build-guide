@@ -78,6 +78,46 @@ The Qwiic-to-breadboard cables connect the HAT to the Pimoroni boards' soldered 
 |---|---:|---|
 | Small Basic exam CA$10 + one drone registration CA$10 (2025 fee schedule) | CA$20.00 | [Exam portal](https://tc.canada.ca/en/aviation/drone-safety/drone-pilot-licensing/take-drone-pilot-online-exam) and [Basic rules](https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations); confirm the live amount in the portal before payment |
 
+## Backup sources (buy here if the primary is sold out)
+
+Every budget row in the guide also carries a second ↗ link. Big-ticket parts have real alternate product pages; generic hardware links to an Amazon search so you can pick any in-stock equivalent. Note: the US shops (RaceDayQuads, GetFPV, Pyrodrone, TBS) ship to Canada but add freight and possible duty — use them only when the Canadian primary is out; Amazon.ca / EpicFPV keep shipping domestic.
+
+| Part | Backup source |
+|---|---|
+| TBS Source One V6 frame | [GetFPV](https://www.getfpv.com/tbs-source-one-v6-5-frame-kit.html) |
+| GEPRC TAKER F405 BLS 50A stack | [Pyrodrone](https://pyrodrone.com/products/geprc-taker-f405-stack-with-bls-50a-4in1-esc-30-30mm) |
+| EMAX ECO III 2207 motors ×4 | [RaceDayQuads](https://www.racedayquads.com/products/emax-e3-series-2207-motor-1700kv-1900kv-2400kv) |
+| Gemfan 51499 props ×8 | [RaceDayQuads](https://www.racedayquads.com/products/gemfan-hurricane-durable-3-blade-51499-propeller-choose-your-color) |
+| RadioMaster Pocket ELRS | [Amazon.ca](https://www.amazon.ca/Radiomaster-Pocket-Controller-Transmitter-Helicopter/dp/B0F3D5Z531) |
+| Samsung 35E 18650s | [Amazon search](https://www.amazon.ca/s?k=RadioMaster+18650+3200mAh) |
+| RadioMaster RP1 V2 receiver | [RaceDayQuads](https://www.racedayquads.com/products/radiomaster-rp1-v2-2-4ghz-elrs-nano-receiver) |
+| GNB 1500 mAh 4S batteries ×2 | [EpicFPV (Canada)](https://epicfpv.ca/products/gnb-lihv-4s-15-2v-1500mah-120c-xt60-lipo-battery-longrange) |
+| ToolkitRC M4AC charger | [RaceDayQuads](https://www.racedayquads.com/products/toolkitrc-m4ac-30w-2-5a-2-4s-ac-smart-charger-xt60) |
+| RunCam Phoenix 2 SE camera | [RaceDayQuads](https://www.racedayquads.com/products/runcam-phoenix-2-special-edition-micro-1000tvl-cmos-4-3-16-9-ntsc-pal-fpv-camera) |
+| TBS Unify Pro HV VTX | [TBS official](https://www.team-blacksheep.com/products/prod:unify_pro_hv_sma) |
+| TBS Diamond antenna | [TBS official](https://www.team-blacksheep.com/products/prod:diamond_antenna) |
+| Skyzone M5F monitor/DVR | [Amazon](https://www.amazon.com/SKYZONE-Monitor-5inch-5-8Ghz-Receiver/dp/B0F2MT7VZN) |
+| Kevlar battery straps | [Amazon search](https://www.amazon.ca/s?k=kevlar+battery+strap) |
+| COB LED strip | [Amazon search](https://www.amazon.ca/s?k=4S+COB+LED+strip) |
+| Battery grip pad | [Amazon search](https://www.amazon.ca/s?k=fpv+battery+grip+pad) |
+| Flywoo tool kit | [GetFPV](https://www.getfpv.com/flywoo-fpv-quad-tool-kit-w-multimeter-and-soldering-iron.html) |
+| Smoke stopper | [Pyrodrone](https://pyrodrone.com/products/iflight-smart-smoke-stopper-xt60-xt30) |
+| LiPo safe bag | [Amazon search](https://www.amazon.ca/s?k=lipo+battery+safe+bag) |
+| Heat shrink (6 mm / 38 mm) | [Amazon search](https://www.amazon.ca/s?k=heat+shrink+tubing+assortment) |
+| Zip ties | [Amazon search](https://www.amazon.ca/s?k=3mm+zip+ties) |
+| M2.5 standoffs | [Amazon search](https://www.amazon.ca/s?k=nylon+M2.5+standoff) |
+| Right-angle micro-USB cable | [Amazon search](https://www.amazon.ca/s?k=right+angle+micro+usb+cable) |
+| Pi Zero 2 WH kit | [Amazon kit](https://www.amazon.ca/WH-Kit-Aluminum-Alloy-MicroSD/dp/B0G69QHBYN) |
+| MLX90640 thermal sensor | [Adafruit MLX90640 55°](https://www.adafruit.com/product/4407) (same sensor, slightly narrower lens) |
+| PA1010D GPS | [Adafruit Mini GPS PA1010D](https://www.adafruit.com/product/4415) (same module, STEMMA QT) |
+| SparkFun Qwiic HAT | [Amazon search](https://www.amazon.ca/s?k=SparkFun+Qwiic+HAT) |
+| Qwiic jumper cables | [Amazon search](https://www.amazon.ca/s?k=SparkFun+Qwiic+jumper+cable) |
+| Windows laptop (optional) | [Amazon search](https://www.amazon.ca/s?k=recertified+windows+laptop) |
+| Permatex 242 threadlock | [Amazon search](https://www.amazon.ca/s?k=Permatex+242) |
+| Energizer AAA | [Amazon search](https://www.amazon.ca/s?k=Energizer+MAX+AAA) |
+| Safety glasses | [Amazon search](https://www.amazon.ca/s?k=3M+SecureFit+200) |
+| Exam + registration | Transport Canada is the only source (see links in the guide) |
+
 ## Exact cost summary
 
 | Component | Amount |
