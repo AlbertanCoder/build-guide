@@ -1397,8 +1397,15 @@
       keyState.textContent = s.keyConfigured ? "saved, ending " + s.keyHint : "not set";
       budget.min = String(s.budgetMin);
       budget.max = String(s.budgetMax);
-      if (document.activeElement !== budget) { budget.value = String(s.dailyUsdMax); }
-      budgetVal.textContent = "  $" + Number(s.dailyUsdMax).toFixed(2) + " / day";
+      /* dailyUsdMax 0 means "no cap", not "zero dollars" — a slider cannot show
+         zero, and "$0.00 / day" reads like the assistant is switched off. */
+      const capped = Number(s.dailyUsdMax) > 0;
+      if (document.activeElement !== budget) {
+        budget.value = String(capped ? s.dailyUsdMax : s.budgetMin);
+      }
+      budgetVal.textContent = capped
+        ? "  $" + Number(s.dailyUsdMax).toFixed(2) + " / day"
+        : "  no cap set";
       scaleNote.textContent =
         "A research job is capped at $" + Number(s.jobBudgetUsd).toFixed(2) +
         " so it can never eat a whole day." +
