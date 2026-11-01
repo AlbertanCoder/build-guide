@@ -129,7 +129,7 @@ on spend, falling back to the offline engine rather than billing past it.
 Run the tests:
 
 ```powershell
-# Everything at once: 179 named checks, one exit code.
+# Everything at once: 189 named checks, one exit code.
 node scripts/dev/gate.js
 node scripts/dev/gate.js --quick    # skip the browser suite (needs Chrome)
 node scripts/dev/gate.js --json     # machine-readable
@@ -142,7 +142,7 @@ node scripts/dev/check-cost-engine.js        # cache, router, meter, compression
 node scripts/dev/check-cost-path.js          # zero-cost repeat, cap, escalation (30 checks)
 node scripts/dev/build-domain.js --check     # domain pack is current and every claim is sourced
 node scripts/dev/check-settings.js           # key never returned, budget clamped (23 checks)
-node scripts/dev/check-browser.js            # real Chrome: drawer clicks, all tabs render, no errors (18)
+node scripts/dev/check-browser.js            # real Chrome: drawer clicks, quiz pass survival (28)
 node scripts/dev/check-quiz-op.js            # the quiz-add operation: 29 checks, incl. refusals
 ```
 

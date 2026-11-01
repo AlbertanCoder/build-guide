@@ -103,7 +103,7 @@ that chain fails, the answer comes from the offline engine with a one-line note 
 
 ## The gate
 
-Eleven suites, 179 named checks, one exit code:
+Eleven suites, 189 named checks, one exit code:
 
 ```powershell
 node scripts/dev/gate.js            # everything
@@ -120,7 +120,7 @@ node scripts/dev/gate.js --json     # machine-readable, for the agent to consume
 | cost path | 30 |
 | quiz operation | 29 |
 | settings api | 23 |
-| browser (Chrome) | 18 |
+| browser (Chrome) | 28 |
 | self-test served | 17 |
 | self-test single file | 17 |
 | ai path | 11 |
@@ -234,7 +234,7 @@ from storage.
 | `scripts/dev/check-cost-engine.js` | 26 unit checks on the engine |
 | `scripts/dev/check-cost-path.js` | 30 end-to-end checks: cache, compression, stats, budget, escalation |
 | `scripts/dev/check-settings.js` | 23 checks on the key and budget endpoints |
-| `scripts/dev/check-browser.js` | 18 checks in a real browser: the settings drawer, all 7 tabs render, zero page errors |
+| `scripts/dev/check-browser.js` | 28 checks in a real browser: the settings drawer, the quiz pass-survival rule, all 7 tabs render, zero page errors |
 | `server/ops/quiz-add.js` | the first named operation: validate before applying, then apply as a pure function |
 | `scripts/dev/check-quiz-op.js` | 29 checks on that operation — every refusal, plus proof it cannot write to disk |
 

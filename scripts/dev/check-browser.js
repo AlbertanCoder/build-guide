@@ -105,6 +105,35 @@ async function waitFor(url) {
     check("the server really stored the slider value", Number(srv.dailyUsdMax) === 0.55, "$" + srv.dailyUsdMax);
     check("the key is not present in the server response",
       JSON.stringify(srv).indexOf("sk-drawer-probe") === -1);
+
+    /* ---- phase 2: the quiz probe, in its own browser profile ---------------- */
+    try { chrome.kill(); } catch (e) { /* already gone */ }
+    await new Promise((r) => setTimeout(r, 500));
+    const chrome2 = spawn(CHROME, [
+      "--headless=new", "--disable-gpu", "--no-sandbox", "--no-first-run",
+      "--user-data-dir=" + path.join(TMP, "profile2"),
+      "http://127.0.0.1:" + APP_PORT + "/index.html?ga-quiz-test"
+    ], { stdio: "ignore" });
+    procs.push(chrome2);
+
+    let quizLines = null;
+    for (let i = 0; i < 160; i += 1) {
+      try {
+        const r = await fetch("http://127.0.0.1:" + APP_PORT + "/api/probe");
+        const j = await r.json();
+        if (j && j.probe && Array.isArray(j.probe.quiz)) { quizLines = j.probe.quiz; break; }
+      } catch (e) { /* not yet */ }
+      await new Promise((r) => setTimeout(r, 150));
+    }
+    if (!quizLines) {
+      check("the page reported its quiz results", false, "no report arrived in 24s");
+    } else {
+      check("the page reported its quiz results", true, quizLines.length + " checks");
+      quizLines.forEach((line) => {
+        if (line.indexOf("PASS ") !== 0) { bad += 1; }
+        console.log(line);
+      });
+    }
   } catch (err) {
     check("the test ran without throwing", false, String(err && err.message ? err.message : err));
   } finally {

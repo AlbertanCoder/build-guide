@@ -2054,11 +2054,65 @@ while True:
       save(); paintGlobal();
     });
   });
+  /* One-time migration of bare-number best scores.
+     A bare number carries no length, so it can only be interpreted while the
+     bank is still the size it was played at. This runs on every load *before*
+     anything reads a score, and persists the result. Doing it lazily at read
+     time is too late: after a question is added, a 4 played out of 5 would be
+     judged against 6 and the pass would be lost — the exact bug this exists to
+     prevent. Requires QUIZZES to be defined; the call site guarantees that. */
+  function migrateQuizBest() {
+    let changed = false;
+    Object.keys(saved.quizBest).forEach(function (k) {
+      const raw = saved.quizBest[k];
+      if (typeof raw === "number") {
+        const len = (QUIZZES[k] || []).length;
+        if (!len) { return; }
+        saved.quizBest[k] = { score: raw, of: len, passed: raw >= Math.ceil(len * 0.75) };
+        changed = true;
+      }
+    });
+    if (changed) { save(); }
+    return changed;
+  }
+
+  /* A best score is stored WITH the quiz length it was earned against, so a
+     question added later cannot un-earn a pass (decision R12). Older saves hold
+     a bare number; those are read as "passed if it cleared the bar for the
+     length it was played at", which is the best available reading of them. */
+  function quizBest(key) {
+    const raw = saved.quizBest[key];
+    const len = (QUIZZES[key] || []).length;
+    if (typeof raw === "number") {
+      return { score: raw, of: len, passed: raw >= Math.ceil(len * 0.75) };
+    }
+    if (raw && typeof raw.score === "number") {
+      const of = raw.of || len;
+      return {
+        score: raw.score,
+        of: of,
+        passed: !!raw.passed || raw.score >= Math.ceil(of * 0.75)
+      };
+    }
+    return { score: 0, of: len, passed: false };
+  }
+
+  /* A pass, once earned, stays earned even after the bank grows. */
+  function quizPassCount() {
+    let pass = 0;
+    Object.keys(QUIZZES).forEach(function (k) {
+      const b = quizBest(k);
+      if (b.passed || b.score >= Math.ceil(QUIZZES[k].length * 0.75)) { pass += 1; }
+    });
+    return pass;
+  }
+
   function quizMastery() {
     let total = 0, got = 0;
     Object.keys(QUIZZES).forEach(function (k) {
-      total += QUIZZES[k].length;
-      got += saved.quizBest[k] || 0;
+      const len = QUIZZES[k].length;
+      total += len;
+      got += Math.min(quizBest(k).score, len);
     });
     return { total: total, got: got };
   }
@@ -2070,10 +2124,7 @@ while True:
     document.getElementById("globalLabel").textContent =
       pct + "% complete (" + done + "/" + boxes.length + " steps, " +
       q.got + "/" + q.total + " quiz points)";
-    let pass = 0;
-    Object.keys(QUIZZES).forEach(function (k) {
-      if ((saved.quizBest[k] || 0) >= Math.ceil(QUIZZES[k].length * 0.75)) pass++;
-    });
+    const pass = quizPassCount();
     document.getElementById("score-overview").textContent =
       pass + " of " + Object.keys(QUIZZES).length + " passed";
   }
@@ -2204,6 +2255,11 @@ while True:
     ]
   };
 
+  /* Convert any bare-number best scores before anything reads them. This has to
+     happen while the bank is still the size those scores were earned against —
+     after a question is added the legacy value can no longer be interpreted. */
+  migrateQuizBest();
+
   /* ---------- Quiz engine: one question at a time, instant feedback ---------- */
   const QUIZ_TITLES = {
     airframe: "Quiz: Build the airframe (5 questions)",
@@ -2218,11 +2274,20 @@ while True:
     let index = 0, score = 0, answered = false;
 
     function drawIntro() {
-      const best = saved.quizBest[key] || 0;
+      const b = quizBest(key);
+      const of = b.score ? b.of : questions.length;
+      const added = questions.length - of;
+      const passMark = Math.ceil(questions.length * 0.75);
       box.innerHTML =
         '<div class="qnum">' + QUIZ_TITLES[key] + '</div>' +
-        '<p style="margin:10px 0 14px">Best score: <strong>' + best + '/' + questions.length +
-        '</strong> (' + (best >= Math.ceil(questions.length * 0.75) ? 'passed' : 'not passed yet') + ').</p>' +
+        '<p style="margin:10px 0 6px">Best score: <strong>' + b.score + '/' + of +
+        '</strong> (' + (b.passed ? 'passed' : 'not passed yet') + ').</p>' +
+        (added > 0
+          ? '<p style="margin:0 0 10px;font-size:13px"><strong>' + added + ' new question' +
+            (added === 1 ? '' : 's') + '</strong> since that score &mdash; retake to keep 100%.</p>'
+          : '') +
+        '<p style="margin:0 0 14px;font-size:13px;opacity:.8">You need ' + passMark +
+        ' of ' + questions.length + ' to pass.</p>' +
         '<button class="btn">Start quiz</button>';
       box.querySelector("button").addEventListener("click", function () {
         index = 0; score = 0; drawQuestion();
@@ -2276,7 +2341,21 @@ while True:
     function drawDone() {
       const passMark = Math.ceil(questions.length * 0.75);
       const passed = score >= passMark;
-      if (score > (saved.quizBest[key] || 0)) { saved.quizBest[key] = score; save(); }
+      /* Store the score WITH the length it was earned against, and never clear a
+         pass that was already earned. Adding a question later then costs the
+         learner nothing (decision R12). */
+      const prevBest = quizBest(key);
+      if (score > prevBest.score) {
+        saved.quizBest[key] = {
+          score: score,
+          of: questions.length,
+          passed: prevBest.passed || passed
+        };
+        save();
+      } else if (passed && !prevBest.passed) {
+        saved.quizBest[key] = { score: prevBest.score, of: questions.length, passed: true };
+        save();
+      }
       paintGlobal();
       box.innerHTML =
         '<div class="quiz-done"><div class="big">' + score + ' / ' + questions.length + '</div>' +
@@ -2296,6 +2375,29 @@ while True:
     drawIntro();
   }
   Object.keys(QUIZZES).forEach(renderQuiz);
+
+  /* Test hooks for the browser probe. These exist because "an earned pass
+     survives the quiz growing" cannot be tested from outside without a way to
+     set a score and grow the bank in memory. `grow`/`shrink` only ever touch the
+     in-memory array, never the file or the saved state. */
+  window.GuideQuiz = {
+    best: quizBest,
+    passCount: quizPassCount,
+    mastery: quizMastery,
+    migrate: migrateQuizBest,
+    length: function (k) { return (QUIZZES[k] || []).length; },
+    setBest: function (k, v) { saved.quizBest[k] = v; save(); },
+    clearBest: function (k) { delete saved.quizBest[k]; save(); },
+    grow: function (k) {
+      (QUIZZES[k] || []).push({
+        q: "Temporary probe question, used only to prove a pass survives the bank growing",
+        a: ["a", "b", "c", "d"],
+        c: 0,
+        why: "temporary probe entry, never persisted to the file"
+      });
+    },
+    shrink: function (k) { (QUIZZES[k] || []).pop(); }
+  };
   /* ---------- The six-step chain ---------- */
   const CHAIN = [
     ["1 Sense", "Selected MLX90640: 768 temperature readings per frame at I2C address 0x33"],

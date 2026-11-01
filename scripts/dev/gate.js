@@ -65,7 +65,7 @@ const SUITES = [
   {
     name: "browser",
     cmd: ["node", ["scripts/dev/check-browser.js"]],
-    expect: 18,
+    expect: 28,
     optional: true /* needs Chrome; --quick skips it, and a skip is reported as skipped */
   },
   {

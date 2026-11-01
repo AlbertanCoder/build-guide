@@ -1973,6 +1973,76 @@
   }
 
   /* ======================================================================
+     QUIZ PROBE — ?ga-quiz-test
+
+     Proves decision R12 in a real browser: a pass earned at 4/5 must survive the
+     quiz growing to 6 questions. It also asserts the negative — a *fresh* 4/6
+     must NOT pass — so the rule cannot be satisfied by making everything pass.
+     ====================================================================== */
+  function runQuizProbe() {
+    const lines = [];
+    const add = function (name, ok, info) {
+      lines.push((ok ? "PASS " : "FAIL ") + name + (info ? "  [" + info + "]" : ""));
+    };
+    function finish() {
+      const pre = document.createElement("pre");
+      pre.id = "ga-quiz-test";
+      pre.textContent = lines.join("\n");
+      document.body.appendChild(pre);
+      try {
+        fetch("/api/probe", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ quiz: lines })
+        }).catch(function () { /* test server not enabled: harmless */ });
+      } catch (e) { /* ignore */ }
+      return lines;
+    }
+
+    const Q = window.GuideQuiz;
+    if (!Q) {
+      add("the quiz hooks are exposed", false, "window.GuideQuiz is missing");
+      return Promise.resolve(finish());
+    }
+    add("the quiz hooks are exposed", true);
+
+    /* 1. an old bare-number save. The migration has to run while the bank is
+          still 5, which is exactly what the page does on load. */
+    Q.clearBest("detect");
+    Q.setBest("detect", 4); /* a bare number, as old saves held */
+    const didMigrate = Q.migrate();
+    add("a legacy bare score is migrated to {score, of, passed}",
+      didMigrate === true && Q.best("detect").of === 5, JSON.stringify(Q.best("detect")));
+    add("and it still counts as a pass at 4/5", Q.best("detect").passed === true,
+      JSON.stringify(Q.best("detect")));
+
+    /* 2. grow the bank in memory */
+    const before = Q.length("detect");
+    Q.grow("detect");
+    add("the bank grew for the test", Q.length("detect") === before + 1,
+      before + " -> " + Q.length("detect"));
+
+    /* 3. the earned pass survives, and the counter still credits it */
+    add("the earned pass survives the bank growing", Q.best("detect").passed === true,
+      JSON.stringify(Q.best("detect")));
+    add("the pass count still credits detect", Q.passCount() >= 1, "passes=" + Q.passCount());
+
+    /* 4. the rule is not blanket-true: a fresh 4 out of 6 must fail (ceil(4.5) = 5) */
+    Q.setBest("detect", { score: 4, of: 6, passed: false });
+    add("a fresh 4/6 is not a pass", Q.best("detect").passed === false,
+      JSON.stringify(Q.best("detect")));
+
+    /* 5. leave the page as we found it */
+    Q.shrink("detect");
+    Q.clearBest("detect");
+    add("the in-memory bank is restored", Q.length("detect") === before, "len=" + Q.length("detect"));
+    add("the saved state is clean again", Q.best("detect").score === 0,
+      JSON.stringify(Q.best("detect")));
+
+    return Promise.resolve(finish());
+  }
+
+  /* ======================================================================
      INIT
      ====================================================================== */
   function init() {
@@ -1993,6 +2063,9 @@
     if (/ga-drawer-test/.test(flags)) {
       /* Drives the settings drawer for real. See runDrawerProbe. */
       probeEndpoint().then(function () { return runDrawerProbe(); });
+    } else if (/ga-quiz-test/.test(flags)) {
+      /* Proves an earned quiz pass survives the bank growing. See runQuizProbe. */
+      runQuizProbe();
     } else if (askFlag) {
       const question = decodeURIComponent(askFlag[1].replace(/\+/g, " "));
       probeEndpoint().then(function () { return runAskProbe(question); });
