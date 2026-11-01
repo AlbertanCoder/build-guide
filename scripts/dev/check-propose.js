@@ -165,6 +165,21 @@ const OP = {
     check("the accepted branch is kept as a record",
       /proposal\/quiz-add-detect-1/.test(gitOut(["branch", "--list", "proposal/*"])));
 
+    /* ---- undo: revert AND rebuild, not just revert --------------------- */
+    const undoRun = run(process.execPath, ["server/ops/undo.js"], CLONE, { GATE_CMD: greenGate });
+    check("undo succeeds", undoRun.status === 0, undoRun.out.split(/\r?\n/)[0].slice(0, 90));
+    const afterUndo = cloneOp.readQuizzes(fs.readFileSync(indexPath, "utf8")).quizzes;
+    check("undo puts the question count back", afterUndo.detect.length === startDetect,
+      String(afterUndo.detect.length));
+    check("undo reports the build it could not do rather than pretending",
+      /SKIPPED/.test(undoRun.out),
+      (undoRun.out.split(/\r?\n/).filter((l) => /build/.test(l))[0] || "").trim().slice(0, 80));
+
+    const again = run(process.execPath, ["server/ops/undo.js"], CLONE, { GATE_CMD: greenGate });
+    check("undo with nothing left to undo refuses clearly",
+      again.status !== 0 && /already undone/.test(again.out),
+      again.out.split(/\r?\n/)[0].slice(0, 90));
+
     /* ---- accept with a RED gate: merges nothing ------------------------- */
     const beforeRed = fs.readFileSync(indexPath, "utf8");
     a = run(process.execPath, ["server/ops/accept.js", "proposal/quiz-add-detect-2"], CLONE,
