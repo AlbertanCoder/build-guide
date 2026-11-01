@@ -1352,6 +1352,18 @@
     note.id = "ga-settings-note";
     note.hidden = true;
 
+    /* The escape hatch. A disabled key field is a dead end: the user is stuck in
+       the one copy that can never take a key. This button is shown only when
+       there is no local server, and it goes straight to the working copy. */
+    const openServer = el("button", "ga-chip",
+      "Open the working copy \u2192 http://localhost:8790/");
+    openServer.type = "button";
+    openServer.id = "ga-open-server";
+    openServer.hidden = true;
+    openServer.addEventListener("click", function () {
+      window.open("http://localhost:8790/", "_blank");
+    });
+
     const providerLabel = el("label", null, "Provider");
     const providerSel = el("select", "ga-select");
     providerSel.id = "ga-provider";
@@ -1422,6 +1434,7 @@
     node.appendChild(budget);
     node.appendChild(scaleNote);
     node.appendChild(note);
+    node.appendChild(openServer);
 
     function setNote(text, bad) {
       note.textContent = text || "";
@@ -1472,10 +1485,14 @@
         setDisabled(true);
         budgetVal.textContent = "  not available";
         scaleNote.textContent = "";
-        setNote("Settings need the local server. Run node server/assistant-server.js and open " +
-          "http://localhost:8790/ \u2014 the key is never stored in this page.", true);
+        setNote("This is the offline copy: there is nowhere safe to keep a key here, " +
+          "so the field stays disabled. Run node server/assistant-server.js (or click " +
+          "the button below) and open http://localhost:8790/ \u2014 the key is entered " +
+          "and kept there, never in this page.", true);
+        openServer.hidden = false;
         return;
       }
+      openServer.hidden = true;
       setDisabled(false);
       fetch("/api/settings", { cache: "no-store" })
         .then(function (r) { return r.json(); })
@@ -1975,6 +1992,19 @@
     add("no local server means the key field is disabled",
       ENDPOINT === "/api/ask" ? keyDisabled === false : keyDisabled === true,
       "endpoint=" + (ENDPOINT || "none") + " disabled=" + keyDisabled);
+
+    /* A disabled field is a dead end. When there is no local server, the drawer
+       must offer the way to the working copy; when served, it must not nag. */
+    let openBtnShown = null;
+    if (UI.showSettings) {
+      UI.showSettings(true);
+      const openBtn = document.getElementById("ga-open-server");
+      openBtnShown = openBtn ? !openBtn.hidden : null;
+      UI.showSettings(false);
+    }
+    add("the offline drawer routes to the working copy",
+      ENDPOINT === "/api/ask" ? openBtnShown === false : openBtnShown === true,
+      "endpoint=" + (ENDPOINT || "none") + " shown=" + openBtnShown);
 
     /* When there is no AI, the panel has to SAY so in words. Behaving differently
        in silence is what made the offline copy look broken. */

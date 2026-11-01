@@ -3396,7 +3396,7 @@ window.GUIDE_DOMAIN = {
      "110°: a much wider swath but each pixel covers far more ground, so small targets disappear.",
      "For finding small hot spots, narrower wins every time. For covering a field fast, wider wins — and you pay for it in detection.",
      "The tab 2 calculator does the arithmetic for both, including the 55°×35° vertical coverage. Move the altitude slider rather than trusting a table.",
-     "The 55° version is the one in this order plan (CA$86.95 at PiShop)."],
+     "The 55° version is the one in this order plan (CA$86.95 at PiShop, checked 2026-10-31)."],
     { src: "Guide tab 2 calculator · parts list", see: [["Altitude & coverage calculator", "build"], ["Parts & budget", "parts"]] })
     .next = "detect-reality";
 
@@ -3430,7 +3430,7 @@ window.GUIDE_DOMAIN = {
   kb("certification", "Do I need a licence or registration to fly this?", "licence,license,certificate,basic,advanced,registration,tc,canada,law,legal,pilot,exam,fees",
     ["Yes. A drone between 250 g and 25 kg needs a Pilot Certificate — Basic Operations and registration/marking, with the proof of registration on you when you fly.",
      "Basic conditions the guide lists: VLOS, ≤25 kg, more than 30 m horizontally from any person, uncontrolled airspace, more than 5.6 km from certified airports and 1.9 km from heliports.",
-     "Fees: the plan allows CA$20 — exam CA$10 plus registration CA$10 on the 2025 schedule. Confirm the live portal fees before you pay, because they change.",
+     "Fees: the plan allows CA$20 (checked 2026-10-31) — exam CA$10 plus registration CA$10 on the 2025 schedule. Confirm the live portal fees before you pay, because they change.",
      "Night flying needs lights sufficient for you or a visual observer to see the aircraft (CAR 901.39) — and that does not waive any other rule.",
      "Beyond Visual Line of Sight, over people, or in controlled airspace puts you in Advanced operations, which is a different certificate and a different project.",
      "This build is 5-inch class and well over 250 g, so assume you are in scope and get the certificate before the first hover."],
@@ -4376,6 +4376,18 @@ window.GUIDE_DOMAIN = {
     note.id = "ga-settings-note";
     note.hidden = true;
 
+    /* The escape hatch. A disabled key field is a dead end: the user is stuck in
+       the one copy that can never take a key. This button is shown only when
+       there is no local server, and it goes straight to the working copy. */
+    const openServer = el("button", "ga-chip",
+      "Open the working copy \u2192 http://localhost:8790/");
+    openServer.type = "button";
+    openServer.id = "ga-open-server";
+    openServer.hidden = true;
+    openServer.addEventListener("click", function () {
+      window.open("http://localhost:8790/", "_blank");
+    });
+
     const providerLabel = el("label", null, "Provider");
     const providerSel = el("select", "ga-select");
     providerSel.id = "ga-provider";
@@ -4446,6 +4458,7 @@ window.GUIDE_DOMAIN = {
     node.appendChild(budget);
     node.appendChild(scaleNote);
     node.appendChild(note);
+    node.appendChild(openServer);
 
     function setNote(text, bad) {
       note.textContent = text || "";
@@ -4496,10 +4509,14 @@ window.GUIDE_DOMAIN = {
         setDisabled(true);
         budgetVal.textContent = "  not available";
         scaleNote.textContent = "";
-        setNote("Settings need the local server. Run node server/assistant-server.js and open " +
-          "http://localhost:8790/ \u2014 the key is never stored in this page.", true);
+        setNote("This is the offline copy: there is nowhere safe to keep a key here, " +
+          "so the field stays disabled. Run node server/assistant-server.js (or click " +
+          "the button below) and open http://localhost:8790/ \u2014 the key is entered " +
+          "and kept there, never in this page.", true);
+        openServer.hidden = false;
         return;
       }
+      openServer.hidden = true;
       setDisabled(false);
       fetch("/api/settings", { cache: "no-store" })
         .then(function (r) { return r.json(); })
@@ -4999,6 +5016,19 @@ window.GUIDE_DOMAIN = {
     add("no local server means the key field is disabled",
       ENDPOINT === "/api/ask" ? keyDisabled === false : keyDisabled === true,
       "endpoint=" + (ENDPOINT || "none") + " disabled=" + keyDisabled);
+
+    /* A disabled field is a dead end. When there is no local server, the drawer
+       must offer the way to the working copy; when served, it must not nag. */
+    let openBtnShown = null;
+    if (UI.showSettings) {
+      UI.showSettings(true);
+      const openBtn = document.getElementById("ga-open-server");
+      openBtnShown = openBtn ? !openBtn.hidden : null;
+      UI.showSettings(false);
+    }
+    add("the offline drawer routes to the working copy",
+      ENDPOINT === "/api/ask" ? openBtnShown === false : openBtnShown === true,
+      "endpoint=" + (ENDPOINT || "none") + " shown=" + openBtnShown);
 
     /* When there is no AI, the panel has to SAY so in words. Behaving differently
        in silence is what made the offline copy look broken. */
