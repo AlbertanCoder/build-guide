@@ -1,0 +1,6 @@
+# The public Guide Assistant worker. Deploy with:
+#   npx wrangler deploy        (from this directory)
+# Secrets (npx wrangler secret put ...): OPENAI_API_KEY, MODEL, ALLOWED_ORIGINS.
+name = "guide-assistant"
+main = "worker.js"
+compatibility_date = "2026-11-01"

@@ -62,15 +62,32 @@ API_KEY=ollama
 LM Studio works the same way on `http://127.0.0.1:1234/v1`. Small local models follow the grounding
 rules less reliably than frontier models â€” run the evaluation below before trusting the output.
 
-## Route C â€” the public site (Cloudflare Worker)
+## Route C â€” the public site (Cloudflare Pages + Worker)
+
+The free, one-account setup: **Cloudflare Pages** serves the static guide (the
+repo root - `index.html` plus `docs/`, including the 3D viewer and the domain
+pack) and the **Worker** below answers AI questions. Both have free tiers.
+
+### 1. Publish the guide (Cloudflare Pages)
+
+Connect the GitHub repo in the Cloudflare dashboard (Pages -> Create -> connect
+`AlbertanCoder/build-guide`, framework preset **None**, no build command,
+output directory `/`), or upload directly: `npx wrangler pages deploy .
+--project-name=build-guide`. The site comes up at
+`https://build-guide.<you>.pages.dev`.
+
+### 2. Deploy the worker
+
 
 ```bash
 cd docs/assistant
-npx wrangler deploy worker.js --name guide-assistant
+npx wrangler deploy                        # reads wrangler.toml
 npx wrangler secret put OPENAI_API_KEY     # stays server-side
 npx wrangler secret put MODEL              # e.g. gpt-4o-mini
-npx wrangler secret put ALLOWED_ORIGINS    # https://albertancoder.github.io
+npx wrangler secret put ALLOWED_ORIGINS    # https://build-guide.<you>.pages.dev
 ```
+
+### 3. Point the page at the worker
 
 Then load the config before the assistant script in `index.html`:
 

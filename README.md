@@ -114,7 +114,8 @@ when no passages arrive (`422`); the prompt forbids answering from general knowl
 show a source line plus up to two navigation buttons. If the service is unreachable the assistant
 falls back to its built-in offline answers and says so.
 
-For the public GitHub Pages site, deploy `docs/assistant/worker.js` to Cloudflare (Pages cannot run
+For the public site, publish the repo root on **Cloudflare Pages** and deploy
+`docs/assistant/worker.js` to Cloudflare Workers (Pages cannot run
 Node) and point the page at it. Everything â€” routes, costs, the evaluation checklist for trusting a
 model â€” is in [docs/assistant/README.md](docs/assistant/README.md).
 
