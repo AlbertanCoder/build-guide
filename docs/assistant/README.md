@@ -103,7 +103,7 @@ that chain fails, the answer comes from the offline engine with a one-line note 
 
 ## The gate
 
-Twelve suites, 239 named checks, one exit code:
+14 suites, 254 named checks, one exit code:
 
 ```powershell
 node scripts/dev/gate.js            # everything
@@ -120,6 +120,7 @@ node scripts/dev/gate.js --json     # machine-readable, for the agent to consume
 | cost path | 30 |
 | quiz operation | 29 |
 | job spec | 8 |
+| drafter | 15 |
 | propose loop | 32 |
 | settings api | 31 |
 | browser (Chrome) | 28 |
@@ -238,7 +239,9 @@ from storage.
 | `scripts/dev/check-settings.js` | 29 checks on the key, budget and provider endpoints |
 | `server/ops/undo.js` | reverts an accepted proposal, then rebuilds and re-mirrors |
 | `server/ops/job-spec.js` | turns "add 3 harder detect questions" into a fixed job; refuses destructive sentences |
+| `server/ops/draft.js` | asks a model for candidates, then keeps only the ones the checks accept |
 | `scripts/dev/check-job-spec.js` | 8 checks on that parser |
+| `scripts/dev/check-draft.js` | 15 checks on the drafter — prompt shape, JSON extraction, screening |
 | `scripts/dev/check-browser.js` | 28 checks in a real browser: the settings drawer, the quiz pass-survival rule, all 7 tabs render, zero page errors |
 | `server/ops/quiz-add.js` | the first named operation: validate before applying, then apply as a pure function |
 | `scripts/dev/check-quiz-op.js` | 29 checks on that operation — every refusal, plus proof it cannot write to disk |

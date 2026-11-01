@@ -1,8 +1,8 @@
 # Shad's Fire-Detecting Drone Build Guide
 
-## [▶ Open the Interactive HTML Guide](https://albertancoder.github.io/build-guide/)
+## [â–¶ Open the Interactive HTML Guide](https://albertancoder.github.io/build-guide/)
 
-**Quick links:** [Live guide](https://albertancoder.github.io/build-guide/) · [HTML source file](index.html) · [Exact order list](Shad-Drone-Order-List.md) · [Audit report](Shad-Drone-Audit-Report.md) · [Payload software](Shad-Drone-Payload/)
+**Quick links:** [Live guide](https://albertancoder.github.io/build-guide/) Â· [HTML source file](index.html) Â· [Exact order list](Shad-Drone-Order-List.md) Â· [Audit report](Shad-Drone-Audit-Report.md) Â· [Payload software](Shad-Drone-Payload/)
 
 A single-page, interactive order and build guide for a 5-inch analog FPV quadcopter with a Raspberry Pi thermal/GPS payload.
 
@@ -14,8 +14,8 @@ A single-page, interactive order and build guide for a 5-inch analog FPV quadcop
 
 ### Parts and interactive budget
 
-Open **3 Parts & Budget** for the interactive order plan — every row links to its live retailer
-listing — plus the **pay-as-you-go staging plan**: nine affordable purchase stages (CA$0–400
+Open **3 Parts & Budget** for the interactive order plan â€” every row links to its live retailer
+listing â€” plus the **pay-as-you-go staging plan**: nine affordable purchase stages (CA$0â€“400
 each) that each deliver something to build, test or learn the day they arrive, ending at the
 same CA$1,714.94 complete plan without one big bill.
 
@@ -30,8 +30,8 @@ same CA$1,714.94 complete plan without one big bill.
 Open **4 Build Steps** in the guide for the assembly manual: one step at a time, each with
 its interactive 3D model and flat picture, a parts strip, numbered actions, a safety note
 and a check gate before the next step. Big Previous/Next buttons walk through the eight
-steps — inventory, frame assembly, soldering, receiver/FPV wiring, charging, Pi/sensor
-wiring, payload mounting and testing — or a toggle shows all eight at once.
+steps â€” inventory, frame assembly, soldering, receiver/FPV wiring, charging, Pi/sensor
+wiring, payload mounting and testing â€” or a toggle shows all eight at once.
 
 [![Illustrated 8-step build](docs/images/illustrated-build.png)](docs/images/illustrated-build.png)
 
@@ -39,11 +39,11 @@ The individual SVG diagrams are also available in `docs/images/build/`.
 
 ### Interactive 3D models
 
-Each of the eight steps — plus the finished aircraft — is an interactive 3D model you can
+Each of the eight steps â€” plus the finished aircraft â€” is an interactive 3D model you can
 orbit, zoom and pan, with HTML part labels read from the model itself. three.js is vendored in
 `docs/vendor/three` (no CDN), models are lazy-loaded on scroll, and each step also shows its
 flat picture underneath the model. Step 8's six test stages are clickable hotspots
-(A–F) that highlight the hardware each stage exercises.
+(Aâ€“F) that highlight the hardware each stage exercises.
 
 Models are generated from committed Blender scripts, so they can be rebuilt at any time:
 
@@ -71,7 +71,7 @@ python -m http.server 8000
 ### Opening the guide by double-click (no server)
 
 Browsers block ES modules and `.glb` fetches on `file://`, so opening `index.html` directly shows
-the page but no 3D. For a double-clickable copy, build the self-contained single file instead —
+the page but no 3D. For a double-clickable copy, build the self-contained single file instead â€”
 three.js, all nine models, every diagram and the Guide Assistant get inlined, and the result works
 from any folder:
 
@@ -91,8 +91,8 @@ The build steps tab is deep-linkable: `#p-steps` opens it directly.
 
 ### Guide Assistant (an AI that answers from this guide)
 
-A panel in the bottom-right corner answers troubleshooting questions about *this* build — "the
-thermal image is noisy at 8 Hz", "the receiver won't bind", "i2cdetect shows nothing" — streams the
+A panel in the bottom-right corner answers troubleshooting questions about *this* build â€” "the
+thermal image is noisy at 8 Hz", "the receiver won't bind", "i2cdetect shows nothing" â€” streams the
 answer, and links straight into the tab or assembly step it used.
 
 **Run it as a real AI assistant (3 minutes, needs a key):**
@@ -114,8 +114,8 @@ show a source line plus up to two navigation buttons. If the service is unreacha
 falls back to its built-in offline answers and says so.
 
 For the public GitHub Pages site, deploy `docs/assistant/worker.js` to Cloudflare (Pages cannot run
-Node) and point the page at it. Everything — routes, costs, the evaluation checklist for trusting a
-model — is in [docs/assistant/README.md](docs/assistant/README.md).
+Node) and point the page at it. Everything â€” routes, costs, the evaluation checklist for trusting a
+model â€” is in [docs/assistant/README.md](docs/assistant/README.md).
 
 **It is built to be cheap as well as good.** Five layers, cheapest first: a
 confident curated entry answers locally with no model call at all; a repeat
@@ -129,7 +129,7 @@ on spend, falling back to the offline engine rather than billing past it.
 Run the tests:
 
 ```powershell
-# Everything at once: 239 named checks, one exit code.
+# Everything at once: 254 named checks, one exit code.
 node scripts/dev/gate.js
 node scripts/dev/gate.js --quick    # skip the browser suite (needs Chrome)
 node scripts/dev/gate.js --json     # machine-readable
@@ -154,13 +154,13 @@ Open `index.html` in a browser. Tabs, build checkboxes, progress, quizzes, flash
 
 ## Included documents
 
-- `Shad-Drone-Order-List.md` — exact parts, quantities, live retailer links, prices, compatibility and cost breakdown.
-- `Shad-Drone-Audit-Report.md` — A–G review, component substitutions, compatibility and validation results.
-- `Shad-Drone-Payload/` — thermal hotspot grouping, geolocation, real/synthetic payload backends, offline coordinate viewer and unit tests.
-- `shad-drone-icon.svg` — current favicon/header artwork.
-- `docs/js/assistant.js` + `docs/assistant/` — the offline Guide Assistant, plus the optional Cloudflare Worker that lets a model draft answers from retrieved passages.
+- `Shad-Drone-Order-List.md` â€” exact parts, quantities, live retailer links, prices, compatibility and cost breakdown.
+- `Shad-Drone-Audit-Report.md` â€” Aâ€“G review, component substitutions, compatibility and validation results.
+- `Shad-Drone-Payload/` â€” thermal hotspot grouping, geolocation, real/synthetic payload backends, offline coordinate viewer and unit tests.
+- `shad-drone-icon.svg` â€” current favicon/header artwork.
+- `docs/js/assistant.js` + `docs/assistant/` â€” the offline Guide Assistant, plus the optional Cloudflare Worker that lets a model draft answers from retrieved passages.
 
-The unavailable stack, thermal camera, Pi and goggles were replaced with live alternatives, then re-checked on **31 October 2026**. Every link loads, but **a working link is not stock** — the frame and the GEPRC 50A stack were out of stock on that re-check, so confirm availability and freight at checkout. The complete selected plan costs **CA$1,714.94**, or **CA$1,799.69 after 5% GST**, before remaining retailer freight — roughly **CA$1,840–1,870 landed**.
+The unavailable stack, thermal camera, Pi and goggles were replaced with live alternatives, then re-checked on **31 October 2026**. Every link loads, but **a working link is not stock** â€” the frame and the GEPRC 50A stack were out of stock on that re-check, so confirm availability and freight at checkout. The complete selected plan costs **CA$1,714.94**, or **CA$1,799.69 after 5% GST**, before remaining retailer freight â€” roughly **CA$1,840â€“1,870 landed**.
 
 ## Payload setup
 
@@ -185,12 +185,12 @@ The viewer defaults to `http://127.0.0.1:8000` and the append-only log is `fligh
   before the model call, and an empty-passage request was rejected with `422`.
 - 4/4 Guide Assistant price checks passed (`scripts/dev/check-kb-prices.js`): every figure in the
   assistant's knowledge base also appears in the guide, the budget arithmetic closes
-  (CA$1,694.94 × 5% = CA$84.75; CA$1,714.94 + CA$84.75 = CA$1,799.69), and the superseded
+  (CA$1,694.94 Ã— 5% = CA$84.75; CA$1,714.94 + CA$84.75 = CA$1,799.69), and the superseded
   CA$1,678.00 total is absent. Verified non-vacuous by re-running it against a deliberately
   reverted copy, where it failed as intended.
 - 26/26 cost-engine unit checks passed (`scripts/dev/check-cost-engine.js`), and 30/30 cost-path
   checks passed end to end (`scripts/dev/check-cost-path.js`) against a mock provider: a repeat
-  question produced **zero** upstream calls, passages were compressed 2,308 → 698 characters,
+  question produced **zero** upstream calls, passages were compressed 2,308 â†’ 698 characters,
   duplicates were dropped, `/api/stats` accounted the spend, the daily cap returned `402` without
   calling the provider, and a cheap-tier refusal escalated exactly once to the strong tier.
 - 14/14 Guide Assistant offline self-tests passed, including that a confident curated question is

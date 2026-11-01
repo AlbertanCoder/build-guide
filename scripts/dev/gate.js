@@ -19,6 +19,7 @@
 
 const { spawn, spawnSync } = require("child_process");
 const path = require("path");
+const fs = require("fs");
 const net = require("net");
 
 const ROOT = path.resolve(__dirname, "..", "..");
@@ -212,6 +213,23 @@ async function runSuite(suite) {
   const totalChecks = results.reduce((n, r) => n + r.passed, 0);
   const expected = results.reduce((n, r) => n + (r.result === "SKIP" ? 0 : r.expect), 0);
 
+  /* The READMEs have stated the wrong total three separate times. A gate that lets
+     the documentation lie about the gate is not doing its job, so check it here. */
+  const docProblems = [];
+  ["README.md", "docs/assistant/README.md"].forEach(function (rel) {
+    let text;
+    try { text = fs.readFileSync(path.join(ROOT, rel), "utf8"); } catch (e) { return; }
+    const m = text.match(/(\d+) named checks/);
+    if (!m) { docProblems.push(rel + " states no check total"); return; }
+    if (Number(m[1]) !== expected) {
+      docProblems.push(rel + " says " + m[1] + " checks; the gate actually runs " + expected);
+    }
+    const suites = text.match(/(\d+) suites/);
+    if (suites && Number(suites[1]) !== SUITES.length) {
+      docProblems.push(rel + " says " + suites[1] + " suites; there are " + SUITES.length);
+    }
+  });
+
   if (JSON_OUT) {
     console.log(JSON.stringify({ ok: failed.length === 0, totalChecks, expected, results }, null, 2));
     process.exit(failed.length ? 1 : 0);
@@ -242,9 +260,16 @@ async function runSuite(suite) {
       " (--quick; not counted as passing)");
   }
 
+  if (docProblems.length) {
+    console.log("");
+    console.log("  THE DOCUMENTATION DOES NOT MATCH THE GATE");
+    docProblems.forEach(function (p) { console.log("    " + p); });
+  }
+
   console.log("");
-  if (failed.length) {
-    console.log("  GATE FAILED — " + failed.length + " suite(s) red.");
+  if (failed.length || docProblems.length) {
+    if (failed.length) { console.log("  GATE FAILED — " + failed.length + " suite(s) red."); }
+    if (docProblems.length) { console.log("  GATE FAILED — the docs disagree with the checks."); }
     process.exit(1);
   }
   console.log("  GATE PASSED" + (skipped.length ? " (with " + skipped.length + " suite skipped)" : ""));
