@@ -53,6 +53,11 @@ const SUITES = [
     expect: 30
   },
   {
+    name: "quiz operation",
+    cmd: ["node", ["scripts/dev/check-quiz-op.js"]],
+    expect: 29
+  },
+  {
     name: "settings api",
     cmd: ["node", ["scripts/dev/check-settings.js"]],
     expect: 23
