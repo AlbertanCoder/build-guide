@@ -58,7 +58,7 @@ to a later stage of the approved plan.
 | R12 | Earned quiz passes survive the bank growing | BUILT |
 | R13 | Proposal branches; main stays clean | BUILT |
 | R14 | Rendered preview **and** diff | BUILT — `/review`: the diff and a live rendering side by side, read-only, 20 checks |
-| R15 | Per-item acceptance | NOT BUILT — accept takes the whole branch |
+| R15 | Per-item acceptance | BUILT — one commit per item plus an item record; `accept.js --pick 1,3,4-7` keeps exactly the chosen items, 18 checks |
 | R16 | Background job with visible progress | NOT BUILT |
 | R17 | Per-job sub-budget | PARTIAL — the number is exposed; there is no job to spend it |
 | R18 | Measurable intent, checked by the gate | BUILT |
@@ -73,9 +73,9 @@ to a later stage of the approved plan.
 
 | | Count |
 |---|---|
-| BUILT | 23 |
+| BUILT | 24 |
 | PARTIAL | 16 |
-| NOT BUILT | 11 |
+| NOT BUILT | 10 |
 
 Counted by hand off the two tables above, row by row — the first version of this
 file said 20 / 13 / 17, which was a guess dressed as a summary. It is corrected
@@ -88,7 +88,7 @@ The questions bought **rules**, and the rules are why the gate exists, why a
 question cannot be added without a citation, and why an accepted change can be
 undone byte-for-byte. That part is real.
 
-What they did **not** buy is a finished assistant. **Eleven decisions are still
+What they did **not** buy is a finished assistant. **Ten decisions are still
 paper, and a further sixteen are half-built.** The largest gaps, in the order
 they hurt:
 
@@ -96,10 +96,8 @@ they hurt:
    text is the thing this project has repeatedly proven cannot be trusted alone.
 2. **The corrections memory** (R11/R12) — "it learns when you correct it" is the
    feature most likely to be mistaken for "it is finished".
-3. **Per-item acceptance** (R15) — the difference between "I can accept a branch"
-   and "I can pick which three of ten questions I actually want".
-4. **The eval set** (R16 round 1) — without it, "it got better" is an opinion.
-5. **5 of 6 domain pages** — the assistant's answer quality is capped by these.
+3. **The eval set** (R16 round 1) — without it, "it got better" is an opinion.
+4. **5 of 6 domain pages** — the assistant's answer quality is capped by these.
 
 Nothing here is hidden: every PARTIAL and NOT BUILT above is checkable by opening
 the named file, which is why this list is committed rather than described.

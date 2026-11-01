@@ -104,6 +104,122 @@ function fail(message, extra) {
   return Object.assign({ ok: false, error: message }, extra || {});
 }
 
+/* ---------- per-item acceptance (R15) ----------
+   "You will like seven of ten." The item record a proposal carries is the unit
+   of choice: --pick 1,3,4-7 keeps exactly those and nothing else reaches main. */
+function parsePick(expr, count) {
+  const indices = [];
+  const parts = String(expr || "").split(",");
+  for (const part of parts) {
+    const t = part.trim();
+    if (!t) { continue; }
+    const range = /^(\d+)-(\d+)$/.exec(t);
+    let lo;
+    let hi;
+    if (range) { lo = Number(range[1]); hi = Number(range[2]); }
+    else if (/^\d+$/.test(t)) { lo = hi = Number(t); }
+    else { return { error: 'cannot read "' + t + '" as an item number (use e.g. 1,3,4-7)' }; }
+    if (lo < 1 || hi > count || lo > hi) {
+      return { error: "item " + t + " is outside 1-" + count };
+    }
+    for (let n = lo; n <= hi; n += 1) { if (indices.indexOf(n) === -1) { indices.push(n); } }
+  }
+  if (!indices.length) { return { error: "no items named - list them like --pick 1,3,4-7" }; }
+  indices.sort(function (a, b) { return a - b; });
+  return { indices: indices };
+}
+
+function acceptPicked(slug, pickExpr, opts) {
+  const o = opts || {};
+  const log = o.log || function () {};
+
+  /* The items are the ops the proposal RECORDED, not its diffs: item diffs that
+     touch shared lines (counts, titles) cannot be recombined without conflicts,
+     so the kept items are replayed from current main instead. */
+  const recName = slug.replace(/^proposal\//, "") + ".json";
+  const rec = git(["show", slug + ":proposals/" + recName]);
+  let ops = null;
+  try { ops = JSON.parse(rec.out); } catch (e) { /* handled below */ }
+  if (!rec.ok || !Array.isArray(ops) || !ops.length) {
+    return fail("this proposal has no item record to pick from; accept it whole or reject it");
+  }
+  const pick = parsePick(pickExpr, ops.length);
+  if (pick.error) { return fail(pick.error); }
+
+  const staging = "accept-pick/" + slug.replace(/^proposal\//, "");
+  if (branchExists(staging)) { git(["branch", "-D", staging]); }
+
+  /* Replaying only the kept items against current main, through the same pure
+     functions that validated them at propose time: the staged state is judged
+     by the CURRENT checks, and the untouched items are never applied at all. */
+  const proposed = require("./propose.js").proposeMany(
+    pick.indices.map(function (n) { return ops[n - 1]; }),
+    { slug: staging, record: false, log: log }
+  );
+  if (!proposed.ok) {
+    return fail("could not stage the picked items: " + proposed.error);
+  }
+
+  log("running the gate on " + staging + " (items " + pick.indices.join(",") + " of " + ops.length + ") ...");
+  const gate = runGate();
+  if (!gate.ok) {
+    git(["checkout", "main"]);
+    git(["branch", "-D", staging]);
+    return fail("the gate is RED on the picked items; nothing was merged. The proposal branch is untouched.",
+      { gate: gate.tail.split(/\r?\n/).filter((l) => /FAIL|GATE|named checks/.test(l)).slice(0, 12) });
+  }
+
+  let r = git(["checkout", "main"]);
+  if (!r.ok) {
+    git(["branch", "-D", staging]);
+    return fail("the gate passed but switching back to main failed: " + r.out.trim());
+  }
+
+  /* Merge: main gets exactly the staged items, one merge commit, undoable in a
+     single revert. The proposal branch keeps the full record of what was
+     drafted, dropped items included. */
+  r = git(["merge", "--no-ff", "--no-commit", staging]);
+  if (!r.ok) {
+    git(["merge", "--abort"]);
+    git(["branch", "-D", staging]);
+    return fail("the merge failed: " + r.out.trim());
+  }
+
+  const build = rebuild();
+  const copy = mirror();
+  if (build.ok) { git(["add", BUILD_NAME]); }
+
+  const dropped = [];
+  for (let n = 1; n <= ops.length; n += 1) {
+    if (pick.indices.indexOf(n) === -1) { dropped.push(n); }
+  }
+  const message = "Accept " + slug + " --pick " + pick.indices.join(",") +
+    " (" + pick.indices.length + " of " + ops.length + " items)";
+  r = git(["commit", "-m", message]);
+  if (!r.ok) {
+    /* Rollback: nothing merged, and the built copies are put back to match main. */
+    git(["merge", "--abort"]);
+    git(["checkout", "--", BUILD_NAME]);
+    rebuild();
+    mirror();
+    git(["branch", "-D", staging]);
+    return fail("the final commit failed; nothing was merged: " + r.out.trim());
+  }
+  git(["branch", "-D", staging]);
+
+  log("accepted " + slug + " items " + pick.indices.join(","));
+  return {
+    ok: true,
+    slug: slug,
+    picked: pick.indices,
+    dropped: dropped,
+    items: ops.length,
+    build: build,
+    copy: copy,
+    undo: "node server/ops/undo.js   # reverts the accept, rebuilds, re-mirrors"
+  };
+}
+
 function accept(slug, opts) {
   const o = opts || {};
   const log = o.log || function () {};
@@ -114,6 +230,7 @@ function accept(slug, opts) {
   if (currentBranch() !== "main") {
     return fail("switch to main before accepting (you are on " + currentBranch() + ")");
   }
+  if (o.pick) { return acceptPicked(slug, String(o.pick), o); }
 
   let r = git(["checkout", slug]);
   if (!r.ok) { return fail("could not check out the proposal: " + r.out.trim()); }
@@ -172,17 +289,25 @@ function accept(slug, opts) {
 
 module.exports = { accept: accept, branchExists: branchExists, runGate: runGate, rebuild: rebuild, mirror: mirror, BUILD_NAME: BUILD_NAME };
 
-/* ---------- command line: node server/ops/accept.js <proposal-branch> ---------- */
+/* ---------- command line ----------
+     node server/ops/accept.js <proposal-branch>              accept it whole
+     node server/ops/accept.js <proposal-branch> --pick 1,3   keep chosen items */
 if (require.main === module) {
   const slug = process.argv[2];
-  const res = accept(slug, { log: function (m) { console.log(m); } });
+  const pickAt = process.argv.indexOf("--pick");
+  const pick = pickAt !== -1 ? (process.argv[pickAt + 1] || "") : null;
+  const res = accept(slug, { log: function (m) { console.log(m); }, pick: pick });
   if (!res.ok) {
     console.error("NOT ACCEPTED: " + res.error);
     (res.gate || []).forEach(function (l) { console.error("  " + l.trim()); });
     process.exit(1);
   }
   console.log("");
-  console.log("  merged " + res.slug + " into main.");
+  console.log("  merged " + res.slug + " into main." +
+    (res.picked ? "  kept items " + res.picked.join(",") + " of " + res.items : ""));
+  if (res.dropped && res.dropped.length) {
+    console.log("  dropped items   : " + res.dropped.join(",") + " (still on the proposal branch)");
+  }
   console.log("  single-file build : " + (res.build.ok ? "rebuilt" : "SKIPPED - " + res.build.reason));
   console.log("  desktop copy      : " + (res.copy.ok ? "updated " + res.copy.dest
     : res.copy.skipped ? "SKIPPED - " + res.copy.reason : "FAILED - " + res.copy.reason));

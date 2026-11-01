@@ -89,6 +89,11 @@ const SUITES = [
     expect: 20
   },
   {
+    name: "per-item acceptance",
+    cmd: ["node", ["scripts/dev/check-pick.js"]],
+    expect: 18
+  },
+  {
     name: "browser",
     cmd: ["node", ["scripts/dev/check-browser.js"]],
     expect: 28,

@@ -284,12 +284,34 @@ function proposeMany(ops, opts) {
   const totalBefore = verdicts[0].derived.totalBefore;
   const totalAfter = totalBefore + list.length;
 
-  const slug = slugFor({ op: list[0].op, target: target }, listProposals());
+  let slug = o.slug || "";
+  if (slug) {
+    if (!/^(proposal|accept-pick)\//.test(slug)) {
+      return fail('a staged branch must be named proposal/... or accept-pick/... (got "' + slug + '")');
+    }
+    if (listProposals().indexOf(slug) !== -1 || git(["rev-parse", "--verify", "--quiet", "refs/heads/" + slug]).ok) {
+      return fail('a branch called "' + slug + '" already exists');
+    }
+  } else {
+    slug = slugFor({ op: list[0].op, target: target }, listProposals());
+  }
   let r = git(["checkout", "-b", slug]);
   if (!r.ok) { return fail("could not create the branch: " + r.out.trim()); }
 
+  /* The item record: the ops themselves, committed with the proposal. This is
+     what --pick replays (the kept items) against current main — diffs of items
+     that touch shared lines (counts, titles) cannot be recombined without
+     conflicts, so the ops are the honest unit of choice. */
+  const recordRel = "proposals/" + slug.replace(/^(proposal|accept-pick)\//, "") + ".json";
+  if (o.record !== false) {
+    fs.mkdirSync(path.join(ROOT, "proposals"), { recursive: true });
+    fs.writeFileSync(path.join(ROOT, recordRel), JSON.stringify(list, null, 2), "utf8");
+    git(["add", recordRel]);
+  }
+
   const abortBranch = function (message) {
     git(["reset", "--hard"]);
+    git(["clean", "-fd", "proposals"]);
     git(["checkout", "main"]);
     git(["branch", "-D", slug]);
     return fail(message);
@@ -297,28 +319,42 @@ function proposeMany(ops, opts) {
 
   /* The try wraps the rest of the function body. */
   try {
+  /* One commit per item (R15): reviewing 7 of 10 must mean keeping 7 of 10.
+     The commits are the record of what was drafted; the ops record is what
+     accept --pick replays, because item diffs that touch shared lines (counts,
+     titles) cannot be recombined without conflicts. */
   const changes = [];
-  for (const op of list) {
+  const syncedFiles = [];
+  let running = totalBefore;
+  for (let i = 0; i < list.length; i += 1) {
+    const op = list[i];
     const applied = quizAdd.apply(op, html);
-    if (!applied.ok) { return abortBranch("a change could not be applied: " + applied.error); }
+    if (!applied.ok) {
+      return abortBranch("change " + (i + 1) + " of " + list.length +
+        " could not be applied: " + applied.error);
+    }
     html = applied.html;
     changes.push(applied.changes[0]);
+    fs.writeFileSync(indexPath, html, "utf8");
+
+    let synced;
+    try {
+      synced = syncTotal(running, running + 1);
+    } catch (e) {
+      return abortBranch("could not update the stated question total: " + e.message);
+    }
+    running += 1;
+    (synced.files || []).forEach(function (f) {
+      if (syncedFiles.indexOf(f) === -1) { syncedFiles.push(f); }
+      git(["add", f]);
+    });
+
+    git(["add", "index.html"]);
+    const itemMessage = "Proposal item " + (i + 1) + "/" + list.length + ": " + applied.changes[0];
+    r = git(["commit", "-m", itemMessage]);
+    if (!r.ok) { return abortBranch("the commit for change " + (i + 1) + " failed: " + r.out.trim()); }
   }
-  fs.writeFileSync(indexPath, html, "utf8");
-
-  let synced;
-  try {
-    synced = syncTotal(totalBefore, totalAfter);
-  } catch (e) {
-    return abortBranch("could not update the stated question total: " + e.message);
-  }
-
-  git(["add", "index.html"]);
-  (synced.files || []).forEach(function (f) { git(["add", f]); });
-
-  const message = "Proposal: " + changes.join("; ");
-  r = git(["commit", "-m", message]);
-  if (!r.ok) { return abortBranch("the commit on the branch failed: " + r.out.trim()); }
+  const message = "Proposal: " + list.length + " change(s), one commit each";
 
   r = git(["checkout", "main"]);
   if (!r.ok) { return fail("committed on " + slug + " but switching back to main failed: " + r.out.trim()); }
@@ -330,8 +366,12 @@ function proposeMany(ops, opts) {
     message: message,
     changes: changes,
     count: list.length,
-    synced: syncTotalReport(synced),
-    next: ["node server/ops/accept.js " + slug, "node server/ops/reject.js " + slug]
+    synced: syncedFiles.length ? syncedFiles.join("; ") : null,
+    next: [
+      "node server/ops/accept.js " + slug + " --pick 1" + (list.length > 1 ? ",2" : "") + "   (chosen items only)",
+      "node server/ops/accept.js " + slug + "   (all " + list.length + ")",
+      "node server/ops/reject.js " + slug
+    ]
   };
   } catch (e) {
     return abortBranch("an unexpected error stopped the proposal: " +

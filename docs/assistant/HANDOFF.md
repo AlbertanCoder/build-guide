@@ -12,7 +12,7 @@ running the gate.
 | Repo | `C:\Users\SHADHUNTER\Desktop\build-guide-repo`, branch `main` |
 | State | clean, pushed, **0 ahead** |
 | Head at handoff | written at `27e5a05`; run `git log -1` — committing this file necessarily moved it, and any later commit should leave the gate green |
-| Gate | `node scripts/dev/gate.js` → **321/321 named checks**, sixteen suites |
+| Gate | `node scripts/dev/gate.js` → **339/339 named checks**, seventeen suites |
 | The file the user opens | `C:\Users\SHADHUNTER\Desktop\Shad's Build Guide.html` — a **generated** single file. Never edit it; edit source and rebuild |
 | The user's API key | **not saved yet** (`keyConfigured: false`) |
 
@@ -33,7 +33,7 @@ running the gate.
 (cache, model tiers, compression, budget, `/api/stats`), the settings drawer
 (provider, key, model, budget — all server-side), domain pack slice 1 of 6 with a
 build that **refuses an unsourced claim**, two named edit operations (`quiz-add`,
-`prose-rewrite`), the proposal branch loop, undo, and a 321-check gate that cannot
+`prose-rewrite`), the proposal branch loop, undo, and a 339-check gate that cannot
 be made green by deleting a check.
 
 **Not built — say so plainly if asked:**
@@ -42,10 +42,9 @@ be made green by deleting a check.
   Editing is the CLI above, driven by a human, and only adds quiz questions or
   rewrites one named paragraph per op.
 - Also missing: corrections memory, eval set, the "Ask" tab, the five
-  code-enforced bans, per-item acceptance, background jobs, and 5 of 6 domain
-  pages.
+  code-enforced bans, background jobs, and 5 of 6 domain pages.
 
-`STATUS.md` has the row-by-row audit: **22 built / 16 partial / 12 still paper.**
+`STATUS.md` has the row-by-row audit: **24 built / 16 partial / 10 still paper.**
 
 ## Rules that must not be broken
 
@@ -73,8 +72,13 @@ banned-language scan, post-conditions) — is also built. 38 checks.
 
 What remains, in order:
 
-1. **Per-item acceptance**, so 7 of 10 drafted questions can be kept.
-2. **The five code-enforced bans**, which are currently prompt text only.
+1. **The five code-enforced bans**, which are currently prompt text only.
+
+Per-item acceptance is built: a multi-item proposal commits **one item per
+commit** plus an item record, and
+`node server/ops/accept.js proposal/<name> --pick 1,3,4-7` keeps exactly the
+chosen items (replayed from current main and gated before merging); the dropped
+items stay on the proposal branch as the record.
 
 Reviewing a proposal is built: open `http://localhost:8790/review` while the
 server runs — the diff and a live rendering of the proposal side by side,
