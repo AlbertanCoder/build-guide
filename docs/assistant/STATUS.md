@@ -62,7 +62,7 @@ to a later stage of the approved plan.
 | R16 | Background job with visible progress | NOT BUILT |
 | R17 | Per-job sub-budget | PARTIAL — the number is exposed; there is no job to spend it |
 | R18 | Measurable intent, checked by the gate | BUILT |
-| R19 | Accept runs gate → rebuild → smoke → mirror → commit, rolls back | PARTIAL — everything but the smoke test of the built file |
+| R19 | Accept runs gate → rebuild → smoke → mirror → commit, rolls back | PARTIAL — gate, rebuild, byte-verified mirror, one commit with rollback all built; the browser smoke test of the built file is still absent |
 | R20 | Honest failure; never relax a check | BUILT — the gate refuses a shrinking check count |
 | R21 | Smallest end-to-end vertical first | BUILT — one question, real repo, accepted and reverted |
 | R22 | Assertion changes shown; weakening rejected | BUILT — expected check counts are declared per suite |

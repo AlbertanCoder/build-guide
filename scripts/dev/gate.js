@@ -76,7 +76,7 @@ const SUITES = [
   {
     name: "propose loop",
     cmd: ["node", ["scripts/dev/check-propose.js"]],
-    expect: 39
+    expect: 41
   },
   {
     name: "settings api",

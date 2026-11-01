@@ -89,7 +89,8 @@ const OP = {
        code (approved change, R22, propose loop 32 -> 38). The real working repo
        is still never a test subject, and nothing here ever pushes. */
     fs.mkdirSync(path.join(CLONE, "server", "ops"), { recursive: true });
-    ["propose.js", "quiz-add.js", "prose-rewrite.js", "known-values.json"].forEach(function (f) {
+    ["propose.js", "quiz-add.js", "prose-rewrite.js", "known-values.json",
+      "accept.js", "undo.js", "reject.js"].forEach(function (f) {
       fs.copyFileSync(path.join(ROOT, "server", "ops", f), path.join(CLONE, "server", "ops", f));
     });
     fs.copyFileSync(path.join(ROOT, "server", "cost-engine.js"), path.join(CLONE, "server", "cost-engine.js"));
@@ -283,6 +284,36 @@ const OP = {
       gitOut(["status", "--porcelain", "--untracked-files=no"]).trim() === "" &&
       fs.readFileSync(indexPath, "utf8") === faultBefore,
       r.out.split(/\r?\n/)[0].slice(0, 90));
+
+    /* ---- the artifact chain: rebuild writes where mirror reads ------------- */
+    /* The bug this catches: rebuild refreshed the tracked root artifact while
+       mirror shipped the stale dist/ copy to the Desktop. */
+    const acceptMod = require(path.join(CLONE, "server", "ops", "accept.js"));
+    fs.mkdirSync(path.join(CLONE, "dist"), { recursive: true });
+    fs.writeFileSync(path.join(CLONE, "dist", "bundle.js"), "fake bundle", "utf8");
+    const fakeBuild = path.join(CLONE, "fake-build.js");
+    fs.writeFileSync(fakeBuild,
+      'require("fs").writeFileSync(process.argv[3], "KNOWN-BUILD-" + Date.now(), "utf8");\n', "utf8");
+    process.env.BUILD_CMD = fakeBuild;
+    const built = acceptMod.rebuild();
+    const distFile = path.join(CLONE, "dist", acceptMod.BUILD_NAME);
+    const rootFile = path.join(CLONE, acceptMod.BUILD_NAME);
+    check("rebuild refreshes both the tracked artifact and the mirror source",
+      built.ok &&
+      /^KNOWN-BUILD-/.test(fs.readFileSync(distFile, "utf8")) &&
+      /^KNOWN-BUILD-/.test(fs.readFileSync(rootFile, "utf8")),
+      built.ok ? "dist and root both refreshed" : String(built.reason || "rebuild failed"));
+
+    const desktopTmp = path.join(TMP, "desktop-copy.html");
+    process.env.GUIDE_DESKTOP_COPY = desktopTmp;
+    const mirrored = acceptMod.mirror();
+    const sameBytes = fs.existsSync(desktopTmp) &&
+      fs.readFileSync(desktopTmp).equals(fs.readFileSync(distFile));
+    check("mirror leaves the target byte-identical to the built file",
+      mirrored.ok && sameBytes,
+      mirrored.ok ? (sameBytes ? "byte-identical" : "copy differs") : String(mirrored.reason || "mirror failed"));
+    delete process.env.BUILD_CMD;
+    delete process.env.GUIDE_DESKTOP_COPY;
   } catch (err) {
     check("the test ran without throwing", false, String(err && err.message ? err.message : err));
   } finally {

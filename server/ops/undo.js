@@ -84,6 +84,14 @@ function undo(target, opts) {
   const build = accept.rebuild();
   const copy = accept.mirror();
 
+  /* The rebuilt artifact is tracked. If the rebuild changed it, commit it, or the
+     tree is left dirty and the NEXT undo or proposal refuses to run. */
+  let artifactCommitted = false;
+  if (git(["status", "--porcelain", "--untracked-files=no"]).out.trim()) {
+    git(["add", "-A"]);
+    artifactCommitted = git(["commit", "-m", "Rebuild after undo of " + sha.slice(0, 7)]).ok;
+  }
+
   const gate = accept.runGate();
   if (!gate.ok) {
     log("WARNING: the gate is red after the revert. The revert is committed; inspect before trusting main.");
@@ -95,6 +103,7 @@ function undo(target, opts) {
     subject: subject,
     build: build,
     copy: copy,
+    artifactCommitted: artifactCommitted,
     gateOk: gate.ok,
     gateTail: gate.ok ? "" : gate.tail.split(/\r?\n/).filter((l) => /FAIL|GATE/.test(l)).slice(0, 8)
   };

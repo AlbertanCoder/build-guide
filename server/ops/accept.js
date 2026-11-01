@@ -60,11 +60,23 @@ function rebuild() {
       reason: "dist/bundle.js is not present (it is git-ignored), so the single-file build cannot be made here"
     };
   }
-  const r = spawnSync(process.execPath,
-    ["scripts/standalone/make-standalone.js", "dist/bundle.js", BUILD_NAME],
+  /* BUILD_CMD is a path to a JS file run by node, so the artifact chain can be
+     tested hermetically with a stand-in for make-standalone (like GATE_CMD). */
+  const build = process.env.BUILD_CMD || "scripts/standalone/make-standalone.js";
+  const distOut = path.join("dist", BUILD_NAME);
+  const r = spawnSync(process.execPath, [build, "dist/bundle.js", distOut],
     { cwd: ROOT, encoding: "utf8", timeout: 300000, maxBuffer: 32 * 1024 * 1024 });
   if (r.status !== 0) {
     return { ok: false, reason: "the rebuild failed: " + String((r.stdout || "") + (r.stderr || "")).slice(0, 300) };
+  }
+  /* Two copies exist on purpose: dist/ is what the gate tests and the mirror
+     ships; the repo root carries the tracked artifact a fresh clone gets.
+     Refreshing only one of them is how the Desktop copy ended up demoing last
+     week's document (paid for 2026-11-01). */
+  try {
+    fs.copyFileSync(path.join(ROOT, distOut), path.join(ROOT, BUILD_NAME));
+  } catch (e) {
+    return { ok: false, reason: "the build succeeded but the tracked artifact could not be refreshed: " + e.message };
   }
   return { ok: true };
 }
@@ -77,6 +89,11 @@ function mirror() {
   try {
     fs.mkdirSync(path.dirname(dest), { recursive: true });
     fs.copyFileSync(src, dest);
+    const a = fs.readFileSync(src);
+    const b = fs.readFileSync(dest);
+    if (!a.equals(b)) {
+      return { ok: false, reason: "the copy at " + dest + " does not match the built file; not reporting success" };
+    }
     return { ok: true, dest: dest };
   } catch (e) {
     return { ok: false, reason: "could not copy to " + dest + ": " + e.message };
@@ -123,11 +140,25 @@ function accept(slug, opts) {
   r = git(["checkout", "main"]);
   if (!r.ok) { return fail("the gate passed but switching back to main failed: " + r.out.trim()); }
 
-  r = git(["merge", "--no-ff", slug, "-m", "Accept " + slug]);
+  /* --no-commit: the merged source and the rebuilt artifact land in ONE commit
+     (R19), so reverting the accept reverts the artifact with it, and the tree is
+     never left dirty for the next propose or undo to trip over. */
+  r = git(["merge", "--no-ff", "--no-commit", slug]);
   if (!r.ok) { return fail("the merge failed: " + r.out.trim()); }
 
   const build = rebuild();
   const copy = mirror();
+  if (build.ok) { git(["add", BUILD_NAME]); }
+
+  r = git(["commit", "-m", "Accept " + slug]);
+  if (!r.ok) {
+    /* Rollback: nothing merged, and the built copies are put back to match main. */
+    git(["merge", "--abort"]);
+    git(["checkout", "--", BUILD_NAME]);
+    rebuild();
+    mirror();
+    return fail("the final commit failed; nothing was merged: " + r.out.trim());
+  }
 
   log("accepted " + slug);
   return {
@@ -135,11 +166,11 @@ function accept(slug, opts) {
     slug: slug,
     build: build,
     copy: copy,
-    undo: 'git revert -m 1 HEAD   # or: git reset --hard HEAD~1'
+    undo: "node server/ops/undo.js   # reverts the accept, rebuilds, re-mirrors"
   };
 }
 
-module.exports = { accept: accept, branchExists: branchExists, runGate: runGate, rebuild: rebuild, mirror: mirror };
+module.exports = { accept: accept, branchExists: branchExists, runGate: runGate, rebuild: rebuild, mirror: mirror, BUILD_NAME: BUILD_NAME };
 
 /* ---------- command line: node server/ops/accept.js <proposal-branch> ---------- */
 if (require.main === module) {
