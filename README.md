@@ -96,7 +96,7 @@ Open `index.html` in a browser. Tabs, build checkboxes, progress, quizzes, flash
 - `Shad-Drone-Payload/` — thermal hotspot grouping, geolocation, real/synthetic payload backends, offline coordinate viewer and unit tests.
 - `shad-drone-icon.svg` — current favicon/header artwork.
 
-The unavailable stack, thermal camera, Pi and goggles were replaced with live alternatives checked on **31 October 2026**. Stock and freight still need confirmation at checkout. The complete selected plan costs **CA$1,673.00**, or **CA$1,754.10 after 5% GST**, before remaining retailer freight.
+The unavailable stack, thermal camera, Pi and goggles were replaced with live alternatives checked on **31 October 2026** and re-verified **1 November 2026** (all 35 links live, all prices re-matched). Stock and freight still need confirmation at checkout. The complete selected plan costs **CA$1,678.00**, or **CA$1,759.10 after 5% GST**, before remaining retailer freight.
 
 ## Payload setup
 

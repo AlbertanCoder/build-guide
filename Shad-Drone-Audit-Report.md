@@ -25,7 +25,7 @@ The original prompt referred to an APEX bundle and Construction Inspector, while
 | D — Wages/NOC | **PASS** | Job Bank NOC 21211 Alberta/Edmonton low/median/high wages confirmed as $28.00/$43.27/$57.69. [Job Bank](https://www.jobbank.gc.ca/marketreport/wages-occupation/24510/AB) |
 | E — Fire math/code | **PASS (software); hardware validation next** | 55°×35° geometry corrected; payload code included; 19/19 unit tests and demo/map checks passed. [Payload README](Shad-Drone-Payload/README.md) |
 | F — Legal | **PASS (guide corrections)** | Basic, night-light and forest-fire rules linked to current TC/CAR sources; flight-specific checks remain. [TC Basic](https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations) |
-| G — Cost/cuts | **PASS (complete-cost disclosure)** | Full build cost is stated rather than forcing CA$750: CA$1,673.00 plus CA$81.10 GST = CA$1,754.10 before remaining freight. [Cost summary](Shad-Drone-Order-List.md#exact-cost-summary) |
+| G — Cost/cuts | **PASS (complete-cost disclosure)** | Full build cost is stated rather than forcing CA$750: CA$1,678.00 plus CA$81.10 GST = CA$1,759.10 before remaining freight. [Cost summary](Shad-Drone-Order-List.md#exact-cost-summary) |
 
 ## [2] Principal substitutions and fixes
 
@@ -42,7 +42,7 @@ The original prompt referred to an APEX bundle and Construction Inspector, while
 11. **Tools:** bare-iron assumption → Flywoo kit with 65W iron, stand, solder, flux, multimeter, hex drivers, cutters, tweezers and prop tool, plus smoke stopper, safety glasses and meter batteries.
 12. **Configuration computer:** unstated → recertified Acer Aspire 1 with one-year Acer warranty; Windows 11 S mode must be switched off for Betaflight/Pi Imager.
 13. **Software:** absent modules/test claims → included `hotspots.py`, `geo.py`, `payload.py`, `map_server.py`, requirements and 19 unit tests.
-14. **Budget:** legacy partial prices → exact item-level order list with CA$1,673.00 known subtotal, GST and freight shown separately.
+14. **Budget:** legacy partial prices → exact item-level order list with CA$1,678.00 known subtotal, GST and freight shown separately.
 15. **Logo:** no readable replacement image was available, so the existing `shad-drone-icon.svg` remains as requested by the fallback instruction.
 
 ## [3] Compatibility matrix
@@ -62,9 +62,9 @@ The complete system is coherent on manufacturer specifications. Physical clearan
 
 ## [4] Cost and build time
 
-- Merchandise + shown laptop freight + compliance allowance: **CA$1,673.00**.
+- Merchandise + shown laptop freight + compliance allowance: **CA$1,678.00**.
 - Alberta GST planning amount on taxable merchandise: **CA$81.10**.
-- Total before remaining freight: **CA$1,754.10**.
+- Total before remaining freight: **CA$1,759.10**.
 - Rotor Village/PiShop freight is weight/address-based. SparkFun freight/import charges and any small-Walmart-item charge are checkout-dependent.
 - Original CA$750 remains visible in the interactive meter only as a comparison target; the complete build is not represented as fitting it.
 

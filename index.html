@@ -403,7 +403,7 @@
     Unavailable parts are replaced with live alternatives, every required category is priced, and
     the payload software is included and tested. Follow the assembly and acceptance checks before flight.</p>
     <div class="pill-row">
-      <span class="pill">&#127841; CA$1,754.10 + remaining freight</span>
+      <span class="pill">&#127841; CA$1,759.10 + remaining freight</span>
       <span class="pill">&#9201; 46-hour estimate</span>
       <span class="pill">&#128293; 32&times;24 thermal prototype</span>
       <span class="pill">&#128218; 7 interactive tabs</span>
@@ -438,7 +438,7 @@
       The unavailable stack, thermal camera, Pi and goggles have been replaced with live listings.
       The <a href="Shad-Drone-Order-List.md">complete order list</a> covers the airframe, analog FPV,
       payload, tools, configuration laptop and compliance allowance. Merchandise, shown laptop freight
-      and the fee allowance total CA$1,673.00; the planning total after 5% GST is CA$1,754.10 before
+      and the fee allowance total CA$1,678.00; the planning total after 5% GST is CA$1,759.10 before
       the remaining retailer freight charges.</div>
     <p>This build is a <strong>5-inch analog FPV quadcopter</strong> carrying a
     <strong>header-equipped Raspberry Pi Zero 2 WH, Pimoroni MLX90640 thermal board and PA1010D GPS</strong>.
@@ -639,8 +639,8 @@
     <p id="budget-note" aria-live="polite" class="muted"></p>
     <div class="note ok"><strong>Complete source-verified order plan.</strong>
       Editable amounts match the selected items checked on 31 Oct 2026. SparkFun's US$10.85 is converted
-      at the Bank of Canada rate of CA$1.3960/US$1 (30 Oct). The CA$1,673.00 subtotal includes the shown
-      laptop freight and CA$15 compliance allowance; CA$81.10 GST gives CA$1,754.10 before remaining
+      at the Bank of Canada rate of CA$1.3960/US$1 (30 Oct). The CA$1,678.00 subtotal includes the shown
+      laptop freight and CA$20 compliance allowance; CA$81.10 GST gives CA$1,759.10 before remaining
       retailer freight. Every row below links to its live retailer listing. Use the <a href="Shad-Drone-Order-List.md">line-by-line order document</a> for stock and freight.</div>
     <div id="shopping"></div>
   </div>
@@ -689,8 +689,8 @@
         <li>Independent Qwiic jumper cables allow a downward thermal lens and upward GPS antenna.</li>
         <li>Out-of-stock budget goggles became the Skyzone M5 analog diversity monitor/DVR.</li>
       </ul>
-      <div class="note gold"><strong>Cost is explicit:</strong> CA$1,673.00 for merchandise, shown laptop
-      freight and the compliance allowance, plus CA$81.10 GST = CA$1,754.10 before remaining freight.
+      <div class="note gold"><strong>Cost is explicit:</strong> CA$1,678.00 for merchandise, shown laptop
+      freight and the compliance allowance, plus CA$81.10 GST = CA$1,759.10 before remaining freight.
       The original CA$750 target is retained in the interactive meter for comparison, not used to hide
       the cost of the complete build.</div>
     </div>
@@ -1794,7 +1794,7 @@ while True:
     
     final: [
       { q: "What does the complete order plan cost before remaining freight?",
-        a: ["CA$1,673.00 plus CA$81.10 GST = CA$1,754.10", "CA$600 including everything", "CA$750 including all freight", "Nothing; all parts are free"],
+        a: ["CA$1,678.00 plus CA$81.10 GST = CA$1,759.10", "CA$600 including everything", "CA$750 including all freight", "Nothing; all parts are free"],
         c: 0,
         why: "The complete list includes the airframe, analog FPV, payload, tools and laptop. Rotor Village/PiShop/SparkFun and any small-item freight remain checkout-dependent." },
       { q: "What is the forest-fire operating restriction?",
@@ -1993,12 +1993,12 @@ while True:
     ["thermal", "Pimoroni MLX90640 55° thermal breakout", "CA$86.95, in stock at PiShop.", 86.95],
     ["gps", "Pimoroni PA1010D GPS breakout", "CA$41.95, in stock at PiShop.", 41.95],
     ["qwiic", "SparkFun Qwiic HAT + two PRT-17912 cables", "US$10.85 converted to CA$15.15 at BoC 1.3960.", 15.15],
-    ["laptop", "Recertified Acer Aspire 1 Windows laptop", "CA$269 with one-year Acer warranty; switch out of S mode.", 269],
+    ["laptop", "Recertified Acer Aspire 1 Windows laptop", "CA$269 with one-year Acer warranty; switch out of S mode. Out of stock at Walmart on 1 Nov 2026 re-check \u2014 re-check listing or substitute a similar recertified Windows laptop.", 269],
     ["laptop-freight", "BuySmart laptop delivery shown to Edmonton", "CA$35.99; actual address changes quote.", 35.99],
     ["threadlock", "Permatex Blue 242 threadlocker", "CA$10.28, sold by Walmart.", 10.28],
     ["aaa", "Energizer MAX AAA cells, 8-pack", "CA$9.47; multimeter requires two.", 9.47],
     ["glasses", "3M SecureFit 200 safety glasses", "CA$12.98; clear anti-fog lenses.", 12.98],
-    ["compliance", "Small Basic exam + registration allowance", "CA$15 planning allowance; confirm live portal fees.", 15]
+    ["compliance", "Small Basic exam + registration allowance", "CA$20 allowance: exam CA$10 + registration CA$10 (2025 fee schedule); confirm live portal fees.", 20]
   ];
   /* Live retailer links per budget row (checked 31 Oct 2026; same as Shad-Drone-Order-List.md) */
   const LINKS = {

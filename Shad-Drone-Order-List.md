@@ -1,10 +1,12 @@
 # Shad's Fire-Detecting Drone — Source-Verified Order Plan
 
-**Checked:** 2026-10-31  
+**Checked:** 2026-10-31 · **re-verified 2026-11-01**  
 **Build:** 5-inch analog FPV quad + Raspberry Pi thermal/GPS payload  
 **Scope:** exact parts, quantities, live sources, tested payload code, and landed-cost assumptions.
 
 Every category needed for the build is covered below. Prices and stock are point-in-time observations, not reservations; recheck the linked listing before payment. Compatibility is verified against specifications, followed by mandatory assembly/bench/flight acceptance tests—not represented as a guarantee against defects or future stock changes.
+
+> **Re-check 2026-11-01:** all 35 links live (HTTP 200) and every price re-matched its listing. Two changes since 31 Oct: (1) the Acer laptop listing is **out of stock** (price still CA$269.00 — re-check or substitute a similar recertified Windows laptop), and (2) Transport Canada's 2025 fee schedule sets the Small Basic exam at CA$10 and drone registration at CA$10, so the compliance allowance is now **CA$20.00**. Walmart blocked automated re-checks of the AAA cells and safety glasses late in the audit; their 31 Oct observations stand (both links resolved earlier in the day). Component specs re-verified: GEPRC stack has a 5V/3A BEC, 3-6S input, 6 UARTs and 30.5 mm mounting; ECO III 2207 has an M5 prop seat (51499 fits) and is a 6S-class wind used here on 4S for torque/efficiency.
 
 ## Order 1 — Rotor Village, Winkler, Manitoba (CAD)
 
@@ -62,7 +64,7 @@ The Qwiic-to-breadboard cables connect the HAT to the Pimoroni boards' soldered 
 
 | Qty | Exact item | Extended CAD | Live listing / availability |
 |---:|---|---:|---|
-| 1 | Acer Aspire 1, 15.6-inch, Celeron N4500/4GB/64GB, Windows 11 S, recertified with 1-year Acer warranty | $269.00 | [Add to cart; BuySmart](https://www.walmart.ca/en/ip/Acer-Aspire-1-FHD-15-6-Laptop-Intel-Celeron-N4500-4GB-DDR4-64GB-eMMC-UHD-Graphics-W11-S-mode-Excellent-Recertified-Year-Manufacturer-Warranty/7ICF4XI4BCLN) |
+| 1 | Acer Aspire 1, 15.6-inch, Celeron N4500/4GB/64GB, Windows 11 S, recertified with 1-year Acer warranty | $269.00 | [Out of stock at 2026-11-01 re-check, price still $269.00; was add-to-cart via BuySmart](https://www.walmart.ca/en/ip/Acer-Aspire-1-FHD-15-6-Laptop-Intel-Celeron-N4500-4GB-DDR4-64GB-eMMC-UHD-Graphics-W11-S-mode-Excellent-Recertified-Year-Manufacturer-Warranty/7ICF4XI4BCLN) |
 | 1 | BuySmart delivery to Edmonton shown on listing | $35.99 | Same laptop listing; actual address changes quote |
 | 1 | Permatex Blue Medium Strength 242 threadlocker | $10.28 | [Sold by Walmart](https://www.walmart.ca/en/ip/Permatex-Blue-Medium-Strength-242-Threadlocker/10045329) |
 | 1 | Energizer MAX AAA batteries, 8-pack (multimeter uses two) | $9.47 | [Sold by Walmart](https://www.walmart.ca/en/ip/Energizer-MAX-AAA-Batteries-8-Pack-Triple-A-Alkaline-Batteries/4MNIVQS3GCTW) |
@@ -74,7 +76,7 @@ The Qwiic-to-breadboard cables connect the HAT to the Pimoroni boards' soldered 
 
 | Item | Planning allowance | Source |
 |---|---:|---|
-| Small Basic exam + one drone registration | CA$15.00 | [Exam portal](https://tc.canada.ca/en/aviation/drone-safety/drone-pilot-licensing/take-drone-pilot-online-exam) and [Basic rules](https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations); confirm the live amount in the portal before payment |
+| Small Basic exam CA$10 + one drone registration CA$10 (2025 fee schedule) | CA$20.00 | [Exam portal](https://tc.canada.ca/en/aviation/drone-safety/drone-pilot-licensing/take-drone-pilot-online-exam) and [Basic rules](https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations); confirm the live amount in the portal before payment |
 
 ## Exact cost summary
 
@@ -84,10 +86,10 @@ The Qwiic-to-breadboard cables connect the HAT to the Pimoroni boards' soldered 
 | PiShop merchandise | CA$230.70 |
 | SparkFun merchandise, converted at 1.3960 | CA$15.15 |
 | Walmart/laptop, including shown laptop freight | CA$337.72 |
-| Compliance allowance | CA$15.00 |
-| **Merchandise + known laptop freight + allowance** | **CA$1,673.00** |
+| Compliance allowance | CA$20.00 |
+| **Merchandise + known laptop freight + allowance** | **CA$1,678.00** |
 | Alberta GST at 5% on CA$1,622.01 taxable planning subtotal | CA$81.10 |
-| **Total before Rotor Village/PiShop/SparkFun/other freight** | **CA$1,754.10** |
+| **Total before Rotor Village/PiShop/SparkFun/other freight** | **CA$1,759.10** |
 
 Freight from Rotor Village and PiShop is weight-based; SparkFun international freight/import charges and any small-Walmart-item charge require checkout quotes. No duty is expected on the Canadian-stocked Rotor Village/PiShop orders, but taxes and carrier charges still apply. The original CA$750 goal is not realistic for this complete new-parts/tools/laptop build; this is the full selected system rather than a reduced-feature list.
 
@@ -96,7 +98,7 @@ Freight from Rotor Village and PiShop is weight-based; SparkFun international fr
 | Interface | Source-backed selection | Required acceptance check |
 |---|---|---|
 | Frame ↔ stack | Source One V6 supports 30.5×30.5mm; GEPRC stack uses the same pattern and 3–6S/5V 3A | Confirm ESC clearance and capacitor placement before tightening |
-| Motors/props/battery | Four 1900KV motors, 51499 props, 4S packs, 50A ESC, XT60 | Verify current/temperature in a restrained low-power test, then short hover |
+| Motors/props/battery | Four 1900KV motors (4mm shaft body, **M5 prop seat** — the 51499's 5 mm hole fits; 19×19 M3 mounting), 51499 props, 4S packs, 50A ESC, XT60. Note: 1900KV is EMAX's 6S-class wind — on 4S it is a torquey, efficient payload hauler, not a freestyle rocket | Verify current/temperature in a restrained low-power test, then short hover |
 | Radio ↔ receiver | Pocket ELRS and RP1 V2 CRSF serial | Cross TX/RX at a free UART (R2/T2 if provided by the FC manual), bind, verify channels/failsafe |
 | Pi ↔ thermal/GPS | Pre-soldered Zero 2 WH + four-port Qwiic HAT; 0x33 camera and 0x10 GPS on 3.3V I2C | Solder 1×5 headers, match labels, run address/API tests |
 | Pi power | GEPRC regulated 5V/3A to micro-USB power-only pigtail; separate bench PSU | Meter polarity/voltage and check undervoltage under load before flight |
