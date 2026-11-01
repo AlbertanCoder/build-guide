@@ -1,19 +1,40 @@
 # Shad's Fire-Detecting Drone — Source-Verified Order Plan
 
-**Checked:** 2026-10-31 · **re-verified 2026-11-01**  
+**Checked:** 2026-10-31 (evening) · **stock re-checked 2026-10-31**  
 **Build:** 5-inch analog FPV quad + Raspberry Pi thermal/GPS payload  
 **Scope:** exact parts, quantities, live sources, tested payload code, and landed-cost assumptions.
 
 Every category needed for the build is covered below. Prices and stock are point-in-time observations, not reservations; recheck the linked listing before payment. Compatibility is verified against specifications, followed by mandatory assembly/bench/flight acceptance tests—not represented as a guarantee against defects or future stock changes.
 
-> **Re-check 2026-11-01:** all 35 links live (HTTP 200) and every price re-matched its listing. Two changes since 31 Oct: (1) the Acer laptop listing is **out of stock** (price still CA$269.00 — re-check or substitute a similar recertified Windows laptop), and (2) Transport Canada's 2025 fee schedule sets the Small Basic exam at CA$10 and drone registration at CA$10, so the compliance allowance is now **CA$20.00**. Walmart blocked automated re-checks of the AAA cells and safety glasses late in the audit; their 31 Oct observations stand (both links resolved earlier in the day). Component specs re-verified: GEPRC stack has a 5V/3A BEC, 3-6S input, 6 UARTs and 30.5 mm mounting; ECO III 2207 has an M5 prop seat (51499 fits) and is a 6S-class wind used here on 4S for torque/efficiency.
+> **Re-check 2026-10-31 (evening):** every link loads, but **loading is not stock** — four items are
+> constrained and two are unbuyable:
+>
+> 1. **TBS Source One V6 frame — OUT OF STOCK** at Rotor Village.
+> 2. **GEPRC TAKER F405 BLS 50A stack — OUT OF STOCK**, and so is the 65A V2. In-stock 30.5×30.5
+>    alternates: **DakeFPV F405 + 65A, CA$95.99**; **GEPRC TAKER F405 BL32 70A, CA$159.99**; Aocoda
+>    F480 V3.2 F405+80A, CA$159.99. Your Stage 1–3 purchases are unaffected — the stack is not needed until Stage 5.
+> 3. **Acer laptop — OUT OF STOCK** at Walmart (price still CA$269.00). Substitute any recertified
+>    Windows laptop, or skip it if you own a computer.
+> 4. **Zip ties — only 1 left**; the Flywoo tool kit (3), Skyzone M5F (1) and TBS Triumph (3) are low stock.
+>
+> **Corrected in this revision:** the TBS Diamond antenna is an **850–950 MHz Crossfire link antenna**,
+> not 5.8 GHz video — replaced by the **TBS Triumph PRO SMA RHCP ($29.99)**. The Qwiic cable is now the
+> **CAB-17261 female-jumper** (the PRT-17912's pin order cannot be made to match the Pimoroni header).
+> The monitor **ships with no 18650 and no SD card**, so both are now separate lines. Transport Canada
+> registration is **CA$10** (raised 1 Apr 2025), so the fee allowance is CA$20. Walmart blocked automated
+> re-checks of the AAA cells and safety glasses; their 31 Oct observations stand.
+>
+> Spec checks retained: GEPRC stack has a 5V/3A BEC, 3–6S input, 6 UARTs and 30.5 mm mounting; ECO III
+> 2207 is 31.6 g with a **5 mm outer / 4 mm inner shaft** and an M5 prop seat (the 51499's 5 mm hub fits);
+> it is a **6S-class wind driven here on 4S** for torque and efficiency, so expect roughly 60–65 % of the
+> thrust of a 2400 KV 4S build (estimate, not measured) — check hover throttle on the bench.
 
 ## Order 1 — Rotor Village, Winkler, Manitoba (CAD)
 
 | Qty | Exact item | Extended CAD | Live listing / observed availability |
 |---:|---|---:|---|
-| 1 | TBS Source One V6 5-inch frame | $48.99 | [Only 1 shown](https://rotorvillage.ca/tbs-source-one-v6-5/) |
-| 1 | GEPRC TAKER F405 BLS 50A Combo Stack, GP-V8 | $85.99 | [Only 1 shown](https://rotorvillage.ca/geprc-taker-f405-bls-50a-combo-stack/) |
+| 1 | TBS Source One V6 5-inch frame | $48.99 | [**OUT OF STOCK** 31 Oct 2026](https://rotorvillage.ca/tbs-source-one-v6-5/) |
+| 1 | GEPRC TAKER F405 BLS 50A Combo Stack, GP-V8 | $85.99 | [**OUT OF STOCK** 31 Oct 2026](https://rotorvillage.ca/geprc-taker-f405-bls-50a-combo-stack/) — see alternates above |
 | 4 | Emax ECO III 2207 1900KV motors | $87.96 | [13 shown](https://rotorvillage.ca/emax-eco-iii-series-2207-1900kv-motor/) |
 | 2 | Gemfan 51499 Hurricane tri-blade prop sets (2CW+2CCW per set) | $8.58 | [Choose options](https://rotorvillage.ca/gemfan-51499-hurricane-tri-blade-prop-2cw-2ccw/) |
 | 1 | RadioMaster Pocket ELRS, charcoal, RM-G5 | $99.99 | [80 shown](https://rotorvillage.ca/radiomaster-pocket-transmitter-elrs-charcoal-edition/) |
@@ -23,8 +44,9 @@ Every category needed for the build is covered below. Prices and stock are point
 | 1 | ToolkitRC M4AC 30W/2.5A AC charger (LiHV, 1–4S) | $49.99 | [7 shown](https://rotorvillage.ca/toolkitrc-m4ac-charger-30w-2-5a/) |
 | 1 | RunCam Phoenix 2 Special Edition analog camera | $36.99 | [8 shown](https://rotorvillage.ca/runcam-phoenix-2-special-edition/) |
 | 1 | TBS Unify Pro 5G8 HV VTX, 2–6S, SMA | $77.99 | [7 shown](https://rotorvillage.ca/tbs-unify-pro-5g8-hv-vtx/) |
-| 1 | TBS Diamond SMA antenna | $36.99 | [Product link](https://rotorvillage.ca/tbs-diamond-antenna-sma/) |
+| 1 | **TBS Triumph PRO SMA RHCP 5.8 GHz antenna** (5500–6000 MHz, 11.5 g) | $29.99 | [Only 3 shown](https://rotorvillage.ca/tbs-triumph-pro-sma-rhcp/) |
 | 1 | Skyzone M5F 5-inch diversity analog FPV monitor/DVR | $249.99 | [Only 1 shown](https://rotorvillage.ca/skyzone-m5-diversity-fpv-monitor/) |
+| 1 | **Samsung 30Q 18650 cell, 2-pack** — the M5F ships with NO battery | $15.99 | [179 in stock](https://rotorvillage.ca/samsung-30q-18650-3000mah-15a-li-ion-2pc/); flat-top, unprotected — add a spacer if the holder misses contact |
 | 1 | Rotor Village Kevlar battery straps, 2-pack | $8.99 | [Add to cart](https://rotorvillage.ca/rvs-kevlar-battery-strap-2pk/) |
 | 1 | LED COB strip, 4S/1m | $11.99 | [Choose options](https://rotorvillage.ca/led-cob-strip-4s-1m/) |
 | 1 | Flywoo Ultra Grip battery pad | $3.99 | [Add to cart](https://rotorvillage.ca/flywoo-ultra-grip-super-sticky-battery-pad/) |
@@ -33,9 +55,9 @@ Every category needed for the build is covered below. Prices and stock are point
 | 1 | RVS LiPo storage bag | $14.99 | [Add to cart](https://rotorvillage.ca/rvs-lipo-storage-bag/) |
 | 10 | 6mm × 150mm black heat shrink | $4.90 | [Add to cart](https://rotorvillage.ca/heat-shrink-6mm-x-150mm-black/) |
 | 2 | 38mm × 150mm clear heat shrink | $3.18 | [Add to cart](https://rotorvillage.ca/pvc-heat-shrink-38mm-x-150mm-clear/) |
-| 1 | 3mm × 100mm zip ties, 100-pack | $12.99 | [Add to cart](https://rotorvillage.ca/zip-ties-100pcs-3mm-x-100mm/) |
+| 1 | 3mm × 100mm zip ties, 100-pack | $12.99 | [**Only 1 left**](https://rotorvillage.ca/zip-ties-100pcs-3mm-x-100mm/) |
 
-**Rotor Village merchandise subtotal: CA$1,074.43.** Freight is calculated by cart weight/dimensions at checkout and is not included. The retailer states that orders ship from Canada; return shipping for verified DOA items is covered under its 30-day DOA process.
+**Rotor Village merchandise subtotal: CA$1,083.42.** Freight is calculated by cart weight/dimensions at checkout and is not included. The retailer states that orders ship from Canada; return shipping for verified DOA items is covered under its 30-day DOA process.
 
 ## Order 2 — PiShop Canada, Ottawa (CAD)
 
@@ -46,8 +68,9 @@ Every category needed for the build is covered below. Prices and stock are point
 | 1 | Pimoroni PA1010D GPS Breakout, SKU 476-1, I2C 0x10, with 1×5 headers | $41.95 | [In stock](https://www.pishop.ca/product/pa1010d-gps-breakout/) |
 | 1 | Micro-USB M/M right-angle cable, 24AWG | $4.95 | [In stock; modify only as documented for aircraft power](https://www.pishop.ca/product/micro-usb-cable-mm-right-angle-micro-usb-24-awg-2-m-6-ft/) |
 | 2 | Nylon M2.5 × 12mm standoff sets, 4 per pack | $1.90 | [In stock](https://www.pishop.ca/product/nylon-11mm-m2-5-standoff-set-pack-of-4/) |
+| 1 | **32GB microSD card for the monitor's DVR** (SanDisk Ultra, Class 10, blank) | $27.95 | [In stock](https://www.pishop.ca/search.php?search_query=32gb+microsd) — any spare card works, but the DVR cannot record without one |
 
-**PiShop merchandise subtotal: CA$230.70.** Freight is weight-based and calculated after entering the shipping address. PiShop ships only within Canada. The Pi-hole kit is used as a hardware bundle; flash the included blank card with Raspberry Pi OS for this project.
+**PiShop merchandise subtotal: CA$258.65.** Freight is weight-based and calculated after entering the shipping address. PiShop ships only within Canada. The Pi-hole kit is used as a hardware bundle; flash its included blank card with Raspberry Pi OS — that card is **not** spare for the DVR.
 
 ## Order 3 — SparkFun, United States (USD shown, CAD converted)
 
@@ -56,10 +79,10 @@ Bank of Canada daily rate checked for 2026-10-30: **CA$1.3960 per US$1**. Use th
 | Qty | Exact item | USD | Converted CAD | Live listing |
 |---:|---|---:|---:|---|
 | 1 | SparkFun Qwiic HAT for Raspberry Pi, DEV-14459 | US$6.95 | CA$9.70 | [In stock](https://www.sparkfun.com/sparkfun-qwiic-hat-for-raspberry-pi.html) |
-| 2 | Flexible Qwiic Cable – Breadboard Jumper, PRT-17912, 150mm | US$3.90 | CA$5.45 | [In stock](https://www.sparkfun.com/flexible-qwiic-cable-breadboard-jumper-4-pin.html) |
+| 2 | **Flexible Qwiic Cable – Female Jumper, CAB-17261, 150mm** | US$3.90 | CA$5.45 | [In stock](https://www.sparkfun.com/flexible-qwiic-cable-female-jumper-4-pin.html) |
 | **Total** |  | **US$10.85** | **CA$15.15** | Freight/import charges not included |
 
-The Qwiic-to-breadboard cables connect the HAT to the Pimoroni boards' soldered 1×5 headers. Match signal labels rather than assuming pin order. This allows the camera lens to face down and GPS antenna to face up independently.
+**Pin order matters — this is not a "match the labels" job.** The Pimoroni 1×5 header is **3V3, SDA, SCL, INT, GND** (it maps to Pi pins 1,3,5,7,9). The PRT-17912 breadboard-jumper cable is wired **GND, 3V3, SDA, SCL** in a rigid 4-pin block, so it physically cannot be plugged in correctly — hence the **CAB-17261 female-jumper** cable in this list, whose four ends can be placed in the right order with pin 4 skipped. Ignore the Qwiic HAT's silkscreen: SparkFun states its SDA/SCL labels are reversed. Wire by cable colour — black GND, red 3V3, blue SDA, yellow SCL. This arrangement lets the camera lens face down and the GPS antenna face up independently.
 ## Order 4 — Walmart Canada / Edmonton (CAD)
 
 | Qty | Exact item | Extended CAD | Live listing / availability |
@@ -95,7 +118,7 @@ Every budget row in the guide also carries a second ↗ link. Big-ticket parts h
 | ToolkitRC M4AC charger | [RaceDayQuads](https://www.racedayquads.com/products/toolkitrc-m4ac-30w-2-5a-2-4s-ac-smart-charger-xt60) |
 | RunCam Phoenix 2 SE camera | [RaceDayQuads](https://www.racedayquads.com/products/runcam-phoenix-2-special-edition-micro-1000tvl-cmos-4-3-16-9-ntsc-pal-fpv-camera) |
 | TBS Unify Pro HV VTX | [TBS official](https://www.team-blacksheep.com/products/prod:unify_pro_hv_sma) |
-| TBS Diamond antenna | [TBS official](https://www.team-blacksheep.com/products/prod:diamond_antenna) |
+| TBS Triumph PRO 5.8 GHz antenna | [TBS official](https://www.team-blacksheep.com/products/prod:triumph_pro_sma) |
 | Skyzone M5F monitor/DVR | [Amazon](https://www.amazon.com/SKYZONE-Monitor-5inch-5-8Ghz-Receiver/dp/B0F2MT7VZN) |
 | Kevlar battery straps | [Amazon search](https://www.amazon.ca/s?k=kevlar+battery+strap) |
 | COB LED strip | [Amazon search](https://www.amazon.ca/s?k=4S+COB+LED+strip) |
@@ -122,14 +145,18 @@ Every budget row in the guide also carries a second ↗ link. Big-ticket parts h
 
 | Component | Amount |
 |---|---:|
-| Rotor Village merchandise | CA$1,074.43 |
-| PiShop merchandise | CA$230.70 |
+| Rotor Village merchandise | CA$1,083.42 |
+| PiShop merchandise | CA$258.65 |
 | SparkFun merchandise, converted at 1.3960 | CA$15.15 |
 | Walmart/laptop, including shown laptop freight | CA$337.72 |
-| Compliance allowance | CA$20.00 |
-| **Merchandise + known laptop freight + allowance** | **CA$1,678.00** |
-| Alberta GST at 5% on CA$1,622.01 taxable planning subtotal | CA$81.10 |
-| **Total before Rotor Village/PiShop/SparkFun/other freight** | **CA$1,759.10** |
+| Compliance allowance (exam $10 + registration $10) | CA$20.00 |
+| **Merchandise + known laptop freight + allowance** | **CA$1,714.94** |
+| Alberta GST at 5% on the CA$1,694.94 taxable subtotal (TC fees are not taxable) | CA$84.75 |
+| **Total before Rotor Village/PiShop/SparkFun/other freight** | **CA$1,799.69** |
+| Estimated remaining retailer freight | CA$40–70 |
+| **Estimated landed total** | **CA$1,840–1,870** |
+
+If you take the DakeFPV stack alternate instead of waiting for the GEPRC restock, add CA$10.00.
 
 Freight from Rotor Village and PiShop is weight-based; SparkFun international freight/import charges and any small-Walmart-item charge require checkout quotes. No duty is expected on the Canadian-stocked Rotor Village/PiShop orders, but taxes and carrier charges still apply. The original CA$750 goal is not realistic for this complete new-parts/tools/laptop build; this is the full selected system rather than a reduced-feature list.
 
@@ -138,16 +165,17 @@ Freight from Rotor Village and PiShop is weight-based; SparkFun international fr
 | Interface | Source-backed selection | Required acceptance check |
 |---|---|---|
 | Frame ↔ stack | Source One V6 supports 30.5×30.5mm; GEPRC stack uses the same pattern and 3–6S/5V 3A | Confirm ESC clearance and capacitor placement before tightening |
-| Motors/props/battery | Four 1900KV motors (4mm shaft body, **M5 prop seat** — the 51499's 5 mm hole fits; 19×19 M3 mounting), 51499 props, 4S packs, 50A ESC, XT60. Note: 1900KV is EMAX's 6S-class wind — on 4S it is a torquey, efficient payload hauler, not a freestyle rocket | Verify current/temperature in a restrained low-power test, then short hover |
-| Radio ↔ receiver | Pocket ELRS and RP1 V2 CRSF serial | Cross TX/RX at a free UART (R2/T2 if provided by the FC manual), bind, verify channels/failsafe |
-| Pi ↔ thermal/GPS | Pre-soldered Zero 2 WH + four-port Qwiic HAT; 0x33 camera and 0x10 GPS on 3.3V I2C | Solder 1×5 headers, match labels, run address/API tests |
+| Motors/props/battery | Four 1900KV motors (**5 mm outer / 4 mm inner hardened shaft**, 31.6 g, M5 prop seat — the 51499's 5 mm hub fits; 16×16 M3 mounting), 51499 props, 4S packs, 50A ESC, XT60. Note: 1900KV is EMAX's 6S-class wind; on 4S it gives ~79 % of the rpm and roughly **60–65 % of the thrust** of a 2400 KV 4S build (estimate, not measured) — a torquey, efficient payload hauler, not a freestyle rocket. Going 6S later also means a new charger (the M4AC is 1–4S). | Verify current/temperature in a restrained low-power test, confirm hover throttle, then short hover |
+| Radio ↔ receiver | Pocket ELRS and RP1 V2 CRSF serial. **The receiver ships on ExpressLRS v2.4** — flash it to the same major version as the radio before binding | Cross TX/RX at a free UART (confirm the pad name from the FC manual; "R2/T2" is unverified), set the Canada domain, bind, verify channels/failsafe |
+| Pi ↔ thermal/GPS | Pre-soldered Zero 2 WH + four-port Qwiic HAT; 0x33 camera and 0x10 GPS on 3.3V I2C | Solder 1×5 headers, wire **3V3/SDA/SCL/GND in Pimoroni order (pin 4 skipped)** with CAB-17261 cables, ignore the HAT silkscreen, run address/API tests |
+| Payload mounting | Pi under the bottom plate (or over a measured cutout); MLX90640 below it, lens down; PA1010D above, patch antenna up | **Measure before drilling** — the lens needs a clear vertical line to the ground, and no board may touch bare carbon |
 | Pi power | GEPRC regulated 5V/3A to micro-USB power-only pigtail; separate bench PSU | Meter polarity/voltage and check undervoltage under load before flight |
-| Analog FPV | Phoenix 2 (5–36V), HV VTX (2–6S), SMA antenna, M5 analog monitor | Match channel/band and legal RF settings; use 25mW/default legal channels unless properly licensed |
+| Analog FPV | Phoenix 2 (5–36V), Unify Pro HV (2–6S), **TBS Triumph PRO 5.8 GHz SMA antenna**, Skyzone M5F analog monitor (needs its own 18650 and microSD) | Match channel/band and legal RF settings; use 25 mW / default legal channels unless properly licensed. A 900 MHz Crossfire antenna (e.g. TBS Diamond) will not work here |
 | Charging | M4AC supports 1–4S LiPo/LiHV and AC input | Select LiHV 4S, attended balance charging in LiPo bag |
 | Software | Included local package with GPS/camera drivers, logging and offline viewer | **19/19 synthetic tests passed**, then perform Pi hardware and surveyed-target tests |
 
-Payload package: `C:\Users\SHADHUNTER\Desktop\Shad-Drone-Payload`  
-Instructions: `C:\Users\SHADHUNTER\Desktop\Shad-Drone-Payload\README.md`
+Payload package: `C:\Users\SHADHUNTER\Desktop\build-guide-repo\Shad-Drone-Payload`  
+Instructions: `C:\Users\SHADHUNTER\Desktop\build-guide-repo\Shad-Drone-Payload\README.md`
 
 The order is complete; assembly, binding, power, I2C, vibration, weight/CG, RF, detection accuracy and flight safety still need the documented acceptance tests. These are normal build steps, not missing purchases.
 

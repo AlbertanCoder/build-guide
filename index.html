@@ -415,7 +415,7 @@
     Unavailable parts are replaced with live alternatives, every required category is priced, and
     the payload software is included and tested. Follow the assembly and acceptance checks before flight.</p>
     <div class="pill-row">
-      <span class="pill">&#127841; CA$1,759.10 + remaining freight</span>
+      <span class="pill">&#127841; CA$1,799.69 before freight</span>
       <span class="pill">&#9201; 46-hour estimate</span>
       <span class="pill">&#128293; 32&times;24 thermal prototype</span>
       <span class="pill">&#128218; 7 interactive tabs</span>
@@ -446,12 +446,14 @@
   </div>
 
   <div class="card">
-    <div class="note ok"><strong>ORDER PLAN &mdash; alternatives selected 31 October 2026.</strong>
-      The unavailable stack, thermal camera, Pi and goggles have been replaced with live listings.
-      The <a href="Shad-Drone-Order-List.md">complete order list</a> covers the airframe, analog FPV,
+    <div class="note ok"><strong>ORDER PLAN &mdash; alternatives selected 31 October 2026, stock re-checked the same day.</strong>
+      The discontinued stack, thermal camera, Pi and goggles were replaced with live listings, and the
+      wrong-band video antenna was replaced with a 5.8&nbsp;GHz part. The
+      <a href="Shad-Drone-Order-List.md">complete order list</a> covers the airframe, analog FPV,
       payload, tools, configuration laptop and compliance allowance. Merchandise, shown laptop freight
-      and the fee allowance total CA$1,678.00; the planning total after 5% GST is CA$1,759.10 before
-      the remaining retailer freight charges.</div>
+      and the CA$20 fee allowance total CA$1,714.94; the planning total after 5% GST is CA$1,799.69 before
+      the remaining retailer freight charges. <strong>The frame and the flight stack were both out of stock
+      at Rotor Village on that check</strong> &mdash; confirm at checkout or use the listed alternates.</div>
     <p>This build is a <strong>5-inch analog FPV quadcopter</strong> carrying a
     <strong>header-equipped Raspberry Pi Zero 2 WH, Pimoroni MLX90640 thermal board and PA1010D GPS</strong>.
     The four-port Qwiic HAT and independent sensor cables let the thermal lens point down while the GPS
@@ -532,8 +534,10 @@
     <div class="acc-body">
       <div class="script">"I built a thermal-camera drone from parts &mdash; assembled the
       airframe, configured the flight controller, wrote and tested the hotspot-detection code,
-      and flew night detection missions over safe targets. It finds a 1-metre heat source from
-      30 metres and puts it on a map with GPS coordinates. I can explain every part of it.
+      and flew night detection missions over safe targets. At 30 m one pixel covers about
+      1&times;0.8 m, so a 1-metre target sits at the edge of what this sensor can resolve &mdash; I report
+      the detection rate I actually measured, and every hotspot lands on a map with GPS coordinates.
+      I can explain every part of it.
       Want to see?"</div>
       <p class="muted">The demo kit and pitch practice live in the Career tab. Never say any of
       it until you've measured it.</p>
@@ -615,6 +619,9 @@
       <ul>
         <li>Operating weight no more than <strong>25 kg</strong>; measure the completed aircraft
         rather than relying on the removed 1 kg/3.7 kg estimates. Maintain VLOS.</li>
+        <li><strong>Below 400 ft (122 m) AGL</strong> &mdash; and no more than 30 m above any building or
+        structure while flying within 61 m of it horizontally. That is <strong>CAR 901.25</strong>; exceeding
+        it needs a special flight operations certificate. This is the limit beginners break first.</li>
         <li>More than <strong>30 m horizontally from any person</strong>. This is an operations-category
         boundary, not a universal safe distance.</li>
         <li><strong>Uncontrolled airspace</strong>, more than 5.6 km from the centre of a certified airport,
@@ -632,6 +639,9 @@
       below 3,000 ft AGL, and do not enter airspace restricted by a NOTAM under 601.16. Check current
       NOTAMs, Alberta fire bans and local/site rules before flight. Use a hot plate for bench tests;
       an open test fire also requires landowner permission and every applicable permit.</div>
+      <div class="note"><strong>Edmonton reality check:</strong> the 5.6 km airport, 1.9 km heliport and
+      uncontrolled-airspace conditions rule out a lot of the city. Check your intended field with Transport
+      Canada's drone site-selection tool before you drive out &mdash; an empty park is not a legal site.</div>
     </div>
   </details>
 </section>
@@ -651,20 +661,25 @@
     <p id="budget-note" aria-live="polite" class="muted"></p>
     <div class="note ok"><strong>Complete source-verified order plan.</strong>
       Editable amounts match the selected items checked on 31 Oct 2026. SparkFun's US$10.85 is converted
-      at the Bank of Canada rate of CA$1.3960/US$1 (30 Oct). The CA$1,678.00 subtotal includes the shown
-      laptop freight and CA$20 compliance allowance; CA$81.10 GST gives CA$1,759.10 before remaining
-      retailer freight. Every row below links to its live retailer listing, plus a backup source in case the first is sold out. Use the <a href="Shad-Drone-Order-List.md">line-by-line order document</a> for stock and freight.</div>
+      at the Bank of Canada rate of CA$1.3960/US$1 (30 Oct). The CA$1,714.94 subtotal includes the shown
+      laptop freight and the CA$20 compliance allowance (exam $10 + registration $10, per TC's 1 Apr 2025
+      fee schedule). 5% GST on the CA$1,694.94 taxable subtotal &mdash; the TC fees are not taxable &mdash;
+      is CA$84.75, giving <strong>CA$1,799.69 before retailer freight</strong>; add roughly CA$40&ndash;70 of
+      freight for a landed total near <strong>CA$1,840&ndash;1,870</strong>. Every row links to a live
+      retailer listing plus a backup source. <strong>A working link is not stock:</strong> the frame and the
+      stack were both out of stock when this was re-checked on 31 Oct 2026. Use the
+      <a href="Shad-Drone-Order-List.md">line-by-line order document</a> for stock and freight.</div>
     <div id="shopping"></div>
   </div>
 
   <details class="acc" open>
     <summary>Buy it in stages &mdash; the pay-as-you-go plan</summary>
     <div class="acc-body">
-      <p>Can't fund CA$1,678 in one shot? Don't. Each stage below is a shopping chunk of
+      <p>Can't fund CA$1,714.94 in one shot? Don't. Each stage below is a shopping chunk of
       roughly CA$120&ndash;400 that pays off the day it arrives: you build, test or learn
       something real, and every stage feeds the next &mdash; nothing sits in a box waiting
-      for more money. Running totals use the verified 1 Nov 2026 prices.
-      <strong>If you already own a computer, the complete flying project is CA$1,373.01</strong>
+      for more money. Running totals use the prices checked on 31 Oct 2026.
+      <strong>If you already own a computer, the complete flying project is CA$1,409.95</strong>
       &mdash; the laptop is an optional extra stage.</p>
       <div class="note"><strong>Freight tip:</strong> stages sharing a store can be merged into
       one order to save shipping (1, 3, 4, 5 and 6 all ship from Rotor Village) &mdash; the
@@ -779,7 +794,7 @@
             <ol class="asm-actions">
               <li>Bolt the arms and standoffs together; screw the four motors on (M1&ndash;M4 order, picture in tab 4).</li>
               <li>Check every motor screw underneath &mdash; none may touch the windings. Threadlock only where the manual says.</li>
-              <li>Fit the straps, grip pad and LED strip. Balance the prop sets &mdash; and keep them OFF the motors.</li>
+              <li>Fit the straps, grip pad and LED strip. The COB strip <strong>must be insulated from bare carbon</strong> &mdash; exposed carbon shorts the LEDs. Balance the prop sets &mdash; and keep them OFF the motors.</li>
             </ol>
           </div>
           <p class="asm-warn"><strong>&#9888; Safety:</strong> propellers stay off until Stage 7. No exceptions.</p>
@@ -804,7 +819,7 @@
               <li>Solder the stack into the airframe: motor wires, XT60 lead, capacitor. First power goes through the Stage 1 smoke stopper.</li>
               <li>Wire the receiver: 5V + GND, TX &rarr; R2, RX &rarr; T2. Bind it to the Stage 3 radio.</li>
               <li>Betaflight with PROPS OFF: channels, failsafe, motor order and direction.</li>
-              <li>Charge and balance the packs in the LiPo bag; learn storage charge for packs you are not using.</li>
+              <li>Charge and balance the packs in the LiPo bag; learn storage charge for packs you are not using. These are <strong>LiHV (4.35 V/cell)</strong> packs: select LiHV on the charger, and later set Betaflight's cell max to 4.35 V or every voltage warning will be wrong.</li>
             </ol>
           </div>
           <div class="asm-check"><span class="asm-label">&#10003; Stage done when</span>
@@ -813,14 +828,16 @@
 
         <div class="stage">
           <h4>Stage 6 &middot; Eyes in the sky</h4>
-          <p class="stg-cost"><b>CA$401.96</b> &middot; running total <b>CA$1,353.01</b> &middot; Rotor Village</p>
+          <p class="stg-cost"><b>CA$438.90</b> &middot; running total <b>CA$1,389.95</b> &middot; Rotor Village + PiShop</p>
           <div class="asm-parts">
             <span class="asm-label">What to buy</span>
             <ul>
               <li data-item="fpv-camera">RunCam Phoenix 2 camera &mdash; $36.99</li>
               <li data-item="vtx">TBS Unify Pro 5G8 HV VTX &mdash; $77.99</li>
-              <li data-item="vtx-antenna">TBS Diamond SMA antenna &mdash; $36.99</li>
+              <li data-item="vtx-antenna">TBS Triumph PRO SMA RHCP 5.8 GHz antenna &mdash; $29.99</li>
               <li data-item="monitor">Skyzone M5F monitor/DVR &mdash; $249.99</li>
+              <li data-item="monitor-cell">18650 cell for the monitor &mdash; $15.99</li>
+              <li data-item="dvr-card">32GB microSD for the DVR &mdash; $27.95</li>
             </ul>
           </div>
           <div class="asm-do">
@@ -837,7 +854,7 @@
 
         <div class="stage">
           <h4>Stage 7 &middot; Papers &amp; first flight</h4>
-          <p class="stg-cost"><b>CA$20.00</b> &middot; running total <b>CA$1,373.01</b> &middot; Transport Canada + a legal field</p>
+          <p class="stg-cost"><b>CA$20.00</b> &middot; running total <b>CA$1,409.95</b> &middot; Transport Canada + a legal field</p>
           <div class="asm-parts">
             <span class="asm-label">What to buy</span>
             <ul>
@@ -851,7 +868,7 @@
               <li>Study the knowledge requirements; pass the Small Basic exam in the Drone Management Portal.</li>
               <li>Register the drone and mark it with the number.</li>
               <li>Mount the Stage 2 payload on the Stage 4 frame: standoffs + zip ties + the Kevlar strap, thermal lens down, GPS up.</li>
-              <li>First hover: one metre up, land, feel the motors for heat. Then run the detection missions from the 19-step checklist in tab 4.</li>
+              <li>First hover: one metre up, land, feel the motors for heat. Stay below 122 m (400 ft) AGL all flight. Then run the detection missions from the 19-step checklist in tab 4.</li>
             </ol>
           </div>
           <div class="asm-check"><span class="asm-label">&#10003; Stage done when</span>
@@ -860,7 +877,7 @@
 
         <div class="stage">
           <h4>Optional stage &middot; The configuration laptop</h4>
-          <p class="stg-cost"><b>CA$304.99</b> (laptop + shown delivery) &middot; complete plan with it: <b>CA$1,678.00</b> &middot; Walmart</p>
+          <p class="stg-cost"><b>CA$304.99</b> (laptop + shown delivery) &middot; complete plan with it: <b>CA$1,714.94</b> &middot; Walmart</p>
           <div class="asm-parts">
             <span class="asm-label">What to buy</span>
             <ul>
@@ -875,15 +892,15 @@
             </ol>
           </div>
           <p class="asm-warn"><strong>&#9888; Note:</strong> the Acer listing was out of stock at the
-          1 Nov 2026 re-check. Re-check it, or substitute any recertified Windows laptop that runs
+          31 Oct 2026 re-check. Re-check it, or substitute any recertified Windows laptop that runs
           Betaflight Configurator and Raspberry Pi Imager.</p>
         </div>
 
       <div class="note gold"><strong>Why this order works:</strong> every stage produces something
       usable immediately &mdash; tools build skill, Stage 2 gives you a working thermal camera, Stage 3
       gives you flying reflexes, Stage 4 gives you the machine, Stages 5&ndash;6 make it alive, Stage 7
-      makes it legal and flying. Total across stages 0&ndash;7: CA$1,373.01, plus the optional laptop
-      = CA$1,678.00 &mdash; identical to the one-shot plan, just stress-free.</div>
+      makes it legal and flying. Total across stages 0&ndash;7: CA$1,409.95, plus the optional laptop
+      = CA$1,714.94 &mdash; identical to the one-shot plan, just stress-free.</div>
     </div>
   </details>
 
@@ -894,7 +911,7 @@
         <tr><th>Package</th><th>Selected contents</th><th>Subtotal</th><th>Status (31 Oct 2026)</th></tr>
         <tr><td><strong>Airframe</strong></td>
           <td>TBS Source One V6 frame, GEPRC F405 50A stack, four Emax ECO III 1900KV motors, two Gemfan 51499 prop sets</td>
-          <td>CA$231.52</td><td><span class="badge b-green">Live listings</span> 30.5 mm stack mounting; assembly clearance check required</td></tr>
+          <td>CA$231.52</td><td><span class="badge b-amber">Out of stock 31 Oct 2026</span> frame <em>and</em> stack unavailable at the linked retailer; in-stock alternates listed in the order doc. 30.5 mm stack mounting; assembly clearance check required</td></tr>
         <tr><td><strong>Radio link</strong></td>
           <td>RadioMaster Pocket ELRS, 3200mAh 18650 pair, RP1 V2 CRSF serial receiver</td>
           <td>CA$145.97</td><td><span class="badge b-green">Live listings</span> UART binding/failsafe setup in steps 4&ndash;5</td></tr>
@@ -902,8 +919,8 @@
           <td>Two GNB 1500mAh 4S 120C HV packs with XT60 and ToolkitRC M4AC LiHV charger</td>
           <td>CA$117.97</td><td><span class="badge b-green">Live listings</span> correct chemistry and connectors</td></tr>
         <tr><td><strong>Analog FPV</strong></td>
-          <td>RunCam Phoenix 2 SE, TBS Unify Pro HV VTX, TBS Diamond antenna, Skyzone M5 diversity monitor/DVR</td>
-          <td>CA$401.96</td><td><span class="badge b-green">Live listings</span> analog 5.8GHz chain; legal channel/power check required</td></tr>
+          <td>RunCam Phoenix 2 SE, TBS Unify Pro HV VTX, TBS Triumph PRO 5.8 GHz antenna, Skyzone M5F monitor/DVR, monitor 18650 cell, DVR microSD card</td>
+          <td>CA$438.90</td><td><span class="badge b-green">Live listings</span> 5.5&ndash;6.0 GHz chain throughout; monitor ships with no battery and no card; legal channel/power check required</td></tr>
         <tr><td><strong>Thermal/GPS payload</strong></td>
           <td>Pi Zero 2 WH kit, Pimoroni 55&deg; MLX90640, PA1010D GPS, SparkFun Qwiic HAT + two jumper cables</td>
           <td>CA$239.00</td><td><span class="badge b-green">Live listings</span> pre-soldered Pi header and independent sensor orientation</td></tr>
@@ -912,10 +929,10 @@
           <td>CA$6.85</td><td><span class="badge b-green">Live listings</span> use the stack's regulated 5V/3A after meter checks</td></tr>
         <tr><td><strong>Tools, safety and mounting</strong></td>
           <td>Flywoo tool kit, smoke stopper, LiPo bag, straps/pad, COB lighting, heat shrink and zip ties</td>
-          <td>CA$177.01</td><td><span class="badge b-green">Live listings</span> no separate soldering station required</td></tr>
+          <td>CA$177.01</td><td><span class="badge b-green">Live listings</span> a 65W portable DC iron is included (it runs from an XT60 pack); a mains temperature-controlled station is easier for a first build</td></tr>
         <tr><td><strong>Computer and small supplies</strong></td>
           <td>Recertified Acer laptop + shown freight, threadlocker, AAA cells, safety glasses and compliance allowance</td>
-          <td>CA$352.72</td><td><span class="badge b-green">Live listings</span> Windows 11 S mode must be switched off</td></tr>
+          <td>CA$357.72</td><td><span class="badge b-green">Live listings</span> Windows 11 S mode must be switched off</td></tr>
       </table>
     </div>
   </details>
@@ -924,15 +941,21 @@
     <summary>How the unavailable parts were replaced</summary>
     <div class="acc-body">
       <ul>
-        <li>SpeedyBee's discontinued stack became the in-stock GEPRC F405 BLS 50A combo.</li>
+        <li>SpeedyBee's discontinued stack became the GEPRC F405 BLS 50A combo &mdash;
+        <strong>out of stock at Rotor Village on the 31 Oct 2026 re-check</strong>, as is the 65A V2.
+        In-stock 30.5&times;30.5 alternates: DakeFPV F405 + 65A, CA$95.99; GEPRC TAKER F405 BL32 70A, CA$159.99.</li>
         <li>Adafruit's out-of-stock thermal board became PiShop's in-stock Pimoroni 55&deg; MLX90640.</li>
         <li>The Pi is the in-stock Zero 2 WH Pi-hole hardware kit, including its pre-soldered header,
         32GB card, reader and bench supply.</li>
         <li>Independent Qwiic jumper cables allow a downward thermal lens and upward GPS antenna.</li>
-        <li>Out-of-stock budget goggles became the Skyzone M5 analog diversity monitor/DVR.</li>
+        <li>Out-of-stock budget goggles became the Skyzone M5F analog diversity monitor/DVR &mdash;
+        it ships with <strong>no 18650 cell and no SD card</strong>, so both are now separate lines.</li>
+        <li>The TBS Diamond antenna (850&ndash;950 MHz, a Crossfire <em>link</em> antenna) became the
+        <strong>TBS Triumph PRO SMA RHCP, 5.5&ndash;6.0 GHz</strong> &mdash; the band the VTX transmits on.</li>
       </ul>
-      <div class="note gold"><strong>Cost is explicit:</strong> CA$1,678.00 for merchandise, shown laptop
-      freight and the compliance allowance, plus CA$81.10 GST = CA$1,759.10 before remaining freight.
+      <div class="note gold"><strong>Cost is explicit:</strong> CA$1,714.94 for merchandise, shown laptop
+      freight and the CA$20 compliance allowance, plus CA$84.75 GST = CA$1,799.69 before remaining freight
+      (roughly CA$1,840&ndash;1,870 landed once retailer freight is added).
       The original CA$750 target is retained in the interactive meter for comparison, not used to hide
       the cost of the complete build.</div>
     </div>
@@ -971,7 +994,7 @@
         <li><strong>Cold-weather reality (Edmonton winter):</strong> LiPos lose punch below
         &minus;10 &deg;C &mdash; keep packs warm in a jacket pocket, expect shorter flights, and
         never charge a frozen pack. The MLX90640 itself is rated to well below freezing.</li>
-        <li><strong>Compliance first:</strong> register the drone ($5) and pass the Transport Canada
+        <li><strong>Compliance first:</strong> register the drone ($10) and pass the Transport Canada
         Small Basic online exam (14+) this week &mdash; costs almost nothing and it's the piece
         that makes every flight after it legal.</li>
       </ul>
@@ -1268,17 +1291,18 @@
                   <li>RP1 V2 receiver</li>
                   <li>Phoenix 2 camera</li>
                   <li>Unify HV VTX</li>
-                  <li>TBS Diamond antenna</li>
-                  <li>M5 monitor</li>
+                  <li>TBS Triumph PRO 5.8 GHz antenna (SMA)</li>
+                  <li>M5F monitor + its 18650 cell</li>
                 </ul>
               </div>
               <div class="asm-do">
                 <span class="asm-label">What to do</span>
                 <ol class="asm-actions">
-                  <li>Wire the receiver: 5V + GND, then receiver TX &rarr; FC pad R2, receiver RX &rarr; FC pad T2.</li>
+                  <li>Wire the receiver: 5V + GND, then receiver TX &rarr; the FC's <strong>RX</strong> pad and receiver RX &rarr; the FC's <strong>TX</strong> pad on a free UART. Read the real pad name off the GEPRC manual &mdash; &ldquo;R2/T2&rdquo; is unconfirmed for this board.</li>
                   <li>Clip the receiver's small antenna on before any power.</li>
-                  <li>Wire camera &rarr; VTX. Mount the VTX and screw its antenna on.</li>
-                  <li>In Betaflight switch on UART2 serial RX + CRSF. Bind the radio.</li>
+                  <li>Wire camera &rarr; FC <code>CAM</code> and FC <code>VTX</code> &rarr; VTX, so Betaflight's OSD (pack voltage, timer, warnings) reaches your screen &mdash; this board has an AT7456E OSD chip. If it turns out to have no analog pads, wire camera &rarr; VTX direct and rely on radio telemetry instead.</li>
+                  <li>Mount the VTX and screw the <strong>5.8 GHz</strong> antenna on <em>before</em> any power.</li>
+                  <li>In Betaflight enable serial RX + CRSF on that UART. Then flash the RP1 V2 to the same major ExpressLRS version as your Pocket (the receiver ships on v2.4), set the Canada regulatory domain, and only then bind.</li>
                 </ol>
               </div>
               <p class="asm-warn"><strong>&#9888; Safety:</strong> never power the VTX without its antenna &mdash; it burns out in seconds.</p>
@@ -1387,7 +1411,7 @@
                   <li>Qwiic HAT</li>
                   <li>MLX90640 thermal camera</li>
                   <li>PA1010D GPS</li>
-                  <li>2&times; PRT-17912 cables</li>
+                  <li>2&times; CAB-17261 female-jumper cables</li>
                   <li>micro-USB pigtail</li>
                 </ul>
               </div>
@@ -1396,7 +1420,7 @@
                 <ol class="asm-actions">
                   <li>Solder the 1&times;5 headers onto both sensor boards.</li>
                   <li>Push the Qwiic HAT onto the Pi.</li>
-                  <li>Connect each sensor to the HAT with one cable. Match the 3V3 / GND / SDA / SCL labels.</li>
+                  <li>Connect each sensor to the HAT with one cable. The Pimoroni header order is <strong>3V3, SDA, SCL, INT, GND</strong> (it maps to Pi pins 1,3,5,7,9), so plug the four cable ends in that order and <strong>skip pin 4</strong>. Ignore the HAT's silkscreen &mdash; SparkFun confirms its SDA/SCL labels are reversed. Trust the cable colours: black GND, red 3V3, blue SDA, yellow SCL.</li>
                   <li>Power it on the bench. Check both sensors answer: camera 0x33, GPS 0x10.</li>
                 </ol>
               </div>
@@ -1452,8 +1476,9 @@
               <div class="asm-do">
                 <span class="asm-label">What to do</span>
                 <ol class="asm-actions">
-                  <li>Stand the Pi on nylon standoffs over the middle of the frame.</li>
-                  <li>Zip-tie it down, then add the Kevlar strap as a second lock.</li>
+                  <li><strong>The rule: the thermal lens needs an unobstructed vertical line to the ground.</strong> Mounted on top of the frame it just stares at the top plate and the battery.</li>
+                  <li><strong>Measure before you drill or cut.</strong> Hold the Pi and both sensor boards in place and sight down through the lens position. Pi under the bottom plate (or over a cutout you have measured); the MLX90640 hangs below it, lens down; the PA1010D sits on top, patch antenna up.</li>
+                  <li>Fix the Pi on nylon standoffs and zip-tie it down, then add the Kevlar strap as the second lock. Strap the bare MLX breakout &mdash; it has no mounting holes of its own.</li>
                   <li>Route every cable out of the prop circles. Tie the loose ends down.</li>
                   <li>Slide the battery on the grip pad until the drone balances on its centre.</li>
                 </ol>
@@ -1462,7 +1487,7 @@
               <div class="asm-check">
                 <span class="asm-label">&#10003; Before you go on</span>
                 <ul>
-                  <li>Two holding methods (ties + strap) &middot; balanced centre of gravity &middot; props still off.</li>
+                  <li>Lens has a clear view straight down &middot; two holding methods (ties + strap) &middot; balanced centre of gravity &middot; props still off.</li>
                 </ul>
               </div>
               <label class="asm-done"><input type="checkbox" data-asm="7"> This step is done</label>
@@ -1514,7 +1539,7 @@
                   <li>Power up and wait for a GPS fix.</li>
                   <li>Check the radio and the video on the bench.</li>
                   <li>Props OFF &mdash; check motor order and direction in Betaflight.</li>
-                  <li>First hover: 1 metre up &rarr; land &rarr; feel the motors for heat.</li>
+                  <li>First hover: 1 metre up &rarr; land &rarr; feel the motors for heat. Never above 122 m (400 ft) AGL.</li>
                   <li>Heat test: a hot plate among cold things. Write down what it finds.</li>
                 </ol>
               </div>
@@ -1561,7 +1586,7 @@
         <li><label><input type="checkbox" data-key="s-5"><span><strong>5 &middot; Betaflight setup (props OFF)</strong>
           <small>Verify motor order/direction at a safe minimum output, channel map, arm switch and failsafe. Configure motor behaviour deliberately rather than assuming armed motors must idle. Done: correct channel response and immediate disarm/throttle-cut behaviour.</small></span></label></li>
         <li><label><input type="checkbox" data-key="s-6"><span><strong>6 &middot; First hover &mdash; legal area, no payload</strong>
-          <small>Only after certification/registration and site/airspace/NOTAM checks. For Basic operations remain more than 30 m horizontally from any person and meet all aerodrome/VLOS limits. Make a brief 1 m hover, land and inspect temperatures.</small></span></label></li>
+          <small>Only after certification/registration and site/airspace/NOTAM checks. For Basic operations remain more than 30 m horizontally from any person, stay below 122 m (400 ft) AGL (CAR 901.25) and meet all aerodrome/VLOS limits. Make a brief 1 m hover, land and inspect temperatures.</small></span></label></li>
       </ul>
     </div>
   </details>
@@ -1572,11 +1597,11 @@
         <li><label><input type="checkbox" data-key="s-7"><span><strong>7 &middot; Pi Zero 2 WH on the bench</strong>
           <small>Flash the Pi-hole kit's blank 32GB card with Raspberry Pi OS using the Acer laptop and included reader. Fit the pre-soldered Pi into the Qwiic HAT, enable I2C and use the included 5.1V/2.5A micro-USB bench supply.</small></span></label></li>
         <li><label><input type="checkbox" data-key="s-8"><span><strong>8 &middot; Connect camera and GPS through the Qwiic HAT</strong>
-          <small>Solder the included straight 1&times;5 male headers onto the Pimoroni boards. Connect each to DEV-14459 with a PRT-17912 jumper cable, matching 3.3V/GND/SDA/SCL labels. Install the payload requirements and verify camera address 0x33 and GPS address 0x10.</small></span></label></li>
+          <small>Solder the included straight 1&times;5 male headers onto the Pimoroni boards. Connect each to DEV-14459 with a CAB-17261 female-jumper cable wired in the Pimoroni order 3V3/SDA/SCL/GND &mdash; that skips pin 4 &mdash; and ignore the HAT silkscreen, whose SDA/SCL labels SparkFun says are reversed. Install the payload requirements and verify camera address 0x33 and GPS address 0x10.</small></span></label></li>
         <li><label><input type="checkbox" data-key="s-9"><span><strong>9 &middot; Run and tune the included detection code</strong>
           <small>Run all 19 synthetic tests in the payload package, then use the demo before hardware tests. Tune threshold and minimum pixels against a safe controlled warm target and save detection/false-positive results.</small></span></label></li>
         <li><label><input type="checkbox" data-key="s-10"><span><strong>10 &middot; Mount and power the payload</strong>
-          <small>Use nylon standoffs, zip ties and a secondary Kevlar strap. Keep the thermal lens down and GPS antenna up, away from carbon. Connect the meter-checked 24AWG micro-USB power pigtail to the GEPRC's regulated 5V/3A output, avoid backfeed, and verify Pi voltage under load.</small></span></label></li>
+          <small>Use nylon standoffs, zip ties and a secondary Kevlar strap. The thermal lens needs an unobstructed vertical line to the ground, so the Pi sits under the bottom plate (or over a measured cutout) with the MLX board below it and the GPS patch antenna up &mdash; measure before you drill. Keep everything off bare carbon. Connect the meter-checked 24AWG micro-USB power pigtail to the GEPRC's regulated 5V/3A output, avoid backfeed, and verify Pi voltage under load.</small></span></label></li>
       </ul>
       <h3>Payload example &mdash; included package, 19 synthetic tests passed</h3>
       <pre><code>import time, board, busio
@@ -1699,8 +1724,9 @@ while True:
     <div class="acc-body">
       <div class="script">"I built a thermal-camera drone from parts &mdash; airframe, flight
       controller, a Raspberry Pi running my own hotspot-detection code. At night, with the lights
-      on like the rules require, it finds a 1-metre heat source from 30 metres and puts it on a
-      map with GPS coordinates. I can explain every part of it. Want to see?"</div>
+      on like the rules require, it flags a 1-metre heat source at 30 m &mdash; right at the edge of the
+      sensor's ~1 m per pixel &mdash; and puts it on a map with GPS coordinates, along with the detection
+      rate I measured. I can explain every part of it. Want to see?"</div>
       <p><strong>Demo flow (3 min):</strong> 0:00 the problem &middot; 0:30 bench: the 768-number
       frame and the flood fill finding a candle &middot; 1:30 the night flight footage &middot;
       2:15 the map marker landing on the target &middot; 2:45 <strong>honest limits first</strong>:
@@ -1771,9 +1797,12 @@ while True:
         <li><span class="badge b-green">Checked</span> GEPRC F405 BLS 50A stock/specs,
         RP1 V2 CRSF/5V receiver, and the Zero 2 WH kit with pre-soldered header and bench supply.</li>
         <li><span class="badge b-green">Checked</span> Pimoroni MLX90640 and PA1010D stock/specs,
-        SparkFun Qwiic HAT/cables, analog FPV chain, charger, tools and laptop. All 35 order links opened successfully.</li>
-        <li><span class="badge b-green">Checked</span> Transport Canada Basic operations and CAR
-        900.06/901.39/601.15. The 30 m condition is a Basic-category boundary; night lights do not waive other rules.</li>
+        SparkFun Qwiic HAT/cables, analog FPV chain, charger, tools and laptop. All order links load
+        &mdash; but <strong>a loading link is not stock</strong>: an out-of-stock page also returns HTTP 200,
+        and the frame and the GEPRC stack were both out of stock on the 31 Oct 2026 re-check.</li>
+        <li><span class="badge b-green">Checked</span> Transport Canada Basic operations, CAR 901.25
+        (400 ft / 122 m AGL ceiling) and CAR 900.06/901.39/601.15. The 30 m condition is a Basic-category
+        boundary; night lights do not waive other rules.</li>
         <li><span class="badge b-green">Checked</span> GoA Systems Analyst MRS PDF (reviewed
         20 May 2026) and Job Bank NOC 21211 Alberta/Edmonton wages $28.00/$43.27/$57.69.</li>
         <li><span class="badge b-green">Checked</span> FPInnovations TR-2020-N29 (2020), including
@@ -1818,7 +1847,7 @@ while True:
         &middot; <a href="https://www.pishop.ca/product/mlx90640-thermal-camera-breakout/">Pimoroni MLX90640</a>
         &middot; <a href="https://www.pishop.ca/product/pa1010d-gps-breakout/">Pimoroni PA1010D GPS</a>
         &middot; <a href="https://www.sparkfun.com/sparkfun-qwiic-hat-for-raspberry-pi.html">SparkFun Qwiic HAT</a>
-        &middot; <a href="Shad-Drone-Order-List.md">All 35 order links</a></li>
+        &middot; <a href="Shad-Drone-Order-List.md">All order links (stock re-check required)</a></li>
         <li><a href="https://www.alberta.ca/system/files/custom_downloaded_images/psc-recruitment-standards-systems-analyst.pdf">GoA Systems Analyst MRS PDF</a>
         &middot; <a href="https://www.jobbank.gc.ca/marketreport/wages-occupation/24510/AB">Job Bank wages</a>
         &middot; <a href="https://www.jobbank.gc.ca/marketreport/summary-occupation/24510/AB">Job Bank profile/outlook</a>
@@ -2036,7 +2065,7 @@ while True:
     
     final: [
       { q: "What does the complete order plan cost before remaining freight?",
-        a: ["CA$1,678.00 plus CA$81.10 GST = CA$1,759.10", "CA$600 including everything", "CA$750 including all freight", "Nothing; all parts are free"],
+        a: ["CA$1,714.94 plus CA$84.75 GST = CA$1,799.69 before freight", "CA$600 including everything", "CA$750 including all freight", "Nothing; all parts are free"],
         c: 0,
         why: "The complete list includes the airframe, analog FPV, payload, tools and laptop. Rotor Village/PiShop/SparkFun and any small-item freight remain checkout-dependent." },
       { q: "What is the forest-fire operating restriction?",
@@ -2219,8 +2248,10 @@ while True:
     ["charger", "ToolkitRC M4AC LiHV balance charger", "CA$49.99; AC input and 1–4S LiHV support.", 49.99],
     ["fpv-camera", "RunCam Phoenix 2 Special Edition", "CA$36.99; analog camera with cable/bracket.", 36.99],
     ["vtx", "TBS Unify Pro 5G8 HV VTX", "CA$77.99; 2–6S input, SMA connector.", 77.99],
-    ["vtx-antenna", "TBS Diamond SMA antenna", "CA$36.99; matches VTX connector.", 36.99],
-    ["monitor", "Skyzone M5F diversity FPV monitor/DVR", "CA$249.99; analog receiver and antennas included.", 249.99],
+    ["vtx-antenna", "TBS Triumph PRO SMA RHCP 5.8 GHz antenna", "CA$29.99; 5500\u20136000 MHz, the band the VTX actually uses. (The superseded TBS Diamond is 850\u2013950 MHz \u2014 a Crossfire link antenna, not 5.8 GHz video.)", 29.99],
+    ["monitor", "Skyzone M5F diversity FPV monitor/DVR", "CA$249.99; analog receiver and antennas included, but NO battery and NO SD card.", 249.99],
+    ["monitor-cell", "Samsung 30Q 18650 cell for the M5F monitor", "CA$15.99 for a 2-pack; the monitor ships without a cell. Flat-top/unprotected \u2014 if the holder misses contact use a button-top or a spacer.", 15.99],
+    ["dvr-card", "32GB microSD card for the monitor DVR", "CA$27.95 (SanDisk Ultra 32GB \u2014 verified PiShop price). Any spare microSD works; the DVR cannot record without one.", 27.95],
     ["straps", "Kevlar battery straps ×2", "CA$8.99 per 2-pack.", 8.99],
     ["lights", "4S COB LED strip, 1m", "CA$11.99; uses flight battery, not Pi's 5V rail.", 11.99],
     ["battery-pad", "Flywoo Ultra Grip battery pad", "CA$3.99.", 3.99],
@@ -2234,8 +2265,8 @@ while True:
     ["pi", "Raspberry Pi Zero 2 WH Pi-hole hardware kit", "CA$94.95; header Pi, 32GB card, reader and 5.1V/2.5A bench PSU.", 94.95],
     ["thermal", "Pimoroni MLX90640 55° thermal breakout", "CA$86.95, in stock at PiShop.", 86.95],
     ["gps", "Pimoroni PA1010D GPS breakout", "CA$41.95, in stock at PiShop.", 41.95],
-    ["qwiic", "SparkFun Qwiic HAT + two PRT-17912 cables", "US$10.85 converted to CA$15.15 at BoC 1.3960.", 15.15],
-    ["laptop", "Recertified Acer Aspire 1 Windows laptop", "CA$269 with one-year Acer warranty; switch out of S mode. Out of stock at Walmart on 1 Nov 2026 re-check \u2014 re-check listing or substitute a similar recertified Windows laptop.", 269],
+    ["qwiic", "SparkFun Qwiic HAT + two CAB-17261 female-jumper cables", "US$10.85 converted to CA$15.15 at BoC 1.3960. Use the female-jumper cable, not PRT-17912: its pins can be re-ordered to 3V3/SDA/SCL/GND.", 15.15],
+    ["laptop", "Recertified Acer Aspire 1 Windows laptop", "CA$269 with one-year Acer warranty; switch out of S mode. Out of stock at Walmart on the 31 Oct 2026 re-check \u2014 re-check listing or substitute a similar recertified Windows laptop.", 269],
     ["laptop-freight", "BuySmart laptop delivery shown to Edmonton", "CA$35.99; actual address changes quote.", 35.99],
     ["threadlock", "Permatex Blue 242 threadlocker", "CA$10.28, sold by Walmart.", 10.28],
     ["aaa", "Energizer MAX AAA cells, 8-pack", "CA$9.47; multimeter requires two.", 9.47],
@@ -2271,8 +2302,10 @@ while True:
     "pi": [["PiShop", "https://www.pishop.ca/product/raspberry-pi-zero-2wh-pi-hole-kit/"]],
     "thermal": [["PiShop", "https://www.pishop.ca/product/mlx90640-thermal-camera-breakout/"]],
     "gps": [["PiShop", "https://www.pishop.ca/product/pa1010d-gps-breakout/"]],
+    "monitor-cell": [["Rotor Village", "https://rotorvillage.ca/samsung-30q-18650-3000mah-15a-li-ion-2pc/"]],
+    "dvr-card": [["PiShop 32GB microSD", "https://www.pishop.ca/search.php?search_query=32gb+microsd"]],
     "qwiic": [["SparkFun Qwiic HAT", "https://www.sparkfun.com/sparkfun-qwiic-hat-for-raspberry-pi.html"],
-              ["SparkFun PRT-17912", "https://www.sparkfun.com/flexible-qwiic-cable-breadboard-jumper-4-pin.html"]],
+              ["SparkFun CAB-17261 female jumper", "https://www.sparkfun.com/flexible-qwiic-cable-female-jumper-4-pin.html"]],
     "laptop": [["Walmart", "https://www.walmart.ca/en/ip/Acer-Aspire-1-FHD-15-6-Laptop-Intel-Celeron-N4500-4GB-DDR4-64GB-eMMC-UHD-Graphics-W11-S-mode-Excellent-Recertified-Year-Manufacturer-Warranty/7ICF4XI4BCLN"]],
     "laptop-freight": [["Walmart listing", "https://www.walmart.ca/en/ip/Acer-Aspire-1-FHD-15-6-Laptop-Intel-Celeron-N4500-4GB-DDR4-64GB-eMMC-UHD-Graphics-W11-S-mode-Excellent-Recertified-Year-Manufacturer-Warranty/7ICF4XI4BCLN"]],
     "threadlock": [["Walmart", "https://www.walmart.ca/en/ip/Permatex-Blue-Medium-Strength-242-Threadlocker/10045329"]],
