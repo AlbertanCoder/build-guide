@@ -101,6 +101,42 @@ typed question
 Conversation history (last 6 turns) travels with each request, so follow-ups work. If anything in
 that chain fails, the answer comes from the offline engine with a one-line note saying why.
 
+## The gate
+
+Ten suites, 150 named checks, one exit code:
+
+```powershell
+node scripts/dev/gate.js            # everything
+node scripts/dev/gate.js --quick    # skip the browser suite
+node scripts/dev/gate.js --json     # machine-readable, for the agent to consume
+```
+
+| Suite | Checks |
+|---|---|
+| encoding | 3 |
+| price guard | 4 |
+| domain pack | 1 |
+| cost engine | 26 |
+| cost path | 30 |
+| settings api | 23 |
+| browser (Chrome) | 18 |
+| self-test served | 17 |
+| self-test single file | 17 |
+| ai path | 11 |
+
+Two deliberate strictnesses, both proved by hand:
+
+1. **A suite that cannot run is a FAIL, not a skip.** A missing Chrome must never
+   quietly disable the only check that catches a broken page.
+2. **Every suite declares its expected check count.** If the count drops, the gate
+   fails even when everything present passes — so deleting a check can never be how
+   you get a green run. Verified by raising `encoding` from 3 to 4, which produced
+   `only 3 checks, expected 4` and exit 1.
+
+This is the object decision R24 protects: the self-editing agent may never modify
+these checks, and that rule is only enforceable now that the checks are one
+invocable thing with a single name.
+
 ## The settings drawer (key and daily budget)
 
 Open the panel and press the gear. Both settings are **server state**, not page

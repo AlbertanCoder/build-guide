@@ -129,6 +129,12 @@ on spend, falling back to the offline engine rather than billing past it.
 Run the tests:
 
 ```powershell
+# Everything at once: 150 named checks, one exit code.
+node scripts/dev/gate.js
+node scripts/dev/gate.js --quick    # skip the browser suite (needs Chrome)
+node scripts/dev/gate.js --json     # machine-readable
+
+# Or one suite at a time:
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/dev/check-llm-path.ps1   # AI path, mock provider, no key
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/dev/check-assistant.ps1 -Target "dist/Shad's Build Guide.html"
 node scripts/dev/check-kb-prices.js          # every KB price must also appear in the guide
