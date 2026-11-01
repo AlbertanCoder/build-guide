@@ -9,3 +9,7 @@ scripts/build/*.err
 
 # Standalone single-file builds are generated, not source
 dist/
+
+# API keys live here and must never be committed
+server/.env
+*.env.local

@@ -1,0 +1,1640 @@
+/*!
+ * Guide Assistant — an offline-first question answering panel for
+ * "Shad's Fire-Detecting Drone — Step-by-Step Build Guide".
+ *
+ * Three deliberate design rules, because the guide's whole value is that it
+ * only states what was checked:
+ *
+ *   1. Grounded. Every answer comes from a curated troubleshooting entry or a
+ *      passage lifted out of this page at runtime. Nothing is generated from a
+ *      model unless GUIDE_ASSISTANT.endpoint is configured (see worker.js).
+ *   2. Honest. When the answer is not in the guide, it says so and points at
+ *      tab 7 (Honest limits & sources) instead of guessing. It never invents a
+ *      price, a part number or a regulation.
+ *   3. Offline. No network, no key, no font or CDN. It works from file:// in
+ *      the single-file build, exactly like the rest of the page.
+ *
+ * Public surface (used by the self-test and by the optional LLM bridge):
+ *   window.GuideAssistant.ask(text)        -> promise of a rendered message
+ *   window.GuideAssistant.jump(tab, step)  -> open a tab / assembly step
+ *   window.GuideAssistant.selfTest()       -> [{ name, ok, info }]
+ *   window.GuideAssistant.kb               -> curated entries (read-only)
+ */
+(function () {
+  "use strict";
+
+  /* ---------- config ---------- */
+  const CONFIG = window.GUIDE_ASSISTANT || {};
+  /* Set window.GUIDE_ASSISTANT = { endpoint: "https://your-worker.dev/ask" }
+     before this file loads to let a model write the answers. The page stays
+     fully functional without it. Never put an API key in this file. */
+  let ENDPOINT = typeof CONFIG.endpoint === "string" ? CONFIG.endpoint.trim() : "";
+
+  /* ?endpoint=http://localhost:8790/api/ask points any copy of this page at a
+     proxy (handy for testing); #ga-local forces the offline engine even then. */
+  (function applyUrlOverrides() {
+    const query = String(location.search || "").replace(/^\?/, "");
+    const params = {};
+    query.split("&").forEach(function (pair) {
+      if (!pair) { return; }
+      const i = pair.indexOf("=");
+      params[decodeURIComponent(i === -1 ? pair : pair.slice(0, i))] =
+        i === -1 ? "1" : decodeURIComponent(pair.slice(i + 1));
+    });
+    if (params.endpoint) { ENDPOINT = params.endpoint; }
+    if (/ga-local/.test(String(location.hash))) { ENDPOINT = ""; }
+  })();
+
+  const STORE = "shad-drone-guide-v1-assistant";
+  const MAX_TURNS = 40;
+
+  const TABS = {
+    why: "1 What & Why", build: "2 How It Works", parts: "3 Parts & Budget",
+    steps: "4 Build Steps", career: "5 Career & Pay", quiz: "6 Quizzes",
+    limits: "7 Limits & Sources"
+  };
+
+  /* ---------- knowledge base helpers ---------- */
+  /* kb(id, title, "tag,tag,tag", [steps], { note, why, next, src, see }) */
+  const KB = [];
+  function kb(id, title, tags, steps, extra) {
+    const entry = {
+      id: id, title: title, tags: tags.split(","), steps: steps,
+      note: "", why: "", src: "", see: [], next: ""
+    };
+    if (extra) { for (const k in extra) { if (extra[k]) entry[k] = extra[k]; } }
+    KB.push(entry);
+    return entry;
+  }
+  /* see: [label, tab, stepNumber?] — the step number is optional */
+  const STEP = function (n, label) { return [label || ("Step " + n), "steps", n]; };
+
+  /* ======================================================================
+     SAFETY FIRST — these are ordered before anything clever on purpose
+     ====================================================================== */
+  kb("props-on", "Props on while you are still configuring", "props,prop,propeller,propellers,armed,motor spins,spinning,cut,injury,hand,fingers,betaflight motors tab,bench test",
+    ["Take the props off before you touch Betaflight, the receiver or any wiring. That is the rule the guide repeats in steps 1, 2, 3 and 8.",
+     "With props off you can still check motor order and direction: Betaflight → Motors tab → enable the safety checkbox → spin each motor at a low value.",
+     "Props go on last — only after the receiver, modes, failsafe and video all work — and come off first before anything is changed.",
+     "Treat every powered quad as armed. A 5-inch prop at idle cuts skin; at power it injures badly."],
+    { note: "If a prop is already spinning and something is wrong: pull the battery, not the radio. Disconnect the XT60 first.", why: "The guide calls this 'the cardinal rule of the hobby' and repeats it at every step for a reason: a spinning 5-inch prop is the only part of this build that can hurt you in a fraction of a second.", src: "Guide steps 1, 2, 3, 8 and the airframe quiz", see: [STEP(8), ["Airframe quiz", "quiz"]] })
+    .next = "motor-order";
+
+  kb("lipo-swollen", "LiPo is swollen, warm, puffy or damaged", "lipo,swollen,puffy,puffed,round,hot,warm,smoke,fire,damaged,battery,charge,charging,storage,retire,dispose,recycle,vent",
+    ["Stop. Do not charge it, do not fly it, do not 'test it once more'.",
+     "Move it away from anything flammable — outdoors on concrete or gravel is right, a bag on a wooden bench is not.",
+     "Do not puncture it or put it in household garbage. Take it to a battery recycling depot.",
+     "For packs you are keeping: storage-charge to about 3.8 V per cell when you are not flying for a while.",
+     "Charge only inside a closed LiPo bag, on a non-flammable surface, with you in the room the whole time."],
+    { note: "LiPo fires are the genuine hazard in this hobby. Everything else in this build fails safely; a pack does not.", why: "The charger pack here is a 4S HV LiPo and a damaged cell can vent flame with no warning, so the rule is dispose first, investigate never.", src: "Guide step 5 and the airframe quiz", see: [STEP(5), ["LiPo safety lines", "steps"]] })
+    .next = "charger-setup";
+
+  kb("vtx-no-antenna", "I powered the VTX without its antenna", "vtx,antenna,burn,burnt,no antenna,unify,tbs,hot,video dead,sma,rp-sma,transmitter,damage",
+    ["Power down now and fit the antenna. Never power a VTX with nothing connected to the SMA.",
+     "Check whether it survived: antenna on, battery connected, monitor on the right channel. A few seconds unloaded often survives; a minute usually does not.",
+     "Feel the VTX body — it should be warm, not painful to hold. A cooked one runs scalding hot and drops power or goes silent.",
+     "Confirm the connector: the TBS Unify Pro 5G8 HV and the TBS Diamond antenna in this plan are both SMA. Forcing an RP-SMA wrecks the centre pin and gives a link that works at 2 m and dies at 50 m."],
+    { note: "The guide's step 4 warning is exact: 'never power the VTX without its antenna — it burns out in seconds'.", src: "Guide step 4", see: [STEP(4, "Step 4 — control and video")] })
+    .next = "no-video";
+
+  kb("sensor-5v", "I put 5V on the thermal camera or GPS", "5v,sensor,dead,magic smoke,3v3,3.3v,mlx90640,gps,pa1010d,qwiic,hat,burnt,sensor dead",
+    ["Those breakout boards are 3.3 V Qwiic devices, and 5 V on the 3V3 rail usually kills them outright — there is no protection to save you.",
+     "Test before you replace anything: run sudo i2cdetect -y 1 and look for 33 (thermal) and 10 (GPS).",
+     "If only one address is missing, only that board is gone. If neither appears, re-check the HAT seating and the header solder joints first — that failure looks identical.",
+     "Replace a suspect board rather than living with it. A partly damaged sensor returns plausible-looking garbage, which is worse than a dead one."],
+    { note: "Guide step 6 warning, verbatim: sensors are 3.3V only — never put 5V on them.", src: "Guide step 6", see: [STEP(6, "Step 6 — wire the Pi payload"), ["Weekend 2 checklist", "steps"]] })
+    .next = "i2c-detect";
+
+  kb("wildfire-law", "Can I fly near a wildfire to test this?", "fire,wildfire,forest,601.15,notam,legal,fly over,5 nautical,9.3 km,3000 ft,emergency,permission",
+    ["No. CAR 601.15 prohibits operating over a forest-fire area, or within 5 NM (9.3 km) of it below 3,000 ft AGL, and NOTAM-restricted airspace is closed to you as well.",
+     "An active fire creates its own emergency airspace. Firefighting aircraft operate low and fast and are not looking for your quad.",
+     "Use the guide's substitute: a controlled hot plate among cold objects, on private land with permission, at a legal test site.",
+     "Write down what you measured. That controlled test is the evidence; a wildfire is not a test range."],
+    { note: "Illegal and dangerous, regardless of how good the thermal data would be.", why: "This is the one mission that looks obvious and is the one you must not fly — which is why the final exam asks about it directly.", src: "CAR 601.15 · Guide rules quiz", see: [["Rules quiz", "quiz"], ["Honest limits & sources", "limits"]] })
+    .next = "people-30m";
+
+  kb("people-30m", "How close can I fly to people?", "people,person,30 metres,meters,30m,basic,crowd,bystander,public,over people,horizontal,bystanders",
+    ["Under Basic operations: more than 30 m (100 ft) horizontally from any person, at all times.",
+     "Closer than that becomes Advanced operations territory — different certificate, different rules, different conversation with an insurer.",
+     "Basic conditions the guide lists: VLOS, \u226425 kg, uncontrolled airspace, more than 5.6 km from certified airports and more than 1.9 km from heliports.",
+     "Keep the aircraft in sight without aids, and keep every other rule in force: aerodromes, NOTAMs, site permission, fire rules."],
+    { why: "The 30 m figure is a category boundary, not a safety suggestion: crossing it changes which certificate the flight requires.", src: "Transport Canada — Basic operations · Guide rules quiz", see: [["Rules quiz", "quiz"], ["Honest limits & sources", "limits"]] })
+    .next = "certification";
+
+  kb("first-power-smoke", "Smoke, sparks or a hot smell on first power-up", "smoke,smoke stopper,short,pop,spark,burning,smell,capacitor,cap,polarity,first power,smoked,blew up",
+    ["Pull the battery immediately and let everything cool before you touch it.",
+     "Never re-power to 'see if it does it again'. The smoke was the diagnosis.",
+     "Inspect in this order: battery-lead polarity, capacitor orientation, solder bridges on the ESC pads, motor wires shorting to carbon, a damaged motor winding.",
+     "Use the meter: continuity across the XT60 should not read shorted, and neither should neighbouring motor pads.",
+     "First power always goes through the iFlight smoke stopper in this plan. Direct connection is how you turn an $86 stack into a story."],
+    { note: "Glasses on, window open, and never leave a LiPo connected unattended while you work.", src: "Guide step 3 — solder the stack", see: [STEP(3, "Step 3 — solder the stack"), ["Weekend 1 checklist", "steps"]] })
+    .next = "esc-desync";
+
+  /* ======================================================================
+     RADIO LINK — RadioMaster Pocket (ELRS) + RP1 V2 receiver
+     ====================================================================== */
+  kb("rx-wont-bind", "Receiver won't bind", "bind,binding,elrs,rp1,receiver,led,blinking,solid,lua,pair,wont bind,not binding,no bind,model mismatch",
+    ["Check the ELRS major version first: the first number of the Version string must match between the transmitter module and the receiver. 3.x talks to 3.x; 3.x will never bind to 2.x.",
+     "Confirm the receiver has power — RP1 V2 wants 5V and GND — and that its UFL antenna is clicked on. Binding with no antenna fails and risks the PA.",
+     "Bind from the radio: ELRS Lua script → [Bind]. On newer ExpressLRS the same menu also offers the bench bind options; those need a current Betaflight (4.5 or newer) on the flight controller, so check your version before relying on them.",
+     "Or bind without the radio: press and hold the receiver's bind button for about 1.5 s, or short the boot pad to ground, then power it.",
+     "Read the LED: double blink, pause, repeat = sitting in bind mode. Solid = bound. Three fast blinks then a pause = Model Mismatch (fix Model Match in the Lua, or toggle it off and on while both ends are powered).",
+     "Once bound, the Lua script shows a C in the top right when the receiver is connected and talking."],
+    { note: "Bind with the flight controller powered from USB and props off. You are one accidental arm command from a bench injury otherwise.", why: "Almost every 'won't bind' case is a firmware major-version mismatch or a receiver that is not actually powered — both are visible in under a minute before you touch anything else.", src: "ExpressLRS binding docs · Guide weekend 1 task 4", see: [STEP(4, "Step 4 — add the receiver"), ["Weekend 1 checklist", "steps"]] })
+    .next = "no-channels";
+
+  kb("no-channels", "Sticks do nothing in Betaflight's Receiver tab", "channels,sticks,no input,no movement,receiver tab,uart,uart2,serial rx,crsf,rp1,sbus,protocol,mode",
+    ["Wiring first, because this is where it usually breaks: receiver TX → flight controller R2 and receiver RX → flight controller T2. The guide is explicit that you do not use the PWM-only ER4 example.",
+     "Ports tab: turn on Serial RX for UART2 only (not UART1, not both).",
+     "Configuration tab: Receiver protocol = CRSF, and make sure telemetry is on if you want link data.",
+     "Check the receiver is actually bound (solid LED) and that the radio's model is the one with the ELRS module active.",
+     "Then check channel map — AETR is the usual default — and confirm the arm switch is on a channel you can see moving.",
+     "If channels move but nothing arms, that is a different problem: look at the arming-disable flags."],
+    { why: "TX-to-RX and RX-to-TX is the single most common wiring error, and no amount of software configuration fixes a crossed pair.", src: "Guide weekend 1 task 4", see: [STEP(4, "Step 4 — add control and video"), ["Weekend 1 checklist", "steps"]] })
+    .next = "arm-wont-arm";
+
+  kb("failsafe", "Setting up failsafe (do this before the first hover)", "failsafe,fail safe,signal loss,lost signal,drop,disarm,throttle cut,safety,stage 2",
+    ["Betaflight → Failsafe: set Stage 2 to Drop (or to a deliberate, tested behaviour). Do not leave the default without knowing what it does.",
+     "Test it on the bench with props off: arm, throttle up slightly, then switch the radio off. The motors must stop.",
+     "Confirm the radio's own failsafe does not fight Betaflight's — in CRSF the flight controller decides.",
+     "Only then go outside. The guide's step 8 checklist puts radio and failsafe checks before the first hover for this reason."],
+    { note: "An untested failsafe is the same as no failsafe. The test takes two minutes on the bench.", src: "Guide step 4 and step 8", see: [STEP(8, "Step 8 — test in this order"), STEP(4, "Step 4 — control and video")] })
+    .next = "arm-wont-arm";
+
+  kb("arm-wont-arm", "It won't arm — arming disabled", "arm,arming,disabled,wont arm,flags,beep,doesnt spin,turtle,switch,throttle",
+    ["Betaflight → Setup: read the Arming Disable flags. They name the reason instead of making you guess.",
+     "The usual ones: throttle not at zero, arm switch assigned to the wrong range, accelerometer needs calibration, the quad is not level (some modes), or the model is still in a pre-arm state.",
+     "Check the Modes tab actually saves: press Save, not just Add Range.",
+     "USB-only power can also block arming on some setups — arm from a battery with props off when you are testing."],
+    { src: "Guide weekend 1 task 5 — Betaflight setup, props off", see: [["Weekend 1 checklist", "steps"], STEP(8)] })
+    .next = "motor-order";
+
+  kb("motor-order", "Motors spin the wrong way, or in the wrong order", "motor,motors,direction,order,reversed,spin wrong,props out,desync,flip over,instaflip,m1 m2 m3 m4",
+    ["Props off. Always props off for this.",
+     "Betaflight → Motors tab: spin each motor with the slider and match the number on screen to the physical motor for this frame (the guide's step 2 picture shows the M1–M4 order).",
+     "If numbering is wrong, fix the motor resource mapping rather than rewiring.",
+     "If direction is wrong, either reverse that motor in the ESC config (DShot bidirectional/reversed motor setting) or swap any two of its three wires at the ESC — not both.",
+     "Then recheck hover: 1 m up, land, feel the motors. An instaflip on takeoff is almost always motor order or direction."],
+    { note: "An instaflip with props on, indoors, is how people get hurt. Verify direction with props off, at low slider values, on the bench.", src: "Guide step 2 (motor order) and step 8", see: [STEP(2, "Step 2 — build the frame"), STEP(8, "Step 8 — test in this order")] })
+    .next = "motors-hot";
+
+  kb("link-quality", "Link quality drops out or RSSI warnings alarm", "rssi,lq,link quality,range,telemetry,dropout,signal,weak,elrs power,packet rate,dbi",
+    ["Antenna first: RP1's UFL connector must be clicked down, and the antenna must not be buried against carbon fibre or the Pi.",
+     "Keep the receiver antenna away from the VTX antenna — 5.8 GHz next to 2.4 GHz at high power is a classic way to lose the link at range.",
+     "Check the ELRS packet rate and TX power in the Lua script. Higher packet rate = lower latency, less range headroom.",
+     "Fly line of sight. Buildings, ground and your own body all block 2.4 GHz.",
+     "Watch LQ in the OSD rather than RSSI alone; LQ falling off a cliff is the honest warning."],
+    { src: "Guide step 4 · ExpressLRS signal-health docs", see: [STEP(4, "Step 4 — control and video")] })
+    .next = "failsafe";
+
+  /* ======================================================================
+     VIDEO — RunCam Phoenix 2 · TBS Unify Pro 5G8 HV · Skyzone M5F
+     ====================================================================== */
+  kb("no-video", "No picture on the FPV monitor", "no video,no picture,black screen,snow,static,monitor,m5,skyzone,channel,band,scan,camera,vtx,dvr,lens cap",
+    ["Antenna on the VTX before you power it — every time. That is the rule most likely to have already cost you a VTX.",
+     "Lens cap. It is embarrassing and it is the most common cause.",
+     "Match band and channel exactly: the Unify's channel has to equal the M5F's band+channel, not just 'channel 3'. Use the monitor's scan/auto-search once to find the signal, then lock it in.",
+     "Check the camera has power and video out: power comes from the VTX's 5V/9V pad in a typical analog chain, video goes to the VTX's video-in.",
+     "Check the VTX is fed from the battery, not the 5V rail — it takes 2–6S directly in this plan.",
+     "If the picture is there but tearing, suspect the camera's video ground or a loose JST/solder joint before you replace anything."],
+    { note: "The HV VTX is powered from the 4S flight battery separately from the Pi and FC rails.", why: "Analog video fails in boring ways: no antenna, lens cap, wrong band, no power. Work down that list before buying parts.", src: "Guide step 4", see: [STEP(4, "Step 4 — control and video")] })
+    .next = "bad-range";
+
+  kb("bad-range", "Picture breaks up as soon as I move away", "breakup,range,interference,static,snow,distance,flicker,antenna,polarization,power,channel overlap",
+    ["Check the antenna connector type: SMA vs RP-SMA. A wrong-gender pair looks connected, spins on, and gives you metres instead of hundreds of metres.",
+     "Both antennas must be the same polarization (both RHCP or both linear) — a mismatched pair loses most of the link budget.",
+     "Make sure your channel is not overlapping a neighbour's; keep clear of the low band if others are flying.",
+     "Keep VTX power legal for your licence and site, and keep the aircraft in sight.",
+     "Mount the VTX antenna clear of the frame with a proper pigtail, not bent against carbon."],
+    { src: "Guide step 4 and the M5F monitor notes", see: [STEP(4, "Step 4 — control and video")] })
+    .next = "no-video";
+
+  /* ======================================================================
+     POWER — GEPRC F405 + BLS 50A stack · Pi Zero 2 WH · 4S HV packs
+     ====================================================================== */
+  kb("pi-power", "The Pi keeps rebooting, or browns out when I throttle up", "pi,raspberry,reboot,reboot loop,undervoltage,brownout,lightning bolt,power,5v,3a,bec,pigtail,crash,shutdown,corrupt sd",
+    ["On the bench use the kit's own 5.1V/2.5A supply first — if it misbehaves on a good bench supply, the problem is the Pi or the SD card, not your wiring.",
+     "In the air the Pi runs from the stack's regulated 5V/3A output through the meter-checked 24AWG micro-USB pigtail. The GEPRC stack provides that rail; the 4S battery does not get connected to the Pi directly.",
+     "Measure it under load, not at idle: a multimeter on the Pi's 5V and GND while everything is running. A rail that sags below about 4.7 V causes exactly these random reboots and SD-card corruption.",
+     "Beware the Zero family's silence: on the Zero models there is no low-voltage warning circuitry like the bigger Pis have, so a starving Pi often just reboots instead of telling you.",
+     "Do not feed another 5V source into the same rail (no backfeed from a second BEC or a USB power bank while the flight pack is connected).",
+     "Keep the pigtail short, and keep the payload wiring away from the ESC's motor current paths.",
+     "If it still browns out on throttle punches, suspect the stack's 5V regulator before the Pi: a servo/ESC spike is a normal cause."],
+    { note: "Never power the Pi from both the bench USB supply and the flight battery at once.", why: "A Pi that reboots mid-flight takes your thermal log with it, and repeated brownouts corrupt the SD card — the failure looks like a software bug but it is a voltage problem.", src: "Raspberry Pi power-supply docs · Guide step 6 and weekend 2 task 10", see: [STEP(6, "Step 6 — wire the Pi payload"), ["Weekend 2 checklist", "steps"], ["Honest limits & sources", "limits"]] })
+    .next = "bec-current";
+
+  kb("bec-current", "Will the 5V rail power the Pi and both sensors?", "current,amps,bec,3a,power budget,rail,how much current,overload,lights,led",
+    ["The F405 stack supplies a regulated 5V/3A output in this plan, and the Pi Zero 2 W plus two Qwiic sensors sit comfortably inside that with headroom.",
+     "The half that catches people: the stack's rail is shared. Do not hang the LED strip or anything else hungry off the same 5V pad as the Pi.",
+     "The 4S COB LED strip in this plan runs from the flight battery, not the Pi's 5V rail — that is deliberate.",
+     "Measure instead of assuming: current clamp or inline meter on the 5V feed with the payload running full tilt (camera streaming, WiFi active).",
+     "If you add anything later, re-measure. The guides' numbers are a design budget, not a guarantee about your exact build."],
+    { src: "Guide step 6, step 7 and the parts list", see: [STEP(6), ["Parts & budget", "parts"]] })
+    .next = "pi-power";
+
+  kb("motors-hot", "Motors or ESC are hot after a 1-metre hover", "motors,hot,temperature,esc,warm,too hot,hover,check,burn,smell",
+    ["Land and feel the motors and the ESC immediately — the guide's step 8 makes this the point of the first hover.",
+     "Warm is normal. Too hot to hold your fingers on for a couple of seconds is not; stop flying and diagnose.",
+     "Check the boring things first: motor screws touching a winding, a prop on backwards, a bent motor shaft, a dragging bell.",
+     "Then tuning: on default PIDs a fresh build can run hot, and a soft-sagging battery pushes current up too.",
+     "Re-test only after a change, keep the hover to a few seconds, and write the temperature down so you can compare."],
+    { note: "A motor that is hot enough to smell is a motor you are about to lose.", src: "Guide step 8", see: [STEP(8, "Step 8 — test in this order"), STEP(2, "Step 2 — motor screws")] })
+    .next = "esc-desync";
+
+  kb("esc-desync", "A motor stutters, twitches or desyncs", "desync,stutter,twitch,jitter,esc,flip,motor cuts,failsafe mid air,dshot",
+    ["Check the solder joint on that motor's three ESC pads — a cold joint behaves exactly like a failing ESC.",
+     "Confirm the ESC protocol in Betaflight (DShot is right for this stack) and that motor direction is set once, not twice.",
+     "Check the motor's own wires for a nick where they pass the arm — a partly cut wire is intermittent and maddening.",
+     "Run the motor on the bench with props off and watch the ESC temperature and the motor's smoothness across the throttle range.",
+     "If it is one motor, swap that motor to another ESC output. If the fault follows the motor, it is the motor; if it stays on the output, it is the ESC."],
+    { src: "Guide step 3 and step 8", see: [STEP(3, "Step 3 — solder the stack"), STEP(8)] })
+    .next = "motors-hot";
+
+  /* ======================================================================
+     THERMAL PAYLOAD — Pi Zero 2 WH · Qwiic HAT · MLX90640 (0x33) · PA1010D (0x10)
+     ====================================================================== */
+  kb("thermal-noise", "Thermal image is noisy, jumpy or speckled at a high refresh rate", "noise,noisy,jitter,jumpy,speckle,flicker,unstable,8hz,16hz,refresh rate,refresh_rate,mlx90640,thermal,grain,flickering pixels,static in the image,accuracy",
+    ["Drop the refresh rate first. The MLX90640 supports a range of rates — 0.5, 1, 2, 4, 8, 16, 32 and 64 Hz — and noise climbs steeply with each step up. The guide's own payload example runs REFRESH_2_HZ, not 8.",
+     "That is not folklore: Adafruit's library docs for the sensor say to start at the lowest speed and only increase the I2C clock rate and the refresh rate slowly, because 'the sensor does not like it if the I2C host cannot keep up'.",
+     "If you were at 8 Hz, drop to 4 or 2 and re-look at the image. A frame that calms down at 2 Hz was telling you the bus could not feed it, not that the sensor is defective.",
+     "Check the bus speed. The guide's example sets the I2C clock to 800000 Hz; if your wiring is long, or the Qwiic cable is daisy-chained, drop to 400000 Hz and retest. Slower bus, cleaner frames.",
+     "Handle the read failures instead of ignoring them: the example wraps getFrame in try/except ValueError and continues, because a failed half-frame read raises rather than returning garbage.",
+     "Let it settle. Give the sensor 30 s or so after power-up before you judge the noise — cold-start drift looks like noise on a 32×24 frame.",
+     "Average a few frames in software for your detection pass (2–4 frames is plenty at 2 Hz). Averaging costs you nothing in hardware and cuts fixed-pattern noise.",
+     "If it is still ugly: check the sensor is not getting vibration from the frame (nylon standoffs, zip tie, Kevlar strap — step 7), and that nothing warm (ESC, VTX, Pi) is in the lens's field of view."],
+    { note: "Do not 'fix' noise by raising the refresh rate — that is the cause, not the cure. Higher refresh also makes motion smear worse in flight, not better.", why: "At 8 Hz and above, the sensor's readout is faster than a marginal I2C link can service, so half-frames get dropped or truncated and the reconstructed image shows exactly the streaky, speckled noise people describe as '8 Hz noise'.", src: "Adafruit MLX90640 library API docs (refresh_rate) · Guide weekend 2 payload example running REFRESH_2_HZ at 800 kHz", see: [STEP(6, "Step 6 — wire the Pi payload"), ["Weekend 2 checklist (payload code)", "steps"], ["Detection & mapping quiz", "quiz"]] })
+    .next = "thermal-valueerror";
+
+  kb("thermal-valueerror", "getFrame keeps raising ValueError (or Errno 121 remote I/O)", "valueerror,error,exception,read fail,i2c error,errno 121,remote i/o,nack,crash,cant read frame,traceback",
+    ["ValueError out of getFrame means the I2C read did not complete — the sensor did not deliver both halves of a frame. It is a bus problem, not a Python bug.",
+     "Copy the guide's handling pattern: catch it and continue. One failed frame at 2 Hz is invisible; letting it kill the process is not.",
+     "Slow the bus to 400000 Hz and shorten the Qwiic run. Re-seat both ends of the PRT-17912 cable until they click.",
+     "Errno 121 / remote I/O error is the same story one layer down: the device did not acknowledge. Check 3.3 V power at the sensor, and that the Qwiic HAT is fully pushed onto the Pi's header.",
+     "If it fails only when the motors run, you have electromagnetic noise on the bus: move the payload wiring away from the ESC and re-test on the bench with the stack powered.",
+     "After repeated failures, re-initialise the sensor object rather than hammering a wedged one."],
+    { note: "Never wrap this in a bare except that hides everything — the guide's example catches ValueError specifically so a real bug still surfaces.", src: "Guide weekend 2 payload example (try/except ValueError, continue)", see: [["Weekend 2 checklist (payload code)", "steps"], STEP(6)] })
+    .next = "thermal-noise";
+
+  kb("thermal-flat", "Every pixel reads the same, or roughly room temperature", "flat,all same,ambient,nothing,lens cap,blank,no heat,uniform,sensor cold,not working,constant temperature",
+    ["Lens cap off, and confirm you are not looking at a wall — a 32×24 sensor pointed at a uniform surface correctly reports a uniform temperature.",
+     "Wave your hand 30 cm in front of the lens. If the frame does not change, the sensor is not delivering new data (see the ValueError entry) rather than being broken.",
+     "Check you are filling the frame buffer: the example allocates 768 elements for the 32×24 array; a shorter list raises IndexError or silently misreads.",
+     "Give it 30 s after power-up. Right after boot the sensor is still settling and reads flat.",
+     "Then test properly: a controlled warm target (a hot plate, a mug of hot water, a person) among cold objects at 1–2 m on the bench.",
+     "Remember what the guide refuses to claim: 768 readings per frame at ±2 °C in the 0–100 °C range is a sensor specification, not a proven detection result."],
+    { src: "Guide step 6 and weekend 2 tasks 8–9", see: [STEP(6), ["Detection & mapping quiz", "quiz"]] })
+    .next = "thermal-noise";
+
+  kb("i2c-detect", "i2cdetect shows no sensors (0x33 and 0x10 missing)", "i2cdetect,i2c,0x33,0x10,not detected,sensors not found,no address,qwiic,hat,header,enable i2c,raspi-config,address missing",
+    ["Turn I2C on: sudo raspi-config → Interface Options → I2C → enable, then reboot. A fresh Raspberry Pi OS image has it off.",
+     "Scan the bus: sudo i2cdetect -y 1. You want 33 (thermal camera) and 10 (GPS) in the grid. Anything else means you are looking at the wrong bus.",
+     "Push the Qwiic HAT fully down onto the Pi's 40-pin header — 'looks seated' is not seated. One row of pins off gives you exactly this symptom.",
+     "Check the header itself if you soldered it: a cold joint on SDA or SCL kills the whole bus, and both sensors disappear together.",
+     "Re-seat each PRT-17912 cable at both ends until it clicks, and match the labels on the board: 3V3, GND, SDA, SCL. The Qwiic connector is keyed, but the board silkscreen is what you verify against.",
+     "Measure 3.3 V at the sensor with the meter. No 3.3 V means the problem is upstream of the sensor, not the sensor.",
+     "If only one address is missing, swap that cable to a known-good port on the HAT to separate a bad cable from a dead board."],
+    { note: "Never probe a Qwiic connector with the Pi powered and the sensor connected — shorting 3V3 to SDA is how sensors die.", why: "The guide's step 6 makes this an explicit gate: both addresses must answer before you mount the payload. Everything downstream assumes the bus works.", src: "Guide step 6 and weekend 2 task 8", see: [STEP(6, "Step 6 — wire the Pi payload"), ["Weekend 2 checklist", "steps"]] })
+    .next = "shared-bus";
+
+  kb("shared-bus", "Two sensors on one Qwiic HAT — will they conflict?", "share,shared,bus,address,conflict,two sensors,both sensors,qwiic hat,dev-14459,prt-17912,cable,same bus,3.3v",
+    ["No conflict: the MLX90640 answers at 0x33 and the PA1010D at 0x10, so both can live on the same I2C bus at the same time. That is why the plan uses the four-port Qwiic HAT.",
+     "Wiring: Pi header → Qwiic HAT (DEV-14459) → one PRT-17912 cable per sensor. Each sensor gets its own port; they are all electrically the same bus.",
+     "Both sensors are 3.3 V devices on the Pi's 3.3 V I2C bus. Nothing in this chain takes 5 V.",
+     "Keep each cable short. Two devices on a marginal bus is still a marginal bus — the noise guidance is the same as for one sensor.",
+     "Verify with sudo i2cdetect -y 1 and expect both 33 and 10, every boot."],
+    { why: "Two devices only collide if they share an address. These do not, which is exactly why the guide can put the thermal lens down and the GPS antenna up on one HAT.", src: "Guide step 6 · parts list (Qwiic HAT + two cables)", see: [STEP(6), ["Parts & budget", "parts"]] })
+    .next = "i2c-detect";
+
+  kb("hotspot-threshold", "Detection finds everything — or nothing at all", "threshold,false positive,sensitivity,60c,60 c,min pixels,minimum pixels,tuning,detect,hotspot,flood fill,too sensitive,misses",
+    ["Start from the guide's tested defaults in the payload example: find_hotspots(frame, 60, 3) — 60 °C threshold, at least 3 connected pixels.",
+     "Too many false positives → raise the temperature threshold and raise the minimum pixel count. A single hot pixel is usually a fixed-pattern artefact, not a fire.",
+     "Missing real targets → lower the threshold toward the target's actual surface temperature, and lower the pixel minimum — but write down that you did.",
+     "Test the change against a controlled warm target among cold controls, not against your imagination. Recording detection rate and false positives is the whole point of weekend 4.",
+     "Keep the logic separate from the flight code — the included hotspots.py is pure and covered by 19 synthetic tests, so you can change a threshold and re-run the suite in seconds.",
+     "Never describe the result as accuracy. The guide is explicit that ideal geometry is sampling, not detection performance."],
+    { note: "Every threshold change invalidates your previous measurements. Re-run the same controlled test after each change or the numbers mean nothing.", why: "A 32×24 sensor and a 1 m target at 30 m are the same size in pixels; the threshold is doing most of the work, so it has to be tuned against measurements rather than vibes.", src: "Guide weekend 2 task 9, weekend 4 tasks 14–16, 'Detection & mapping' quiz", see: [["Weekend 4 checklist", "steps"], ["Detection & mapping quiz", "quiz"], ["Honest limits & sources", "limits"]] })
+    .next = "detect-reality";
+
+  kb("thermal-mount", "Image smears or blurs while the drone is moving", "smear,blur,vibration,motion,mount,jelly,wobbly,shaky,standoff,loose,cable,moving",
+    ["A 2 Hz sensor plus forward flight equals motion smear. For detection, hover or fly slow, straight passes — the guide's test method is a survey pass over a stationary target, not a chase.",
+     "Mount the payload rigidly: nylon standoffs over the frame's centre, zip tie, then the Kevlar strap as a second lock (step 7).",
+     "Keep cables out of the prop circles and tie the loose ends down — a swinging cable vibrates the Pi and the sensor with it.",
+     "Check nothing warm is in the lens field of view: the ESC and VTX are right there, and a heat source that moves with the aircraft is a guaranteed false positive.",
+     "Lens one way down, antenna one way up. Reversed orientation gives you a clean image of the sky."],
+    { note: "No bare circuit board touches carbon fibre — that is the guide's step 7 warning, and it is also a vibration rule.", src: "Guide step 7", see: [STEP(7, "Step 7 — mount and balance")] })
+    .next = "hotspot-threshold";
+
+  /* ======================================================================
+     GPS & MAPPING — PA1010D · payload.py · map_server.py
+     ====================================================================== */
+  kb("gps-no-fix", "GPS never gets a fix", "gps,fix,no fix,satellites,pa1010d,indoor,cold start,antenna,sky,coordinates,no position,hdop,waiting",
+    ["Indoors there is no fix. Ever. Take it outside with a clear view of the sky before you decide anything is broken — this is the number one false alarm in the whole payload.",
+     "A cold start can take a while, especially with a small patch antenna; give it minutes, not seconds, and keep it still.",
+     "Antenna up, away from carbon fibre and away from the Pi's metal and the VTX. Carbon shadows GPS badly.",
+     "Confirm the device answers at 0x10 and that NMEA sentences are arriving — if the sentences flow but the fix does not, it is sky view, not wiring.",
+     "Log fix quality alongside position so a 2-satellite 'fix' never ends up on a map as if it were good data."],
+    { src: "Guide weekend 3 task 11, step 6 wiring", see: [["Weekend 3 checklist", "steps"], STEP(6)] })
+    .next = "map-viewer";
+
+  kb("map-viewer", "The map viewer shows nothing / the demo won't serve", "map,viewer,payload.py,serve,localhost,8000,demo,jsonl,flight log,empty,blank map,no marker,browser",
+    ["Prove the viewer with synthetic data first: cd Shad-Drone-Payload, then python payload.py --demo --serve, and open http://127.0.0.1:8000.",
+     "If the demo draws a marker, the viewer works and your problem is live data — not the map.",
+     "Then run the real backend and confirm a GPS fix exists before expecting a marker. No fix means no coordinates, whatever the map does.",
+     "Check the append-only log is actually growing (flight-log.jsonl) and that each line parses as JSON. One truncated line is enough to break a naive reader.",
+     "Run the unit tests before blaming the code: python -m unittest -v test_drone_logic.py. The package ships 19 passing synthetic tests — if they fail on your machine, the environment is the problem."],
+    { src: "Guide weekend 3 task 13 · payload package README", see: [["Weekend 3 checklist", "steps"]] })
+    .next = "geo-error";
+
+  kb("geo-error", "The map marker is nowhere near the target", "marker,off target,position,error,geolocation,heading,accuracy,offset,map wrong,gps error,coordinate",
+    ["Work out which input is wrong before touching the maths. The chain is: pixel offset → metres → rotated by heading → added to GPS position.",
+     "Heading is the usual culprit. Set a calibrated aircraft heading explicitly; a stationary GPS cannot tell you which way the aircraft is pointing.",
+     "Altitude sets the scale: ground width = 2 × altitude × tan(FOV/2), and a 10 % altitude error is a 10 % position error, neatly.",
+     "Altitude, tilt, terrain and lens distortion are all excluded from the included geo.py model. Over uneven ground or with the aircraft tilted, expect the error you were warned about.",
+     "Measure it: put surveyed targets at measured positions, fly repeated passes, and record the error. That measured number is the only honest one."],
+    { note: "Do not quote a 2 m accuracy figure. The guide says explicitly that repeated surveyed-target results are what count.", src: "Guide weekend 3 task 12 · 'Detection & mapping' quiz", see: [["Weekend 3 checklist", "steps"], ["Detection & mapping quiz", "quiz"]] })
+    .next = "detect-reality";
+
+  kb("detect-reality", "Will this actually detect a fire from 30 m?", "detect,detection,works,really,accuracy,30 m,30m,1 metre,pixel,resolution,honest,limit,can it see,small target",
+    ["Do the geometry before believing anything: at 30 m with the 55° lens the frame is about 31.2 m wide, and 31.2 ÷ 32 gives roughly 0.98 m per pixel. A 1-metre target is about one pixel.",
+     "One pixel is sampling, not detection. Whether that pixel is a fire depends on temperature contrast, background, emissivity, sensor noise and your threshold.",
+     "The sensor is 32×24 — 768 readings per frame at ±2 °C over 0–100 °C. That is the specification, not a result.",
+     "What the evidence supports: FPInnovations describes the mission product as a map of GPS-referenced hotspots delivered to the firefighter — not a magic aircraft, and not a guarantee this prototype works.",
+     "Get closer, hug the thermal contrast, or accept that the honest deliverable is 'hotspots on a map, with measured error'.",
+     "Until you have repeated controlled tests with recorded detection rates and false positives, do not say it detects fires. The guide's honesty box is the product."],
+    { why: "Every over-claim invites one question you cannot answer. Measured limits survive scrutiny; promises do not.", src: "Guide tab 2 calculator, final exam question on 1 m at 30 m, FPInnovations TR-2020-N29", see: [["Altitude & coverage calculator", "build"], ["Honest limits & sources", "limits"], ["Final exam", "quiz"]] })
+    .next = "fov";
+
+  /* ======================================================================
+     THE BUILD ITSELF — money, order, schedule, rules, career
+     ====================================================================== */
+  kb("fov", "55° lens or 110° lens — which one?", "fov,lens,wide,narrow,coverage,55,110,field of view,swath,resolution,which lens",
+    ["55°: a narrower swath with better metres-per-pixel. At 30 m AGL that is about 31.2 m wide — roughly 0.98 m per pixel across the 32-pixel frame.",
+     "110°: a much wider swath but each pixel covers far more ground, so small targets disappear.",
+     "For finding small hot spots, narrower wins every time. For covering a field fast, wider wins — and you pay for it in detection.",
+     "The tab 2 calculator does the arithmetic for both, including the 55°×35° vertical coverage. Move the altitude slider rather than trusting a table.",
+     "The 55° version is the one in this order plan (CA$86.95 at PiShop)."],
+    { src: "Guide tab 2 calculator · parts list", see: [["Altitude & coverage calculator", "build"], ["Parts & budget", "parts"]] })
+    .next = "detect-reality";
+
+  kb("budget", "What does this cost, and is my total right?", "cost,price,total,budget,gst,money,how much,1714,1799,1678,1759,cheap,expensive,tax,freight",
+    ["The complete order plan is CA$1,714.94 for merchandise, the shown laptop freight and the CA$20 fee allowance.",
+     "Add 5 % GST on the CA$1,694.94 taxable subtotal — the Transport Canada fees are not taxable — for CA$84.75, a planning total of CA$1,799.69, still before remaining retailer freight on the small items.",
+     "The budget table in tab 3 is live: change any price and the total, the progress bar and the notes update. Tick an item you already own and it drops out of the total.",
+     "If you want to spread it out, the staged plan splits the same CA$1,714.94 into nine stages of roughly CA$0–400, each of which gives you something to build or test the day it arrives.",
+     "Every price was checked against a live listing on 31 Oct 2026, with a backup retailer for each row. A working link is not stock — the frame and the GEPRC 50A stack were out of stock when this was re-checked — so confirm availability and freight at checkout rather than trusting a live page."],
+    { why: "The staging exists so the project survives real life: nine smaller payments that each end in progress beat one bill you keep postponing.", src: "Guide tab 3 and the order list", see: [["Parts & budget", "parts"], ["Staged buying plan", "parts"]] })
+    .next = "stock";
+
+  kb("what-next", "What should I do next? Where do I start?", "next,start,begin,first,order,whats next,step by step,how do i begin,kick off",
+    ["Read tab 1 for the ten minutes it takes — it tells you what you are building and why, including what it will not do.",
+     "Then order with the staged plan in tab 3 if money is tight, or the full list if it is not. Confirm stock at checkout; the links are checked but stock is not guaranteed.",
+     "When the boxes arrive, do step 1: five piles, every item ticked against the order list, and the manuals downloaded.",
+     "Then work the eight steps in order, respecting the done-means rule: each step has an observable check, and you do not move on until it passes.",
+     "Take the matching quiz in tab 6 after each weekend. If you cannot explain a step out loud, you do not own it yet."],
+    { src: "Guide tabs 1, 3, 4 and 6", see: [["What you're building & why", "why"], STEP(1, "Step 1 — lay out the parts"), ["Quizzes", "quiz"]] })
+    .next = "how-long";
+
+  kb("how-long", "How long will this take?", "how long,time,weeks,hours,46,weekend,finish date,schedule,commitment",
+    ["46 hours of hands-on work across 19 tracked tasks and 8 assembly steps.",
+     "The slider in the header turns that into weeks and a projected finish date from today — 8 hours a week lands around 6 weeks.",
+     "Realistically the clock is dominated by three things: waiting for deliveries, learning Betaflight, and the thermal tuning weekend.",
+     "The weekend breakdown in tab 4 is a reasonable pace: airframe, payload, GPS/mapping, flight tests, then the evidence pass.",
+     "The finish date saves with your other progress in this browser, so you can keep it honest instead of optimistic."],
+    { src: "Guide header calculator and tab 4", see: [["Build-time calculator", "why"], ["Build steps", "steps"]] })
+    .next = "what-next";
+
+  kb("certification", "Do I need a licence or registration to fly this?", "licence,license,certificate,basic,advanced,registration,tc,canada,law,legal,pilot,exam,fees",
+    ["Yes. A drone between 250 g and 25 kg needs a Pilot Certificate — Basic Operations and registration/marking, with the proof of registration on you when you fly.",
+     "Basic conditions the guide lists: VLOS, ≤25 kg, more than 30 m horizontally from any person, uncontrolled airspace, more than 5.6 km from certified airports and 1.9 km from heliports.",
+     "Fees: the plan allows CA$20 — exam CA$10 plus registration CA$10 on the 2025 schedule. Confirm the live portal fees before you pay, because they change.",
+     "Night flying needs lights sufficient for you or a visual observer to see the aircraft (CAR 901.39) — and that does not waive any other rule.",
+     "Beyond Visual Line of Sight, over people, or in controlled airspace puts you in Advanced operations, which is a different certificate and a different project.",
+     "This build is 5-inch class and well over 250 g, so assume you are in scope and get the certificate before the first hover."],
+    { note: "The guide's footer says it plainly: a prototype builder's roadmap, not career or legal advice. Check the current Transport Canada rules yourself.", src: "Transport Canada Basic operations · CAR 901.39 · Guide rules quiz", see: [["Rules quiz", "quiz"], ["Honest limits & sources", "limits"]] })
+    .next = "career";
+
+  kb("career", "Is any of this a career? What does it pay?", "job,career,salary,wage,pay,systems analyst,resume,work,employer,hiring,43.27,21211,pitch",
+    ["The guide pairs the build with a target role: Systems Analyst / data work, NOC 21211, Alberta/Edmonton.",
+     "Job Bank figures quoted: CA$28.00 low, CA$43.27 median, CA$57.69 high per hour, updated 19 Nov 2025. Those are occupational wages, not a starting offer.",
+     "The GoA Systems Analyst recruitment standard PDF was reviewed 20 May 2026 — that is the document to read for what a hiring manager there expects.",
+     "The build is the demonstration, not the credential. The evidence package (README, honest limits, measured results, 5-minute video, flight log) is what makes it credible in an interview.",
+     "The career tab has the demo kit and pitch practice. Do not say 'it detects fires from 30 m' until you have measured it — one exaggeration undoes the whole story."],
+    { src: "Guide tab 5 · Job Bank NOC 21211 · GoA Systems Analyst MRS", see: [["Career & pay", "career"]] })
+    .next = "certification";
+
+  kb("saved-progress", "Is my progress saved? Will it sync to my phone?", "saved,progress,save,localstorage,sync,browser,phone,laptop,other device,lost,cleared,tick",
+    ["Everything saves in this browser only — checkboxes, quiz bests, flashcard state, budget prices and the build-time slider.",
+     "There is no account and no sync: opening the page on your phone starts from zero.",
+     "Clearing site data, or using private/incognito mode, wipes it. So does a different browser on the same machine.",
+     "For a record you can keep, screenshot the progress bar and the quiz scores, or keep the numbers in the order document."],
+    { src: "Guide footer — progress and quiz scores save in this browser only", see: [["Build steps", "steps"], ["Quizzes", "quiz"]] })
+    .next = "stock";
+
+  kb("stock", "A part is out of stock or discontinued — can I substitute?", "stock,out of stock,substitute,alternative,discontinued,replace,unavailable,cant find,backup,substitution",
+    ["Every budget row has a backup retailer link next to the primary one — check that first before redesigning anything.",
+     "The plan already contains substitutions after the first audit: the GEPRC TAKER F405 BLS 50A stack replaced a discontinued SpeedyBee F405 V4, and the stack, thermal camera, Pi and goggles were all re-checked on 31 Oct 2026.",
+     "A safe substitute has to match on voltage, current rating, mounting pattern and connector — and for the payload, on I2C address and 3.3 V logic.",
+     "If you change a part, update the order document and the budget rather than carrying a stale number in your head.",
+     "Read the audit report for the reasoning already applied, so you are not repeating work that was done."],
+    { src: "Guide tab 3 · Shad-Drone-Audit-Report.md", see: [["Parts & budget", "parts"], ["Honest limits & sources", "limits"]] })
+    .next = "budget";
+
+  kb("solder", "My solder joints look bad / a joint broke off", "solder,soldering,joint,cold joint,tin,flux,bridge,pad,wire,wont stick,tug test,iron,temperature",
+    ["A good joint is shiny, concave and small. A dull lump is a cold joint and it will fail in flight, not on the bench.",
+     "Set the iron hot enough (around 350 °C for the pads on this stack), use flux, and tin both the pad and the wire before joining them.",
+     "Cut each motor wire so it just reaches the ESC — a long loop is a wire waiting to be nicked by a prop or a zip tie.",
+     "Give every wire a gentle tug after soldering. If it moves, redo it now instead of discovering it at 30 m.",
+     "Check for bridges between adjacent pads with the meter's continuity mode before the first power-up, then use the smoke stopper."],
+    { note: "Eye protection and an open window. Solder splatter and flux fumes are the cheap hazards in this build.", src: "Guide step 3", see: [STEP(3, "Step 3 — solder the stack")] })
+    .next = "first-power-smoke";
+
+  kb("charger-setup", "How do I set up the M4AC charger for these packs?", "charger,m4ac,toolkitrc,lihv,4s,balance,balance lead,amps,charge rate,storage charge,how to charge",
+    ["The packs in this plan are GNB 1500 mAh 4S 120C HV LiPos, so select LiHV / 4S on the charger — not plain LiPo, or you will stop short of a full pack.",
+     "Plug in the main XT60 lead AND the balance lead. Balance charging is not optional with a 4S pack.",
+     "Charge inside the closed LiPo bag, on something that will not burn, with you in the room. The guide repeats this because it is the one that matters.",
+     "Storage-charge to about 3.8 V per cell if you are not flying within a day or two.",
+     "Also put the two 18650 cells in the RadioMaster Pocket — that is a separate power system from the flight battery."],
+    { src: "Guide step 5", see: [STEP(5, "Step 5 — charge the batteries safely")] })
+    .next = "flight-time";
+
+  kb("flight-time", "How long can it fly, and why does the voltage sag?", "flight time,minutes,how long fly,sag,voltage drop,1500mah,battery,low voltage,land,capacity",
+    ["There is no honest number until you fly it — payload weight, throttle habits and temperature all move it. Measure it and write it down.",
+     "The pack is a 1500 mAh 4S HV. Treat 3.5 V per cell under load as your land-now line, and land earlier while you are learning.",
+     "Sag is normal: a 4S HV pack at full charge sits around 16.8–17.4 V, and a hard throttle punch can drop a volt for a moment. Sustained sag means a tired or cold pack.",
+     "The payload, the LED strip and cold weather all cost flight time. Test flights should be short and purposeful anyway.",
+     "Record capacity put back in at the charger — that is your real consumption, straight from the machine."],
+    { src: "Guide step 5 and step 8", see: [STEP(8, "Step 8 — test in this order"), STEP(5)] })
+    .next = "lipo-swollen";
+
+  kb("betaflight-connect", "Betaflight won't connect to the flight controller", "betaflight,connect,dfu,flash,com port,usb,not connecting,driver,boot button,no port,target",
+    ["Use a data cable, not a charge-only one. Half the 'dead' flight controllers on the internet are the wrong USB cable.",
+     "Betaflight → select the correct COM port (Windows) and connect. If nothing appears, the FC is not enumerating — try another cable and another USB port before another driver.",
+     "To flash, use DFU mode: hold the boot button while plugging in, then flash the correct target for the GEPRC F405.",
+     "Before you change anything, save a diff: CLI → diff all → copy it somewhere. It is the difference between a five-minute fix and an evening.",
+     "Never flash with a battery connected. USB only, props off, and let it finish before you touch anything."],
+    { note: "Back up the diff before flashing or restoring. This costs ten seconds and has saved more builds than any tutorial.", src: "Guide weekend 1 task 5", see: [["Weekend 1 checklist", "steps"]] })
+    .next = "no-channels";
+
+  kb("quiz", "How do the quizzes and flashcards work?", "quiz,quizzes,test,score,flashcard,flashcards,practice,pass,75,questions,exam",
+    ["Five topic quizzes plus a final exam: airframe, payload, detection & mapping, flight rules, final exam (8 questions).",
+     "You pass a topic at 75 % or better; the overview counts how many of the five you have passed.",
+     "Every answer explains why it is right, with the source — that explanation is worth more than the score.",
+     "Flashcards are the fast recall layer: flip each card, and the progress counter tracks how many you have seen.",
+     "Your best score per quiz and the flashcard state save in this browser, so you can walk away and come back."],
+    { src: "Guide tab 6", see: [["Quizzes", "quiz"]] })
+    .next = "what-next";
+
+  kb("autonomy", "Can it fly itself and find fires on its own?", "autonomous,autonomy,self flying,waypoint,gps flight,mission,autopilot,ai decides,rtl",
+    ["No. The guide is explicit that no AI briefing is implemented and that generated prose is never ground truth.",
+     "What exists: a payload that finds hot pixels, converts them to GPS-referenced coordinates and logs them. A human flies the aircraft.",
+     "Letting detection logic command the flight controller is a safety decision nobody should make casually — the guide keeps detection separate from flight code on purpose.",
+     "If you want to go further later, that is a new project with new certifications, and it should never start by removing the human."],
+    { why: "Keeping detection separate from flight control is what makes the 19 synthetic tests possible, and it keeps a false positive from becoming a control input.", src: "Guide tab 7 'future AI briefing' question · CHAIN step 5", see: [["What you're building & why", "why"], ["Honest limits & sources", "limits"]] })
+    .next = "detect-reality";
+
+  /* ======================================================================
+     TEXT UTILITIES
+     ====================================================================== */
+  const STOP = (",a,an,the,and,or,but,if,then,than,so,as,at,by,for,from,in,into,of,on,onto,to,with,is,are,was,were,be,been,being,am,do,does,did,doing,have,has,had,it,its,this,that,these,those,i,im,ive,me,my,we,our,you,your,he,she,they,them,their,what,which,who,whom,when,where,why,how,not,no,yes,can,could,should,would,will,just,also,very,really,about,get,got,up,down,out,off,over,under,again,still,any,some,more,most,all,one,two,use,using,need,needs,want,wants,make,makes,goes,going,go," )
+    .split(",");
+
+  function norm(s) {
+    return String(s == null ? "" : s).toLowerCase()
+      .replace(/\u2019|\u2018/g, "'")
+      .replace(/[^a-z0-9'.+\s-]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+  /* Crude, deterministic stem: enough to join noise/noisy, sensor/sensors,
+     charge/charging, bind/binding without shipping a stemmer library. */
+  function stem(w) {
+    if (w.length <= 3) { return w; }
+    if (/ies$/.test(w)) { return w.slice(0, -3) + "y"; }
+    if (/(sses|shes|ches|xes)$/.test(w)) { return w.slice(0, -2); }
+    if (/s$/.test(w) && !/ss$/.test(w)) { return w.slice(0, -1); }
+    if (/ing$/.test(w) && w.length > 5) { return w.slice(0, -3); }
+    if (/ed$/.test(w) && w.length > 4) { return w.slice(0, -2); }
+    return w;
+  }
+  function tokens(s) {
+    const out = [];
+    norm(s).split(" ").forEach(function (w) {
+      if (!w || w.length < 2) { return; }
+      if (STOP.indexOf(w) !== -1 || STOP.indexOf(stem(w)) !== -1) { return; }
+      out.push(stem(w));
+    });
+    return out;
+  }
+  function uniq(list) {
+    const seen = {}, out = [];
+    list.forEach(function (v) { if (!seen[v]) { seen[v] = 1; out.push(v); } });
+    return out;
+  }
+  function clip(s, n) {
+    const t = String(s || "").replace(/\s+/g, " ").trim();
+    return t.length > n ? t.slice(0, n - 1).replace(/[ ,.;:]$/, "") + "…" : t;
+  }
+
+  /* ======================================================================
+     RETRIEVAL — index this page at runtime, so answers quote the real guide
+     ====================================================================== */
+  const PASSAGES = [];
+
+  function plain(el) {
+    return el ? String(el.textContent || "").replace(/\s+/g, " ").trim() : "";
+  }
+  function addPassage(tab, step, label, el, text) {
+    if (!text || text.length < 40) { return; }
+    const tf = {};
+    tokens(text).forEach(function (t) { tf[t] = (tf[t] || 0) + 1; });
+    let len = 0;
+    Object.keys(tf).forEach(function (k) { len += tf[k]; });
+    PASSAGES.push({
+      tab: tab, step: step, label: label, text: text, el: el || null,
+      tf: tf, len: len
+    });
+  }
+
+  function buildIndex() {
+    PASSAGES.length = 0;
+    const panels = document.querySelectorAll("main section[role='tabpanel']");
+    Array.prototype.forEach.call(panels, function (panel) {
+      const tab = String(panel.id || "").replace(/^p-/, "");
+      const before = PASSAGES.length;
+
+      /* assembly steps get one passage each — they are the most asked-about */
+      const steps = panel.querySelectorAll(".asm-step");
+      Array.prototype.forEach.call(steps, function (sec) {
+        const n = Number(sec.getAttribute("data-step"));
+        const h = sec.querySelector("h3");
+        const notes = sec.querySelector(".asm-notes") || sec;
+        addPassage(tab, n, "Step " + n + " — " + plain(h), sec,
+          ("Step " + n + " " + plain(h) + ". " + plain(notes)).slice(0, 1400));
+      });
+
+      /* accordions: everything else worth quoting */
+      const accs = panel.querySelectorAll("details.acc");
+      Array.prototype.forEach.call(accs, function (d) {
+        if (d.querySelector(".asm-step")) { return; }
+        const sum = d.querySelector("summary");
+        addPassage(tab, null, plain(sum), d, plain(d).slice(0, 1400));
+      });
+
+      /* loose cards that are not inside an accordion */
+      const cards = panel.querySelectorAll(".card");
+      Array.prototype.forEach.call(cards, function (c) {
+        if (c.closest("details")) { return; }
+        const h = c.querySelector("h2, h3, strong");
+        addPassage(tab, null, plain(h) || (TABS[tab] || tab), c, plain(c).slice(0, 1400));
+      });
+
+      if (PASSAGES.length === before) {
+        addPassage(tab, null, TABS[tab] || tab, panel, plain(panel).slice(0, 1400));
+      }
+    });
+    return PASSAGES.length;
+  }
+
+  /* BM25 over the page passages */
+  function searchPassages(query, limit) {
+    const q = uniq(tokens(query));
+    if (!q.length || !PASSAGES.length) { return []; }
+    const N = PASSAGES.length;
+    let totalLen = 0;
+    PASSAGES.forEach(function (p) { totalLen += p.len; });
+    const avg = totalLen / N || 1;
+    const df = {};
+    q.forEach(function (t) {
+      let n = 0;
+      PASSAGES.forEach(function (p) { if (p.tf[t]) { n += 1; } });
+      df[t] = n;
+    });
+    const scored = PASSAGES.map(function (p) {
+      let s = 0;
+      q.forEach(function (t) {
+        const f = p.tf[t] || 0;
+        if (!f) { return; }
+        const idf = Math.log(1 + (N - df[t] + 0.5) / (df[t] + 0.5));
+        s += idf * (f * 2.4) / (f + 1.4 * (0.25 + 0.75 * (p.len / avg)));
+      });
+      return { p: p, score: s };
+    });
+    scored.sort(function (a, b) { return b.score - a.score; });
+    return scored.filter(function (x) { return x.score > 0; }).slice(0, limit || 3);
+  }
+
+  /* ======================================================================
+     MATCHING — curated entries first, because they carry the advice
+     ====================================================================== */
+  function tagHits(query, entry) {
+    const q = " " + norm(query) + " ";
+    let hits = 0, score = 0;
+    entry.tags.forEach(function (tag) {
+      const t = norm(tag);
+      if (!t) { return; }
+      const found = t.indexOf(" ") !== -1 ? q.indexOf(t) !== -1 : q.indexOf(" " + t + " ") !== -1;
+      if (!found) { return; }
+      hits += 1;
+      score += 1 + Math.min(t.length, 18) / 18;
+    });
+    /* title words are worth something but never enough on their own */
+    const qs = uniq(tokens(query));
+    const ts = uniq(tokens(entry.title));
+    let overlap = 0;
+    qs.forEach(function (w) { if (ts.indexOf(w) !== -1) { overlap += 1; } });
+    score += overlap * 1.4;
+    return { score: score, hits: hits, overlap: overlap };
+  }
+
+  function matchEntry(query) {
+    let best = null;
+    KB.forEach(function (entry) {
+      const r = tagHits(query, entry);
+      if (!r.score) { return; }
+      if (!best || r.score > best.score) {
+        best = { entry: entry, score: r.score, hits: r.hits, overlap: r.overlap };
+      }
+    });
+    if (!best) { return null; }
+    const qlen = uniq(tokens(query)).length;
+    /* Short questions ("no video", "gps fix") need less evidence than long
+       rambling ones, otherwise nothing ever clears the bar. */
+    const need = qlen <= 2 ? 1.2 : (qlen <= 4 ? 2.0 : 2.6);
+    best.confident = best.score >= need;
+    return best;
+  }
+
+  function relatedChips(entry, n) {
+    const out = [];
+    const start = KB.indexOf(entry);
+    for (let i = 1; i <= KB.length && out.length < (n || 2); i += 1) {
+      const e = KB[(start + i) % KB.length];
+      if (e && e.id !== entry.id) { out.push(e.title); }
+    }
+    return out;
+  }
+
+  /* ======================================================================
+     ANSWERING — deterministic, grounded, and honest about its own scope
+     ====================================================================== */
+  const GREETING = ["hi", "hello", "hey", "yo", "hiya", "good morning", "good afternoon", "good evening"];
+  const THANKS = ["thanks", "thank you", "cheers", "ta", "thx", "appreciate it"];
+  const MORE = ["more", "next", "and then", "what else", "go on", "continue", "anything else"];
+  const WHY = ["why", "why is that", "why?", "explain", "how come"];
+
+  const ctx = { lastId: "", lastQuery: "", turns: 0, history: [] };
+
+  function entryMessage(entry, opts) {
+    const o = opts || {};
+    const see = (entry.see || []).map(function (s) {
+      return { label: s[0], tab: s[1], step: s[2] || null };
+    });
+    return {
+      role: "bot",
+      title: entry.title,
+      body: o.lead ? [o.lead] : [],
+      steps: entry.steps.slice(0, o.limit || entry.steps.length),
+      note: entry.note || "",
+      src: entry.src || "",
+      see: see,
+      chips: o.chips || []
+    };
+  }
+
+  function introMessage() {
+    return {
+      role: "bot",
+      title: "Ask me about this build",
+      body: ["I answer from this guide's own text and from a troubleshooting set written for exactly these parts — the GEPRC F405 stack, the RP1 receiver, the Pi Zero 2 WH, the MLX90640 and the PA1010D GPS.",
+        "If something is not in the guide, I will tell you instead of inventing it. Prices and regulations always get pointed back at the tab that keeps them current."],
+      steps: [],
+      note: "",
+      src: ENDPOINT
+        ? "Written by an AI model from this guide's own passages, then shown with its source."
+        : "No network, no API key: answers come from this page and its built-in troubleshooting set.",
+      see: [],
+      chips: ["No video on the monitor", "Thermal image is noisy at 8 Hz", "Receiver won't bind", "Pi keeps rebooting", "What does it cost?"]
+    };
+  }
+
+  function refusalMessage(query) {
+    const hits = searchPassages(query, 2);
+    if (hits.length && hits[0].score >= 2) {
+      const p = hits[0].p;
+      return {
+        role: "bot",
+        title: "Closest thing in the guide",
+        body: ["I do not have a tested answer for that specific question, so here is the nearest passage rather than a guess:"],
+        steps: [],
+        quote: { label: p.label || (TABS[p.tab] || p.tab), text: clip(p.text, 420) },
+        note: "",
+        src: "",
+        see: [{ label: p.label || (TABS[p.tab] || p.tab), tab: p.tab, step: p.step }],
+        chips: ["What should I do next?", "Honest limits"]
+      };
+    }
+    return {
+      role: "bot",
+      title: "That one is outside this guide",
+      body: ["I would rather say so than invent an answer. This guide covers one specific build: a 5-inch analog FPV quad with a Pi Zero 2 WH thermal payload.",
+        "Things I can help with right now:"],
+      steps: ["Bench problems: props, power, smoke stopper, soldering.",
+        "Radio and video: binding, channels, failsafe, no picture.",
+        "Payload: I2C, the thermal camera's noise and refresh rate, GPS fixes, thresholds.",
+        "Money, rules and schedule: the budget, Transport Canada conditions, the 46 hours."],
+      note: "For what the guide deliberately does not claim, read tab 7 — Honest limits & sources.",
+      src: "",
+      see: [{ label: "Honest limits & sources", tab: "limits" }],
+      chips: ["Thermal image is noisy at 8 Hz", "Receiver won't bind", "How close can I fly to people?", "What does it cost?"]
+    };
+  }
+
+  /* ======================================================================
+     NAVIGATION — reuse the page's own tab / stepper logic, never duplicate it
+     ====================================================================== */
+  function jump(tab, step) {
+    if (tab && TABS[tab] && typeof window.openTab === "function") { window.openTab(tab); }
+    let el = null;
+    if (step) {
+      Array.prototype.forEach.call(document.querySelectorAll("#p-steps details"), function (d) {
+        if (d.querySelector(".asm-step[data-step='" + step + "']")) { d.open = true; }
+      });
+      const dot = document.querySelector("[data-asm-dot='" + step + "']");
+      if (dot) { dot.click(); }
+      el = document.querySelector(".asm-step[data-step='" + step + "']");
+    } else if (tab) {
+      el = document.getElementById("p-" + tab);
+    }
+    if (!el) { return false; }
+    try { el.scrollIntoView({ behavior: "smooth", block: step ? "center" : "start" }); }
+    catch (e) { el.scrollIntoView(); }
+    el.classList.add("ga-flash");
+    setTimeout(function () { el.classList.remove("ga-flash"); }, 1800);
+    return true;
+  }
+
+  /* ======================================================================
+     THE DISPATCHER
+     ====================================================================== */
+  function anyStarts(q, list) {
+    for (let i = 0; i < list.length; i += 1) {
+      if (q.indexOf(list[i]) === 0) { return true; }
+    }
+    return false;
+  }
+  function entryById(id) {
+    for (let i = 0; i < KB.length; i += 1) { if (KB[i].id === id) { return KB[i]; } }
+    return null;
+  }
+  function seeOf(entry) {
+    return (entry.see || []).map(function (s) {
+      return { label: s[0], tab: s[1], step: s[2] || null };
+    });
+  }
+
+  const TAB_WORDS = [
+    [/^(open |show |go to |jump to )?(the )?(budget|parts list|price list)/, "parts"],
+    [/^(open |show |go to |jump to )?(the )?quiz/, "quiz"],
+    [/^(open |show |go to |jump to )?(the )?(career|salary|jobs)/, "career"],
+    [/^(open |show |go to |jump to )?(the )?(limits|sources)/, "limits"],
+    [/^(open |show |go to |jump to )?(the )?(how it works|pipeline)/, "build"]
+  ];
+
+  function answerLocal(text) {
+    const raw = String(text || "").trim();
+    const q = norm(raw);
+    if (!q) { return introMessage(); }
+
+    /* --- pleasantries ------------------------------------------------- */
+    if (anyStarts(q, GREETING)) { return introMessage(); }
+    if (anyStarts(q, THANKS)) {
+      return {
+        role: "bot", title: "Any time",
+        body: ["Props off, goggles on, and check the obvious thing before the expensive thing."],
+        steps: [], src: "", see: [], chips: ["What should I do next?", "Thermal image is noisy at 8 Hz"]
+      };
+    }
+
+    const last = ctx.lastId ? entryById(ctx.lastId) : null;
+
+    /* --- follow-ups that only make sense in a conversation ------------- */
+    if (last && anyStarts(q, WHY) && last.why) {
+      return {
+        role: "bot", title: "Why that is the answer",
+        body: [last.why], steps: [], src: last.src,
+        see: seeOf(last), chips: relatedChips(last, 2)
+      };
+    }
+    if (last && (anyStarts(q, MORE) || /^(yes|yeah|yep|ok|okay|sure|do it)$/.test(q))) {
+      const next = last.next ? entryById(last.next) : null;
+      if (next) {
+        ctx.lastId = next.id;
+        return entryMessage(next, { lead: "Next thing to check:", chips: relatedChips(next, 2) });
+      }
+      return {
+        role: "bot", title: "That is the whole checklist",
+        body: ["Nothing further in that entry. The full ordered list for this part of the build is one click away."],
+        steps: [], src: "", see: seeOf(last), chips: relatedChips(last, 3)
+      };
+    }
+
+    /* --- "open step 6", "show me the budget" --------------------------- */
+    const stepM = q.match(/\bstep\s*([1-8])\b/) || q.match(/\b([1-8])(?:st|nd|rd|th)?\s+step\b/);
+    if (stepM && /^(open|show|go|goto|jump|take|bring|where|find|scroll|what)/.test(q)) {
+      const n = Number(stepM[1]);
+      const names = ["", "Lay out all the parts", "Build the frame", "Solder the stack",
+        "Add control and video", "Charge the batteries safely", "Wire the Pi payload",
+        "Mount and balance", "Test, in this order"];
+      jump("steps", n);
+      return {
+        role: "bot", title: "Step " + n + " — " + names[n],
+        body: ["Opened it in the Build Steps tab. Each step ends with a check you have to pass before the next one."],
+        steps: [], src: "", see: [STEP(n, "Back to step " + n), ["All 8 steps", "steps"]],
+        chips: ["Props on or off?", "What should I do next?"]
+      };
+    }
+    for (let i = 0; i < TAB_WORDS.length; i += 1) {
+      if (TAB_WORDS[i][0].test(q) && /^(open|show|go|jump|take)/.test(q)) {
+        const tab = TAB_WORDS[i][1];
+        jump(tab);
+        return {
+          role: "bot", title: "Opened " + (TABS[tab] || tab),
+          body: ["I switched tabs for you. Ask me anything about what is in there."],
+          steps: [], src: "", see: [[TABS[tab] || tab, tab]], chips: ["What should I do next?"]
+        };
+      }
+    }
+
+    /* --- curated entries ---------------------------------------------- */
+    const m = matchEntry(q);
+    if (m && m.confident) {
+      ctx.lastId = m.entry.id;
+      ctx.lastQuery = raw;
+      return entryMessage(m.entry, { chips: relatedChips(m.entry, 2) });
+    }
+    if (m && m.score >= 1.4) {
+      ctx.lastId = m.entry.id;
+      ctx.lastQuery = raw;
+      return entryMessage(m.entry, {
+        lead: "Closest match I have — if that is not your problem, rephrase it or pick a suggestion below.",
+        chips: relatedChips(m.entry, 2)
+      });
+    }
+
+    /* --- nothing matched: quote the nearest passage, or admit the gap --- */
+    return refusalMessage(raw);
+  }
+
+  /* ======================================================================
+     UI — a small dialog that stays out of the page's way
+     ====================================================================== */
+  const UI = { root: null, panel: null, log: null, input: null, busy: false };
+  const MESSAGES = [];
+
+  function el(tag, cls, text) {
+    const n = document.createElement(tag);
+    if (cls) { n.className = cls; }
+    if (text != null) { n.textContent = text; }
+    return n;
+  }
+
+  function renderMessage(msg) {
+    const wrap = el("div", "ga-msg ga-" + (msg.role || "bot"));
+    if (msg.role === "user") {
+      wrap.appendChild(el("p", "ga-user-text", msg.text));
+      return wrap;
+    }
+    const card = el("div", "ga-card");
+    if (msg.title) { card.appendChild(el("h4", "ga-title", msg.title)); }
+    if (msg.md && msg.body && msg.body.length) {
+      const stream = el("div", "ga-stream");
+      renderMarkdown(stream, msg.body.join("\n\n"));
+      card.appendChild(stream);
+    } else {
+      (msg.body || []).forEach(function (t) { card.appendChild(el("p", "ga-body", t)); });
+    }
+    if (msg.quote) {
+      const q = el("blockquote", "ga-quote");
+      q.appendChild(el("span", "ga-quote-label", msg.quote.label));
+      q.appendChild(el("span", "ga-quote-text", msg.quote.text));
+      card.appendChild(q);
+    }
+    if (msg.steps && msg.steps.length) {
+      const ol = el("ol", "ga-steps");
+      msg.steps.forEach(function (s) { ol.appendChild(el("li", null, s)); });
+      card.appendChild(ol);
+    }
+    if (msg.note) { card.appendChild(el("p", "ga-note", msg.note)); }
+    if (msg.src) { card.appendChild(el("p", "ga-src", "Source: " + msg.src)); }
+    if (msg.see && msg.see.length) {
+      const row = el("div", "ga-see");
+      msg.see.forEach(function (s) {
+        const b = el("button", "ga-link", s.label);
+        b.type = "button";
+        b.addEventListener("click", function () { jump(s.tab, s.step); });
+        row.appendChild(b);
+      });
+      card.appendChild(row);
+    }
+    wrap.appendChild(card);
+    if (msg.chips && msg.chips.length) {
+      const row = el("div", "ga-chips");
+      msg.chips.forEach(function (c) {
+        const b = el("button", "ga-chip", c);
+        b.type = "button";
+        b.addEventListener("click", function () { ask(c); });
+        row.appendChild(b);
+      });
+      wrap.appendChild(row);
+    }
+    return wrap;
+  }
+
+  /* ---------- markdown-lite, built as DOM nodes (no innerHTML, no XSS) ------ */
+  function inlineInto(target, text) {
+    String(text).split(/(\*\*[^*]+\*\*|`[^`]+`)/g).forEach(function (part) {
+      if (!part) { return; }
+      if (/^\*\*[^*]+\*\*$/.test(part)) { target.appendChild(el("strong", null, part.slice(2, -2))); }
+      else if (/^`[^`]+`$/.test(part)) { target.appendChild(el("code", null, part.slice(1, -1))); }
+      else { target.appendChild(document.createTextNode(part)); }
+    });
+  }
+
+  function renderMarkdown(container, text) {
+    container.textContent = "";
+    String(text || "").split(/\n{2,}/).forEach(function (block) {
+      const lines = block.split("\n").filter(function (l) { return l.trim(); });
+      if (!lines.length) { return; }
+      const allBullet = lines.every(function (l) { return /^\s*[-*\u2022]\s+/.test(l); });
+      const allNumber = lines.every(function (l) { return /^\s*\d+[.)]\s+/.test(l); });
+      if (allBullet || allNumber) {
+        const list = el(allBullet ? "ul" : "ol", "ga-steps");
+        lines.forEach(function (l) {
+          const li = el("li");
+          inlineInto(li, l.replace(/^\s*(?:[-*\u2022]|\d+[.)])\s+/, ""));
+          list.appendChild(li);
+        });
+        container.appendChild(list);
+        return;
+      }
+      const p = el("p", "ga-body");
+      lines.forEach(function (l, i) {
+        if (i) { p.appendChild(document.createElement("br")); }
+        inlineInto(p, l);
+      });
+      container.appendChild(p);
+    });
+  }
+
+  /* ---------- streaming card ------------------------------------------------ */
+  function streamingCard() {
+    const wrap = el("div", "ga-msg ga-bot");
+    const card = el("div", "ga-card");
+    const title = el("h4", "ga-title", "Thinking\u2026");
+    const body = el("div", "ga-stream");
+    const foot = el("div", "ga-foot");
+    const stop = el("button", "ga-stop", "Stop");
+    stop.type = "button";
+    foot.appendChild(stop);
+    card.appendChild(title);
+    card.appendChild(body);
+    card.appendChild(foot);
+    wrap.appendChild(card);
+    UI.log.appendChild(wrap);
+    UI.log.scrollTop = UI.log.scrollHeight;
+    return { wrap: wrap, card: card, title: title, body: body, foot: foot, stop: stop, meta: null };
+  }
+
+  function finishStream(card, msg) {
+    if (card.stop.parentNode) { card.stop.parentNode.removeChild(card.stop); }
+    card.title.textContent = msg.title || "Answer";
+    if (msg.src) { card.foot.appendChild(el("p", "ga-src", "Source: " + msg.src)); }
+    if (msg.see && msg.see.length) {
+      const row = el("div", "ga-see");
+      msg.see.forEach(function (s) {
+        const b = el("button", "ga-link", s.label);
+        b.type = "button";
+        b.addEventListener("click", function () { jump(s.tab, s.step); });
+        row.appendChild(b);
+      });
+      card.foot.appendChild(row);
+    }
+    if (msg.chips && msg.chips.length) {
+      const row = el("div", "ga-chips");
+      msg.chips.forEach(function (c) {
+        const b = el("button", "ga-chip", c);
+        b.type = "button";
+        b.addEventListener("click", function () { ask(c); });
+        row.appendChild(b);
+      });
+      card.foot.appendChild(row);
+    }
+    card.card.classList.remove("ga-live");
+    UI.log.scrollTop = UI.log.scrollHeight;
+  }
+
+  /* ---------- retrieval-augmented context for the model --------------------
+     The curated entry goes first: it is exactly the advice a good answer should
+     contain, and the page passages give the model the guide's own wording. */
+  function buildContext(question) {
+    const out = [];
+    const hit = matchEntry(norm(question));
+    if (hit) {
+      const e = hit.entry;
+      const first = (e.see && e.see[0]) || null;
+      let text = e.steps.join(" ");
+      if (e.note) { text += " Safety note: " + e.note; }
+      if (e.why) { text += " Why: " + e.why; }
+      if (e.src) { text += " Source: " + e.src; }
+      out.push({
+        label: "Troubleshooting: " + e.title,
+        tab: first ? first[1] : "",
+        step: first && first[2] ? first[2] : null,
+        text: text
+      });
+    }
+    searchPassages(question, 4).forEach(function (h) {
+      out.push({
+        label: h.p.label || TABS[h.p.tab] || h.p.tab,
+        tab: h.p.tab, step: h.p.step || null, text: h.p.text
+      });
+    });
+    return out.slice(0, 6);
+  }
+
+  function historyText(msg) {
+    if (!msg) { return ""; }
+    if (msg.md && msg.body && msg.body.length) { return msg.body.join("\n\n"); }
+    return [msg.title || ""].concat(msg.steps || []).join(". ").trim();
+  }
+
+  function persist() {
+    try {
+      localStorage.setItem(STORE, JSON.stringify({
+        v: 2,
+        lastId: ctx.lastId,
+        history: ctx.history.slice(-12),
+        messages: MESSAGES.slice(-MAX_TURNS)
+      }));
+    } catch (e) { /* private mode: the chat simply does not persist */ }
+  }
+
+  function modeLabel() {
+    return ENDPOINT
+      ? "AI answers \u00b7 grounded in this guide"
+      : "Grounded in this guide \u00b7 works offline";
+  }
+
+  function setMode() {
+    const sub = document.getElementById("ga-sub");
+    if (sub) { sub.textContent = modeLabel(); }
+  }
+
+  /* If the page is being served by server/assistant-server.js, use it without
+     any configuration. Silent: on any failure the offline engine stays in use.
+     Returns a promise so the test hook can wait for the answer. */
+  function probeEndpoint() {
+    if (ENDPOINT || location.protocol === "file:" || typeof fetch !== "function") {
+      return Promise.resolve(ENDPOINT);
+    }
+    return fetch("/api/health", { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) {
+        if (j && j.ok && (j.keyConfigured || j.local)) {
+          ENDPOINT = "/api/ask";
+          setMode();
+        }
+        return ENDPOINT;
+      })
+      .catch(function () { return ENDPOINT; /* not our server: stay offline */ });
+  }
+
+  /* Test hook: ?ga-ask=<question> asks one question, then reports what the page
+     actually rendered so scripts/dev/check-llm-path.ps1 can assert on it. The
+     report is only accepted by a server started with GA_TEST=1. */
+  function runAskProbe(question) {
+    return ask(question).then(function (msg) {
+      const text = msg && msg.md ? (msg.body || []).join("\n\n") : historyText(msg);
+      const report = {
+        endpoint: ENDPOINT || "offline",
+        chars: String(text || "").length,
+        see: (msg && msg.see) ? msg.see.length : 0,
+        src: (msg && msg.src) || "",
+        renderedListItems: UI.log.querySelectorAll(".ga-stream li").length,
+        renderedLinks: UI.log.querySelectorAll(".ga-link").length,
+        stillStreaming: UI.log.querySelectorAll(".ga-live").length,
+        hasNavDirective: /\[\[NAV/i.test(String(text || "")),
+        text: String(text || "").slice(0, 600)
+      };
+      const pre = document.createElement("pre");
+      pre.id = "ga-answer-probe";
+      pre.textContent = Object.keys(report).map(function (k) {
+        return "PROBE " + k + "=" + report[k];
+      }).join("\n");
+      document.body.appendChild(pre);
+      try {
+        fetch("/api/probe", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(report)
+        }).catch(function () { /* no test server listening: fine */ });
+      } catch (e) { /* ignore */ }
+      return report;
+    });
+  }
+
+  function push(msg) {
+    MESSAGES.push(msg);
+    UI.log.appendChild(renderMessage(msg));
+    UI.log.scrollTop = UI.log.scrollHeight;
+    persist();
+    return msg;
+  }
+
+  function setOpen(on) {
+    UI.panel.hidden = !on;
+    document.documentElement.classList.toggle("ga-lock", on && window.innerWidth < 560);
+    if (on) {
+      UI.panel.removeAttribute("inert");
+      if (UI.input) { UI.input.focus(); }
+    } else {
+      UI.panel.setAttribute("inert", "");
+    }
+  }
+
+  function mount() {
+    if (document.getElementById("ga-root")) { return; }
+    const root = el("div", null);
+    root.id = "ga-root";
+
+    const launcher = el("button", "ga-launcher");
+    launcher.id = "ga-launcher";
+    launcher.type = "button";
+    launcher.setAttribute("aria-expanded", "false");
+    launcher.setAttribute("aria-controls", "ga-panel");
+    const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNS, "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("width", "20");
+    svg.setAttribute("height", "20");
+    const path = document.createElementNS(svgNS, "path");
+    path.setAttribute("d", "M4 4h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 4V6a2 2 0 0 1 2-2z");
+    path.setAttribute("fill", "currentColor");
+    svg.appendChild(path);
+    launcher.appendChild(svg);
+    launcher.appendChild(el("span", "ga-launcher-label", "Ask the guide"));
+
+    const panel = el("div", "ga-panel");
+    panel.id = "ga-panel";
+    panel.hidden = true;
+    panel.setAttribute("role", "dialog");
+    panel.setAttribute("aria-modal", "false");
+    panel.setAttribute("aria-labelledby", "ga-h");
+
+    const head = el("div", "ga-head");
+    const titles = el("div", "ga-head-titles");
+    const h = el("strong", null, "Guide Assistant");
+    h.id = "ga-h";
+    titles.appendChild(h);
+    const sub = el("span", "ga-sub", modeLabel());
+    sub.id = "ga-sub";
+    titles.appendChild(sub);
+    head.appendChild(titles);
+
+    const btns = el("div", "ga-head-btns");
+    const clear = el("button", "ga-icon-btn", "Clear");
+    clear.type = "button";
+    clear.title = "Clear this conversation";
+    clear.addEventListener("click", function () {
+      MESSAGES.length = 0;
+      ctx.lastId = "";
+      ctx.history.length = 0;
+      UI.log.innerHTML = "";
+      push(introMessage());
+    });
+    const close = el("button", "ga-icon-btn ga-close", "\u2715");
+    close.type = "button";
+    close.setAttribute("aria-label", "Close assistant");
+    close.addEventListener("click", function () { setOpen(false); launcher.focus(); });
+    btns.appendChild(clear);
+    btns.appendChild(close);
+    head.appendChild(btns);
+
+    const log = el("div", "ga-log");
+    log.id = "ga-log";
+    log.setAttribute("role", "log");
+    log.setAttribute("aria-live", "polite");
+    log.setAttribute("aria-label", "Conversation");
+
+    const form = el("form", "ga-form");
+    form.id = "ga-form";
+    const label = el("label", "ga-sr", "Ask a question about this build");
+    label.setAttribute("for", "ga-input");
+    const input = el("textarea", "ga-input");
+    input.id = "ga-input";
+    input.rows = 1;
+    input.maxLength = 300;
+    input.placeholder = "e.g. thermal image is noisy at 8 Hz";
+    const send = el("button", "ga-send", "Send");
+    send.type = "submit";
+    form.appendChild(label);
+    form.appendChild(input);
+    form.appendChild(send);
+
+    panel.appendChild(head);
+    panel.appendChild(log);
+    panel.appendChild(form);
+    root.appendChild(panel);
+    root.appendChild(launcher);
+    document.body.appendChild(root);
+
+    UI.root = root; UI.panel = panel; UI.log = log; UI.input = input;
+    setOpen(false);
+
+    launcher.addEventListener("click", function () {
+      const open = panel.hidden;
+      setOpen(open);
+      launcher.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const t = input.value.trim();
+      if (!t) { return; }
+      input.value = "";
+      ask(t);
+    });
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        form.dispatchEvent(new Event("submit", { cancelable: true }));
+      }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !panel.hidden) { setOpen(false); launcher.focus(); }
+    });
+  }
+
+  /* ======================================================================
+     ASKING — local by default, model-assisted only if an endpoint is set
+     ====================================================================== */
+  /* Non-streaming endpoint (the Cloudflare Worker): plain JSON answer. */
+  function readJsonAnswer(data) {
+    const answer = String(data && data.answer ? data.answer : "").trim();
+    if (!answer) { throw new Error("empty answer"); }
+    return {
+      role: "bot", title: "Answer", body: [answer], md: true,
+      src: data.sources && data.sources.length ? data.sources.join(" \u00b7 ") : "Retrieved from this guide",
+      see: (data.see || []).map(function (s) {
+        return { label: s.label, tab: s.tab, step: s.step || null };
+      }),
+      chips: (data.chips || []).slice(0, 3)
+    };
+  }
+
+  /* Streaming endpoint (server/assistant-server.js): SSE, token by token. */
+  function pumpStream(res, sink) {
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = "";
+    const step = function () {
+      return reader.read().then(function (chunk) {
+        if (chunk.done) { return; }
+        buf += decoder.decode(chunk.value, { stream: true });
+        const lines = buf.split(/\r?\n/);
+        buf = lines.pop() || "";
+        for (let i = 0; i < lines.length; i += 1) {
+          const line = lines[i].trim();
+          if (!line.startsWith("data:")) { continue; }
+          let evt;
+          try { evt = JSON.parse(line.slice(5).trim()); } catch (e) { continue; }
+          if (evt.type === "delta" && evt.text) { sink.delta(evt.text); }
+          else if (evt.type === "replace") { sink.replace(evt.text); }
+          else if (evt.type === "meta") { sink.meta(evt); }
+          else if (evt.type === "error") { throw new Error(evt.error || "model error"); }
+          else if (evt.type === "done") { return; }
+        }
+        return step();
+      });
+    };
+    return step();
+  }
+
+  function askModel(question, sink, signal) {
+    const passages = buildContext(question);
+    /* No retrieved evidence means no model call at all. */
+    if (!passages.length) { return Promise.reject(new Error("no passages")); }
+    return fetch(ENDPOINT, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      signal: signal,
+      body: JSON.stringify({
+        question: question,
+        passages: passages,
+        history: ctx.history.slice(-6)
+      })
+    }).then(function (res) {
+      const type = res.headers.get("content-type") || "";
+      if (!res.ok) {
+        return res.text().then(function (body) {
+          throw new Error("HTTP " + res.status + ": " + body.slice(0, 120));
+        });
+      }
+      if (type.indexOf("text/event-stream") !== -1 && res.body && res.body.getReader) {
+        return pumpStream(res, sink);
+      }
+      return res.json().then(function (data) {
+        const msg = readJsonAnswer(data);
+        sink.replace(msg.body.join("\n\n"));
+        sink.meta(msg);
+        return msg;
+      });
+    });
+  }
+
+  /* ---------- model answer with a live, streaming card --------------------- */
+  function modelAnswer(question) {
+    const card = streamingCard();
+    card.card.classList.add("ga-live");
+    const state = { text: "", meta: null };
+    const controller = typeof AbortController === "function" ? new AbortController() : null;
+
+    const paint = function () {
+      renderMarkdown(card.body, state.text);
+      if (!UI.panel.hidden) { UI.log.scrollTop = UI.log.scrollHeight; }
+    };
+    const sink = {
+      delta: function (piece) { state.text += piece; paint(); },
+      replace: function (full) { state.text = full; paint(); },
+      meta: function (evt) { state.meta = evt; }
+    };
+
+    if (controller) {
+      card.stop.addEventListener("click", function () {
+        card.stop.textContent = "Stopping\u2026";
+        controller.abort();
+      });
+    } else {
+      card.stop.style.display = "none";
+    }
+
+    return askModel(question, sink, controller ? controller.signal : undefined)
+      .then(function () {
+        const text = String(state.text || "").trim();
+        if (!text) { throw new Error("empty answer"); }
+        const meta = state.meta || {};
+        const msg = {
+          role: "bot", title: "Answer", body: [text], md: true,
+          src: meta.sources && meta.sources.length
+            ? meta.sources.join(" \u00b7 ") : "Retrieved from this guide",
+          see: Array.isArray(meta.see) ? meta.see : [],
+          chips: Array.isArray(meta.chips) ? meta.chips : []
+        };
+        finishStream(card, msg);
+        ctx.history.push({ role: "assistant", content: text });
+        MESSAGES.push(msg);
+        persist();
+        return msg;
+      })
+      .catch(function (err) {
+        if (card.wrap.parentNode) { card.wrap.parentNode.removeChild(card.wrap); }
+        const aborted = err && err.name === "AbortError";
+        const local = answerLocal(question);
+        local.note = (local.note ? local.note + " " : "") + (aborted
+          ? "(Stopped, so this answer came from the offline guide instead.)"
+          : "(The AI service did not answer \u2014 " +
+            String((err && err.message) || err).slice(0, 80) +
+            " \u2014 so this came from the offline guide instead.)");
+        ctx.history.push({ role: "assistant", content: historyText(local) });
+        return push(local);
+      });
+  }
+
+  function ask(text) {
+    const t = String(text == null ? "" : text).trim();
+    if (!t || UI.busy) { return Promise.resolve(null); }
+    if (UI.panel.hidden) { setOpen(true); }
+    push({ role: "user", text: t });
+    ctx.history.push({ role: "user", content: t });
+    UI.busy = true;
+
+    if (!ENDPOINT) {
+      const local = answerLocal(t);
+      ctx.history.push({ role: "assistant", content: historyText(local) });
+      UI.busy = false;
+      return Promise.resolve(push(local));
+    }
+    return modelAnswer(t).then(function (msg) {
+      UI.busy = false;
+      return msg;
+    }, function () {
+      const local = answerLocal(t);
+      ctx.history.push({ role: "assistant", content: historyText(local) });
+      UI.busy = false;
+      return push(local);
+    });
+  }
+
+
+  function restore() {
+    let data = null;
+    try { data = JSON.parse(localStorage.getItem(STORE) || "null"); } catch (e) { data = null; }
+    if (!data || !Array.isArray(data.messages)) { return false; }
+    ctx.lastId = typeof data.lastId === "string" ? data.lastId : "";
+    if (Array.isArray(data.history)) {
+      ctx.history = data.history
+        .filter(function (m) { return m && (m.role === "user" || m.role === "assistant"); })
+        .slice(-12);
+    }
+    data.messages.slice(-MAX_TURNS).forEach(function (m) {
+      if (!m || (m.role !== "user" && m.role !== "bot")) { return; }
+      MESSAGES.push(m);
+      UI.log.appendChild(renderMessage(m));
+    });
+    UI.log.scrollTop = UI.log.scrollHeight;
+    return MESSAGES.length > 0;
+  }
+
+  /* ======================================================================
+     SELF-TEST — same spirit as the guide's own browser checks
+     ====================================================================== */
+  function selfTest() {
+    const out = [];
+    const add = function (name, ok, info) {
+      out.push({ name: name, ok: !!ok, info: String(info == null ? "" : info) });
+    };
+
+    /* 1. knowledge base integrity */
+    const ids = {}, titles = {};
+    let dup = "", thin = "", badSee = "";
+    KB.forEach(function (e) {
+      if (ids[e.id]) { dup = e.id; }
+      ids[e.id] = 1;
+      if (titles[e.title]) { dup = dup || "title:" + e.title; }
+      titles[e.title] = 1;
+      if (e.steps.length < 2 || e.tags.length < 3) { thin = thin || e.id; }
+      (e.see || []).forEach(function (s) {
+        if (!TABS[s[1]]) { badSee = badSee || e.id + "->" + s[1]; }
+        if (s[2] != null && (s[2] < 1 || s[2] > 8)) { badSee = badSee || e.id + "->step" + s[2]; }
+      });
+      if (e.next && !KB.some(function (x) { return x.id === e.next; })) { badSee = badSee || e.id + "->next:" + e.next; }
+    });
+    add("kb ids are unique (" + KB.length + " entries)", !dup, dup || "no duplicates");
+    add("kb entries have tags, steps and valid links", !thin && !badSee, thin || badSee || "all valid");
+
+    /* 2. retrieval index covers the real page */
+    const stepPassages = PASSAGES.filter(function (p) { return p.tab === "steps" && p.step; });
+    add("page passages indexed", PASSAGES.length >= 10, PASSAGES.length + " passages");
+    add("all 8 assembly steps indexed", stepPassages.length === 8, stepPassages.length + "/8");
+
+    /* 3. answering behaviour */
+    const cases = [
+      ["thermal image is noisy at 8 hz", "thermal-noise"],
+      ["the mlx90640 is jumpy and speckled", "thermal-noise"],
+      ["receiver wont bind", "rx-wont-bind"],
+      ["sticks do nothing in betaflight", "no-channels"],
+      ["no picture on the monitor", "no-video"],
+      ["my pi keeps rebooting", "pi-power"],
+      ["i2cdetect shows nothing at 0x33", "i2c-detect"],
+      ["gps never gets a fix", "gps-no-fix"],
+      ["how much does it cost", "budget"],
+      ["do i need a licence", "certification"],
+      ["the lipo is puffy", "lipo-swollen"],
+      ["props on or off", "props-on"],
+      ["can it fly itself", "autonomy"],
+      ["hotspots are finding everything", "hotspot-threshold"],
+      ["what should i do next", "what-next"],
+      ["i put 5v on the sensors", "sensor-5v"],
+      ["can i fly near a wildfire", "wildfire-law"],
+      ["how close can i fly to people", "people-30m"],
+      ["smoke came out on first power", "first-power-smoke"]
+    ];
+    let pass = 0;
+    const fails = [];
+    cases.forEach(function (c) {
+      ctx.lastId = "";
+      const msg = answerLocal(c[0]);
+      const want = entryById(c[1]);
+      if (want && msg.title === want.title) { pass += 1; } else { fails.push(c[0] + " -> " + msg.title); }
+    });
+    add("routed questions hit the right entry (" + pass + "/" + cases.length + ")",
+      pass === cases.length, fails.join(" | ") || "all routed");
+
+    /* 4. honesty: an unrelated question must not produce a fabricated answer */
+    ctx.lastId = "";
+    const odd = answerLocal("what is the airspeed velocity of an unladen swallow");
+    add("unrelated question is refused, not invented",
+      /outside this guide|Closest thing/i.test(odd.title), odd.title);
+
+    /* 5. follow-ups work inside a conversation */
+    ctx.lastId = "";
+    answerLocal("receiver wont bind");
+    const why = answerLocal("why");
+    add("follow-up 'why' explains the previous answer",
+      /Why that is the answer/.test(why.title), why.title);
+    const more = answerLocal("what else");
+    add("follow-up 'what else' advances the checklist",
+      !!more.title && more.title !== why.title, more.title);
+
+    /* 6. navigation actually opens the page */
+    const jumped = jump("steps", 3);
+    const step3 = document.querySelector(".asm-step[data-step='3']");
+    add("deep link opens assembly step 3",
+      !!(jumped && step3 && !document.getElementById("p-steps").hidden),
+      jumped ? "visible" : "jump failed");
+    jump("why", null);
+
+    /* 7. storage must not collide with the guide's own key */
+    add("chat storage key is separate from the guide's",
+      STORE !== "shad-drone-guide-v1", STORE);
+
+    /* 8. the panel is present and closed by default */
+    add("panel mounted and closed by default",
+      !!document.getElementById("ga-panel") && document.getElementById("ga-panel").hidden, "ok");
+
+    return out;
+  }
+
+  function formatResults(results) {
+    const failed = results.filter(function (r) { return !r.ok; });
+    return "Guide Assistant self-test: " + (results.length - failed.length) + "/" +
+      results.length + " passed\n" + results.map(function (r) {
+        return (r.ok ? "PASS " : "FAIL ") + r.name + (r.ok ? "" : "  [" + r.info + "]");
+      }).join("\n");
+  }
+
+  function writeSelfTest() {
+    const results = selfTest();
+    const pre = document.createElement("pre");
+    pre.id = "ga-selftest";
+    pre.textContent = formatResults(results);
+    document.body.appendChild(pre);
+
+    /* a real round-trip through the UI, not just the dispatcher */
+    return ask("thermal image is noisy at 8 Hz").then(function () {
+      const log = document.getElementById("ga-log");
+      const cards = log.querySelectorAll(".ga-card").length;
+      const steps = log.querySelectorAll(".ga-steps li").length;
+      const sources = log.querySelectorAll(".ga-src").length;
+      const ok = cards >= 2 && steps >= 3 && sources >= 1;
+      results.push({
+        name: "live UI round-trip renders an answer with steps and a source",
+        ok: ok,
+        info: ok ? "" : "cards=" + cards + " steps=" + steps + " sources=" + sources
+      });
+      pre.textContent = formatResults(results);
+      return results;
+    });
+  }
+
+  /* ======================================================================
+     INIT
+     ====================================================================== */
+  function init() {
+    buildIndex();
+    mount();
+    if (!restore()) { push(introMessage()); }
+    const flags = String(location.hash) + String(location.search);
+    if (/ga-open/.test(flags)) {
+      setOpen(true);
+      const l = document.getElementById("ga-launcher");
+      if (l) { l.setAttribute("aria-expanded", "true"); }
+    }
+    probeEndpoint();
+    setMode();
+    /* ?ga-ask=<question> asks one question and writes the outcome to a <pre>,
+       so the whole model path can be regression-tested from the command line. */
+    const askFlag = String(location.search).match(/[?&]ga-ask=([^&#]+)/);
+    if (askFlag) {
+      const question = decodeURIComponent(askFlag[1].replace(/\+/g, " "));
+      probeEndpoint().then(function () { return runAskProbe(question); });
+    } else {
+      probeEndpoint();
+    }
+    setMode();
+    if (/ga-selftest/.test(flags)) { writeSelfTest(); }
+  }
+
+  window.GuideAssistant = {
+    ask: ask,
+    answer: answerLocal,
+    jump: jump,
+    match: matchEntry,
+    search: searchPassages,
+    context: buildContext,
+    selfTest: selfTest,
+    writeSelfTest: writeSelfTest,
+    kb: KB,
+    passages: PASSAGES,
+    intro: introMessage,
+    setEndpoint: function (u) { ENDPOINT = u || ""; setMode(); },
+    getEndpoint: function () { return ENDPOINT; },
+    history: function () { return ctx.history.slice(); }
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();

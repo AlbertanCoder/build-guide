@@ -82,6 +82,21 @@ html = html.replace(moduleTag,
   + 'new Function(new TextDecoder().decode(a))();})();</script>');
 log.push('viewer bundle inlined (base64)');
 
+// ---- 6. inline the Guide Assistant (classic script, no imports) -----------
+// It must live inside the single file: the assistant is offline-first, and a
+// relative <script src> would 404 once the HTML is copied anywhere else.
+const assistantTag = '<script src="docs/js/assistant.js"></script>';
+if (html.includes(assistantTag)) {
+  const assistant = fs.readFileSync(path.join(REPO, 'docs/js/assistant.js'), 'utf8');
+  if (assistant.includes('</script')) {
+    throw new Error('docs/js/assistant.js contains a </script sequence; it cannot be inlined verbatim');
+  }
+  html = html.replace(assistantTag, '<script>' + assistant + '</script>');
+  log.push('guide assistant inlined');
+} else {
+  log.push('guide assistant tag not found (skipped)');
+}
+
 fs.mkdirSync(path.dirname(outPath), { recursive: true });
 fs.writeFileSync(outPath, html, 'utf8');
 
