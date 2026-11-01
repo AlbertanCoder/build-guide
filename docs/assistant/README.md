@@ -299,7 +299,7 @@ source is shown, and an empty-passage request is rejected with `422`.
 
 ## Evaluate a model before you trust it
 
-The quiz bank is a ready-made gold set: 28 questions whose `why` fields hold the canonical, sourced
+The quiz bank is a ready-made gold set: 29 questions whose `why` fields hold the canonical, sourced
 answers, and the calculators define the correct numbers.
 
 1. Ask each quiz question through the panel; compare against the `why` text.
