@@ -12,7 +12,7 @@ running the gate.
 | Repo | `C:\Users\SHADHUNTER\Desktop\build-guide-repo`, branch `main` |
 | State | clean, pushed, **0 ahead** |
 | Head at handoff | written at `27e5a05`; run `git log -1` — committing this file necessarily moved it, and any later commit should leave the gate green |
-| Gate | `node scripts/dev/gate.js` → **375/375 named checks**, eighteen suites |
+| Gate | `node scripts/dev/gate.js` → **378/378 named checks**, eighteen suites |
 | The file the user opens | `C:\Users\SHADHUNTER\Desktop\Shad's Build Guide.html` — a **generated** single file. Never edit it; edit source and rebuild |
 | The user's API key | **not saved yet** (`keyConfigured: false`) |
 
@@ -33,7 +33,7 @@ running the gate.
 (cache, model tiers, compression, budget, `/api/stats`), the settings drawer
 (provider, key, model, budget — all server-side), domain pack slice 1 of 6 with a
 build that **refuses an unsourced claim**, two named edit operations (`quiz-add`,
-`prose-rewrite`), the proposal branch loop, undo, and a 375-check gate that cannot
+`prose-rewrite`), the proposal branch loop, undo, and a 378-check gate that cannot
 be made green by deleting a check.
 
 **Not built — say so plainly if asked:**
@@ -78,7 +78,10 @@ The domain pack is complete: all six pages, 30 sourced blocks, in `docs/domain/`
 The five code-enforced bans are built: `server/bans.js` screens every AI answer
 (a banned claim is replaced with a loud block notice and never cached), every
 quiz question and draft candidate (`quiz-add.validate`), every prose rewrite,
-and the shipped offline answers (the gate screens all 44). 33 checks.
+the shipped offline answers and the domain pack (the gate screens all 44
+answers and all 30 blocks). The public Cloudflare Worker carries the same five
+detectors, generated from `server/bans.js` by `scripts/dev/build-worker-bans.js`.
+37 checks.
 
 Per-item acceptance is built: a multi-item proposal commits **one item per
 commit** plus an item record, and

@@ -93,6 +93,98 @@ function parseModelJson(text) {
   try { return JSON.parse(candidate.slice(first, last + 1)); } catch (e) { return null; }
 }
 
+/* ---- BANS:BEGIN (generated from server/bans.js by scripts/dev/build-worker-bans.js) ---- */
+function sentences(text) {
+  return String(text || "")
+    .split(/(?<=[.!?])\s+|\r?\n+/)
+    .map(function (s) { return s.trim(); })
+    .filter(Boolean);
+}
+
+const DATE_RE = /\b20\d\d-\d\d-\d\d\b|\b\d{1,2}\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+20\d\d\b|\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2}(st|nd|rd|th)?,?\s+20\d\d\b/i;
+
+const BANS = [
+  {
+    id: "detection-performance",
+    say: "detection performance must not be stated as fact - report only what was actually measured",
+    allow: /\b(measured|recorded|observed|logged|in (our|your|my) (test|tests|trials|flights?|runs?)|not guaranteed|no guarantee|is not proof|may be difficult|your mileage|estimat)/i,
+    re: [
+      /\b\d+(\.\d+)?\s*%\s*[a-z-]*\b(detect|accura|success|reliab)/i,
+      /\b(detects?|resolves?|identifies?|spots?)\b[^.]{0,60}\b(at|from|up to)\s+\d+(\.\d+)?\s*m\b/i,
+      /\bdetection (rate|accuracy|performance|range|capability|distance)\b[^.]{0,40}\b(is|are|of|at)\s*\d/i,
+      /\b(guaranteed|reliable|foolproof|perfect)\s+(detection|detections)\b/i
+    ]
+  },
+  {
+    id: "unsourced-price-or-regulation",
+    say: "a price, fee or regulation must carry the date it was checked",
+    /* The date may sit anywhere in the answer - the source line convention - so
+       this is the one ban whose allowance is tested against the whole text. */
+    allowScope: "text",
+    allow: DATE_RE,
+    re: [
+      /\bCA?\$\s?\d/i,
+      /\b(fees?|fines?|prices?|costs?)\b[^.]{0,30}\d/i,
+      /* A regulation claim WITHOUT its identifier ("regulation 601.15 ...").
+         "CAR 601.15" names its own source and passes on its own. */
+      /\b(regulations?|the rule|the law)\s+(number\s+)?\d/i
+    ]
+  },
+  {
+    id: "flying-near-a-wildfire",
+    say: "flying near or over a wildfire is not allowed (CAR 601.15)",
+    allow: /\b(never|do not|don'?t|must not|shall not|is not allowed|not allowed|illegal|prohibited|banned|refus|avoid|CAR 601\.15|keep away|stay away)\b/i,
+    re: [
+      /\b(fly|flying|flown|flight|airborne|launch(?:ing)?|drone)\b[^.]{0,60}\b(over|near|above|close to|within|towards?|into|across)\b[^.]{0,40}\b(wildfire|forest fire|wildland fire|active fire|fire perimeters?|fire grounds?|the fire|the flames)/i
+    ]
+  },
+  {
+    id: "certification-or-approval-claim",
+    say: "claiming certification or legal approval - this build is neither certified nor approved",
+    allow: /\b(not certified|not approved|no (certification|approval)|never claim|do not claim|don'?t claim|without (certification|approval)|is not (certified|approved|legal)|is neither|refus|cannot claim|can'?t claim|uncontrolled|hobby)\b/i,
+    re: [
+      /\b(we|it|this|the (build|system|drone|guide|project|aircraft|payload))\b[^.]{0,40}\b(is|are|has been|now|fully)\b[^.]{0,24}\b(certified|approved|authorized|licensed|cleared|compliant)\b/i,
+      /\b(fully|legally) (compliant|approved|certified|authorized)\b/i,
+      /\bcertified (drone|pilot|operator|system|aircraft)\b/i
+    ]
+  },
+  {
+    id: "edit-without-approval",
+    say: "edits happen only through a proposal you accept - claim no change has landed without one",
+    allow: /\b(proposal|proposed|pending|not yet|branch|after you accept|until you accept|waiting for|would be|once accepted|can be accepted|draft)\b/i,
+    re: [
+      /\b(I (have|'ve)|I'?ve)\s+(edited|changed|updated|rewritten|fixed|altered|added (to|in))\b/i,
+      /\b(the (guide|document|page|file|source|section))\b[^.]{0,30}\b(has been|is now|was)\b[^.]{0,20}\b(edited|updated|changed|rewritten|modified|fixed)\b/i
+    ]
+  }
+];
+
+/** Screen text against all five bans. */
+function screenText(text) {
+  const full = String(text || "");
+  const hits = [];
+  BANS.forEach(function (ban) {
+    const allowEverywhere = ban.allowScope === "text" && ban.allow && ban.allow.test(full);
+    if (allowEverywhere) { return; }
+    sentences(full).forEach(function (sentence) {
+      const matches = ban.re.some(function (re) { return re.test(sentence); });
+      if (!matches) { return; }
+      if (ban.allowScope !== "text" && ban.allow && ban.allow.test(sentence)) { return; }
+      hits.push({ id: ban.id, say: ban.say, sentence: sentence.slice(0, 200) });
+    });
+  });
+  return { ok: hits.length === 0, hits: hits };
+}
+
+/** What replaces a blocked answer. Loud and specific - never a silent rewrite. */
+function blockNotice(hits) {
+  const says = [];
+  (hits || []).forEach(function (h) { if (says.indexOf(h.say) === -1) { says.push(h.say); } });
+  return "That answer was blocked by the guide's safety checks (the five code-enforced " +
+    "bans): " + says.join("; ") + ". Nothing was shown as fact and nothing was cached.";
+}
+/* ---- BANS:END (generated) ---- */
+
 /* ---- module entry point (fetch handler) --------------------------------
    Helper functions below are hoisted, so declaring the handler first keeps
    the Cloudflare Workers convention of "entry point at the top". */
@@ -168,6 +260,22 @@ export default {
     const parsed = parseModelJson(text);
     if (!parsed || !parsed.answer) {
       return Response.json({ error: "unparseable model output" }, { status: 502, headers: cors });
+    }
+
+    /* The five code-enforced bans (decision 25) - the same detectors the local
+       server runs, generated from server/bans.js into the region above. A
+       banned claim is replaced with a loud block notice, never returned raw. */
+    const banned = screenText(
+      [String(parsed.answer)].concat(
+        Array.isArray(parsed.steps) ? parsed.steps.map(String) : [],
+        [String(parsed.note || "")]
+      ).join("\n")
+    );
+    if (!banned.ok) {
+      return Response.json(sanitise({
+        answer: blockNotice(banned.hits),
+        steps: [], sources: [], see: [], chips: [], note: ""
+      }), { headers: { ...cors, "cache-control": "no-store" } });
     }
 
     return Response.json(sanitise(parsed), {

@@ -218,6 +218,35 @@ check("every domain pack block passes the five bans",
   domainBlocks.length > 0 && domainHits.length === 0,
   domainHits.length ? domainHits.slice(0, 4).join(" | ") : domainBlocks.length + " blocks clean");
 
+/* ---- the public worker carries the same five bans -------------------------
+   The Cloudflare Worker answers the public site. Its detectors are GENERATED
+   from server/bans.js (scripts/dev/build-worker-bans.js): one source of truth,
+   and these checks prove the copy is current, effective, and actually wired
+   into the answer path. */
+const { spawnSync } = require("child_process");
+const genCheck = spawnSync(process.execPath,
+  [path.join(ROOT, "scripts", "dev", "build-worker-bans.js"), "--check"],
+  { cwd: ROOT, encoding: "utf8" });
+check("the Cloudflare worker's bans copy is current (generated from server/bans.js)",
+  genCheck.status === 0,
+  (String(genCheck.stdout || "") + String(genCheck.stderr || "")).trim().split(/\r?\n/)[0]);
+
+const workerSrc = fs.readFileSync(path.join(ROOT, "docs", "assistant", "worker.js"), "utf8");
+const beginAt = workerSrc.indexOf("/* ---- BANS:BEGIN");
+const endAt = workerSrc.indexOf("/* ---- BANS:END");
+const workerBans = new Function(
+  workerSrc.slice(workerSrc.indexOf("function sentences", beginAt), endAt) +
+  "\nreturn { screenText: screenText, blockNotice: blockNotice };")();
+const workerHitIds = CASES.map(function (c) {
+  return workerBans.screenText(c.bad[0]).hits.map(function (h) { return h.id; })[0] || "";
+});
+check("the worker's own copy refuses one banned sample per ban",
+  CASES.every(function (c, i) { return workerHitIds[i] === c.id; }),
+  workerHitIds.join(","));
+check("the worker's answer path runs the screen and returns the block notice",
+  /const banned = screenText\(/.test(workerSrc) &&
+  /blockNotice\(banned\.hits\)/.test(workerSrc));
+
 /* ---- the enforcement points ------------------------------------------------ */
 const bannedQuestion = {
   op: "quiz-add",

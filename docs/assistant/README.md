@@ -82,6 +82,12 @@ Then load the config before the assistant script in `index.html`:
 The Worker returns JSON rather than a stream; the page detects that and renders the whole answer at
 once. Both shapes go through the same citation and navigation handling.
 
+The Worker enforces the five code-enforced bans in code, not just in the prompt:
+its detectors are generated from `server/bans.js`
+(`node scripts/dev/build-worker-bans.js`, verified by the gate), and a banned
+claim is replaced with a loud block notice instead of being returned. After
+editing `server/bans.js`, re-run the generator and redeploy.
+
 
 ## How a question is answered
 
@@ -103,7 +109,7 @@ that chain fails, the answer comes from the offline engine with a one-line note 
 
 ## The gate
 
-18 suites, 375 named checks, one exit code:
+18 suites, 378 named checks, one exit code:
 
 ```powershell
 node scripts/dev/gate.js            # everything
@@ -126,7 +132,7 @@ node scripts/dev/gate.js --json     # machine-readable, for the agent to consume
 | settings api | 31 |
 | review api | 20 |
 | per-item acceptance | 18 |
-| the five bans | 34 |
+| the five bans | 37 |
 | browser (Chrome) | 28 |
 | self-test served | 19 |
 | self-test single file | 19 |

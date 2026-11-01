@@ -37,7 +37,7 @@ to a later stage of the approved plan.
 | 22 | Keep the panel, add an "Ask" tab | PARTIAL — panel only |
 | 23 | Only question + passages + 2 turns leave the machine | BUILT |
 | 24 | Guide voice + "why it matters for your build" line | PARTIAL — voice is prompted; the line is not enforced |
-| 25 | Five code-enforced bans | BUILT — `server/bans.js` screens answers, drafts and edits; every ban proven not inert, 33 checks |
+| 25 | Five code-enforced bans | BUILT — `server/bans.js` screens answers, drafts, edits, the domain pack and the public worker; every ban proven not inert, 37 checks |
 | 26 | Build in four slices | PARTIAL — slice 1 done; 2–4 in progress |
 
 ## Round 2 — the living-document agent (24)

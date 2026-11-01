@@ -96,7 +96,7 @@ const SUITES = [
   {
     name: "the five bans",
     cmd: ["node", ["scripts/dev/check-bans.js"]],
-    expect: 34
+    expect: 37
   },
   {
     name: "browser",
