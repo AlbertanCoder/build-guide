@@ -58,6 +58,11 @@ const SUITES = [
     expect: 29
   },
   {
+    name: "job spec",
+    cmd: ["node", ["scripts/dev/check-job-spec.js"]],
+    expect: 8
+  },
+  {
     name: "propose loop",
     cmd: ["node", ["scripts/dev/check-propose.js"]],
     expect: 32
