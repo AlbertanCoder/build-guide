@@ -253,6 +253,90 @@
   .finished-build > p { max-width: 720px; }
   details.orig-diagram { margin: 8px 0 0; font-size: 13px; }
   details.orig-diagram summary { cursor: pointer; color: var(--sky); font-weight: 600; }
+
+  /* ---- IKEA-style assembly walker (tab 4) ---- */
+  .assembly { margin: 4px 0 22px; }
+  .asm-legend { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center;
+                margin: 0 0 16px; padding: 12px 16px; background: var(--pine-pale);
+                border-radius: 12px; font-size: 14px; color: var(--pine-deep); }
+  .asm-legend .asm-key { white-space: nowrap; font-weight: 700; }
+  .asm-goal { margin: 0 0 20px; }
+  .asm-goal h3 { margin: 0 0 8px; color: var(--pine-deep); }
+  .asm-goal > p { max-width: 720px; }
+  .asm-toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 0 0 12px; }
+  .asm-dots { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
+  .asm-dot { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--line);
+             background: var(--card); color: var(--soft); font-weight: 700; font-size: 14px;
+             padding: 0; transition: background .15s, color .15s, border-color .15s; }
+  .asm-dot:hover { border-color: var(--pine); color: var(--pine); }
+  .asm-dot.is-done { background: var(--pine-pale); border-color: var(--pine); color: var(--pine); }
+  .asm-dot.is-current { background: var(--pine); border-color: var(--pine); color: #fff; }
+  .asm-stage { display: grid; gap: 18px; }
+  .asm-step { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+              box-shadow: var(--shadow); overflow: hidden; scroll-margin-top: 12px; }
+  .asm-head { display: flex; align-items: center; gap: 14px; padding: 15px 18px;
+              background: linear-gradient(135deg, var(--pine-deep) 0%, var(--pine) 100%);
+              color: #fff; }
+  .asm-num { flex: none; width: 52px; height: 52px; border-radius: 50%;
+             background: rgba(255,255,255,.16); border: 2px solid rgba(255,255,255,.55);
+             display: grid; place-items: center; font-size: 24px; font-weight: 800; }
+  .asm-title h3 { margin: 0; font-size: 19px; color: #fff; }
+  .asm-meta { margin: 2px 0 0; font-size: 13px; color: #d9ebe3; }
+  .asm-body { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(260px, .9fr); }
+  .asm-visual { padding: 14px; background: var(--bg); border-right: 1px solid var(--line); }
+  .asm-visual .viewer3d { margin-bottom: 0; }
+  .asm-picture { display: block; margin: 10px 0 0; border: 1px solid var(--line);
+                 border-radius: 10px; overflow: hidden; background: #fff; }
+  .asm-picture img { display: block; width: 100%; height: auto; }
+  .asm-cap { margin: 6px 2px 0; font-size: 12px; color: var(--soft); }
+  .asm-notes { padding: 16px 18px; }
+  .asm-label { display: block; font-size: 11.5px; font-weight: 800; letter-spacing: 1.4px;
+               text-transform: uppercase; color: var(--soft); margin: 0 0 7px; }
+  .asm-parts ul { list-style: none; padding: 0; margin: 0 0 15px; display: flex;
+                  flex-wrap: wrap; gap: 6px; }
+  .asm-parts li { margin: 0; font-size: 12.5px; font-weight: 600; background: var(--sky-pale);
+                  color: var(--sky); border-radius: 999px; padding: 4px 11px; }
+  .asm-actions { margin: 0 0 15px; padding: 0; list-style: none; counter-reset: asmstep; }
+  .asm-actions li { counter-increment: asmstep; position: relative; padding: 0 0 11px 40px;
+                    margin: 0; font-size: 14.5px; line-height: 1.5; }
+  .asm-actions li:last-child { padding-bottom: 0; }
+  .asm-actions li::before { content: counter(asmstep); position: absolute; left: 0; top: -1px;
+                            width: 27px; height: 27px; border-radius: 50%; background: var(--pine);
+                            color: #fff; font-weight: 700; font-size: 14px;
+                            display: grid; place-items: center; }
+  .asm-warn { background: var(--ember-pale); border-left: 4px solid var(--ember);
+              border-radius: 0 10px 10px 0; padding: 10px 14px; font-size: 13.5px; margin: 0 0 15px; }
+  .asm-check { background: var(--pine-pale); border: 1.5px dashed var(--pine);
+               border-radius: 12px; padding: 12px 14px; margin: 0 0 13px; }
+  .asm-check .asm-label { color: var(--pine); }
+  .asm-check ul { margin: 0; padding-left: 18px; font-size: 14px; }
+  .asm-done { display: inline-flex; align-items: center; gap: 9px; font-weight: 700;
+              color: var(--pine); cursor: pointer; }
+  .asm-done input { width: 20px; height: 20px; accent-color: var(--pine); }
+  .asm-nav { display: flex; align-items: center; gap: 12px; padding: 14px 18px;
+             border-top: 1px solid var(--line); background: #fffdf8; }
+  .asm-count { flex: 1; text-align: center; font-size: 13.5px; color: var(--soft); }
+  .asm-count b { color: var(--pine-deep); }
+  .asm-btn { border: 1px solid var(--line); background: var(--card); color: var(--pine-deep);
+             font-weight: 700; font-size: 15px; border-radius: 10px; padding: 11px 18px; }
+  .asm-btn:hover { border-color: var(--pine); color: var(--pine); }
+  .asm-btn.primary { background: var(--pine); border-color: var(--pine); color: #fff; min-width: 175px; }
+  .asm-btn.primary:hover { background: var(--pine-deep); color: #fff; }
+  .asm-btn[disabled] { opacity: .45; cursor: default; }
+  .asm-btn[disabled]:hover { border-color: var(--line); color: var(--pine-deep); }
+  .assembly.show-all .asm-nav { display: none; }
+  @media (max-width: 760px) {
+    .asm-body { grid-template-columns: 1fr; }
+    .asm-visual { border-right: 0; border-bottom: 1px solid var(--line); }
+    .asm-num { width: 44px; height: 44px; font-size: 20px; }
+    .asm-btn { padding: 10px 13px; font-size: 14px; }
+    .asm-btn.primary { min-width: 0; }
+  }
+  @media print {
+    .asm-step[hidden] { display: block !important; }
+    .asm-nav, .asm-toolbar, .asm-done { display: none !important; }
+    .asm-step { break-inside: avoid; }
+  }
 </style>
 <script type="importmap">
 {
@@ -676,221 +760,538 @@
     <button class="expand-btn" data-panel="p-steps">Expand all</button>
   </div>
 
-  <details class="acc" open>
-    <summary>Start here &mdash; 8 pictures to build it</summary>
-    <div class="acc-body">
-      <p>Follow the pictures in order. Each card lists the parts and the check to complete before moving on. The full 19-step checklist remains below for reference.</p>
 
-      <div class="finished-build">
-        <h3>The finished build</h3>
-        <p>Every part in its flying position: 5-inch X frame, F405 + 50A stack, analog FPV, the 4S pack
-        strapped behind the Pi Zero 2 WH payload, thermal lens facing the ground and the GPS mast
-        clear of both prop arcs. Rotate it to see how the payload sits inside the frame.</p>
-        <div class="viewer3d" data-model="docs/models/final-product.glb" data-title="The finished build">
-          <div class="viewer3d-canvas">
-            <div class="viewer3d-labels"></div>
-            <span class="viewer3d-status">Loading 3D&hellip;</span>
-          </div>
-          <p class="viewer3d-nogl">This interactive view needs WebGL. Every step still links its original
-          diagram, so the guide stays readable without it.</p>
-          <div class="viewer3d-bar">
-            <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
-            <button type="button" data-action="reset">Reset view</button>
-            <button type="button" data-action="labels" aria-pressed="true">Labels</button>
-            <button type="button" data-action="fullscreen">Full screen</button>
+  <details class="acc" open>
+    <summary>Assembly instructions &mdash; picture by picture, one step at a time</summary>
+    <div class="acc-body">
+      <p>Do one step at a time, like an IKEA manual: look at the picture, do the numbered
+      actions, pass the check, then press <strong>Next</strong>. Tick <strong>This step is
+      done</strong> only when the check passes. The full 19-step plan with tests and flight
+      practice stays below for reference.</p>
+
+      <div class="assembly" data-assembly>
+        <div class="asm-legend">
+          <span class="asm-key">How this works:</span>
+          <span>1 Look at the picture &rarr; 2 Do the numbered actions &rarr; 3 Pass the &#10003; check &rarr; 4 Press Next</span>
+          <span class="asm-key">&#9888; = safety rule</span>
+          <span class="asm-key">&#10003; = check before going on</span>
+        </div>
+
+        <div class="asm-goal">
+          <h3>What you are building</h3>
+          <p>Every part in its flying position: 5-inch X frame, F405 + 50A stack, analog FPV,
+          the 4S pack strapped behind the Pi Zero 2 WH payload, thermal lens facing the ground
+          and the GPS mast clear of both prop arcs. Rotate it to see how the payload sits
+          inside the frame &mdash; this is what step 8 must look like.</p>
+          <div class="viewer3d" data-model="docs/models/final-product.glb" data-title="The finished build">
+            <div class="viewer3d-canvas">
+              <div class="viewer3d-labels"></div>
+              <span class="viewer3d-status">Loading 3D&hellip;</span>
+            </div>
+            <p class="viewer3d-nogl">This interactive view needs WebGL. Every step still shows
+            its flat picture, so the guide stays readable without it.</p>
+            <div class="viewer3d-bar">
+              <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
+              <button type="button" data-action="reset">Reset view</button>
+              <button type="button" data-action="labels" aria-pressed="true">Labels</button>
+              <button type="button" data-action="fullscreen">Full screen</button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="visual-guide">
-        <article class="visual-step">
-          <div class="viewer3d" data-model="docs/models/step-01-parts.glb" data-title="Lay out everything">
-            <div class="viewer3d-canvas">
-              <div class="viewer3d-labels"></div>
-              <span class="viewer3d-status">Loading 3D&hellip;</span>
-            </div>
-            <p class="viewer3d-nogl">This interactive view needs WebGL &mdash; the original diagram is linked below.</p>
-            <div class="viewer3d-bar">
-              <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
-              <button type="button" data-action="reset">Reset view</button>
-              <button type="button" data-action="labels" aria-pressed="true">Labels</button>
-              <button type="button" data-action="fullscreen">Full screen</button>
-            </div>
+        <div class="asm-toolbar">
+          <div class="asm-dots">
+            <button type="button" class="asm-dot" data-asm-dot="1" title="Step 1: Lay out all the parts" aria-label="Step 1: Lay out all the parts">1</button>
+            <button type="button" class="asm-dot" data-asm-dot="2" title="Step 2: Build the frame" aria-label="Step 2: Build the frame">2</button>
+            <button type="button" class="asm-dot" data-asm-dot="3" title="Step 3: Solder the stack" aria-label="Step 3: Solder the stack">3</button>
+            <button type="button" class="asm-dot" data-asm-dot="4" title="Step 4: Add control and video" aria-label="Step 4: Add control and video">4</button>
+            <button type="button" class="asm-dot" data-asm-dot="5" title="Step 5: Charge the batteries safely" aria-label="Step 5: Charge the batteries safely">5</button>
+            <button type="button" class="asm-dot" data-asm-dot="6" title="Step 6: Wire the Pi payload" aria-label="Step 6: Wire the Pi payload">6</button>
+            <button type="button" class="asm-dot" data-asm-dot="7" title="Step 7: Mount and balance" aria-label="Step 7: Mount and balance">7</button>
+            <button type="button" class="asm-dot" data-asm-dot="8" title="Step 8: Test, in this order" aria-label="Step 8: Test, in this order">8</button>
           </div>
-          <details class="orig-diagram">
-            <summary>Original diagram (SVG)</summary>
-            <a href="docs/images/build/01-parts.svg" target="_blank" rel="noopener">01-parts.svg &mdash; All parts grouped on the bench before assembly</a>
-          </details>
-          <div class="build-notes"><h3>1 · Lay out everything</h3>
-            <p><strong>Do this:</strong> Put the five groups on the bench and compare them with the order list.</p>
-            <p class="need"><strong>You need:</strong> Airframe, radio/power, analog FPV, thermal payload, tools and laptop.</p>
-            <p class="check">✓ Check: every item is present before touching a wire.</p></div>
-        </article>
-        <article class="visual-step">
-          <div class="viewer3d" data-model="docs/models/step-02-frame.glb" data-title="Frame and motors">
-            <div class="viewer3d-canvas">
-              <div class="viewer3d-labels"></div>
-              <span class="viewer3d-status">Loading 3D&hellip;</span>
-            </div>
-            <p class="viewer3d-nogl">This interactive view needs WebGL &mdash; the original diagram is linked below.</p>
-            <div class="viewer3d-bar">
-              <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
-              <button type="button" data-action="reset">Reset view</button>
-              <button type="button" data-action="labels" aria-pressed="true">Labels</button>
-              <button type="button" data-action="fullscreen">Full screen</button>
-            </div>
-          </div>
-          <div class="build-notes"><h3>2 · Build the frame</h3>
-            <p><strong>Do this:</strong> Fit the arms, standoffs and four motors. Leave propellers off.</p>
-            <p class="need"><strong>You need:</strong> Source One V6 frame, motors, included hardware and hex drivers.</p>
-            <p class="check">✓ Check: frame is rigid, screws cannot touch windings, motors spin freely.</p>
-            <details class="orig-diagram">
-              <summary>Original diagram (SVG)</summary>
-              <a href="docs/images/build/02-frame.svg" target="_blank" rel="noopener">02-frame.svg &mdash; X frame plan view, M1&ndash;M4 order and 30.5&nbsp;mm stack holes</a>
-            </details></div>
-        </article>
+          <button type="button" class="expand-btn" data-asm-all aria-pressed="false">Show all 8 steps</button>
+        </div>
 
+        <div class="asm-stage">
+        <section class="asm-step" data-step="1" aria-label="Step 1: Lay out all the parts">
+          <div class="asm-head">
+            <span class="asm-num" aria-hidden="true">1</span>
+            <div class="asm-title">
+              <h3>Lay out all the parts</h3>
+              <p class="asm-meta">No tools &middot; you need the order list and a clear table</p>
+            </div>
+          </div>
+          <div class="asm-body">
+            <div class="asm-visual">
+              <div class="viewer3d" data-model="docs/models/step-01-parts.glb" data-title="Lay out all the parts">
+                <div class="viewer3d-canvas">
+                  <div class="viewer3d-labels"></div>
+                  <span class="viewer3d-status">Loading 3D&hellip;</span>
+                </div>
+                <p class="viewer3d-nogl">This interactive view needs WebGL &mdash; the flat picture below still shows the step.</p>
+                <div class="viewer3d-bar">
+                  <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
+                  <button type="button" data-action="reset">Reset view</button>
+                  <button type="button" data-action="labels" aria-pressed="true">Labels</button>
+                  <button type="button" data-action="fullscreen">Full screen</button>
+                </div>
+              </div>
+              <div class="asm-picture">
+                <a href="docs/images/build/01-parts.svg" target="_blank" rel="noopener"><img src="docs/images/build/01-parts.svg" alt="Flat picture: all parts grouped in five piles on the bench"></a>
+              </div>
+              <p class="asm-cap">The flat picture &mdash; the same step drawn on paper. Click it for full size.</p>
+            </div>
+            <div class="asm-notes">
+              <div class="asm-parts">
+                <span class="asm-label">You will need</span>
+                <ul>
+                  <li>Order-list document</li>
+                  <li>Every part &mdash; 5 groups</li>
+                  <li>Laptop</li>
+                </ul>
+              </div>
+              <div class="asm-do">
+                <span class="asm-label">What to do</span>
+                <ol class="asm-actions">
+                  <li>Put the parts in 5 piles: airframe &middot; radio &amp; power &middot; video &middot; thermal payload &middot; tools.</li>
+                  <li>Tick every pile against the order list.</li>
+                  <li>Download the manuals for the stack, receiver, VTX and Pi sensors.</li>
+                </ol>
+              </div>
+              <p class="asm-warn"><strong>&#9888; Safety:</strong> keep the propellers in the bag &mdash; they go on at the very end, after everything works.</p>
+              <div class="asm-check">
+                <span class="asm-label">&#10003; Before you go on</span>
+                <ul>
+                  <li>Every item on the order list is on the bench. Nothing missing.</li>
+                </ul>
+              </div>
+              <label class="asm-done"><input type="checkbox" data-asm="1"> This step is done</label>
+            </div>
+          </div>
+        </section>
+        <section class="asm-step" data-step="2" aria-label="Step 2: Build the frame">
+          <div class="asm-head">
+            <span class="asm-num" aria-hidden="true">2</span>
+            <div class="asm-title">
+              <h3>Build the frame</h3>
+              <p class="asm-meta">Hex drivers &middot; you need the frame box and the 4 motors</p>
+            </div>
+          </div>
+          <div class="asm-body">
+            <div class="asm-visual">
+              <div class="viewer3d" data-model="docs/models/step-02-frame.glb" data-title="Build the frame">
+                <div class="viewer3d-canvas">
+                  <div class="viewer3d-labels"></div>
+                  <span class="viewer3d-status">Loading 3D&hellip;</span>
+                </div>
+                <p class="viewer3d-nogl">This interactive view needs WebGL &mdash; the flat picture below still shows the step.</p>
+                <div class="viewer3d-bar">
+                  <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
+                  <button type="button" data-action="reset">Reset view</button>
+                  <button type="button" data-action="labels" aria-pressed="true">Labels</button>
+                  <button type="button" data-action="fullscreen">Full screen</button>
+                </div>
+              </div>
+              <div class="asm-picture">
+                <a href="docs/images/build/02-frame.svg" target="_blank" rel="noopener"><img src="docs/images/build/02-frame.svg" alt="Flat picture: X frame plan view, M1 to M4 motor order and 30.5 mm stack holes"></a>
+              </div>
+              <p class="asm-cap">The flat picture &mdash; the same step drawn on paper. Click it for full size.</p>
+            </div>
+            <div class="asm-notes">
+              <div class="asm-parts">
+                <span class="asm-label">You will need</span>
+                <ul>
+                  <li>Source One V6 frame</li>
+                  <li>4 motors</li>
+                  <li>Screws + standoffs</li>
+                  <li>Hex drivers</li>
+                  <li>Threadlock (only if the manual says so)</li>
+                </ul>
+              </div>
+              <div class="asm-do">
+                <span class="asm-label">What to do</span>
+                <ol class="asm-actions">
+                  <li>Bolt the arms to the bottom plate.</li>
+                  <li>Screw the standoffs on top.</li>
+                  <li>Screw the 4 motors onto the arms &mdash; the picture shows the M1&ndash;M4 order.</li>
+                  <li>Check every motor screw underneath: none may touch the copper windings.</li>
+                </ol>
+              </div>
+              <p class="asm-warn"><strong>&#9888; Safety:</strong> propellers still stay in the bag.</p>
+              <div class="asm-check">
+                <span class="asm-label">&#10003; Before you go on</span>
+                <ul>
+                  <li>Frame rigid &middot; motors spin freely &middot; no screw touches a winding.</li>
+                </ul>
+              </div>
+              <label class="asm-done"><input type="checkbox" data-asm="2"> This step is done</label>
+            </div>
+          </div>
+        </section>
+        <section class="asm-step" data-step="3" aria-label="Step 3: Solder the stack">
+          <div class="asm-head">
+            <span class="asm-num" aria-hidden="true">3</span>
+            <div class="asm-title">
+              <h3>Solder the stack</h3>
+              <p class="asm-meta">Soldering iron + eye protection &middot; take your time here</p>
+            </div>
+          </div>
+          <div class="asm-body">
+            <div class="asm-visual">
+              <div class="viewer3d" data-model="docs/models/step-03-stack.glb" data-title="Solder the stack">
+                <div class="viewer3d-canvas">
+                  <div class="viewer3d-labels"></div>
+                  <span class="viewer3d-status">Loading 3D&hellip;</span>
+                </div>
+                <p class="viewer3d-nogl">This interactive view needs WebGL &mdash; the flat picture below still shows the step.</p>
+                <div class="viewer3d-bar">
+                  <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
+                  <button type="button" data-action="reset">Reset view</button>
+                  <button type="button" data-action="labels" aria-pressed="true">Labels</button>
+                  <button type="button" data-action="fullscreen">Full screen</button>
+                </div>
+              </div>
+              <div class="asm-picture">
+                <a href="docs/images/build/03-stack.svg" target="_blank" rel="noopener"><img src="docs/images/build/03-stack.svg" alt="Flat picture: motor wiring, ESC, capacitor, battery lead and smoke stopper"></a>
+              </div>
+              <p class="asm-cap">The flat picture &mdash; the same step drawn on paper. Click it for full size.</p>
+            </div>
+            <div class="asm-notes">
+              <div class="asm-parts">
+                <span class="asm-label">You will need</span>
+                <ul>
+                  <li>F405 FC + 50A ESC</li>
+                  <li>XT60 battery lead</li>
+                  <li>Capacitor</li>
+                  <li>Solder + flux + cutters</li>
+                  <li>Multimeter</li>
+                  <li>Smoke stopper</li>
+                </ul>
+              </div>
+              <div class="asm-do">
+                <span class="asm-label">What to do</span>
+                <ol class="asm-actions">
+                  <li>Cut each motor wire so it just reaches the ESC.</li>
+                  <li>Tin the pads. Solder the 3 wires from each motor to the ESC.</li>
+                  <li>Solder the XT60 lead and the capacitor &mdash; + to +, &minus; to &minus;.</li>
+                  <li>Bolt the flight controller onto the standoffs, above the ESC.</li>
+                </ol>
+              </div>
+              <p class="asm-warn"><strong>&#9888; Safety:</strong> glasses on, window open. First power-up goes through the smoke stopper &mdash; never direct.</p>
+              <div class="asm-check">
+                <span class="asm-label">&#10003; Before you go on</span>
+                <ul>
+                  <li>Meter confirms polarity &middot; no solder bridges &middot; every wire passes a gentle tug test.</li>
+                </ul>
+              </div>
+              <label class="asm-done"><input type="checkbox" data-asm="3"> This step is done</label>
+            </div>
+          </div>
+        </section>
+        <section class="asm-step" data-step="4" aria-label="Step 4: Add control and video">
+          <div class="asm-head">
+            <span class="asm-num" aria-hidden="true">4</span>
+            <div class="asm-title">
+              <h3>Add control and video</h3>
+              <p class="asm-meta">Soldering iron &middot; the radio link and the video chain</p>
+            </div>
+          </div>
+          <div class="asm-body">
+            <div class="asm-visual">
+              <div class="viewer3d" data-model="docs/models/step-04-receiver-fpv.glb" data-title="Add control and video">
+                <div class="viewer3d-canvas">
+                  <div class="viewer3d-labels"></div>
+                  <span class="viewer3d-status">Loading 3D&hellip;</span>
+                </div>
+                <p class="viewer3d-nogl">This interactive view needs WebGL &mdash; the flat picture below still shows the step.</p>
+                <div class="viewer3d-bar">
+                  <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
+                  <button type="button" data-action="reset">Reset view</button>
+                  <button type="button" data-action="labels" aria-pressed="true">Labels</button>
+                  <button type="button" data-action="fullscreen">Full screen</button>
+                </div>
+              </div>
+              <div class="asm-picture">
+                <a href="docs/images/build/04-receiver-fpv.svg" target="_blank" rel="noopener"><img src="docs/images/build/04-receiver-fpv.svg" alt="Flat picture: RP1 UART wiring and the analog camera, VTX, antenna and monitor chain"></a>
+              </div>
+              <p class="asm-cap">The flat picture &mdash; the same step drawn on paper. Click it for full size.</p>
+            </div>
+            <div class="asm-notes">
+              <div class="asm-parts">
+                <span class="asm-label">You will need</span>
+                <ul>
+                  <li>RP1 V2 receiver</li>
+                  <li>Phoenix 2 camera</li>
+                  <li>Unify HV VTX</li>
+                  <li>TBS Diamond antenna</li>
+                  <li>M5 monitor</li>
+                </ul>
+              </div>
+              <div class="asm-do">
+                <span class="asm-label">What to do</span>
+                <ol class="asm-actions">
+                  <li>Wire the receiver: 5V + GND, then receiver TX &rarr; FC pad R2, receiver RX &rarr; FC pad T2.</li>
+                  <li>Clip the receiver's small antenna on before any power.</li>
+                  <li>Wire camera &rarr; VTX. Mount the VTX and screw its antenna on.</li>
+                  <li>In Betaflight switch on UART2 serial RX + CRSF. Bind the radio.</li>
+                </ol>
+              </div>
+              <p class="asm-warn"><strong>&#9888; Safety:</strong> never power the VTX without its antenna &mdash; it burns out in seconds.</p>
+              <div class="asm-check">
+                <span class="asm-label">&#10003; Before you go on</span>
+                <ul>
+                  <li>All radio channels respond &middot; failsafe cuts the throttle &middot; picture on the monitor.</li>
+                </ul>
+              </div>
+              <label class="asm-done"><input type="checkbox" data-asm="4"> This step is done</label>
+            </div>
+          </div>
+        </section>
+        <section class="asm-step" data-step="5" aria-label="Step 5: Charge the batteries safely">
+          <div class="asm-head">
+            <span class="asm-num" aria-hidden="true">5</span>
+            <div class="asm-title">
+              <h3>Charge the batteries safely</h3>
+              <p class="asm-meta">The charger and the LiPo bag &middot; never skip the bag</p>
+            </div>
+          </div>
+          <div class="asm-body">
+            <div class="asm-visual">
+              <div class="viewer3d" data-model="docs/models/step-05-power.glb" data-title="Charge the batteries safely">
+                <div class="viewer3d-canvas">
+                  <div class="viewer3d-labels"></div>
+                  <span class="viewer3d-status">Loading 3D&hellip;</span>
+                </div>
+                <p class="viewer3d-nogl">This interactive view needs WebGL &mdash; the flat picture below still shows the step.</p>
+                <div class="viewer3d-bar">
+                  <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
+                  <button type="button" data-action="reset">Reset view</button>
+                  <button type="button" data-action="labels" aria-pressed="true">Labels</button>
+                  <button type="button" data-action="fullscreen">Full screen</button>
+                </div>
+              </div>
+              <div class="asm-picture">
+                <a href="docs/images/build/05-power.svg" target="_blank" rel="noopener"><img src="docs/images/build/05-power.svg" alt="Flat picture: radio cells and the 4S LiHV battery connected to the M4AC charger"></a>
+              </div>
+              <p class="asm-cap">The flat picture &mdash; the same step drawn on paper. Click it for full size.</p>
+            </div>
+            <div class="asm-notes">
+              <div class="asm-parts">
+                <span class="asm-label">You will need</span>
+                <ul>
+                  <li>2&times; 18650 cells</li>
+                  <li>USB-C cord</li>
+                  <li>GNB 4S packs</li>
+                  <li>M4AC charger</li>
+                  <li>LiPo bag</li>
+                </ul>
+              </div>
+              <div class="asm-do">
+                <span class="asm-label">What to do</span>
+                <ol class="asm-actions">
+                  <li>Put the two 18650 cells in the radio.</li>
+                  <li>Plug the 4S pack into the charger &mdash; main plug AND balance lead.</li>
+                  <li>Select LiHV / 4S on the charger screen.</li>
+                  <li>Charge inside the closed LiPo bag and stay next to it the whole time.</li>
+                </ol>
+              </div>
+              <p class="asm-warn"><strong>&#9888; Safety:</strong> never charge unattended. Never charge a swollen or damaged pack.</p>
+              <div class="asm-check">
+                <span class="asm-label">&#10003; Before you go on</span>
+                <ul>
+                  <li>Right mode selected &middot; leads undamaged &middot; bag closed beside you.</li>
+                </ul>
+              </div>
+              <label class="asm-done"><input type="checkbox" data-asm="5"> This step is done</label>
+            </div>
+          </div>
+        </section>
+        <section class="asm-step" data-step="6" aria-label="Step 6: Wire the Pi payload">
+          <div class="asm-head">
+            <span class="asm-num" aria-hidden="true">6</span>
+            <div class="asm-title">
+              <h3>Wire the Pi payload</h3>
+              <p class="asm-meta">Soldering iron &middot; the small brain that finds heat</p>
+            </div>
+          </div>
+          <div class="asm-body">
+            <div class="asm-visual">
+              <div class="viewer3d" data-model="docs/models/step-06-payload.glb" data-title="Wire the Pi payload">
+                <div class="viewer3d-canvas">
+                  <div class="viewer3d-labels"></div>
+                  <span class="viewer3d-status">Loading 3D&hellip;</span>
+                </div>
+                <p class="viewer3d-nogl">This interactive view needs WebGL &mdash; the flat picture below still shows the step.</p>
+                <div class="viewer3d-bar">
+                  <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
+                  <button type="button" data-action="reset">Reset view</button>
+                  <button type="button" data-action="labels" aria-pressed="true">Labels</button>
+                  <button type="button" data-action="fullscreen">Full screen</button>
+                </div>
+              </div>
+              <div class="asm-picture">
+                <a href="docs/images/build/06-payload.svg" target="_blank" rel="noopener"><img src="docs/images/build/06-payload.svg" alt="Flat picture: Pi Qwiic HAT connected independently to the thermal camera and GPS"></a>
+              </div>
+              <p class="asm-cap">The flat picture &mdash; the same step drawn on paper. Click it for full size.</p>
+            </div>
+            <div class="asm-notes">
+              <div class="asm-parts">
+                <span class="asm-label">You will need</span>
+                <ul>
+                  <li>Pi Zero 2 WH</li>
+                  <li>Qwiic HAT</li>
+                  <li>MLX90640 thermal camera</li>
+                  <li>PA1010D GPS</li>
+                  <li>2&times; PRT-17912 cables</li>
+                  <li>micro-USB pigtail</li>
+                </ul>
+              </div>
+              <div class="asm-do">
+                <span class="asm-label">What to do</span>
+                <ol class="asm-actions">
+                  <li>Solder the 1&times;5 headers onto both sensor boards.</li>
+                  <li>Push the Qwiic HAT onto the Pi.</li>
+                  <li>Connect each sensor to the HAT with one cable. Match the 3V3 / GND / SDA / SCL labels.</li>
+                  <li>Power it on the bench. Check both sensors answer: camera 0x33, GPS 0x10.</li>
+                </ol>
+              </div>
+              <p class="asm-warn"><strong>&#9888; Safety:</strong> thermal lens points DOWN, GPS antenna points UP. Sensors are 3.3V only &mdash; never put 5V on them.</p>
+              <div class="asm-check">
+                <span class="asm-label">&#10003; Before you go on</span>
+                <ul>
+                  <li>Both sensor addresses answer &middot; orientation right &middot; no pin bent backwards.</li>
+                </ul>
+              </div>
+              <label class="asm-done"><input type="checkbox" data-asm="6"> This step is done</label>
+            </div>
+          </div>
+        </section>
+        <section class="asm-step" data-step="7" aria-label="Step 7: Mount and balance">
+          <div class="asm-head">
+            <span class="asm-num" aria-hidden="true">7</span>
+            <div class="asm-title">
+              <h3>Mount and balance</h3>
+              <p class="asm-meta">Hex drivers + zip ties &middot; props still off</p>
+            </div>
+          </div>
+          <div class="asm-body">
+            <div class="asm-visual">
+              <div class="viewer3d" data-model="docs/models/step-07-mount.glb" data-title="Mount and balance">
+                <div class="viewer3d-canvas">
+                  <div class="viewer3d-labels"></div>
+                  <span class="viewer3d-status">Loading 3D&hellip;</span>
+                </div>
+                <p class="viewer3d-nogl">This interactive view needs WebGL &mdash; the flat picture below still shows the step.</p>
+                <div class="viewer3d-bar">
+                  <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
+                  <button type="button" data-action="reset">Reset view</button>
+                  <button type="button" data-action="labels" aria-pressed="true">Labels</button>
+                  <button type="button" data-action="fullscreen">Full screen</button>
+                </div>
+              </div>
+              <div class="asm-picture">
+                <a href="docs/images/build/07-mount.svg" target="_blank" rel="noopener"><img src="docs/images/build/07-mount.svg" alt="Flat picture: payload secured over frame centre with camera down, GPS up and clear propeller zones"></a>
+              </div>
+              <p class="asm-cap">The flat picture &mdash; the same step drawn on paper. Click it for full size.</p>
+            </div>
+            <div class="asm-notes">
+              <div class="asm-parts">
+                <span class="asm-label">You will need</span>
+                <ul>
+                  <li>Nylon standoffs</li>
+                  <li>Zip ties</li>
+                  <li>Kevlar strap</li>
+                  <li>Battery grip pad</li>
+                </ul>
+              </div>
+              <div class="asm-do">
+                <span class="asm-label">What to do</span>
+                <ol class="asm-actions">
+                  <li>Stand the Pi on nylon standoffs over the middle of the frame.</li>
+                  <li>Zip-tie it down, then add the Kevlar strap as a second lock.</li>
+                  <li>Route every cable out of the prop circles. Tie the loose ends down.</li>
+                  <li>Slide the battery on the grip pad until the drone balances on its centre.</li>
+                </ol>
+              </div>
+              <p class="asm-warn"><strong>&#9888; Safety:</strong> no bare circuit board touches carbon fibre. Nothing loose near spinning props.</p>
+              <div class="asm-check">
+                <span class="asm-label">&#10003; Before you go on</span>
+                <ul>
+                  <li>Two holding methods (ties + strap) &middot; balanced centre of gravity &middot; props still off.</li>
+                </ul>
+              </div>
+              <label class="asm-done"><input type="checkbox" data-asm="7"> This step is done</label>
+            </div>
+          </div>
+        </section>
+        <section class="asm-step" data-step="8" aria-label="Step 8: Test, in this order">
+          <div class="asm-head">
+            <span class="asm-num" aria-hidden="true">8</span>
+            <div class="asm-title">
+              <h3>Test, in this order</h3>
+              <p class="asm-meta">Laptop &middot; each test only after the last one passes</p>
+            </div>
+          </div>
+          <div class="asm-body">
+            <div class="asm-visual">
+              <div class="viewer3d" data-model="docs/models/step-08-test.glb" data-title="Test, in this order">
+                <div class="viewer3d-canvas">
+                  <div class="viewer3d-labels"></div>
+                  <span class="viewer3d-status">Loading 3D&hellip;</span>
+                </div>
+                <p class="viewer3d-nogl">This interactive view needs WebGL &mdash; the flat picture below still shows the step.</p>
+                <div class="viewer3d-bar">
+                  <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
+                  <button type="button" data-action="reset">Reset view</button>
+                  <button type="button" data-action="labels" aria-pressed="true">Labels</button>
+                  <button type="button" data-action="fullscreen">Full screen</button>
+                </div>
+              </div>
+              <div class="asm-picture">
+                <a href="docs/images/build/08-test.svg" target="_blank" rel="noopener"><img src="docs/images/build/08-test.svg" alt="Flat picture: testing sequence from software and bench checks to hover and hot-plate validation"></a>
+              </div>
+              <p class="asm-cap">The flat picture &mdash; the same step drawn on paper. Click it for full size.</p>
+            </div>
+            <div class="asm-notes">
+              <div class="asm-parts">
+                <span class="asm-label">You will need</span>
+                <ul>
+                  <li>Acer laptop</li>
+                  <li>Payload package</li>
+                  <li>Legal open site</li>
+                  <li>Controlled hot plate</li>
+                </ul>
+              </div>
+              <div class="asm-do">
+                <span class="asm-label">What to do &mdash; in this order</span>
+                <ol class="asm-actions">
+                  <li>Run the software tests and the demo on the laptop.</li>
+                  <li>Power up and wait for a GPS fix.</li>
+                  <li>Check the radio and the video on the bench.</li>
+                  <li>Props OFF &mdash; check motor order and direction in Betaflight.</li>
+                  <li>First hover: 1 metre up &rarr; land &rarr; feel the motors for heat.</li>
+                  <li>Heat test: a hot plate among cold things. Write down what it finds.</li>
+                </ol>
+              </div>
+              <p class="asm-warn"><strong>&#9888; Safety:</strong> never near a wildfire &mdash; the law says 5 nautical miles (9.3 km). Only controlled targets on private land with permission.</p>
+              <div class="asm-check">
+                <span class="asm-label">&#10003; Before you go on</span>
+                <ul>
+                  <li>You have written results before you say &ldquo;it detects&rdquo;.</li>
+                </ul>
+              </div>
+              <label class="asm-done"><input type="checkbox" data-asm="8"> This step is done</label>
+            </div>
+          </div>
+        </section>
+        </div>
 
-        <article class="visual-step">
-          <div class="viewer3d" data-model="docs/models/step-03-stack.glb" data-title="Solder and inspect">
-            <div class="viewer3d-canvas">
-              <div class="viewer3d-labels"></div>
-              <span class="viewer3d-status">Loading 3D&hellip;</span>
-            </div>
-            <p class="viewer3d-nogl">This interactive view needs WebGL &mdash; the original diagram is linked below.</p>
-            <div class="viewer3d-bar">
-              <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
-              <button type="button" data-action="reset">Reset view</button>
-              <button type="button" data-action="labels" aria-pressed="true">Labels</button>
-              <button type="button" data-action="fullscreen">Full screen</button>
-            </div>
-          </div>
-          <details class="orig-diagram">
-            <summary>Original diagram (SVG)</summary>
-            <a href="docs/images/build/03-stack.svg" target="_blank" rel="noopener">03-stack.svg &mdash; Motor wiring, ESC, capacitor, battery lead and smoke stopper</a>
-          </details>
-          <div class="build-notes"><h3>3 · Solder and inspect</h3>
-            <p><strong>Do this:</strong> Solder motor wires, battery lead and capacitor to the ESC. Fit the FC above it.</p>
-            <p class="need"><strong>You need:</strong> Stack, iron, solder/flux, cutters, safety glasses, meter and smoke stopper.</p>
-            <p class="check">✓ Check: polarity and continuity pass; no bridges or loose wires; first power uses the smoke stopper.</p></div>
-        </article>
-        <article class="visual-step">
-          <div class="viewer3d" data-model="docs/models/step-04-receiver-fpv.glb" data-title="Add control and video">
-            <div class="viewer3d-canvas">
-              <div class="viewer3d-labels"></div>
-              <span class="viewer3d-status">Loading 3D&hellip;</span>
-            </div>
-            <p class="viewer3d-nogl">This interactive view needs WebGL &mdash; the original diagram is linked below.</p>
-            <div class="viewer3d-bar">
-              <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
-              <button type="button" data-action="reset">Reset view</button>
-              <button type="button" data-action="labels" aria-pressed="true">Labels</button>
-              <button type="button" data-action="fullscreen">Full screen</button>
-            </div>
-          </div>
-          <details class="orig-diagram">
-            <summary>Original diagram (SVG)</summary>
-            <a href="docs/images/build/04-receiver-fpv.svg" target="_blank" rel="noopener">04-receiver-fpv.svg &mdash; RP1 UART wiring and analog camera, VTX, antenna and monitor chain</a>
-          </details>
-          <div class="build-notes"><h3>4 · Add control and video</h3>
-            <p><strong>Do this:</strong> Cross RP1 TX/RX to the FC's R2/T2. Then connect the analog camera, HV VTX, antenna and monitor.</p>
-            <p class="need"><strong>You need:</strong> RP1 V2, Phoenix 2, Unify HV, TBS Diamond antenna and M5 monitor.</p>
-            <p class="check">✓ Check: CRSF channels and failsafe work; video works; VTX is never powered without its antenna.</p></div>
-        </article>
-
-        <article class="visual-step">
-          <div class="viewer3d" data-model="docs/models/step-05-power.glb" data-title="Charge power safely">
-            <div class="viewer3d-canvas">
-              <div class="viewer3d-labels"></div>
-              <span class="viewer3d-status">Loading 3D&hellip;</span>
-            </div>
-            <p class="viewer3d-nogl">This interactive view needs WebGL &mdash; the original diagram is linked below.</p>
-            <div class="viewer3d-bar">
-              <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
-              <button type="button" data-action="reset">Reset view</button>
-              <button type="button" data-action="labels" aria-pressed="true">Labels</button>
-              <button type="button" data-action="fullscreen">Full screen</button>
-            </div>
-          </div>
-          <details class="orig-diagram">
-            <summary>Original diagram (SVG)</summary>
-            <a href="docs/images/build/05-power.svg" target="_blank" rel="noopener">05-power.svg &mdash; Pocket radio cells and 4S LiHV battery connected to the M4AC charger</a>
-          </details>
-          <div class="build-notes"><h3>5 · Charge power safely</h3>
-            <p><strong>Do this:</strong> Install the radio's two 18650 cells. Connect a 4S pack to the M4AC with XT60 and balance lead.</p>
-            <p class="need"><strong>You need:</strong> 18650 pair, USB-C cord, GNB 4S packs, M4AC and LiPo bag.</p>
-            <p class="check">✓ Check: select LiHV/4S, inspect leads and balance-charge attended in the bag.</p></div>
-        </article>
-        <article class="visual-step">
-          <div class="viewer3d" data-model="docs/models/step-06-payload.glb" data-title="Wire the Pi payload">
-            <div class="viewer3d-canvas">
-              <div class="viewer3d-labels"></div>
-              <span class="viewer3d-status">Loading 3D&hellip;</span>
-            </div>
-            <p class="viewer3d-nogl">This interactive view needs WebGL &mdash; the original diagram is linked below.</p>
-            <div class="viewer3d-bar">
-              <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
-              <button type="button" data-action="reset">Reset view</button>
-              <button type="button" data-action="labels" aria-pressed="true">Labels</button>
-              <button type="button" data-action="fullscreen">Full screen</button>
-            </div>
-          </div>
-          <details class="orig-diagram">
-            <summary>Original diagram (SVG)</summary>
-            <a href="docs/images/build/06-payload.svg" target="_blank" rel="noopener">06-payload.svg &mdash; Pi Qwiic HAT connected independently to thermal camera and GPS</a>
-          </details>
-          <div class="build-notes"><h3>6 · Wire the Pi payload</h3>
-            <p><strong>Do this:</strong> Solder the 1×5 sensor headers, fit the Qwiic HAT and connect each sensor with a PRT-17912 cable.</p>
-            <p class="need"><strong>You need:</strong> Zero 2 WH kit, Qwiic HAT, MLX90640, PA1010D, two jumper cables and micro-USB pigtail.</p>
-            <p class="check">✓ Check: camera 0x33 and GPS 0x10 respond; thermal faces down, GPS faces up.</p></div>
-        </article>
-
-        <article class="visual-step">
-          <div class="viewer3d" data-model="docs/models/step-07-mount.glb" data-title="Mount and balance">
-            <div class="viewer3d-canvas">
-              <div class="viewer3d-labels"></div>
-              <span class="viewer3d-status">Loading 3D&hellip;</span>
-            </div>
-            <p class="viewer3d-nogl">This interactive view needs WebGL &mdash; the original diagram is linked below.</p>
-            <div class="viewer3d-bar">
-              <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
-              <button type="button" data-action="reset">Reset view</button>
-              <button type="button" data-action="labels" aria-pressed="true">Labels</button>
-              <button type="button" data-action="fullscreen">Full screen</button>
-            </div>
-          </div>
-          <details class="orig-diagram">
-            <summary>Original diagram (SVG)</summary>
-            <a href="docs/images/build/07-mount.svg" target="_blank" rel="noopener">07-mount.svg &mdash; Payload secured over frame centre with camera down, GPS up and clear propeller zones</a>
-          </details>
-          <div class="build-notes"><h3>7 · Mount and balance</h3>
-            <p><strong>Do this:</strong> Secure Pi/HAT with nylon standoffs and zip ties, then add a Kevlar strap. Route every cable clear of props.</p>
-            <p class="need"><strong>You need:</strong> Standoffs, zip ties, Kevlar strap, battery grip pad and frame.</p>
-            <p class="check">✓ Check: two retention methods, no carbon contact, balanced centre of gravity.</p></div>
-        </article>
-        <article class="visual-step">
-          <div class="viewer3d" data-model="docs/models/step-08-test.glb" data-title="Test in order">
-            <div class="viewer3d-canvas">
-              <div class="viewer3d-labels"></div>
-              <span class="viewer3d-status">Loading 3D&hellip;</span>
-            </div>
-            <p class="viewer3d-nogl">This interactive view needs WebGL &mdash; the original diagram is linked below.</p>
-            <div class="viewer3d-bar">
-              <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
-              <button type="button" data-action="reset">Reset view</button>
-              <button type="button" data-action="labels" aria-pressed="true">Labels</button>
-              <button type="button" data-action="fullscreen">Full screen</button>
-            </div>
-          </div>
-          <details class="orig-diagram">
-            <summary>Original diagram (SVG)</summary>
-            <a href="docs/images/build/08-test.svg" target="_blank" rel="noopener">08-test.svg &mdash; Testing sequence from software and bench checks to hover and hot-plate validation</a>
-          </details>
-          <div class="build-notes"><h3>8 · Test in order</h3>
-            <p><strong>Do this:</strong> Run tests and demo, verify GPS fix and power, test radio/video, check motors with props off, then hover.</p>
-            <p class="need"><strong>You need:</strong> Acer laptop, payload package, open legal site and a controlled hot plate.</p>
-            <p class="check">✓ Check: repeated hot/cold results are recorded before claiming detection. Never test at a wildfire.</p></div>
-        </article>
+        <div class="asm-nav">
+          <button type="button" class="asm-btn" data-asm-prev>&larr; Previous step</button>
+          <span class="asm-count">Step <b data-asm-cur>1</b> of 8 &mdash; pass the &#10003; check, tick the box, then go on</span>
+          <button type="button" class="asm-btn primary" data-asm-next>Next step &rarr;</button>
+        </div>
       </div>
     </div>
   </details>
@@ -1765,6 +2166,86 @@ while True:
       btn.textContent = anyClosed ? "Collapse all" : "Expand all";
     });
   });
+</script>
+<script>
+  "use strict";
+  /* ---------- IKEA-style assembly walker (tab 4) ----------
+     One step at a time: picture + numbered actions + check gate, then Next.
+     Done ticks persist in the same saved.ticks store as the checklist. */
+  (function () {
+    const asm = document.querySelector("[data-assembly]");
+    if (!asm) return;
+    const steps = Array.from(asm.querySelectorAll(".asm-step"));
+    const dots = Array.from(asm.querySelectorAll("[data-asm-dot]"));
+    const prevBtn = asm.querySelector("[data-asm-prev]");
+    const nextBtn = asm.querySelector("[data-asm-next]");
+    const curEl = asm.querySelector("[data-asm-cur]");
+    const toggleBtn = asm.querySelector("[data-asm-all]");
+    let current = 0;
+
+    function paintDots() {
+      dots.forEach(function (d, k) {
+        d.classList.toggle("is-current", k === current && !asm.classList.contains("show-all"));
+        d.setAttribute("aria-current", k === current ? "step" : "false");
+      });
+    }
+    function show(n, scroll) {
+      current = Math.max(0, Math.min(steps.length - 1, n));
+      steps.forEach(function (s, k) { s.hidden = k !== current; });
+      if (curEl) curEl.textContent = String(current + 1);
+      if (prevBtn) prevBtn.disabled = current === 0;
+      if (nextBtn) nextBtn.disabled = current === steps.length - 1;
+      paintDots();
+      if (scroll !== false && steps[current].getBoundingClientRect().top < 0) {
+        steps[current].scrollIntoView({ block: "start" });
+      }
+    }
+    if (prevBtn) prevBtn.addEventListener("click", function () { show(current - 1); });
+    if (nextBtn) nextBtn.addEventListener("click", function () { show(current + 1); });
+    dots.forEach(function (d, k) {
+      d.addEventListener("click", function () {
+        if (asm.classList.contains("show-all")) {
+          steps[k].scrollIntoView({ block: "start" });
+        } else {
+          show(k);
+        }
+      });
+    });
+    if (toggleBtn) toggleBtn.addEventListener("click", function () {
+      const on = asm.classList.toggle("show-all");
+      toggleBtn.setAttribute("aria-pressed", String(on));
+      toggleBtn.textContent = on ? "One step at a time" : "Show all 8 steps";
+      if (on) {
+        steps.forEach(function (s) { s.hidden = false; });
+      } else {
+        show(current, false);
+      }
+      paintDots();
+    });
+    steps.forEach(function (s, k) {
+      const box = s.querySelector("input[data-asm]");
+      if (!box) return;
+      const key = "asm-" + String(k + 1);
+      try {
+        if (typeof saved !== "undefined" && saved.ticks) box.checked = !!saved.ticks[key];
+      } catch (e) {}
+      if (dots[k]) dots[k].classList.toggle("is-done", box.checked);
+      box.addEventListener("change", function () {
+        try {
+          if (typeof saved !== "undefined" && saved.ticks) {
+            saved.ticks[key] = box.checked;
+            if (typeof save === "function") save();
+          }
+        } catch (e) {}
+        if (dots[k]) dots[k].classList.toggle("is-done", box.checked);
+        if (box.checked && k === current && current < steps.length - 1
+            && !asm.classList.contains("show-all")) {
+          show(current + 1);
+        }
+      });
+    });
+    show(0, false);
+  })();
 </script>
 <script type="module" src="docs/js/viewer3d.js"></script>
 </body>

@@ -20,9 +20,13 @@ A single-page, interactive order and build guide for a 5-inch analog FPV quadcop
 
 [![Detection pipeline and coverage calculator](docs/images/logic.png)](docs/images/logic.png)
 
-### Illustrated 8-step build
+### IKEA-style assembly instructions
 
-Open **4 Build Steps** in the guide for eight custom diagrams covering inventory, frame assembly, soldering, receiver/FPV wiring, charging, Pi/sensor wiring, payload mounting and testing.
+Open **4 Build Steps** in the guide for the assembly manual: one step at a time, each with
+its interactive 3D model and flat picture, a parts strip, numbered actions, a safety note
+and a check gate before the next step. Big Previous/Next buttons walk through the eight
+steps — inventory, frame assembly, soldering, receiver/FPV wiring, charging, Pi/sensor
+wiring, payload mounting and testing — or a toggle shows all eight at once.
 
 [![Illustrated 8-step build](docs/images/illustrated-build.png)](docs/images/illustrated-build.png)
 
@@ -30,10 +34,10 @@ The individual SVG diagrams are also available in `docs/images/build/`.
 
 ### Interactive 3D models
 
-Each of the eight steps — plus the finished aircraft — is now an interactive 3D model you can
+Each of the eight steps — plus the finished aircraft — is an interactive 3D model you can
 orbit, zoom and pan, with HTML part labels read from the model itself. three.js is vendored in
-`docs/vendor/three` (no CDN), models are lazy-loaded on scroll, and each step keeps its original
-SVG as a collapsible "original diagram" link. Step 8's six test stages are clickable hotspots
+`docs/vendor/three` (no CDN), models are lazy-loaded on scroll, and each step also shows its
+flat picture underneath the model. Step 8's six test stages are clickable hotspots
 (A–F) that highlight the hardware each stage exercises.
 
 Models are generated from committed Blender scripts, so they can be rebuilt at any time:
@@ -74,7 +78,7 @@ esbuild docs/js/viewer3d.js --bundle --format=iife --minify --target=es2020 \
   --alias:three/addons/renderers/CSS2DRenderer.js=./docs/vendor/three/addons/renderers/CSS2DRenderer.js \
   --outfile=bundle.js
 
-node scripts/standalone/make-standalone.js bundle.js "Shad's Build Guide (3D).html"
+node scripts/standalone/make-standalone.js bundle.js "Shad's Build Guide.html"
 ```
 
 The build steps tab is deep-linkable: `#p-steps` opens it directly.
