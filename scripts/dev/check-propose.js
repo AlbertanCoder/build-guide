@@ -59,8 +59,17 @@ const OP = {
 
     const indexPath = path.join(CLONE, "index.html");
     const startHtml = fs.readFileSync(indexPath, "utf8");
-    check("the clone starts with 5 detection questions",
-      /Quiz: Detection & mapping \(5 questions\)/.test(startHtml));
+    /* Read the baseline rather than hardcoding it. Once a real question is
+       accepted the repo legitimately has 6 detection questions, and a test that
+       insisted on 5 would go red for a CORRECT change — the exact thing R22
+       exists to prevent. */
+    const cloneOp = require(path.join(CLONE, "server", "ops", "quiz-add.js"));
+    const startQuizzes = cloneOp.readQuizzes(startHtml).quizzes;
+    const startDetect = startQuizzes.detect.length;
+    const startTotal = Object.keys(startQuizzes)
+      .reduce((n, k) => n + startQuizzes[k].length, 0);
+    check("the clone has a detection quiz to add to", startDetect >= 1,
+      startDetect + " detection, " + startTotal + " total");
 
     fs.writeFileSync(path.join(CLONE, "op.json"), JSON.stringify(OP, null, 2), "utf8");
 
@@ -74,12 +83,13 @@ const OP = {
 
     /* ---- the assertions that matter: main must not have moved ---------- */
     const mainNow = fs.readFileSync(indexPath, "utf8");
-    check("MAIN IS UNCHANGED: still says 5 questions",
-      /Quiz: Detection & mapping \(5 questions\)/.test(mainNow));
-    const cloneOp = require(path.join(CLONE, "server", "ops", "quiz-add.js"));
-    const mainTotal = Object.keys(cloneOp.readQuizzes(mainNow).quizzes)
-      .reduce((n, k) => n + cloneOp.readQuizzes(mainNow).quizzes[k].length, 0);
-    check("MAIN IS UNCHANGED: still 28 questions on disk", mainTotal === 28, String(mainTotal));
+    const mainQuizzes = cloneOp.readQuizzes(mainNow).quizzes;
+    const mainTotal = Object.keys(mainQuizzes)
+      .reduce((n, k) => n + mainQuizzes[k].length, 0);
+    check("MAIN IS UNCHANGED: detection still has " + startDetect,
+      mainQuizzes.detect.length === startDetect, String(mainQuizzes.detect.length));
+    check("MAIN IS UNCHANGED: still " + startTotal + " questions on disk",
+      mainTotal === startTotal, String(mainTotal));
     check("we are back on main",
       gitOut(["rev-parse", "--abbrev-ref", "HEAD"]).trim() === "main");
     check("the working tree is clean after proposing",
@@ -87,10 +97,11 @@ const OP = {
 
     /* ---- the branch itself --------------------------------------------- */
     const branchHtml = gitOut(["show", "proposal/quiz-add-detect-1:index.html"]);
-    check("the branch has 6 detection questions",
-      /Quiz: Detection & mapping \(6 questions\)/.test(branchHtml));
+    check("the branch adds exactly one detection question",
+      new RegExp("\\(" + (startDetect + 1) + " questions\\)").test(branchHtml));
     const branchReadme = gitOut(["show", "proposal/quiz-add-detect-1:docs/assistant/README.md"]);
-    check("the branch updated the stated total in the docs", /29 questions/.test(branchReadme));
+    check("the branch updated the stated total in the docs",
+      new RegExp((startTotal + 1) + " questions").test(branchReadme));
 
     /* ---- a second proposal gets its own number ------------------------- */
     r = node(["server/ops/propose.js", "op.json"]);
@@ -128,7 +139,8 @@ const OP = {
       { GATE_CMD: greenGate });
     check("accept succeeds when the gate is green", a.status === 0, a.out.split(/\r?\n/)[0].slice(0, 90));
     const merged = fs.readFileSync(indexPath, "utf8");
-    check("main now carries the new question", /Quiz: Detection & mapping \(6 questions\)/.test(merged));
+    check("main now carries the new question",
+      new RegExp("\\(" + (startDetect + 1) + " questions\\)").test(merged));
     check("accept says it SKIPPED the single-file build rather than pretending",
       /SKIPPED/.test(a.out), (a.out.split(/\r?\n/).filter((l) => /build/.test(l))[0] || "").trim().slice(0, 80));
     check("the accepted branch is kept as a record",
