@@ -83,6 +83,26 @@ const OP = {
     check("the clone has a detection quiz to add to", startDetect >= 1,
       startDetect + " detection, " + startTotal + " total");
 
+    /* The ops under test are the WORKING TREE ones, copied into the throwaway
+       clone and committed THERE as "the code under test": a fix and its tests are
+       then validated in the same run, instead of testing the previous commit's
+       code (approved change, R22, propose loop 32 -> 38). The real working repo
+       is still never a test subject, and nothing here ever pushes. */
+    fs.mkdirSync(path.join(CLONE, "server", "ops"), { recursive: true });
+    ["propose.js", "quiz-add.js", "prose-rewrite.js", "known-values.json"].forEach(function (f) {
+      fs.copyFileSync(path.join(ROOT, "server", "ops", f), path.join(CLONE, "server", "ops", f));
+    });
+    fs.copyFileSync(path.join(ROOT, "server", "cost-engine.js"), path.join(CLONE, "server", "cost-engine.js"));
+    run("git", ["add", "-A"], CLONE);
+    run("git", ["commit", "--quiet", "-m", "code under test (working tree, placed by check-propose)"], CLONE);
+
+    const proseMod = require(path.join(ROOT, "server", "ops", "prose-rewrite.js"));
+    const pBuildSpan = proseMod.sectionSpan(startHtml, "p-build");
+    const PROSE_ANCHOR = /<p\b[^>]*>[\s\S]*?<\/p>/.exec(
+      startHtml.slice(pBuildSpan.start, pBuildSpan.end))[0];
+    const PROSE_NEW = "<p>Prose fixture " + NONCE +
+      " rewrites this paragraph with enough words to satisfy every length rule.</p>";
+
     fs.writeFileSync(path.join(CLONE, "op.json"), JSON.stringify(OP, null, 2), "utf8");
 
     r = node(["server/ops/propose.js", "op.json"]);
@@ -126,6 +146,40 @@ const OP = {
     r = node(["server/ops/propose.js", "bom-op.json"]);
     check("an op file saved with a UTF-8 BOM is accepted",
       r.status === 0, r.out.split(/\r?\n/)[0].slice(0, 90));
+
+    /* ---- prose-rewrite through the same loop ----------------------------- */
+    const proseHtmlBefore = fs.readFileSync(indexPath, "utf8");
+    fs.writeFileSync(path.join(CLONE, "prose.json"), JSON.stringify(
+      { op: "prose-rewrite", section: "p-build", oldText: PROSE_ANCHOR, newText: PROSE_NEW },
+      null, 2), "utf8");
+    r = node(["server/ops/propose.js", "prose.json"]);
+    check("propose runs a prose-rewrite end to end", r.status === 0,
+      r.status === 0 ? "ok" : r.out.split(/\r?\n/).slice(0, 3).join(" / "));
+    check("a prose-rewrite proposal branch was created",
+      /proposal\/prose-rewrite-p-build-1/.test(gitOut(["branch", "--list", "proposal/*"])),
+      gitOut(["branch", "--list", "proposal/*"]).trim());
+    check("MAIN IS UNCHANGED: the prose proposal moved no bytes",
+      fs.readFileSync(indexPath, "utf8") === proseHtmlBefore);
+    const proseBranchHtml = gitOut(["show", "proposal/prose-rewrite-p-build-1:index.html"]);
+    check("the branch carries the rewritten paragraph",
+      proseBranchHtml.indexOf(PROSE_NEW) !== -1 && proseBranchHtml.indexOf(PROSE_ANCHOR) === -1);
+    const proseBranchQuizzes = cloneOp.readQuizzes(proseBranchHtml).quizzes;
+    const proseBranchTotal = Object.keys(proseBranchQuizzes)
+      .reduce((n, k) => n + proseBranchQuizzes[k].length, 0);
+    check("the prose branch left the question total at " + startTotal,
+      proseBranchTotal === startTotal, String(proseBranchTotal));
+
+    fs.writeFileSync(path.join(CLONE, "prose-bad.json"), JSON.stringify(
+      {
+        op: "prose-rewrite", section: "p-build", oldText: PROSE_ANCHOR,
+        newText: "<p>Bad fixture claims this is 100% safe and deserves to be rewritten.</p>"
+      }, null, 2), "utf8");
+    const branchesBeforeProse = gitOut(["branch", "--list", "proposal/*"]);
+    r = node(["server/ops/propose.js", "prose-bad.json"]);
+    check("a prose op with banned language is refused and leaves no branch",
+      r.status !== 0 && /100%/.test(r.out) &&
+      gitOut(["branch", "--list", "proposal/*"]) === branchesBeforeProse,
+      r.out.split(/\r?\n/)[0].slice(0, 90));
 
     /* ---- refusals leave no residue ------------------------------------- */
     const dup = JSON.parse(JSON.stringify(OP));

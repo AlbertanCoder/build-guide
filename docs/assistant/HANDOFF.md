@@ -12,7 +12,7 @@ running the gate.
 | Repo | `C:\Users\SHADHUNTER\Desktop\build-guide-repo`, branch `main` |
 | State | clean, pushed, **0 ahead** |
 | Head at handoff | written at `27e5a05`; run `git log -1` — committing this file necessarily moved it, and any later commit should leave the gate green |
-| Gate | `node scripts/dev/gate.js` → **292/292 named checks**, fifteen suites |
+| Gate | `node scripts/dev/gate.js` → **298/298 named checks**, fifteen suites |
 | The file the user opens | `C:\Users\SHADHUNTER\Desktop\Shad's Build Guide.html` — a **generated** single file. Never edit it; edit source and rebuild |
 | The user's API key | **not saved yet** (`keyConfigured: false`) |
 
@@ -33,7 +33,7 @@ running the gate.
 (cache, model tiers, compression, budget, `/api/stats`), the settings drawer
 (provider, key, model, budget — all server-side), domain pack slice 1 of 6 with a
 build that **refuses an unsourced claim**, two named edit operations (`quiz-add`,
-`prose-rewrite`), the proposal branch loop, undo, and a 292-check gate that cannot
+`prose-rewrite`), the proposal branch loop, undo, and a 298-check gate that cannot
 be made green by deleting a check.
 
 **Not built — say so plainly if asked:**

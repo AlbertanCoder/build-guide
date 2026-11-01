@@ -188,7 +188,7 @@ function propose(opPath, opts) {
   }
 
   git(["add", "index.html"]);
-  (synced.files || []).forEach(function (f) { git(["add", f]); });
+  ((synced && synced.files) || []).forEach(function (f) { git(["add", f]); });
 
   const message = "Proposal: " + applied.changes.join("; ");
   r = git(["commit", "-m", message]);
