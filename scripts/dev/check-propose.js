@@ -22,8 +22,11 @@ function check(name, ok, detail) {
   console.log((ok ? "PASS " : "FAIL ") + name + (detail ? "  [" + detail + "]" : ""));
 }
 
-function run(cmd, args, cwd) {
-  const r = spawnSync(cmd, args, { cwd: cwd || CLONE, encoding: "utf8", windowsHide: true });
+function run(cmd, args, cwd, env) {
+  const r = spawnSync(cmd, args, {
+    cwd: cwd || CLONE, encoding: "utf8", windowsHide: true,
+    env: Object.assign({}, process.env, env || {})
+  });
   return { status: r.status, out: String(r.stdout || "") + String(r.stderr || "") };
 }
 const node = (args) => run(process.execPath, args, CLONE);
@@ -114,6 +117,46 @@ const OP = {
     fs.writeFileSync(indexPath, saved, "utf8");
     check("restoring the file makes the tree clean again",
       gitOut(["status", "--porcelain", "--untracked-files=no"]).trim() === "");
+
+    /* ---- accept with a GREEN gate: merges, and admits what it skipped --- */
+    const greenGate = path.join(CLONE, "gate-green.js");
+    fs.writeFileSync(greenGate, "process.exit(0);\n", "utf8");
+    const redGate = path.join(CLONE, "gate-red.js");
+    fs.writeFileSync(redGate, "console.log('FAIL a check is broken');\nprocess.exit(1);\n", "utf8");
+
+    let a = run(process.execPath, ["server/ops/accept.js", "proposal/quiz-add-detect-1"], CLONE,
+      { GATE_CMD: greenGate });
+    check("accept succeeds when the gate is green", a.status === 0, a.out.split(/\r?\n/)[0].slice(0, 90));
+    const merged = fs.readFileSync(indexPath, "utf8");
+    check("main now carries the new question", /Quiz: Detection & mapping \(6 questions\)/.test(merged));
+    check("accept says it SKIPPED the single-file build rather than pretending",
+      /SKIPPED/.test(a.out), (a.out.split(/\r?\n/).filter((l) => /build/.test(l))[0] || "").trim().slice(0, 80));
+    check("the accepted branch is kept as a record",
+      /proposal\/quiz-add-detect-1/.test(gitOut(["branch", "--list", "proposal/*"])));
+
+    /* ---- accept with a RED gate: merges nothing ------------------------- */
+    const beforeRed = fs.readFileSync(indexPath, "utf8");
+    a = run(process.execPath, ["server/ops/accept.js", "proposal/quiz-add-detect-2"], CLONE,
+      { GATE_CMD: redGate });
+    check("accept refuses when the gate is red", a.status !== 0 && /RED/.test(a.out),
+      a.out.split(/\r?\n/)[0].slice(0, 90));
+    check("a red gate leaves main byte-identical",
+      fs.readFileSync(indexPath, "utf8") === beforeRed);
+    check("the refused branch is kept for inspection",
+      /proposal\/quiz-add-detect-2/.test(gitOut(["branch", "--list", "proposal/*"])));
+
+    /* ---- reject deletes the branch and touches nothing else ------------- */
+    const beforeReject = fs.readFileSync(indexPath, "utf8");
+    const rj = run(process.execPath, ["server/ops/reject.js", "proposal/quiz-add-detect-2"], CLONE);
+    check("reject succeeds", rj.status === 0, rj.out.trim().slice(0, 80));
+    check("the rejected branch is gone",
+      !/proposal\/quiz-add-detect-2/.test(gitOut(["branch", "--list", "proposal/*"])));
+    check("reject left main byte-identical",
+      fs.readFileSync(indexPath, "utf8") === beforeReject);
+
+    const guard = run(process.execPath, ["server/ops/reject.js", "main"], CLONE);
+    check("reject refuses to delete anything that is not a proposal",
+      guard.status !== 0, guard.out.split(/\r?\n/)[0].slice(0, 80));
   } catch (err) {
     check("the test ran without throwing", false, String(err && err.message ? err.message : err));
   } finally {
