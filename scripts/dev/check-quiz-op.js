@@ -40,12 +40,17 @@ check("reads the real quizzes out of index.html", Object.keys(parsed.quizzes).le
 check("the guide has questions to work with", START_TOTAL > 0, String(START_TOTAL));
 check("the detect quiz has questions to work with", START_DETECT > 0, String(START_DETECT));
 
+/* Unique per run. Once a question like this is accepted into the repo, a fixed
+   fixture becomes a near-duplicate of an existing question and the suite goes
+   red for a correct state. */
+const NONCE = "q" + Date.now().toString(36);
+
 const OP = {
   op: "quiz-add",
   target: "detect",
   intent: { add: 1, minLevel: 3, totalBefore: START_TOTAL, totalAfter: START_TOTAL + 1 },
   question: {
-    q: "At 30 m with the 55 degree lens, roughly how much ground does one pixel cover?",
+    q: "At 30 m with the 55 degree lens, roughly how much ground does one pixel cover? (" + NONCE + ")",
     a: ["About 10 cm", "About 1 m", "About 10 m", "About 30 m"],
     c: 1,
     why: "2 x 30 m x tan(27.5 deg) is about 31.2 m across; over 32 pixels that is about 0.98 m."

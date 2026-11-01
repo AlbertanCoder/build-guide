@@ -58,10 +58,16 @@ const OP = {
 
 (async () => {
   try {
-    let r = run("git", ["clone", "--quiet", ROOT, CLONE], TMP);
-    check("cloned the committed repo to a temp dir", r.status === 0,
+    /* --branch main matters: a plain local clone inherits the outer repo's HEAD,
+       and during accept the outer repo is briefly on the proposal branch. Without
+       this, the clone landed on the branch and propose refused to run. */
+    let r = run("git", ["clone", "--quiet", "--branch", "main", ROOT, CLONE], TMP);
+    check("cloned main of the repo to a temp dir", r.status === 0,
       r.status === 0 ? "ok" : r.out.slice(0, 150));
     if (r.status !== 0) { throw new Error("clone failed"); }
+    check("the clone is on main regardless of what the outer repo is doing",
+      gitOut(["rev-parse", "--abbrev-ref", "HEAD"]).trim() === "main",
+      gitOut(["rev-parse", "--abbrev-ref", "HEAD"]).trim());
 
     const indexPath = path.join(CLONE, "index.html");
     const startHtml = fs.readFileSync(indexPath, "utf8");

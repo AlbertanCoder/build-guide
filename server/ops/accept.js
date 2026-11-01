@@ -101,6 +101,17 @@ function accept(slug, opts) {
   let r = git(["checkout", slug]);
   if (!r.ok) { return fail("could not check out the proposal: " + r.out.trim()); }
 
+  /* Bring the proposal up to date with main before gating it. A proposal made an
+     hour ago carries the tests from an hour ago, and gating stale tests either
+     fails a good change or passes a bad one. Merging main in first means the
+     proposal is always judged by the CURRENT checks. */
+  const upToDate = git(["merge", "main", "--no-edit", "-m", "Merge main into " + slug + " before gating"]);
+  if (!upToDate.ok) {
+    git(["merge", "--abort"]);
+    git(["checkout", "main"]);
+    return fail("this proposal conflicts with the current main; re-propose it against the latest main");
+  }
+
   log("running the gate on " + slug + " ...");
   const gate = runGate();
   if (!gate.ok) {
