@@ -251,13 +251,10 @@ if (require.main === module) {
   process.exit(0);
 }
 
-function syncTotal(file, before, after) {
-  const full = path.join(ROOT, file);
-  if (!fs.existsSync(full)) { return { changed: false }; }
-  const text = fs.readFileSync(full, "utf8");
-  const from = before + " questions";
-  const to = after + " questions";
-  if (text.indexOf(from) === -1) { return { changed: false }; }
-  fs.writeFileSync(full, text.split(from).join(to), "utf8");
-  return { changed: true, from: from, to: to };
-}
+/* NOTE: there used to be a second, older `syncTotal(file, before, after)` down
+   here. Two function declarations with the same name is legal JavaScript and the
+   LATER one silently wins, so the new call `syncTotal(before, after)` was reaching
+   the old 3-argument version and passing 28 as a file path. It is deleted; if you
+   ever add a second definition, the run-time behaviour changes without an error.
+   Caught by scripts/dev/check-propose.js. */
+
