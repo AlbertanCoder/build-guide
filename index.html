@@ -165,6 +165,14 @@
   .shop input[type="number"] { width: 74px; padding: 5px 7px; border: 1px solid var(--line); border-radius: 8px; }
   .shop-links { margin: 4px 0 0; font-size: 12.5px; }
   .shop-links a { font-weight: 600; white-space: nowrap; }
+  /* ---- Staged buying plan (tab 3) ---- */
+  .stage { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+           padding: 16px 18px; margin: 0 0 12px; box-shadow: var(--shadow); }
+  .stage h4 { margin: 0 0 4px; font-size: 16.5px; color: var(--pine-deep); }
+  .stage .stg-cost { font-size: 13px; color: var(--soft); margin: 0 0 10px; }
+  .stage .stg-cost b { color: var(--pine); }
+  .stage .asm-label { margin-top: 12px; }
+  .stage .asm-label:first-child { margin-top: 0; }
 
   .wire { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; text-align: center; }
   .wire div { border-radius: 10px; padding: 11px 4px; color: #fff; font-weight: 700; font-size: 15px; }
@@ -644,6 +652,230 @@
       retailer freight. Every row below links to its live retailer listing. Use the <a href="Shad-Drone-Order-List.md">line-by-line order document</a> for stock and freight.</div>
     <div id="shopping"></div>
   </div>
+
+  <details class="acc" open>
+    <summary>Buy it in stages &mdash; the pay-as-you-go plan</summary>
+    <div class="acc-body">
+      <p>Can't fund CA$1,678 in one shot? Don't. Each stage below is a shopping chunk of
+      roughly CA$120&ndash;400 that pays off the day it arrives: you build, test or learn
+      something real, and every stage feeds the next &mdash; nothing sits in a box waiting
+      for more money. Running totals use the verified 1 Nov 2026 prices.
+      <strong>If you already own a computer, the complete flying project is CA$1,373.01</strong>
+      &mdash; the laptop is an optional extra stage.</p>
+      <div class="note"><strong>Freight tip:</strong> stages sharing a store can be merged into
+      one order to save shipping (1, 3, 4, 5 and 6 all ship from Rotor Village) &mdash; the
+      trade-off is waiting longer. Re-check prices before checkout.</div>
+
+        <div class="stage">
+          <h4>Stage 0 &middot; Start tonight</h4>
+          <p class="stg-cost"><b>CA$0</b> &middot; running total <b>CA$0</b> &middot; nothing to buy</p>
+          <div class="asm-do">
+            <span class="asm-label">What you can do with it</span>
+            <ol class="asm-actions">
+              <li>Run the payload software on any computer: the 19 tests, the demo and the local map viewer.</li>
+              <li>Read the manuals for the stack, receiver, VTX and Pi sensors &mdash; download them now.</li>
+              <li>Watch a soldering tutorial and read the LiPo safety notes in this guide.</li>
+            </ol>
+          </div>
+          <div class="asm-check"><span class="asm-label">&#10003; Stage done when</span>
+            <ul><li>You can explain how a thermal frame becomes GPS-referenced hotspots on a map.</li></ul></div>
+        </div>
+
+        <div class="stage">
+          <h4>Stage 1 &middot; Workshop &amp; safety</h4>
+          <p class="stg-cost"><b>CA$191.62</b> &middot; running total <b>CA$191.62</b> &middot; Walmart + PiShop + Rotor Village</p>
+          <div class="asm-parts">
+            <span class="asm-label">What to buy</span>
+            <ul>
+              <li>Flywoo tool kit + iron + multimeter &mdash; $103.99</li>
+              <li>Smoke stopper &mdash; $11.99</li>
+              <li>LiPo bag &mdash; $14.99</li>
+              <li>Safety glasses &mdash; $12.98</li>
+              <li>Threadlock &mdash; $10.28</li>
+              <li>AAA cells &mdash; $9.47</li>
+              <li>Heat shrink &mdash; $8.08</li>
+              <li>Zip ties &mdash; $12.99</li>
+              <li>Standoffs &mdash; $1.90</li>
+              <li>micro-USB cable &mdash; $4.95</li>
+            </ul>
+          </div>
+          <div class="asm-do">
+            <span class="asm-label">What you can do with it</span>
+            <ol class="asm-actions">
+              <li>Set up the iron. Practice tinning pads and soldering wires on dead electronics or cheap perfboard.</li>
+              <li>Build the micro-USB power pigtail: cut one end, meter-check the wires, insulate with heat shrink. A real drone part.</li>
+              <li>Learn the multimeter: volts DC, continuity, resistance &mdash; you will use all three in every later stage.</li>
+            </ol>
+          </div>
+          <div class="asm-check"><span class="asm-label">&#10003; Stage done when</span>
+            <ul><li>Your joints are shiny and strong, the pigtail is meter-checked, and you trust the meter.</li></ul></div>
+        </div>
+        <div class="stage">
+          <h4>Stage 2 &middot; The payload laboratory</h4>
+          <p class="stg-cost"><b>CA$239.00</b> &middot; running total <b>CA$430.62</b> &middot; PiShop + SparkFun</p>
+          <div class="asm-parts">
+            <span class="asm-label">What to buy</span>
+            <ul>
+              <li>Pi Zero 2 WH kit &mdash; $94.95</li>
+              <li>Pimoroni MLX90640 thermal camera &mdash; $86.95</li>
+              <li>Pimoroni PA1010D GPS &mdash; $41.95</li>
+              <li>Qwiic HAT + two cables &mdash; $15.15</li>
+            </ul>
+          </div>
+          <div class="asm-do">
+            <span class="asm-label">What you can do with it</span>
+            <ol class="asm-actions">
+              <li>Flash the Pi, enable I2C, fit the Qwiic HAT &mdash; the bench PSU is in the kit.</li>
+              <li>Solder the 1&times;5 sensor headers &mdash; your Stage 1 practice pays off here.</li>
+              <li>Wire each sensor to the HAT; confirm camera 0x33 and GPS 0x10 answer.</li>
+              <li>Point the thermal camera at hot and cold things: run the hotspot demo and open the map viewer.</li>
+            </ol>
+          </div>
+          <div class="asm-check"><span class="asm-label">&#10003; Stage done when</span>
+            <ul><li>You own a working thermal-camera gadget on your desk &mdash; the drone's brain, fully tested before the drone exists. Any old computer is enough.</li></ul></div>
+        </div>
+
+        <div class="stage">
+          <h4>Stage 3 &middot; Radio &amp; reflexes</h4>
+          <p class="stg-cost"><b>CA$117.98</b> &middot; running total <b>CA$548.60</b> &middot; Rotor Village</p>
+          <div class="asm-parts">
+            <span class="asm-label">What to buy</span>
+            <ul>
+              <li>RadioMaster Pocket ELRS &mdash; $99.99</li>
+              <li>18650 battery pair &mdash; $17.99</li>
+            </ul>
+          </div>
+          <div class="asm-do">
+            <span class="asm-label">What you can do with it</span>
+            <ol class="asm-actions">
+              <li>Charge the cells in the radio; set up EdgeTX: switches, arm switch, timer, model name.</li>
+              <li>Plug the radio into the computer by USB and practice in a free FPV simulator &mdash; crash as much as you like, it costs nothing.</li>
+            </ol>
+          </div>
+          <div class="asm-check"><span class="asm-label">&#10003; Stage done when</span>
+            <ul><li>You can hold a smooth simulator hover and arm/disarm without looking at the radio.</li></ul></div>
+        </div>
+
+        <div class="stage">
+          <h4>Stage 4 &middot; The airframe</h4>
+          <p class="stg-cost"><b>CA$170.50</b> &middot; running total <b>CA$719.10</b> &middot; Rotor Village</p>
+          <div class="asm-parts">
+            <span class="asm-label">What to buy</span>
+            <ul>
+              <li>TBS Source One V6 frame &mdash; $48.99</li>
+              <li>Emax ECO III 2207 motors &times;4 &mdash; $87.96</li>
+              <li>Gemfan 51499 prop sets &times;2 &mdash; $8.58</li>
+              <li>Kevlar straps &mdash; $8.99</li>
+              <li>Battery grip pad &mdash; $3.99</li>
+              <li>4S LED strip &mdash; $11.99</li>
+            </ul>
+          </div>
+          <div class="asm-do">
+            <span class="asm-label">What you can do with it</span>
+            <ol class="asm-actions">
+              <li>Bolt the arms and standoffs together; screw the four motors on (M1&ndash;M4 order, picture in tab 4).</li>
+              <li>Check every motor screw underneath &mdash; none may touch the windings. Threadlock only where the manual says.</li>
+              <li>Fit the straps, grip pad and LED strip. Balance the prop sets &mdash; and keep them OFF the motors.</li>
+            </ol>
+          </div>
+          <p class="asm-warn"><strong>&#9888; Safety:</strong> propellers stay off until Stage 7. No exceptions.</p>
+          <div class="asm-check"><span class="asm-label">&#10003; Stage done when</span>
+            <ul><li>A rigid quad airframe sits on the table with motors spinning freely. Take a photo for the build log.</li></ul></div>
+        </div>
+        <div class="stage">
+          <h4>Stage 5 &middot; Power &amp; control</h4>
+          <p class="stg-cost"><b>CA$231.95</b> &middot; running total <b>CA$951.05</b> &middot; Rotor Village</p>
+          <div class="asm-parts">
+            <span class="asm-label">What to buy</span>
+            <ul>
+              <li>GEPRC F405 + 50A stack &mdash; $85.99</li>
+              <li>RP1 V2 receiver &mdash; $27.99</li>
+              <li>GNB 4S batteries &times;2 &mdash; $67.98</li>
+              <li>M4AC charger &mdash; $49.99</li>
+            </ul>
+          </div>
+          <div class="asm-do">
+            <span class="asm-label">What you can do with it</span>
+            <ol class="asm-actions">
+              <li>Solder the stack into the airframe: motor wires, XT60 lead, capacitor. First power goes through the Stage 1 smoke stopper.</li>
+              <li>Wire the receiver: 5V + GND, TX &rarr; R2, RX &rarr; T2. Bind it to the Stage 3 radio.</li>
+              <li>Betaflight with PROPS OFF: channels, failsafe, motor order and direction.</li>
+              <li>Charge and balance the packs in the LiPo bag; learn storage charge for packs you are not using.</li>
+            </ol>
+          </div>
+          <div class="asm-check"><span class="asm-label">&#10003; Stage done when</span>
+            <ul><li>The radio talks to the quad and all four motors spin on the bench &mdash; props still off.</li></ul></div>
+        </div>
+
+        <div class="stage">
+          <h4>Stage 6 &middot; Eyes in the sky</h4>
+          <p class="stg-cost"><b>CA$401.96</b> &middot; running total <b>CA$1,353.01</b> &middot; Rotor Village</p>
+          <div class="asm-parts">
+            <span class="asm-label">What to buy</span>
+            <ul>
+              <li>RunCam Phoenix 2 camera &mdash; $36.99</li>
+              <li>TBS Unify Pro 5G8 HV VTX &mdash; $77.99</li>
+              <li>TBS Diamond SMA antenna &mdash; $36.99</li>
+              <li>Skyzone M5F monitor/DVR &mdash; $249.99</li>
+            </ul>
+          </div>
+          <div class="asm-do">
+            <span class="asm-label">What you can do with it</span>
+            <ol class="asm-actions">
+              <li>Wire camera &rarr; VTX. Mount both. Screw the antenna on BEFORE any power &mdash; every time.</li>
+              <li>Pick a legal channel and power setting; find the picture on the M5F monitor.</li>
+              <li>Low-power range test in the yard; record the DVR.</li>
+            </ol>
+          </div>
+          <div class="asm-check"><span class="asm-label">&#10003; Stage done when</span>
+            <ul><li>You see what the drone sees, and the DVR records it.</li></ul></div>
+        </div>
+
+        <div class="stage">
+          <h4>Stage 7 &middot; Papers &amp; first flight</h4>
+          <p class="stg-cost"><b>CA$20.00</b> &middot; running total <b>CA$1,373.01</b> &middot; Transport Canada + a legal field</p>
+          <div class="asm-parts">
+            <span class="asm-label">What to buy</span>
+            <ul>
+              <li>Small Basic exam &mdash; $10</li>
+              <li>Drone registration &mdash; $10</li>
+            </ul>
+          </div>
+          <div class="asm-do">
+            <span class="asm-label">What you can do with it</span>
+            <ol class="asm-actions">
+              <li>Study the knowledge requirements; pass the Small Basic exam in the Drone Management Portal.</li>
+              <li>Register the drone and mark it with the number.</li>
+              <li>Mount the Stage 2 payload on the Stage 4 frame: standoffs + zip ties + the Kevlar strap, thermal lens down, GPS up.</li>
+              <li>First hover: one metre up, land, feel the motors for heat. Then run the detection missions from the 19-step checklist in tab 4.</li>
+            </ol>
+          </div>
+          <div class="asm-check"><span class="asm-label">&#10003; Stage done when</span>
+            <ul><li>The complete system flies and logs hotspots on a map &mdash; that is the goal, reached in affordable chunks.</li></ul></div>
+        </div>
+
+        <div class="stage">
+          <h4>Optional stage &middot; The configuration laptop</h4>
+          <p class="stg-cost"><b>CA$304.99</b> (laptop + shown delivery) &middot; complete plan with it: <b>CA$1,678.00</b> &middot; Walmart</p>
+          <div class="asm-do">
+            <span class="asm-label">When to buy it</span>
+            <ol class="asm-actions">
+              <li>Only if you do not already own a computer &mdash; every earlier stage works on any old Windows, Mac or Linux machine.</li>
+              <li>Or buy it late as a dedicated field laptop: it runs Betaflight Configurator and the payload demo at the flying field.</li>
+            </ol>
+          </div>
+          <p class="asm-warn"><strong>&#9888; Note:</strong> the Acer listing was out of stock at the
+          1 Nov 2026 re-check. Re-check it, or substitute any recertified Windows laptop that runs
+          Betaflight Configurator and Raspberry Pi Imager.</p>
+        </div>
+
+      <div class="note gold"><strong>Why this order works:</strong> every stage produces something
+      usable immediately &mdash; tools build skill, Stage 2 gives you a working thermal camera, Stage 3
+      gives you flying reflexes, Stage 4 gives you the machine, Stages 5&ndash;6 make it alive, Stage 7
+      makes it legal and flying. Total across stages 0&ndash;7: CA$1,373.01, plus the optional laptop
+      = CA$1,678.00 &mdash; identical to the one-shot plan, just stress-free.</div>
+    </div>
+  </details>
 
   <details class="acc">
     <summary>The full build sheet &mdash; what each part does</summary>

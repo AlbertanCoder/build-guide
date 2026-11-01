@@ -14,6 +14,11 @@ A single-page, interactive order and build guide for a 5-inch analog FPV quadcop
 
 ### Parts and interactive budget
 
+Open **3 Parts & Budget** for the interactive order plan — every row links to its live retailer
+listing — plus the **pay-as-you-go staging plan**: nine affordable purchase stages (CA$0–400
+each) that each deliver something to build, test or learn the day they arrive, ending at the
+same CA$1,678.00 complete plan without one big bill.
+
 [![Parts and budget](docs/images/order-plan.png)](docs/images/order-plan.png)
 
 ### Detection pipeline and coverage calculator
