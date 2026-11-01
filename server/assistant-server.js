@@ -23,6 +23,10 @@ const path = require("path");
 
 const REPO = path.resolve(__dirname, "..");
 const ENGINE = require("./cost-engine.js");
+const QUIZ = require("./ops/quiz-add.js");
+const JOBSPEC = require("./ops/job-spec.js");
+const DRAFT = require("./ops/draft.js");
+const PROPOSE = require("./ops/propose.js");
 
 /* ---------- .env (no dependency) ---------- */
 function loadEnv() {
@@ -457,6 +461,143 @@ async function verifyKey() {
   }
 }
 
+/* One non-streaming call, used by the drafter. Streaming is for answers; a
+   drafting job wants the whole JSON array before it does anything. */
+async function askOnce(prompt) {
+  if (!API_KEY && !/127\.0\.0\.1|localhost/.test(BASE_URL)) {
+    throw new Error("no API key yet — open the gear in the panel and add one");
+  }
+  if (PROVIDER === "anthropic") {
+    const res = await fetch(BASE_URL + "/v1/messages", {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-api-key": API_KEY, "anthropic-version": "2023-06-01" },
+      body: JSON.stringify({
+        model: CHEAP_MODEL, max_tokens: 1500, temperature: 0.4,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+    if (!res.ok) { throw new Error("provider " + res.status + ": " + (await res.text()).slice(0, 180)); }
+    const json = await res.json();
+    if (json.usage) { meter.record(CHEAP_MODEL, { inputTokens: json.usage.input_tokens || 0, outputTokens: json.usage.output_tokens || 0 }); }
+    const block = (json.content || []).find((b) => b.type === "text");
+    return block ? block.text : "";
+  }
+  const res = await fetch(BASE_URL + "/chat/completions", {
+    method: "POST",
+    headers: { "content-type": "application/json", authorization: "Bearer " + (API_KEY || "local") },
+    body: JSON.stringify({
+      model: CHEAP_MODEL, temperature: 0.4, max_tokens: 1500,
+      messages: [{ role: "user", content: prompt }]
+    })
+  });
+  if (!res.ok) { throw new Error("provider " + res.status + ": " + (await res.text()).slice(0, 180)); }
+  const json = await res.json();
+  if (json.usage) {
+    meter.record(CHEAP_MODEL, {
+      inputTokens: json.usage.prompt_tokens || 0,
+      outputTokens: json.usage.completion_tokens || 0
+    });
+  }
+  const choice = json.choices && json.choices[0];
+  return (choice && choice.message && choice.message.content) || "";
+}
+
+/* The evidence the drafter is allowed to use: the curated domain pages, one block
+   per heading. Small enough to send whole, and every block is already sourced. */
+function domainPassages() {
+  const dir = path.join(REPO, "docs", "domain");
+  const out = [];
+  if (!fs.existsSync(dir)) { return out; }
+  fs.readdirSync(dir).filter((f) => f.endsWith(".md")).sort().forEach((file) => {
+    const text = fs.readFileSync(path.join(dir, file), "utf8");
+    text.split(/\n(?=##\s)/).forEach((block) => {
+      const trimmed = block.trim();
+      if (!trimmed || trimmed.indexOf("## ") !== 0) { return; }
+      const heading = trimmed.split(/\r?\n/)[0].replace(/^##\s*/, "").slice(0, 80);
+      out.push({ label: file.replace(/\.md$/, "") + " — " + heading, text: trimmed.slice(0, 900) });
+    });
+  });
+  return out;
+}
+
+/** POST /api/propose { sentence } — the chat asks for a change and gets a branch. */
+async function handlePropose(req, res) {
+  /* This writes files and runs git, so it gets the same guards as the settings
+     endpoint: a JSON content type (which forces a preflight a hostile page cannot
+     satisfy) and a same-origin check. */
+  const origin = String(req.headers.origin || "");
+  const host = String(req.headers.host || "");
+  if (String(req.headers["content-type"] || "").indexOf("application/json") === -1) {
+    sendJson(res, 415, { error: "Send application/json." }); return;
+  }
+  if (origin && host && origin.replace(/^https?:\/\//, "") !== host) {
+    sendJson(res, 403, { error: "Cross-origin change refused." }); return;
+  }
+
+  let raw = "";
+  let tooBig = false;
+  await new Promise((resolve) => {
+    req.on("data", (c) => { raw += c; if (raw.length > 4000) { tooBig = true; req.destroy(); resolve(); } });
+    req.on("end", resolve);
+    req.on("error", resolve);
+  });
+  if (tooBig) { sendJson(res, 413, { error: "Request too large." }); return; }
+
+  let body;
+  try { body = JSON.parse(raw || "{}"); } catch (e) { sendJson(res, 400, { error: "Bad JSON." }); return; }
+
+  const parsed = JOBSPEC.parseIntent(String(body.sentence || ""));
+  if (!parsed.ok) { sendJson(res, 400, { error: parsed.error }); return; }
+  const job = parsed.job;
+
+  if (meter.blocked()) {
+    sendJson(res, 402, { error: "the daily budget is spent, so no drafting until it resets", budget: meter.snapshot() });
+    return;
+  }
+  if (!API_KEY && !/127\.0\.0\.1|localhost/.test(BASE_URL)) {
+    sendJson(res, 501, { error: "no API key yet — open the gear in the panel and add one" });
+    return;
+  }
+
+  let ctx;
+  try {
+    const html = fs.readFileSync(path.join(REPO, "index.html"), "utf8");
+    ctx = {
+      quizzes: QUIZ.readQuizzes(html).quizzes,
+      corpus: PROPOSE.buildCorpus(),
+      correctValues: PROPOSE.loadKnownValues()
+    };
+  } catch (e) {
+    sendJson(res, 500, { error: "could not prepare the checks: " + String(e.message || e) });
+    return;
+  }
+
+  let drafted;
+  try {
+    drafted = await DRAFT.draft(job, ctx, askOnce, { passages: domainPassages() });
+  } catch (e) {
+    sendJson(res, 502, { error: String(e.message || e).slice(0, 240) });
+    return;
+  }
+
+  if (!drafted.ok) {
+    sendJson(res, 200, { ok: false, job: job, error: drafted.error, rejected: drafted.rejected });
+    return;
+  }
+
+  const proposed = PROPOSE.proposeMany(drafted.survivors.slice(0, job.count));
+  sendJson(res, 200, {
+    ok: proposed.ok,
+    job: job,
+    drafted: drafted.survivors.length,
+    rejected: drafted.rejected,
+    proposal: proposed.ok
+      ? { slug: proposed.slug, changes: proposed.changes, synced: proposed.synced, next: proposed.next }
+      : null,
+    error: proposed.ok ? "" : proposed.error
+  });
+}
+
 function sendJson(res, code, obj) {
   const body = JSON.stringify(obj);
   res.writeHead(code, {
@@ -828,6 +969,16 @@ const server = http.createServer((req, res) => {
 
   if (u === "/api/ask" && req.method === "POST") { handleAsk(req, res); return; }
   if (u === "/api/ask") { sendJson(res, 405, { error: "POST only." }); return; }
+
+  /* The chat asking for a change: sentence in, proposal branch out. */
+  if (u === "/api/propose" && req.method === "POST") { handlePropose(req, res); return; }
+  if (u === "/api/propose") { sendJson(res, 405, { error: "POST only." }); return; }
+
+  /* Open proposals, so the panel can tell the user what is waiting for them. */
+  if (u === "/api/proposals") {
+    sendJson(res, 200, { ok: true, proposals: PROPOSE.listProposals() });
+    return;
+  }
   serveStatic(req, res);
 });
 

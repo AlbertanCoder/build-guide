@@ -194,12 +194,109 @@ function syncTotalReport(synced) {
 
 module.exports = {
   propose: propose,
+  proposeMany: proposeMany,
   listProposals: listProposals,
   buildCorpus: buildCorpus,
   loadKnownValues: loadKnownValues,
   currentBranch: currentBranch,
   isClean: isClean
 };
+
+/**
+ * proposeMany — one branch carrying several validated changes, committed once.
+ *
+ * The drafter needs this: the user asked for three questions, which is ONE thing to
+ * review, not three branches to merge separately. Every op is validated up front; if
+ * any one fails, nothing is created.
+ */
+function proposeMany(ops, opts) {
+  const o = opts || {};
+  const log = o.log || function () {};
+  const list = Array.isArray(ops) ? ops : [ops];
+
+  if (!list.length) { return fail("no changes were supplied"); }
+  if (!isClean()) {
+    return fail("the working tree is not clean — commit or stash first, so a proposal never mixes with your own edits");
+  }
+  if (currentBranch() !== "main") {
+    return fail("you are on " + (currentBranch() || "a detached HEAD") + "; switch to main first");
+  }
+
+  const indexPath = path.join(ROOT, "index.html");
+  let html = fs.readFileSync(indexPath, "utf8");
+
+  let ctx;
+  try {
+    ctx = {
+      quizzes: quizAdd.readQuizzes(html).quizzes,
+      corpus: buildCorpus(),
+      correctValues: loadKnownValues()
+    };
+  } catch (e) {
+    return fail("could not prepare the checks: " + e.message);
+  }
+
+  /* Validate every op against the ORIGINAL state before touching anything. */
+  const verdicts = list.map((op) => quizAdd.validate(op, ctx));
+  const bad = verdicts.filter((v) => !v.ok);
+  if (bad.length) {
+    return fail(bad.length + " of " + list.length + " change(s) were refused before anything was created", {
+      errors: bad.reduce((acc, v) => acc.concat(v.errors), [])
+    });
+  }
+
+  const target = list[0].target;
+  const totalBefore = verdicts[0].derived.totalBefore;
+  const totalAfter = totalBefore + list.length;
+
+  const slug = slugFor({ op: list[0].op, target: target }, listProposals());
+  let r = git(["checkout", "-b", slug]);
+  if (!r.ok) { return fail("could not create the branch: " + r.out.trim()); }
+
+  const abortBranch = function (message) {
+    git(["checkout", "--", "."]);
+    git(["checkout", "main"]);
+    git(["branch", "-D", slug]);
+    return fail(message);
+  };
+
+  const changes = [];
+  for (const op of list) {
+    const applied = quizAdd.apply(op, html);
+    if (!applied.ok) { return abortBranch("a change could not be applied: " + applied.error); }
+    html = applied.html;
+    changes.push(applied.changes[0]);
+  }
+  fs.writeFileSync(indexPath, html, "utf8");
+
+  let synced;
+  try {
+    synced = syncTotal(totalBefore, totalAfter);
+  } catch (e) {
+    return abortBranch("could not update the stated question total: " + e.message);
+  }
+
+  git(["add", "index.html"]);
+  (synced.files || []).forEach(function (f) { git(["add", f]); });
+
+  const message = "Proposal: " + changes.join("; ");
+  r = git(["commit", "-m", message]);
+  if (!r.ok) { return abortBranch("the commit on the branch failed: " + r.out.trim()); }
+
+  r = git(["checkout", "main"]);
+  if (!r.ok) { return fail("committed on " + slug + " but switching back to main failed: " + r.out.trim()); }
+
+  log("proposed " + slug);
+  return {
+    ok: true,
+    slug: slug,
+    message: message,
+    changes: changes,
+    count: list.length,
+    synced: syncTotalReport(synced),
+    next: ["node server/ops/accept.js " + slug, "node server/ops/reject.js " + slug]
+  };
+}
 
 /**
  * The guide states the question total in more than one document, and a stale

@@ -1712,6 +1712,69 @@
      a model here would be paying to reword a paragraph we already own.
      opts.forceModel exists for the test hook and for askAI(), which spend on
      purpose. */
+  /* ======================================================================
+     ACTING — the chat asking for a change, not just answering
+     ====================================================================== */
+
+  /* "add 3 harder detect questions" is a request to DO something, not a question.
+     The server has the real parser; this only decides which door to knock on. */
+  function looksLikeEdit(text) {
+    const t = String(text || "").toLowerCase();
+    if (!/^\s*(add|create|write|draft|make|give me)\b/.test(t)) { return false; }
+    return /\b(questions?|quizzes|quiz|exam)\b/.test(t);
+  }
+
+  function proposeChange(sentence) {
+    return fetch("/api/propose", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ sentence: sentence })
+    }).then(function (r) {
+      return r.json().then(function (j) {
+        if (!r.ok) { throw new Error((j && j.error) || ("HTTP " + r.status)); }
+        return j;
+      });
+    }).then(function (j) {
+      if (!j.ok) {
+        /* The server refused, and it says why. Do not dress that up as success. */
+        const why = (j.rejected && j.rejected.length)
+          ? j.rejected.map(function (r) { return "\u201c" + r.question.slice(0, 55) + "\u201d \u2014 " + r.reasons[0]; })
+          : [];
+        return push({
+          role: "bot",
+          title: "Nothing was drafted",
+          body: [j.error || "the drafter produced nothing usable"],
+          steps: why,
+          src: "",
+          chips: ["Open the gear and add a key", "Try a different request"]
+        });
+      }
+      const refused = (j.rejected || []).length;
+      return push({
+        role: "bot",
+        title: "Proposal ready: " + j.proposal.slug,
+        body: [
+          "I drafted " + j.drafted + " question" + (j.drafted === 1 ? "" : "s") + " for the " +
+            j.job.target + " quiz" + (refused ? " and refused " + refused + " of my own drafts." : "."),
+          "Your real guide has not changed. The work is on a branch, waiting for you to accept or reject it."
+        ],
+        steps: (j.rejected || []).map(function (r) {
+          return "refused \u201c" + r.question.slice(0, 55) + "\u201d \u2014 " + r.reasons[0];
+        }),
+        src: "every kept question must be provable from a cited passage",
+        chips: ["Review it: node server/ops/accept.js " + j.proposal.slug]
+      });
+    }).catch(function (e) {
+      return push({
+        role: "bot",
+        title: "Could not propose that",
+        body: [String(e.message || e)],
+        steps: [],
+        src: ""
+      });
+    });
+  }
+
   function curatedAnswer(text) {
     const q = norm(text);
     if (!q) { return null; }
@@ -1736,6 +1799,9 @@
     }
 
     if (!(opts && opts.forceModel)) {
+      if (settingsAvailable() && looksLikeEdit(t)) {
+        return proposeChange(t).then(function (msg) { UI.busy = false; return msg; });
+      }
       const free = curatedAnswer(t);
       if (free) {
         ctx.history.push({ role: "assistant", content: historyText(free) });

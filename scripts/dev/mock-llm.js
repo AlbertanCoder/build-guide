@@ -34,6 +34,28 @@ const ANSWER = [
   "[[NAV steps 6]]"
 ].join("\n");
 
+/* Two canned candidates for the drafter: one that should pass every check, one
+   whose "proof" is not in the corpus and must be refused. The point of the mock is
+   that the SCREENING is what gets exercised, not the model. */
+const MOCK_CANDIDATES = [
+  {
+    q: "Roughly how much ground does a single pixel cover at 30 m with the 55 degree lens?",
+    a: ["About 10 cm", "About 1 m", "About 10 m", "About 30 m"],
+    c: 1,
+    why: "2 x 30 m x tan(27.5 deg) is about 31.2 m across; over 32 pixels that is about 0.98 m.",
+    citation: { source: "docs/domain/01-thermal-detection-limits.md", verified: "2026-11-01", mustContain: "0.98 m per pixel" },
+    level: 3
+  },
+  {
+    q: "What resolution is the thermal array in megapixels?",
+    a: ["0.0008 MP", "0.5 MP", "2 MP", "8 MP"],
+    c: 0,
+    why: "32 x 24 is 768 readings, which is under a hundredth of a megapixel.",
+    citation: { source: "invented", verified: "2026-11-01", mustContain: "a phrase that is not in the corpus anywhere" },
+    level: 3
+  }
+];
+
 const server = http.createServer((req, res) => {
   if (req.url === "/v1/models") {
     res.writeHead(200, { "content-type": "application/json" });
@@ -84,6 +106,20 @@ const server = http.createServer((req, res) => {
     const text = refuse
       ? "That is not in this guide. Check the step 6 notes instead."
       : ANSWER.replace("Passages received: ", "Passages received: " + passageCount + ".");
+
+    /* A non-streaming request is the drafter asking for JSON. Answer with the two
+       canned candidates so /api/propose can be exercised end to end. */
+    if (!body.stream) {
+      const payload = /JSON array/i.test(content)
+        ? JSON.stringify(MOCK_CANDIDATES)
+        : ANSWER;
+      res.writeHead(200, { "content-type": "application/json" });
+      res.end(JSON.stringify({
+        choices: [{ message: { role: "assistant", content: payload } }],
+        usage: { prompt_tokens: 900, completion_tokens: 260 }
+      }));
+      return;
+    }
 
     res.writeHead(200, {
       "content-type": "text/event-stream; charset=utf-8",
