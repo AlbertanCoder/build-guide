@@ -20,8 +20,31 @@ const fs = require("fs");
 const path = require("path");
 const { execFileSync } = require("child_process");
 const quizAdd = require("./quiz-add.js");
+const proseRewrite = require("./prose-rewrite.js");
 
 const ROOT = path.resolve(__dirname, "..", "..");
+
+/* The named operations propose knows how to run. Each one validates before it
+   may change anything (R4). quiz-add moves the stated question total along with
+   the edit (R23); prose-rewrite does not touch counts at all. */
+const OP_MODULES = {
+  "quiz-add": {
+    mod: quizAdd,
+    syncTotals: true,
+    ctx: function (html) {
+      return {
+        quizzes: quizAdd.readQuizzes(html).quizzes,
+        corpus: buildCorpus(),
+        correctValues: loadKnownValues()
+      };
+    }
+  },
+  "prose-rewrite": {
+    mod: proseRewrite,
+    syncTotals: false,
+    ctx: function (html) { return { html: html }; }
+  }
+};
 
 function git(args) {
   try {
@@ -88,7 +111,7 @@ function readOp(file) {
 }
 
 function slugFor(op, existing) {
-  const base = "proposal/" + op.op + "-" + op.target;
+  const base = "proposal/" + op.op + "-" + (op.target || op.section || "change");
   let n = 1;
   while (existing.indexOf(base + "-" + n) !== -1) { n += 1; }
   return base + "-" + n;
@@ -122,18 +145,19 @@ function propose(opPath, opts) {
   const indexPath = path.join(ROOT, "index.html");
   const html = fs.readFileSync(indexPath, "utf8");
 
+  const spec = OP_MODULES[op && op.op];
+  if (!spec) {
+    return fail('unknown op "' + (op && op.op) + '" (known: ' + Object.keys(OP_MODULES).join(", ") + ")");
+  }
+
   let ctx;
   try {
-    ctx = {
-      quizzes: quizAdd.readQuizzes(html).quizzes,
-      corpus: buildCorpus(),
-      correctValues: loadKnownValues()
-    };
+    ctx = spec.ctx(html);
   } catch (e) {
     return fail("could not prepare the checks: " + e.message);
   }
 
-  const verdict = quizAdd.validate(op, ctx);
+  const verdict = spec.mod.validate(op, ctx);
   if (!verdict.ok) {
     return fail("the change was refused before anything was created", { errors: verdict.errors, derived: verdict.derived });
   }
@@ -150,15 +174,17 @@ function propose(opPath, opts) {
     return fail(message);
   };
 
-  const applied = quizAdd.apply(op, html);
+  const applied = spec.mod.apply(op, html);
   if (!applied.ok) { return abortBranch("the change could not be applied: " + applied.error); }
   fs.writeFileSync(indexPath, applied.html, "utf8");
 
-  let synced;
-  try {
-    synced = syncTotal(verdict.derived.totalBefore, verdict.derived.totalAfter);
-  } catch (e) {
-    return abortBranch("could not update the stated question total: " + e.message);
+  let synced = null;
+  if (spec.syncTotals) {
+    try {
+      synced = syncTotal(verdict.derived.totalBefore, verdict.derived.totalAfter);
+    } catch (e) {
+      return abortBranch("could not update the stated question total: " + e.message);
+    }
   }
 
   git(["add", "index.html"]);

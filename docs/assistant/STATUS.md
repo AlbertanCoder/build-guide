@@ -21,7 +21,7 @@ to a later stage of the approved plan.
 | 6 | Allowlisted live tools (CWFIS, prices) | NOT BUILT |
 | 7 | Six domain pages, thermal first | PARTIAL — 1 of 6 written |
 | 8 | Propose → accept → gate → auto-commit | BUILT |
-| 9 | Editable surface: prose/docs/KB/budget, not code | PARTIAL — only the quiz operation exists; no prose edit operation |
+| 9 | Editable surface: prose/docs/KB/budget, not code | PARTIAL — `quiz-add` and `prose-rewrite` exist; KB-entry and budget edits do not |
 | 10 | 3D as named presets | NOT BUILT |
 | 11 | Corrections memory (learning, no training) | NOT BUILT |
 | 12 | Corrections stored in `docs/domain/corrections.md` | NOT BUILT — file does not exist |
@@ -47,7 +47,7 @@ to a later stage of the approved plan.
 | R1 | Three real guarantees, never a percentage | BUILT — the gate is the mechanical half; nothing claims 100% |
 | R2 | Edit sources, rebuild, mirror; never a generated file | BUILT |
 | R3 | JS allowed, but a real browser smoke test | BUILT — the browser suite is the sensor |
-| R4 | Named operations + exact-once find/replace | PARTIAL — `quiz-add` exists; no prose operation yet |
+| R4 | Named operations + exact-once find/replace | BUILT — `quiz-add` and `prose-rewrite`, both schema-validated and exact-once anchored |
 | R5 | Structured reads, never whole-file | BUILT |
 | R6 | Additive by default | BUILT |
 | R7 | Questions only from the corpus, answer must be provable | BUILT |
@@ -73,8 +73,8 @@ to a later stage of the approved plan.
 
 | | Count |
 |---|---|
-| BUILT | 21 |
-| PARTIAL | 17 |
+| BUILT | 22 |
+| PARTIAL | 16 |
 | NOT BUILT | 12 |
 
 Counted by hand off the two tables above, row by row — the first version of this
@@ -89,7 +89,7 @@ question cannot be added without a citation, and why an accepted change can be
 undone byte-for-byte. That part is real.
 
 What they did **not** buy is a finished assistant. **Twelve decisions are still
-paper, and a further seventeen are half-built.** The largest gaps, in the order
+paper, and a further sixteen are half-built.** The largest gaps, in the order
 they hurt:
 
 1. **The five code-enforced bans** (R25) — they are prompt text today, and prompt

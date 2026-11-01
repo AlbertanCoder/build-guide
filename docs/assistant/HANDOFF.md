@@ -12,7 +12,7 @@ running the gate.
 | Repo | `C:\Users\SHADHUNTER\Desktop\build-guide-repo`, branch `main` |
 | State | clean, pushed, **0 ahead** |
 | Head at handoff | written at `27e5a05`; run `git log -1` — committing this file necessarily moved it, and any later commit should leave the gate green |
-| Gate | `node scripts/dev/gate.js` → **239/239 named checks**, twelve suites |
+| Gate | `node scripts/dev/gate.js` → **291/291 named checks**, fifteen suites |
 | The file the user opens | `C:\Users\SHADHUNTER\Desktop\Shad's Build Guide.html` — a **generated** single file. Never edit it; edit source and rebuild |
 | The user's API key | **not saved yet** (`keyConfigured: false`) |
 
@@ -32,19 +32,20 @@ running the gate.
 **Built:** answering (44 curated offline answers, AI optional), the cost engine
 (cache, model tiers, compression, budget, `/api/stats`), the settings drawer
 (provider, key, model, budget — all server-side), domain pack slice 1 of 6 with a
-build that **refuses an unsourced claim**, one named edit operation (`quiz-add`),
-the proposal branch loop, undo, and a 239-check gate that cannot be made green by
-deleting a check.
+build that **refuses an unsourced claim**, two named edit operations (`quiz-add`,
+`prose-rewrite`), the proposal branch loop, undo, and a 291-check gate that cannot
+be made green by deleting a check.
 
 **Not built — say so plainly if asked:**
 
 - **The chatbot cannot edit anything.** No button, no sentence, changes the page.
-  Editing is the CLI above, driven by a human, and only adds quiz questions.
+  Editing is the CLI above, driven by a human, and only adds quiz questions or
+  rewrites one named paragraph per op.
 - Also missing: corrections memory, eval set, the "Ask" tab, the five
   code-enforced bans, the preview/diff UI, per-item acceptance, background jobs,
   and 5 of 6 domain pages.
 
-`STATUS.md` has the row-by-row audit: **21 built / 17 partial / 12 still paper.**
+`STATUS.md` has the row-by-row audit: **22 built / 16 partial / 12 still paper.**
 
 ## Rules that must not be broken
 
@@ -58,21 +59,23 @@ deleting a check.
 5. **No percentage confidence, no "100% verified" language.** Ever.
 6. **Never push from a script.** Pushing is a human action.
 
-## Next task: Stage 3 — the drafter
+## Next tasks, in priority order
 
-**Goal:** the user types *"add 3 harder detection questions"* and gets a proposal
-branch to review and take the quiz on. Half of it already exists:
+The drafter that earlier versions of this file called "Stage 3" is **built**:
+`server/ops/draft.js` asks a model for N candidates, runs each through
+`quiz-add.validate`, keeps only the survivors, and calls `propose` — respecting
+`jobBudgetUsd` from `/api/settings`. 15 checks. The chat triggers it through
+`POST /api/propose`.
 
-- `server/ops/job-spec.js` turns the sentence into `{target, count, minLevel}` and
-  **refuses destructive sentences** ("delete all the rules questions"). 8 checks.
-- `server/ops/quiz-add.js` validates one candidate against the corpus and applies it
-  as a pure function that cannot write to disk. 29 checks.
+`prose-rewrite` — rewrite exactly one named paragraph in a named section, validated
+like `quiz-add` (exact-once anchor inside the section's span, `<p>`-only surface,
+banned-language scan, post-conditions) — is also built. 37 checks.
 
-**Missing:** the piece that asks a model for N candidates, runs each through
-`quiz-add.validate`, keeps only the survivors, and calls `propose`. Suggested shape:
-`server/ops/draft.js` — build the prompt from the job spec plus retrieved passages,
-request strict JSON, validate every candidate, discard the rest, write the proposal.
-It must respect `jobBudgetUsd` from `/api/settings`.
+What remains, in order:
+
+1. **Preview + diff side by side**, so a proposal can be inspected rather than trusted.
+2. **Per-item acceptance**, so 7 of 10 drafted questions can be kept.
+3. **The five code-enforced bans**, which are currently prompt text only.
 
 ## Traps already paid for — do not re-discover these
 
