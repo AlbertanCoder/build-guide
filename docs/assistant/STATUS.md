@@ -19,7 +19,7 @@ to a later stage of the approved plan.
 | 4 | Conflicts shown, never silently resolved | NOT BUILT |
 | 5 | `verified YYYY-MM-DD` + 30-day warning | PARTIAL — dates are required at build time; no staleness warning at answer time |
 | 6 | Allowlisted live tools (CWFIS, prices) | NOT BUILT |
-| 7 | Six domain pages, thermal first | PARTIAL — 1 of 6 written |
+| 7 | Six domain pages, thermal first | BUILT — 6 of 6 written, 30 blocks, every block sourced and dated |
 | 8 | Propose → accept → gate → auto-commit | BUILT |
 | 9 | Editable surface: prose/docs/KB/budget, not code | PARTIAL — `quiz-add` and `prose-rewrite` exist; KB-entry and budget edits do not |
 | 10 | 3D as named presets | NOT BUILT |
@@ -73,8 +73,8 @@ to a later stage of the approved plan.
 
 | | Count |
 |---|---|
-| BUILT | 25 |
-| PARTIAL | 16 |
+| BUILT | 26 |
+| PARTIAL | 15 |
 | NOT BUILT | 9 |
 
 Counted by hand off the two tables above, row by row — the first version of this
@@ -89,13 +89,12 @@ question cannot be added without a citation, and why an accepted change can be
 undone byte-for-byte. That part is real.
 
 What they did **not** buy is a finished assistant. **Nine decisions are still
-paper, and a further sixteen are half-built.** The largest gaps, in the order
+paper, and a further fifteen are half-built.** The largest gaps, in the order
 they hurt:
 
 1. **The corrections memory** (R11/R12) — "it learns when you correct it" is the
    feature most likely to be mistaken for "it is finished".
 2. **The eval set** (R16 round 1) — without it, "it got better" is an opinion.
-3. **5 of 6 domain pages** — the assistant's answer quality is capped by these.
 
 Nothing here is hidden: every PARTIAL and NOT BUILT above is checkable by opening
 the named file, which is why this list is committed rather than described.

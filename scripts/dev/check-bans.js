@@ -187,6 +187,37 @@ Object.keys(quizzes).forEach(function (k) {
 check("every quiz question and explanation in the bank passes the five bans",
   questionHits.length === 0, questionHits.length ? questionHits.slice(0, 4).join(" | ") : "bank clean");
 
+/* The domain pack: block TEXT only (the source::/verified:: lines are
+   provenance, not claims). Every curated page must pass the same screen. */
+function domainBlockTexts(dir) {
+  const out = [];
+  fs.readdirSync(dir).filter((f) => f.endsWith(".md")).sort().forEach(function (f) {
+    let block = null;
+    fs.readFileSync(path.join(dir, f), "utf8").split(/\r?\n/).forEach(function (line) {
+      if (/^##\s+/.test(line)) {
+        if (block) { out.push(block); }
+        block = { where: f + " / " + line.replace(/^##\s+/, "").trim(), text: [] };
+        return;
+      }
+      if (!block) { return; }
+      if (/^(source|verified|tags)::/.test(line)) { return; }
+      block.text.push(line);
+    });
+    if (block) { out.push(block); }
+  });
+  return out;
+}
+
+const domainBlocks = domainBlockTexts(path.join(ROOT, "docs", "domain"));
+const domainHits = [];
+domainBlocks.forEach(function (b) {
+  const v = BANS.screenText(b.text.join(" "));
+  if (!v.ok) { domainHits.push(b.where + ": " + v.hits.map((h) => h.id).join(",")); }
+});
+check("every domain pack block passes the five bans",
+  domainBlocks.length > 0 && domainHits.length === 0,
+  domainHits.length ? domainHits.slice(0, 4).join(" | ") : domainBlocks.length + " blocks clean");
+
 /* ---- the enforcement points ------------------------------------------------ */
 const bannedQuestion = {
   op: "quiz-add",
