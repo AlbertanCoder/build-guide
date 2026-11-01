@@ -17,7 +17,7 @@ A single-page, interactive order and build guide for a 5-inch analog FPV quadcop
 Open **3 Parts & Budget** for the interactive order plan — every row links to its live retailer
 listing — plus the **pay-as-you-go staging plan**: nine affordable purchase stages (CA$0–400
 each) that each deliver something to build, test or learn the day they arrive, ending at the
-same CA$1,678.00 complete plan without one big bill.
+same CA$1,714.94 complete plan without one big bill.
 
 [![Parts and budget](docs/images/order-plan.png)](docs/images/order-plan.png)
 
@@ -72,7 +72,8 @@ python -m http.server 8000
 
 Browsers block ES modules and `.glb` fetches on `file://`, so opening `index.html` directly shows
 the page but no 3D. For a double-clickable copy, build the self-contained single file instead —
-three.js, all nine models and every diagram get inlined, and the result works from any folder:
+three.js, all nine models, every diagram and the Guide Assistant get inlined, and the result works
+from any folder:
 
 ```bash
 # once, in a scratch dir: npm install esbuild
@@ -88,6 +89,42 @@ node scripts/standalone/make-standalone.js bundle.js "Shad's Build Guide.html"
 
 The build steps tab is deep-linkable: `#p-steps` opens it directly.
 
+### Guide Assistant (an AI that answers from this guide)
+
+A panel in the bottom-right corner answers troubleshooting questions about *this* build — "the
+thermal image is noisy at 8 Hz", "the receiver won't bind", "i2cdetect shows nothing" — streams the
+answer, and links straight into the tab or assembly step it used.
+
+**Run it as a real AI assistant (3 minutes, needs a key):**
+
+```powershell
+Copy-Item server/.env.example server/.env   # add one provider key, or point it at Ollama
+node server/assistant-server.js             # http://localhost:8790/
+```
+
+`server/assistant-server.js` is a zero-dependency proxy: it serves the guide and streams answers from
+any OpenAI-compatible provider or Anthropic, with the key kept server-side. The page detects the
+server and switches itself on. No key at all? Put the same `.env` on Ollama or LM Studio and it runs
+free and offline.
+
+**Grounding is enforced, not requested.** Every request carries passages retrieved from the guide
+plus curated troubleshooting entries for the exact parts ordered; the proxy refuses to call a model
+when no passages arrive (`422`); the prompt forbids answering from general knowledge; and answers
+show a source line plus up to two navigation buttons. If the service is unreachable the assistant
+falls back to its built-in offline answers and says so.
+
+For the public GitHub Pages site, deploy `docs/assistant/worker.js` to Cloudflare (Pages cannot run
+Node) and point the page at it. Everything — routes, costs, the evaluation checklist for trusting a
+model — is in [docs/assistant/README.md](docs/assistant/README.md).
+
+Run the tests:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/dev/check-llm-path.ps1   # AI path, mock provider, no key
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/dev/check-assistant.ps1 -Target "dist/Shad's Build Guide.html"
+node scripts/dev/check-kb-prices.js          # every KB price must also appear in the guide
+```
+
 *These are previews of the HTML guide, not a completed aircraft. Click any image to view it full-size.*
 
 ## Open the guide
@@ -100,8 +137,9 @@ Open `index.html` in a browser. Tabs, build checkboxes, progress, quizzes, flash
 - `Shad-Drone-Audit-Report.md` — A–G review, component substitutions, compatibility and validation results.
 - `Shad-Drone-Payload/` — thermal hotspot grouping, geolocation, real/synthetic payload backends, offline coordinate viewer and unit tests.
 - `shad-drone-icon.svg` — current favicon/header artwork.
+- `docs/js/assistant.js` + `docs/assistant/` — the offline Guide Assistant, plus the optional Cloudflare Worker that lets a model draft answers from retrieved passages.
 
-The unavailable stack, thermal camera, Pi and goggles were replaced with live alternatives checked on **31 October 2026** and re-verified **1 November 2026** (all 35 links live, all prices re-matched). Stock and freight still need confirmation at checkout. The complete selected plan costs **CA$1,678.00**, or **CA$1,759.10 after 5% GST**, before remaining retailer freight.
+The unavailable stack, thermal camera, Pi and goggles were replaced with live alternatives, then re-checked on **31 October 2026**. Every link loads, but **a working link is not stock** — the frame and the GEPRC 50A stack were out of stock on that re-check, so confirm availability and freight at checkout. The complete selected plan costs **CA$1,714.94**, or **CA$1,799.69 after 5% GST**, before remaining retailer freight — roughly **CA$1,840–1,870 landed**.
 
 ## Payload setup
 
@@ -119,8 +157,21 @@ The viewer defaults to `http://127.0.0.1:8000` and the append-only log is `fligh
 ## Validation
 
 - 55/55 browser checks passed, including all tabs, saved state, quizzes, flashcards, budget, coverage and mobile layouts.
+- 12/12 Guide Assistant offline self-tests passed on both the served page and the offline single-file build.
+- 11/11 Guide Assistant AI-path checks passed end to end against a mock streaming provider
+  (`scripts/dev/check-llm-path.ps1`): SSE streaming reached the browser, markdown rendered as real
+  lists, the `[[NAV]]` directive became a button and was stripped from the prose, retrieval ran
+  before the model call, and an empty-passage request was rejected with `422`.
+- 4/4 Guide Assistant price checks passed (`scripts/dev/check-kb-prices.js`): every figure in the
+  assistant's knowledge base also appears in the guide, the budget arithmetic closes
+  (CA$1,694.94 × 5% = CA$84.75; CA$1,714.94 + CA$84.75 = CA$1,799.69), and the superseded
+  CA$1,678.00 total is absent. Verified non-vacuous by re-running it against a deliberately
+  reverted copy, where it failed as intended.
+- `node --check` clean on `docs/js/assistant.js`, `server/assistant-server.js` and the mock provider;
+  UTF-8 integrity verified for every shipped file.
 - 19/19 payload unit tests passed.
 - Demo, map health/API and viewer responses passed.
-- 35/35 order-document links opened successfully.
+- Every order-document link resolves, but a working link is not stock: the frame and the GEPRC 50A
+  stack were out of stock on the 31 Oct 2026 re-check.
 
 Product availability, compatibility and performance must still be verified during assembly, bench testing and controlled flight testing. This is a prototype builder's roadmap, not career or legal advice.
