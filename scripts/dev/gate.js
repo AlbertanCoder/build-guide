@@ -81,12 +81,12 @@ const SUITES = [
   {
     name: "self-test served",
     served: true, /* the page must be served over http, not file:// */
-    expect: 17
+    expect: 18
   },
   {
     name: "self-test single file",
     cmd: PS("scripts/dev/check-assistant.ps1", ["-Target", "dist/Shad's Build Guide.html"]),
-    expect: 17
+    expect: 18
   },
   {
     name: "ai path",

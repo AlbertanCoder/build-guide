@@ -1093,14 +1093,28 @@
   }
 
   function modeLabel() {
-    return ENDPOINT
-      ? "AI answers \u00b7 grounded in this guide"
-      : "Grounded in this guide \u00b7 works offline";
+    if (ENDPOINT) { return "AI answers \u00b7 grounded in this guide"; }
+    if (typeof location !== "undefined" && location.protocol === "file:") {
+      return "Offline copy \u00b7 44 written answers \u00b7 no AI";
+    }
+    return "Grounded in this guide \u00b7 works offline";
   }
 
   function setMode() {
     const sub = document.getElementById("ga-sub");
     if (sub) { sub.textContent = modeLabel(); }
+    /* Say it out loud, in the panel, rather than leaving the user to work out why
+       the answers are canned and the key field is disabled. */
+    const note = document.getElementById("ga-offline-note");
+    if (note) {
+      const isFile = typeof location !== "undefined" && location.protocol === "file:";
+      note.hidden = !!ENDPOINT;
+      note.textContent = isFile
+        ? "This is the offline copy: 44 written answers, no AI, and no API key can be entered here. " +
+          "For AI, run  node server/assistant-server.js  then open  http://localhost:8790/"
+        : "No local server, so these are the 44 written answers only. " +
+          "For AI, run  node server/assistant-server.js  and reload.";
+    }
   }
 
   /* If the page is being served by server/assistant-server.js, use it without
@@ -1274,7 +1288,12 @@
     }
     gear.addEventListener("click", function () { showSettings(!settingsOpen); });
 
+    const offlineNote = el("p", "ga-offline-note");
+    offlineNote.id = "ga-offline-note";
+    offlineNote.hidden = true;
+
     panel.appendChild(head);
+    panel.appendChild(offlineNote);
     panel.appendChild(settings.node);
     panel.appendChild(log);
     panel.appendChild(form);
@@ -1862,6 +1881,14 @@
     add("no local server means the key field is disabled",
       ENDPOINT === "/api/ask" ? keyDisabled === false : keyDisabled === true,
       "endpoint=" + (ENDPOINT || "none") + " disabled=" + keyDisabled);
+
+    /* When there is no AI, the panel has to SAY so in words. Behaving differently
+       in silence is what made the offline copy look broken. */
+    const offNote = document.getElementById("ga-offline-note");
+    add("the panel explains how to get AI when there is none",
+      !!offNote && (ENDPOINT ? offNote.hidden === true
+        : (offNote.hidden === false && /assistant-server/.test(offNote.textContent))),
+      ENDPOINT ? "AI is on, note hidden" : (offNote ? offNote.textContent.slice(0, 45) : "missing"));
 
     return out;
   }

@@ -103,7 +103,7 @@ that chain fails, the answer comes from the offline engine with a one-line note 
 
 ## The gate
 
-Twelve suites, 235 named checks, one exit code:
+Twelve suites, 237 named checks, one exit code:
 
 ```powershell
 node scripts/dev/gate.js            # everything
@@ -123,8 +123,8 @@ node scripts/dev/gate.js --json     # machine-readable, for the agent to consume
 | propose loop | 32 |
 | settings api | 29 |
 | browser (Chrome) | 28 |
-| self-test served | 17 |
-| self-test single file | 17 |
+| self-test served | 18 |
+| self-test single file | 18 |
 | ai path | 11 |
 
 Two deliberate strictnesses, both proved by hand:
