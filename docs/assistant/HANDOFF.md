@@ -11,7 +11,7 @@ running the gate.
 |---|---|
 | Repo | `C:\Users\SHADHUNTER\Desktop\build-guide-repo`, branch `main` |
 | State | clean, pushed, **0 ahead** |
-| Head at handoff | `27e5a05` |
+| Head at handoff | written at `27e5a05`; run `git log -1` — committing this file necessarily moved it, and any later commit should leave the gate green |
 | Gate | `node scripts/dev/gate.js` → **239/239 named checks**, twelve suites |
 | The file the user opens | `C:\Users\SHADHUNTER\Desktop\Shad's Build Guide.html` — a **generated** single file. Never edit it; edit source and rebuild |
 | The user's API key | **not saved yet** (`keyConfigured: false`) |
