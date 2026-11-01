@@ -103,6 +103,9 @@ function build() {
         text: b.heading + ". " + b.text,
         source: b.source,
         verified: b.verified,
+        /* Corrections must be labelled as corrections at every surface (decision
+           4: shown and named, never folded silently into the prose). */
+        correction: /^corrections/i.test(page.file),
         unverified: /^not from a source/i.test(b.source)
       });
     }

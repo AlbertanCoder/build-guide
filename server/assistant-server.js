@@ -28,6 +28,7 @@ const QUIZ = require("./ops/quiz-add.js");
 const JOBSPEC = require("./ops/job-spec.js");
 const DRAFT = require("./ops/draft.js");
 const PROPOSE = require("./ops/propose.js");
+const CORRECTION = require("./ops/correction-add.js");
 const BANS = require("./bans.js");
 
 /* ---------- .env (no dependency) ---------- */
@@ -195,6 +196,7 @@ function systemPrompt() {
     "2. Never invent a part number, price, fee or regulation. If a passage states a number you",
     "   may repeat it and attribute it. If no passage states it, say what the guide does say.",
     "3. If the passages do not answer the question, reply exactly: That is not in this guide.",
+  "3b. Corrections on file (passages labelled \"Correction on file\") supersede the guide: when one disagrees with a guide passage, show both and say the correction is authoritative for this build.",
     "   Then say in one sentence what the user could check instead. Never guess.",
     "4. Safety before cleverness: props off for any configuration, never charge a LiPo",
     "   unattended, never power a VTX without its antenna, sensors are 3.3V only, CAR 601.15",
@@ -547,6 +549,46 @@ async function handlePropose(req, res) {
 
   let body;
   try { body = JSON.parse(raw || "{}"); } catch (e) { sendJson(res, 400, { error: "Bad JSON." }); return; }
+
+  const sentence = String(body.sentence || "");
+
+  /* The corrections memory's chat door (decisions 11 and 12):
+     "correction: <what is right>. supersedes: <what it replaces>". No model and
+     no key needed - the user's sentence is the content - but it still lands only
+     as a proposal branch for the human to accept. Nothing is auto-ingested. */
+  if (/^\s*(correction|correct|remember|wrong)\s*[:\-]/i.test(sentence)) {
+    const built = CORRECTION.fromSentence(sentence);
+    if (built.error) { sendJson(res, 200, { ok: false, error: built.error, rejected: [] }); return; }
+    let existing = "";
+    try {
+      const cp = path.join(REPO, CORRECTION.FILE);
+      existing = fs.existsSync(cp) ? fs.readFileSync(cp, "utf8") : "";
+    } catch (e) { /* treated as an empty memory */ }
+    const verdict = CORRECTION.validate(built, { existing: existing });
+    if (!verdict.ok) {
+      sendJson(res, 200, { ok: false, error: verdict.errors.join("; "), rejected: [] });
+      return;
+    }
+    try {
+      const tmp = path.join(REPO, "server", ".cache", "correction-op.json");
+      fs.mkdirSync(path.join(REPO, "server", ".cache"), { recursive: true });
+      fs.writeFileSync(tmp, JSON.stringify(built, null, 2), "utf8");
+      const proposed = PROPOSE.propose(tmp, {});
+      sendJson(res, 200, {
+        ok: proposed.ok,
+        job: { kind: "correction-add" },
+        drafted: 1,
+        rejected: [],
+        proposal: proposed.ok
+          ? { slug: proposed.slug, changes: proposed.changes, synced: proposed.synced, next: proposed.next }
+          : null,
+        error: proposed.ok ? "" : proposed.error
+      });
+    } catch (e) {
+      sendJson(res, 500, { error: "could not record the correction: " + String(e.message || e).slice(0, 200) });
+    }
+    return;
+  }
 
   const parsed = JOBSPEC.parseIntent(String(body.sentence || ""));
   if (!parsed.ok) { sendJson(res, 400, { error: parsed.error }); return; }

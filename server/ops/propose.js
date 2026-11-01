@@ -21,12 +21,15 @@ const path = require("path");
 const { execFileSync } = require("child_process");
 const quizAdd = require("./quiz-add.js");
 const proseRewrite = require("./prose-rewrite.js");
+const correctionAdd = require("./correction-add.js");
 
 const ROOT = path.resolve(__dirname, "..", "..");
 
 /* The named operations propose knows how to run. Each one validates before it
    may change anything (R4). quiz-add moves the stated question total along with
-   the edit (R23); prose-rewrite does not touch counts at all. */
+   the edit (R23); prose-rewrite does not touch counts at all; correction-add
+   writes the corrections memory and regenerates the domain pack index in the
+   same commit (also R23: a fact and its index move together). */
 const OP_MODULES = {
   "quiz-add": {
     mod: quizAdd,
@@ -43,6 +46,13 @@ const OP_MODULES = {
     mod: proseRewrite,
     syncTotals: false,
     ctx: function (html) { return { html: html }; }
+  },
+  "correction-add": {
+    mod: correctionAdd,
+    syncTotals: false,
+    target: correctionAdd.FILE,
+    rebuild: "domain",
+    ctx: function (html, content) { return { html: html, existing: content }; }
   }
 };
 
@@ -150,9 +160,13 @@ function propose(opPath, opts) {
     return fail('unknown op "' + (op && op.op) + '" (known: ' + Object.keys(OP_MODULES).join(", ") + ")");
   }
 
+  const targetRel = spec.target || "index.html";
+  const targetPath = path.join(ROOT, targetRel);
+  const targetContent = fs.existsSync(targetPath) ? fs.readFileSync(targetPath, "utf8") : "";
+
   let ctx;
   try {
-    ctx = spec.ctx(html);
+    ctx = spec.ctx(html, targetContent);
   } catch (e) {
     return fail("could not prepare the checks: " + e.message);
   }
@@ -179,9 +193,23 @@ function propose(opPath, opts) {
 
   /* The try wraps the rest of the function body. */
   try {
-  const applied = spec.mod.apply(op, html);
+  const applied = spec.mod.apply(op, targetContent);
   if (!applied.ok) { return abortBranch("the change could not be applied: " + applied.error); }
-  fs.writeFileSync(indexPath, applied.html, "utf8");
+  const outText = ("html" in applied) ? applied.html : applied.content;
+  fs.writeFileSync(targetPath, outText, "utf8");
+
+  /* A fact and its index move together (R23): a correction commits the
+     regenerated domain pack beside the correction itself. */
+  if (spec.rebuild === "domain") {
+    try {
+      execFileSync(process.execPath, ["scripts/dev/build-domain.js"],
+        { cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+    } catch (e) {
+      return abortBranch("the domain pack rebuild failed: " +
+        String((e.stdout || "") + (e.stderr || "") || e.message).slice(0, 200));
+    }
+    git(["add", "docs/js/domain.js"]);
+  }
 
   let synced = null;
   if (spec.syncTotals) {
@@ -192,7 +220,7 @@ function propose(opPath, opts) {
     }
   }
 
-  git(["add", "index.html"]);
+  git(["add", targetRel]);
   ((synced && synced.files) || []).forEach(function (f) { git(["add", f]); });
 
   const message = "Proposal: " + applied.changes.join("; ");

@@ -600,12 +600,36 @@
     const domain = typeof window !== "undefined" ? window.GUIDE_DOMAIN : null;
     if (domain && domain.chunks && domain.chunks.length) {
       domain.chunks.forEach(function (c) {
-        addPassage("", null, "Domain \u00b7 " + c.heading, null,
+        addPassage("", null, domainLabel(c), null,
           c.text + " Source: " + c.source + " (verified " + c.verified + ").");
       });
     }
 
     return PASSAGES.length;
+  }
+
+  /* Corrections are labelled as corrections at every surface (decisions 4 and
+     12): never folded silently into the prose, always named. */
+  function domainLabel(c) {
+    if (c && c.correction) {
+      return "Correction on file \u00b7 " + String(c.heading || "")
+        .replace(/^\s*correction\s*[\u2014\-\u2013]+\s*/i, "");
+    }
+    return "Domain \u00b7 " + String((c && c.heading) || "");
+  }
+
+  /* Corrections on file ride along with offline answers: when one is among the
+     top retrieval hits for the question, the answer says so, in words. */
+  function withCorrections(msg, question) {
+    if (!msg || msg.role !== "bot") { return msg; }
+    const hits = searchPassages(String(question || ""), 3).filter(function (h) {
+      return /^Correction on file/.test(h.p.label || "");
+    });
+    if (!hits.length) { return msg; }
+    const note = hits[0].p.text.replace(/\s*Source: [\s\S]*$/, "").slice(0, 220);
+    const out = Object.assign({}, msg);
+    out.body = (msg.body || []).concat(["\u26a0 Correction on file: " + note]);
+    return out;
   }
 
   /* BM25 over the page passages */
@@ -813,7 +837,13 @@
     [/^(open |show |go to |jump to )?(the )?(how it works|pipeline)/, "build"]
   ];
 
+  /* The offline answer, with any correction on file shown alongside it (the
+     corrections memory reaches every answer path, not just the model's). */
   function answerLocal(text) {
+    return withCorrections(answerLocalRaw(text), text);
+  }
+
+  function answerLocalRaw(text) {
     const raw = String(text || "").trim();
     const q = norm(raw);
     if (!q) { return introMessage(); }
@@ -1737,6 +1767,7 @@
      The server has the real parser; this only decides which door to knock on. */
   function looksLikeEdit(text) {
     const t = String(text || "").toLowerCase();
+    if (/^\s*(correction|correct|remember|wrong)\s*[:\-]/.test(t)) { return true; }
     if (!/^\s*(add|create|write|draft|make|give me)\b/.test(t)) { return false; }
     return /\b(questions?|quizzes|quiz|exam)\b/.test(t);
   }
@@ -2013,6 +2044,21 @@
       !!offNote && (ENDPOINT ? offNote.hidden === true
         : (offNote.hidden === false && /assistant-server/.test(offNote.textContent))),
       ENDPOINT ? "AI is on, note hidden" : (offNote ? offNote.textContent.slice(0, 45) : "missing"));
+
+    /* Corrections memory (decisions 4, 11, 12): a correction is labelled at
+       every surface, and offline answers carry the note. */
+    add("correction passages are labelled as corrections",
+      domainLabel({ heading: "Correction \u2014 battery note", correction: true }) ===
+        "Correction on file \u00b7 battery note" &&
+      domainLabel({ heading: "Airframes" }) === "Domain \u00b7 Airframes",
+      domainLabel({ heading: "Correction \u2014 battery note", correction: true }));
+
+    addPassage("", null, "Correction on file \u00b7 note test", null,
+      "Note test correction text for the self-test. Source: self-test (verified 2026-11-01).");
+    const noted = answerLocal("what does the correction note look like");
+    add("offline answers carry the correction note",
+      (noted.body || []).length === 2 && /Correction on file/.test((noted.body || []).join(" ")),
+      (noted.body || []).length + " body lines");
 
     return out;
   }

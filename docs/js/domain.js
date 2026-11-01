@@ -49,6 +49,7 @@ window.GUIDE_DOMAIN = {
       "text": "The sensor is a 32 by 24 array. The MLX90640 gives 768 temperature readings per frame, at roughly ±2 °C over a 0–100 °C range. That is the specification, not a measured detection result.",
       "source": "MLX90640 datasheet; Guide tab 1 (the honesty box)",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -71,6 +72,7 @@ window.GUIDE_DOMAIN = {
       "text": "The ground footprint decides your pixel size. Ground width for a downward camera is 2 × altitude × tan(FOV ÷ 2). With the 55° lens at 30 m that is about 31.2 m across, which over 32 pixels is roughly 0.98 m per pixel.",
       "source": "Guide tab 2 altitude and coverage calculator",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -93,6 +95,7 @@ window.GUIDE_DOMAIN = {
       "text": "A one metre heat source at 30 m is about one pixel. At 30 m with the 55° lens a 1 m target covers about one pixel, so detection is a sampling question before it is an algorithm question. This is why the guide refuses to promise \"finds a 1 m heat source from 30 m\" as a capability.",
       "source": "Guide tab 1 and tab 2; audit pass 2 finding 12",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -115,6 +118,7 @@ window.GUIDE_DOMAIN = {
       "text": "What the customer actually receives. FPInnovations describes the mission product as a map of GPS-referenced hotspots delivered to the firefighter — not an aircraft that finds fires by itself. That framing is what the prototype should be measured against.",
       "source": "FPInnovations TR-2020-N29",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -137,6 +141,7 @@ window.GUIDE_DOMAIN = {
       "text": "Accuracy and contrast are different numbers. ±2 °C is absolute accuracy, not the smallest temperature difference the array can resolve; thermal contrast sensitivity is a separate, smaller figure. Quoting the accuracy figure as if it were sensitivity overstates detection capability.",
       "source": "Not from a source — verify against the MLX90640 datasheet before quoting",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": true
     },
     {
@@ -160,6 +165,7 @@ window.GUIDE_DOMAIN = {
       "text": "The mission product is a map, not an autopilot. FPInnovations describes the deliverable as a map of GPS-referenced hotspots handed to the firefighter — not an aircraft that finds fires by itself. The prototype should be measured against that framing.",
       "source": "FPInnovations TR-2020-N29 (2020), as cited in Guide tab 7 and domain 01",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -183,6 +189,7 @@ window.GUIDE_DOMAIN = {
       "text": "A real fire is agency airspace. Unauthorised drones near a wildfire ground air tankers and endanger crews, which is why the guide says plainly that no drone may fly over or within 5 nautical miles (9.3 km) of a wildfire below 3,000 ft (CAR 601.15). Real fires are not practice.",
       "source": "Guide tab 1 and tab 4; CAR 601.15",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -206,6 +213,7 @@ window.GUIDE_DOMAIN = {
       "text": "Training happens on safe heat targets. You train on safe heat targets — fire pits, burn barrels, hot plates — on private land, with permission. The acceptance run is a VLOS grid over a safe hot plate among cold controls, then replaying the logged map.",
       "source": "Guide tab 1; step 8 acceptance tests",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -229,6 +237,7 @@ window.GUIDE_DOMAIN = {
       "text": "Reports keep measured values and limitations. The pipeline's report step logs what was actually measured and the limitations that came with it; no unsupported briefing is claimed. The acceptance step is repeated controlled tests with logged error and honest limitations.",
       "source": "Guide CHAIN steps 5 and 6; payload README limitations",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -252,6 +261,7 @@ window.GUIDE_DOMAIN = {
       "text": "Why it matters for your build. The build is judged on delivering a credible hotspot map a crew could act on, with the caveats attached — not on \"finding fires\". Every design choice that looks conservative follows from that.",
       "source": "Guide tab 1; FPInnovations TR-2020-N29 (2020)",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -276,6 +286,7 @@ window.GUIDE_DOMAIN = {
       "text": "The forest-fire line that never bends. Do not operate over a forest-fire area or within 5 nautical miles (9.3 km) of one below 3,000 ft AGL, and do not enter airspace restricted by a NOTAM under CAR 601.16. Unauthorised drones ground air tankers and endanger crews.",
       "source": "CAR 601.15 and CAR 601.16, as cited in Guide tab 1 and tab 4",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -300,6 +311,7 @@ window.GUIDE_DOMAIN = {
       "text": "Register, mark, and carry the certificate. Register and mark the drone (250 g to 25 kg) and carry proof plus a Pilot Certificate — Basic Operations. The Small Basic exam and registration have fees (exam CA$10 plus registration CA$10, per TC's 1 Apr 2025 fee schedule, checked 2026-10-31); age 14+ applies to Basic. The certificate does not expire, but skills must stay current.",
       "source": "Guide tab 4; Transport Canada fee schedule 1 Apr 2025, via the order list",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -324,6 +336,7 @@ window.GUIDE_DOMAIN = {
       "text": "Altitude, proximity and weight. Fly below 400 ft (122 m) AGL, and no more than 30 m above a building while within 61 m of it horizontally (CAR 901.25). Operating weight must be no more than 25 kg — measure the completed aircraft rather than trusting estimates. Maintain VLOS.",
       "source": "Guide tab 4",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -348,6 +361,7 @@ window.GUIDE_DOMAIN = {
       "text": "Night lights are necessary, not sufficient. CAR 901.39 requires the aircraft to remain visible; a generic LED kit does not by itself make a flight legal. VLOS, airspace, bystander, aerodrome, NOTAM, Alberta fire bans and local rules all still apply at night.",
       "source": "Guide tab 1 stat and tab 4 night-lighting note",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -372,6 +386,7 @@ window.GUIDE_DOMAIN = {
       "text": "Why it matters for your build. The budget carries a CA$20 compliance allowance (exam and registration, per TC's 1 Apr 2025 fee schedule, checked 2026-10-31) so paperwork is never the reason the project stalls — the flying starts legal.",
       "source": "Order list compliance allowance; Guide tab 3",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -395,6 +410,7 @@ window.GUIDE_DOMAIN = {
       "text": "Hotspot detection here is grouping, not learning. hotspots.py groups connected warm pixels — 4-connectivity, minimum size, and a threshold inclusion rule — rather than running a learned model. The standard library suite covers no/single/multiple hotspots, connectivity, minimum size, edge cases and the end-to-end synthetic pipeline (19 synthetic tests).",
       "source": "payload README tests section; Guide CHAIN step 2",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -418,6 +434,7 @@ window.GUIDE_DOMAIN = {
       "text": "The resolution floor comes before the algorithm. At 30 m with the 55° lens a 1 m heat source covers about one pixel, so detection is a sampling question before it is an algorithm question. Ideal-nadir geometry also omits tilt, terrain, lens distortion and GPS/altitude/heading errors.",
       "source": "domain 01; payload README limitations; Guide tab 2 calculator",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -441,6 +458,7 @@ window.GUIDE_DOMAIN = {
       "text": "Geolocation is geometry plus assumptions. geo.py turns GPS position, altitude and heading into coordinates for each detected hotspot. Heading must be set clockwise from north — the code does not infer reliable heading while stationary — and surveyed-target error is still to be measured.",
       "source": "payload README run-on-hardware section; Guide CHAIN step 3",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -464,6 +482,7 @@ window.GUIDE_DOMAIN = {
       "text": "The log is the record, the viewer is a convenience. flight-log.jsonl is the authoritative append-only record; the map viewer is an offline coordinate plot, not internet map tiles. Reports keep measured values and limitations, and no unsupported AI briefing is claimed.",
       "source": "payload README verify-the-demo section; Guide CHAIN steps 4 and 5",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -487,6 +506,7 @@ window.GUIDE_DOMAIN = {
       "text": "Why it matters for your build. The career asset is the honest pipeline — group, locate, map, report, prove — not a model claim. Each stage is testable on the bench before anything flies.",
       "source": "Guide tab 5 (\"the pipeline is the career asset\"); payload README",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -509,6 +529,7 @@ window.GUIDE_DOMAIN = {
       "text": "The parts are a chosen set, not a mood board. The airframe is a TBS Source One V6 5-inch frame with four Emax ECO III 2207 1900KV motors, Gemfan 51499 tri-blade props, and two GNB 1500mAh 4S 120C HV packs (CA$48.99 frame, CA$87.96 motors, CA$67.98 batteries, checked 2026-10-31).",
       "source": "Order list, items checked 2026-10-31",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -531,6 +552,7 @@ window.GUIDE_DOMAIN = {
       "text": "The motor wind is a known trade-off. 1900 KV is a 6S-class wind, kept deliberately on 4S at roughly 550–570 g AUW with restrained current — an efficiency-style build that still carries the payload. Audit pass 2 recorded the trade-off and chose not to change it.",
       "source": "Shad-Drone-Audit-Report.md, audit pass 2 (2026-10-31)",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -553,6 +575,7 @@ window.GUIDE_DOMAIN = {
       "text": "Power is split on purpose. The GEPRC TAKER F405 BLS 50A combo stack (CA$85.99, checked 2026-10-31) feeds the Pi through a regulated 5V/3A output; the analog video transmitter runs separately from the 4S battery. Sensor boards take 3.3 V from the Qwiic HAT and nothing in that chain takes 5 V.",
       "source": "Order list; payload README wiring and power",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -575,6 +598,7 @@ window.GUIDE_DOMAIN = {
       "text": "Stock is a design constraint. The frame and the flight stack were both out of stock at Rotor Village on 31 Oct 2026, with in-stock 30.5×30.5 alternates listed (checked 2026-10-31). Confirm at checkout, and keep an alternate in the plan.",
       "source": "Order list banner (2026-10-31)",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -597,6 +621,7 @@ window.GUIDE_DOMAIN = {
       "text": "Why it matters for your build. The airframe exists to carry a calibrated payload — thermal lens down, GPS antenna up, independent retention, boards clear of carbon fibre. Bench-test power and sensors before the first flight.",
       "source": "payload README wiring; Guide steps 6–8",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -618,6 +643,7 @@ window.GUIDE_DOMAIN = {
       "text": "What the Job Bank data says. Job Bank groups the data engineer profile under Data scientists (NOC 21211) and rates Alberta prospects \"Moderate\". The Alberta/Edmonton median is CA$43.27/hr (Job Bank, NOC 21211, updated 19 Nov 2025).",
       "source": "Guide tab 5; Job Bank NOC 21211, updated 19 Nov 2025",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -639,6 +665,7 @@ window.GUIDE_DOMAIN = {
       "text": "The classification question is separate. GoA Systems Analyst is a different classification with its own controls; Level 1 MRS accepts a related two-year diploma, or a related one-year certificate and qualifying experience. Do not assume experience alone replaces the education requirement — check the current MRS wording.",
       "source": "Guide tab 5 and the MRS discussion there",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -660,6 +687,7 @@ window.GUIDE_DOMAIN = {
       "text": "Portfolio evidence, not promises. A completed, tested project is portfolio evidence; an unbuilt guide is not evidence of a working system, a reference, or interview fluency. No employment outcome is guaranteed — the guide says so in its own words.",
       "source": "Guide tab 1 (\"Will this land me a job? The straight answer\")",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -681,6 +709,7 @@ window.GUIDE_DOMAIN = {
       "text": "Say only what you measured. The pitch script's rule is that you never claim a detection rate until you have measured it. Demo kit and pitch practice live in the Career tab; the honest version of the pitch is the one that survives the follow-up question.",
       "source": "Guide tab 1 script and tab 5 demo kit",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     },
     {
@@ -702,6 +731,7 @@ window.GUIDE_DOMAIN = {
       "text": "Why it matters for your build. Every line of the intended pitch maps to something you did and can show — the build is designed backwards from that interview.",
       "source": "Guide tab 1 and tab 5",
       "verified": "2026-11-01",
+      "correction": false,
       "unverified": false
     }
   ]

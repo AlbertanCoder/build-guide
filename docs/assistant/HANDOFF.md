@@ -12,7 +12,7 @@ running the gate.
 | Repo | `C:\Users\SHADHUNTER\Desktop\build-guide-repo`, branch `main` |
 | State | clean, pushed, **0 ahead** |
 | Head at handoff | written at `27e5a05`; run `git log -1` — committing this file necessarily moved it, and any later commit should leave the gate green |
-| Gate | `node scripts/dev/gate.js` → **378/378 named checks**, eighteen suites |
+| Gate | `node scripts/dev/gate.js` → **404/404 named checks**, nineteen suites |
 | The file the user opens | `C:\Users\SHADHUNTER\Desktop\Shad's Build Guide.html` — a **generated** single file. Never edit it; edit source and rebuild |
 | The user's API key | **not saved yet** (`keyConfigured: false`) |
 
@@ -33,7 +33,7 @@ running the gate.
 (cache, model tiers, compression, budget, `/api/stats`), the settings drawer
 (provider, key, model, budget — all server-side), domain pack slice 1 of 6 with a
 build that **refuses an unsourced claim**, two named edit operations (`quiz-add`,
-`prose-rewrite`), the proposal branch loop, undo, and a 378-check gate that cannot
+`prose-rewrite`), the proposal branch loop, undo, and a 404-check gate that cannot
 be made green by deleting a check.
 
 **Not built — say so plainly if asked:**
@@ -41,9 +41,9 @@ be made green by deleting a check.
 - **The chatbot cannot edit anything.** No button, no sentence, changes the page.
   Editing is the CLI above, driven by a human, and only adds quiz questions or
   rewrites one named paragraph per op.
-- Also missing: corrections memory, eval set, the "Ask" tab, and background jobs.
+- Also missing: eval set, the "Ask" tab, and background jobs.
 
-`STATUS.md` has the row-by-row audit: **26 built / 15 partial / 9 still paper.**
+`STATUS.md` has the row-by-row audit: **28 built / 15 partial / 7 still paper.**
 
 ## Rules that must not be broken
 
@@ -70,7 +70,13 @@ like `quiz-add` (exact-once anchor inside the section's span, `<p>`-only surface
 banned-language scan, post-conditions) — is also built. 38 checks.
 
 What remains beyond the original priority list, in the order `STATUS.md` ranks
-them: the corrections memory, the eval set, and the "Ask" tab.
+them: the eval set and the "Ask" tab.
+
+The corrections memory is built: `correction-add` writes
+`docs/domain/corrections.md` through the proposal loop (never auto-ingested,
+never unreviewed), corrections are retrieved by the same BM25 and labelled
+"Correction on file" at every surface, and a correction that disagrees with the
+guide is shown as a conflict, labelled authoritative for the answers. 22 checks.
 
 The domain pack is complete: all six pages, 30 sourced blocks, in `docs/domain/`
 (generated into `docs/js/domain.js`; the build refuses an unsourced block).

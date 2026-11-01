@@ -23,8 +23,8 @@ to a later stage of the approved plan.
 | 8 | Propose → accept → gate → auto-commit | BUILT |
 | 9 | Editable surface: prose/docs/KB/budget, not code | PARTIAL — `quiz-add` and `prose-rewrite` exist; KB-entry and budget edits do not |
 | 10 | 3D as named presets | NOT BUILT |
-| 11 | Corrections memory (learning, no training) | NOT BUILT |
-| 12 | Corrections stored in `docs/domain/corrections.md` | NOT BUILT — file does not exist |
+| 11 | Corrections memory (learning, no training) | BUILT — `correction-add` through the proposal loop; reviewed, never auto-ingested, 22 checks |
+| 12 | Corrections stored in `docs/domain/corrections.md` | BUILT — committed, labelled "Correction on file", retrieved by the same BM25 |
 | 13 | Full gate before accepting | BUILT |
 | 14 | Three write gates (local + token + `--allow-write`) | PARTIAL — loopback bind and origin/content-type guards exist; no token, no flag |
 | 15 | Edit limits: 10/session, budget, kill switch | NOT BUILT |
@@ -73,9 +73,9 @@ to a later stage of the approved plan.
 
 | | Count |
 |---|---|
-| BUILT | 26 |
+| BUILT | 28 |
 | PARTIAL | 15 |
-| NOT BUILT | 9 |
+| NOT BUILT | 7 |
 
 Counted by hand off the two tables above, row by row — the first version of this
 file said 20 / 13 / 17, which was a guess dressed as a summary. It is corrected
@@ -88,13 +88,11 @@ The questions bought **rules**, and the rules are why the gate exists, why a
 question cannot be added without a citation, and why an accepted change can be
 undone byte-for-byte. That part is real.
 
-What they did **not** buy is a finished assistant. **Nine decisions are still
+What they did **not** buy is a finished assistant. **Seven decisions are still
 paper, and a further fifteen are half-built.** The largest gaps, in the order
 they hurt:
 
-1. **The corrections memory** (R11/R12) — "it learns when you correct it" is the
-   feature most likely to be mistaken for "it is finished".
-2. **The eval set** (R16 round 1) — without it, "it got better" is an opinion.
+1. **The eval set** (R16 round 1) — without it, "it got better" is an opinion.
 
 Nothing here is hidden: every PARTIAL and NOT BUILT above is checkable by opening
 the named file, which is why this list is committed rather than described.

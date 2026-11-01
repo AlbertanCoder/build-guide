@@ -99,6 +99,11 @@ const SUITES = [
     expect: 37
   },
   {
+    name: "corrections memory",
+    cmd: ["node", ["scripts/dev/check-corrections.js"]],
+    expect: 22
+  },
+  {
     name: "browser",
     cmd: ["node", ["scripts/dev/check-browser.js"]],
     expect: 28,
@@ -107,12 +112,12 @@ const SUITES = [
   {
     name: "self-test served",
     served: true, /* the page must be served over http, not file:// */
-    expect: 19
+    expect: 21
   },
   {
     name: "self-test single file",
     cmd: PS("scripts/dev/check-assistant.ps1", ["-Target", "dist/Shad's Build Guide.html"]),
-    expect: 19
+    expect: 21
   },
   {
     name: "ai path",

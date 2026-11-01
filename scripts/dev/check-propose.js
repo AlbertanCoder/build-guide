@@ -89,7 +89,7 @@ const OP = {
        code (approved change, R22, propose loop 32 -> 38). The real working repo
        is still never a test subject, and nothing here ever pushes. */
     fs.mkdirSync(path.join(CLONE, "server", "ops"), { recursive: true });
-    ["propose.js", "quiz-add.js", "prose-rewrite.js", "known-values.json",
+    ["propose.js", "quiz-add.js", "prose-rewrite.js", "correction-add.js", "known-values.json",
       "accept.js", "undo.js", "reject.js"].forEach(function (f) {
       fs.copyFileSync(path.join(ROOT, "server", "ops", f), path.join(CLONE, "server", "ops", f));
     });
