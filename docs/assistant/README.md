@@ -103,7 +103,7 @@ that chain fails, the answer comes from the offline engine with a one-line note 
 
 ## The gate
 
-Twelve suites, 204 named checks, one exit code:
+Twelve suites, 215 named checks, one exit code:
 
 ```powershell
 node scripts/dev/gate.js            # everything
@@ -119,7 +119,7 @@ node scripts/dev/gate.js --json     # machine-readable, for the agent to consume
 | cost engine | 26 |
 | cost path | 30 |
 | quiz operation | 29 |
-| propose loop | 15 |
+| propose loop | 26 |
 | settings api | 23 |
 | browser (Chrome) | 28 |
 | self-test served | 17 |
@@ -240,7 +240,9 @@ from storage.
 | `scripts/dev/check-quiz-op.js` | 29 checks on that operation — every refusal, plus proof it cannot write to disk |
 | `server/ops/propose.js` | turns a validated op into a `proposal/` branch; cannot touch `main` |
 | `server/ops/known-values.json` | values the corpus treats as correct, so a distractor can never secretly be right |
-| `scripts/dev/check-propose.js` | 15 checks in a throwaway clone, including that `main` never moved |
+| `scripts/dev/check-propose.js` | 26 checks in a throwaway clone covering propose, accept and reject — including that `main` never moved |
+| `server/ops/accept.js` | merges a proposal only if the whole gate is green on it |
+| `server/ops/reject.js` | deletes a `proposal/*` branch and nothing else |
 
 ## Tests
 

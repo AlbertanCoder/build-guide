@@ -60,7 +60,7 @@ const SUITES = [
   {
     name: "propose loop",
     cmd: ["node", ["scripts/dev/check-propose.js"]],
-    expect: 15
+    expect: 26
   },
   {
     name: "settings api",

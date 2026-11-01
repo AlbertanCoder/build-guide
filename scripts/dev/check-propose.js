@@ -165,6 +165,6 @@ const OP = {
 
   console.log("");
   if (bad) { console.log(bad + " check(s) failed."); process.exit(1); }
-  console.log("propose verified, and main never moved.");
+  console.log("propose / accept / reject verified; main never moved.");
 })();
 
