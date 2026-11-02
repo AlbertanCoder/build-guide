@@ -1737,15 +1737,20 @@
     providerNote.id = "ga-provider-note";
 
     const modelLabel = el("label", null, "Model");
+    const modelSel = el("select", "ga-select");
+    modelSel.id = "ga-model-pick";
+    const OTHER_MODEL = "__other";
     const modelInput = el("input", "ga-key-input");
     modelInput.id = "ga-model";
     modelInput.autocomplete = "off";
     modelInput.placeholder = "exact model id, e.g. vendor/model-name";
+    modelInput.hidden = true;
     const modelRow = el("div", "ga-row");
     const saveModel = el("button", "ga-chip", "Use this model");
     saveModel.type = "button";
     saveModel.id = "ga-model-save";
     modelRow.appendChild(saveModel);
+    modelRow.hidden = true;
 
     const keyLabel = el("label", null, "API key");
     const keyState = el("span", "ga-sub");
@@ -1827,6 +1832,7 @@
     node.appendChild(providerSel);
     node.appendChild(providerNote);
     node.appendChild(modelLabel);
+    node.appendChild(modelSel);
     node.appendChild(modelInput);
     node.appendChild(modelRow);
     node.appendChild(keyLabel);
@@ -1848,7 +1854,7 @@
     }
 
     function setDisabled(on) {
-      [providerSel, modelInput, saveModel, keyInput, saveKey, testKey, clearKey, budget].forEach(function (n) {
+      [providerSel, modelSel, modelInput, saveModel, keyInput, saveKey, testKey, clearKey, budget].forEach(function (n) {
         n.disabled = !!on;
       });
     }
@@ -1869,6 +1875,21 @@
       }
       if (s.preset) { providerSel.value = s.preset; }
       if (document.activeElement !== modelInput) { modelInput.value = s.cheapModel || ""; }
+      const preset = (s.presets || []).find(function (p) { return p.id === s.preset; });
+      const models = (preset && preset.models ? preset.models : []).slice();
+      if (s.cheapModel && models.indexOf(s.cheapModel) === -1) { models.unshift(s.cheapModel); }
+      modelSel.textContent = "";
+      models.forEach(function (m) {
+        const opt = document.createElement("option");
+        opt.value = m;
+        opt.textContent = m;
+        modelSel.appendChild(opt);
+      });
+      const other = document.createElement("option");
+      other.value = OTHER_MODEL;
+      other.textContent = "Other (type a model name)";
+      modelSel.appendChild(other);
+      modelSel.value = modelInput.hidden ? (s.cheapModel || OTHER_MODEL) : OTHER_MODEL;
       providerNote.textContent = (s.baseUrl || "") +
         (s.cheapModel ? "  ·  cheap " + s.cheapModel : "") +
         (s.strongModel && s.strongModel !== s.cheapModel ? "  ·  strong " + s.strongModel : "");
@@ -1931,12 +1952,33 @@
         .catch(function (e) { setNote(e.message, true); });
     });
 
+    function showCustomModel(on) {
+      modelInput.hidden = !on;
+      modelRow.hidden = !on;
+    }
+
+    modelSel.addEventListener("change", function () {
+      if (modelSel.value === OTHER_MODEL) {
+        showCustomModel(true);
+        modelInput.focus();
+        return;
+      }
+      showCustomModel(false);
+      post({ model: modelSel.value })
+        .then(function (s) {
+          paint(s);
+          setNote("Model set to " + s.cheapModel + ". Ask a question to try it.");
+        })
+        .catch(function (e) { setNote(e.message, true); });
+    });
+
     saveModel.addEventListener("click", function () {
       const v = modelInput.value.trim();
       if (!v) { setNote("Type an exact model id first, e.g. vendor/model-name.", true); return; }
       saveModel.disabled = true;
       post({ model: v })
         .then(function (s) {
+          showCustomModel(false);
           paint(s);
           setNote("Model set to " + s.cheapModel + ". Press Test key, then ask a real question.");
         })

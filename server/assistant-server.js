@@ -469,7 +469,9 @@ function settingsPayload() {
     cheapModel: CHEAP_MODEL,
     strongModel: STRONG_MODEL,
     preset: presetFor(),
-    presets: PRESETS.map(function (p) { return { id: p.id, label: p.label }; }),
+    presets: PRESETS.map(function (p) {
+      return { id: p.id, label: p.label, models: p.cheap === p.strong ? [p.cheap] : [p.strong, p.cheap] };
+    }),
     dailyUsdMax: cap,
     budgetMin: BUDGET_MIN,
     budgetMax: BUDGET_MAX,
