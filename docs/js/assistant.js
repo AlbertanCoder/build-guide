@@ -1740,6 +1740,9 @@
     const modelSel = el("select", "ga-select");
     modelSel.id = "ga-model-pick";
     const OTHER_MODEL = "__other";
+    let lastSettings = null;
+    let providerModels = [];
+    let modelListSig = "";
     const modelInput = el("input", "ga-key-input");
     modelInput.id = "ga-model";
     modelInput.autocomplete = "off";
@@ -1875,21 +1878,21 @@
       }
       if (s.preset) { providerSel.value = s.preset; }
       if (document.activeElement !== modelInput) { modelInput.value = s.cheapModel || ""; }
-      const preset = (s.presets || []).find(function (p) { return p.id === s.preset; });
-      const models = (preset && preset.models ? preset.models : []).slice();
-      if (s.cheapModel && models.indexOf(s.cheapModel) === -1) { models.unshift(s.cheapModel); }
-      modelSel.textContent = "";
-      models.forEach(function (m) {
-        const opt = document.createElement("option");
-        opt.value = m;
-        opt.textContent = m;
-        modelSel.appendChild(opt);
-      });
-      const other = document.createElement("option");
-      other.value = OTHER_MODEL;
-      other.textContent = "Other (type a model name)";
-      modelSel.appendChild(other);
-      modelSel.value = modelInput.hidden ? (s.cheapModel || OTHER_MODEL) : OTHER_MODEL;
+      lastSettings = s;
+      renderModels();
+      const sig = (s.preset || s.baseUrl || "") + "|" + (s.keyConfigured ? s.keyHint : "");
+      if (sig !== modelListSig) {
+        modelListSig = sig;
+        providerModels = [];
+        fetch("/api/models", { cache: "no-store" })
+          .then(function (r) { return r.json(); })
+          .then(function (j) {
+            if (modelListSig !== sig) { return; }
+            providerModels = Array.isArray(j.ids) ? j.ids : [];
+            renderModels();
+          })
+          .catch(function () { /* the suggested models still show */ });
+      }
       providerNote.textContent = (s.baseUrl || "") +
         (s.cheapModel ? "  ·  cheap " + s.cheapModel : "") +
         (s.strongModel && s.strongModel !== s.cheapModel ? "  ·  strong " + s.strongModel : "");
@@ -1908,6 +1911,39 @@
         "A research job is capped at $" + Number(s.jobBudgetUsd).toFixed(2) +
         " so it can never eat a whole day." +
         (s.blocked ? " Today's budget is spent: answers fall back to the offline engine." : "");
+    }
+
+    function renderModels() {
+      const s = lastSettings || {};
+      const preset = (s.presets || []).find(function (p) { return p.id === s.preset; });
+      const suggested = (preset && preset.models ? preset.models : []).slice();
+      if (s.cheapModel && suggested.indexOf(s.cheapModel) === -1 &&
+          providerModels.indexOf(s.cheapModel) === -1) { suggested.unshift(s.cheapModel); }
+      function option(parent, value, text) {
+        const opt = document.createElement("option");
+        opt.value = value;
+        opt.textContent = text;
+        parent.appendChild(opt);
+      }
+      modelSel.textContent = "";
+      const top = document.createElement("optgroup");
+      top.label = "Suggested";
+      suggested.forEach(function (m) { option(top, m, m); });
+      modelSel.appendChild(top);
+      const groups = {};
+      providerModels.forEach(function (m) {
+        if (suggested.indexOf(m) !== -1) { return; }
+        const maker = m.indexOf("/") > 0 ? m.slice(0, m.indexOf("/")) : "Your provider's models";
+        (groups[maker] = groups[maker] || []).push(m);
+      });
+      Object.keys(groups).sort().forEach(function (maker) {
+        const g = document.createElement("optgroup");
+        g.label = maker;
+        groups[maker].forEach(function (m) { option(g, m, m); });
+        modelSel.appendChild(g);
+      });
+      option(modelSel, OTHER_MODEL, "Other (type a model name)");
+      modelSel.value = modelInput.hidden ? (s.cheapModel || OTHER_MODEL) : OTHER_MODEL;
     }
 
     function load() {

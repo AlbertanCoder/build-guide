@@ -504,6 +504,35 @@ async function verifyKey() {
   }
 }
 
+/* The models this key can use, straight from the provider's model list (a free
+   call, no tokens). Kept ten minutes per provider + key so opening the drawer
+   does not hit the provider every time. Never throws. */
+let modelListCache = { sig: "", at: 0, ids: [] };
+async function listModels() {
+  const local = /127\.0\.0\.1|localhost/.test(BASE_URL);
+  if (TEST_MODE || (!API_KEY && !local)) { return { ids: [], detail: API_KEY ? "" : "No key saved yet." }; }
+  const sig = PROVIDER + "|" + BASE_URL + "|" + API_KEY.slice(-6);
+  if (modelListCache.sig === sig && Date.now() - modelListCache.at < 10 * 60 * 1000) {
+    return { ids: modelListCache.ids, detail: "" };
+  }
+  const url = PROVIDER === "anthropic" ? BASE_URL + "/v1/models?limit=1000" : BASE_URL + "/models";
+  try {
+    const headers = PROVIDER === "anthropic"
+      ? { "x-api-key": API_KEY, "anthropic-version": "2023-06-01" }
+      : { authorization: "Bearer " + (API_KEY || "local") };
+    const res = await fetch(url, { method: "GET", headers: headers, signal: AbortSignal.timeout(10000) });
+    if (!res.ok) { return { ids: [], detail: "The provider did not list its models (HTTP " + res.status + ")." }; }
+    const j = await res.json();
+    const ids = Array.from(new Set((Array.isArray(j.data) ? j.data : [])
+      .map(function (m) { return m && typeof m.id === "string" ? m.id.slice(0, 120) : ""; })
+      .filter(Boolean))).sort();
+    modelListCache = { sig: sig, at: Date.now(), ids: ids };
+    return { ids: ids, detail: "" };
+  } catch (e) {
+    return { ids: [], detail: "Could not reach the provider: " + String(e.message || e).slice(0, 200) };
+  }
+}
+
 /* One non-streaming call, used by the drafter. Streaming is for answers; a
    drafting job wants the whole JSON array before it does anything. */
 async function askOnce(prompt) {
@@ -1253,6 +1282,12 @@ const server = http.createServer((req, res) => {
      preflight that this server never approves (so a hostile page cannot POST),
      and a same-origin check rejects a mismatched Origin. The response never
      contains the key — only whether one is set and its last four characters. */
+  if (u === "/api/models") {
+    if (req.method !== "GET") { sendJson(res, 405, { error: "GET only." }); return; }
+    listModels().then(function (r) { sendJson(res, 200, r); });
+    return;
+  }
+
   if (u === "/api/settings") {
     if (req.method === "GET") { sendJson(res, 200, settingsPayload()); return; }
     if (req.method !== "POST") { sendJson(res, 405, { error: "GET or POST." }); return; }
