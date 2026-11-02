@@ -418,7 +418,7 @@
   .ga-dot:nth-child(2) { animation-delay: .15s; }
   .ga-dot:nth-child(3) { animation-delay: .3s; }
   @keyframes ga-bounce { 0%, 80%, 100% { opacity: .25; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
-  .ga-form { display: flex; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--line);
+  .ga-form { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--line);
     background: var(--card); align-items: flex-end; }
   .ga-input { flex: 1 1 auto; resize: none; max-height: 88px; padding: 9px 11px; border: 1px solid var(--line);
     border-radius: 10px; font: inherit; font-size: 14px; background: #fff; color: var(--ink); }
@@ -426,6 +426,11 @@
   .ga-send { border: 0; background: var(--pine); color: #fff; border-radius: 10px;
     padding: 9px 14px; font-weight: 600; font-size: 14px; }
   .ga-send:hover { background: var(--pine-deep); }
+  .ga-suggestion-text { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 180px;
+    overflow-y: auto; padding: 8px; background: var(--bg); border-radius: 8px;
+    font-family: inherit; font-size: 12px; line-height: 1.45; }
+  .ga-suggestion-citations { margin: 4px 0 0; padding-left: 18px; }
+  .ga-chip:disabled { opacity: .55; cursor: not-allowed; }
   .ga-sr { position: absolute; width: 1px; height: 1px; overflow: hidden;
     clip: rect(0 0 0 0); white-space: nowrap; }
   .ga-flash { animation: ga-flash 1.8s ease-out; }
@@ -4607,6 +4612,7 @@ window.GUIDE_DOMAIN = {
       card.appendChild(ol);
     }
     if (msg.note) { card.appendChild(el("p", "ga-note", msg.note)); }
+    if (msg.suggestion) { renderSuggestion(card, msg); }
     if (msg.src) { card.appendChild(el("p", "ga-src", "Source: " + msg.src)); }
     if (msg.see && msg.see.length) {
       const row = el("div", "ga-see");
@@ -4630,6 +4636,82 @@ window.GUIDE_DOMAIN = {
       wrap.appendChild(row);
     }
     return wrap;
+  }
+
+  function suggestionStatusText(s) {
+    if (s.status === "dismissed") { return "Suggestion dismissed. No server request or write was made."; }
+    if (s.status === "accepted") {
+      return "Proposal created: " + s.proposal + ". Your real guide is unchanged pending normal review.";
+    }
+    return s.error || "Accept creates a proposal for review. Reject dismisses only this local suggestion.";
+  }
+
+  function renderSuggestion(card, msg) {
+    const s = msg.suggestion;
+    /* A reload must never resurrect an in-flight write as an active pending card. */
+    if (!s.status || s.status === "accepting") { s.status = "ready"; }
+    const op = s.op || {};
+    card.appendChild(el("p", "ga-note", "Section: " + op.section));
+    card.appendChild(el("p", "ga-src", "Before"));
+    card.appendChild(el("pre", "ga-suggestion-text", op.oldText || ""));
+    card.appendChild(el("p", "ga-src", "Suggested replacement"));
+    card.appendChild(el("pre", "ga-suggestion-text", op.newText || ""));
+
+    const groups = [
+      ["improves", "What improves"],
+      ["corpusSupport", "Corpus support"],
+      ["conflicts", "Conflicts"]
+    ];
+    groups.forEach(function (group) {
+      card.appendChild(el("p", "ga-title", group[1]));
+      const claims = s.report && Array.isArray(s.report[group[0]]) ? s.report[group[0]] : [];
+      if (!claims.length) {
+        card.appendChild(el("p", "ga-note", group[0] === "conflicts"
+          ? "No conflict was found in the supplied corpus; other conflicts may exist."
+          : "No cited claims were returned."));
+        return;
+      }
+      const list = el("ol", "ga-steps");
+      claims.forEach(function (item) {
+        const li = el("li", null, item.claim);
+        const citations = el("ul", "ga-suggestion-citations");
+        (item.citations || []).forEach(function (citation) {
+          citations.appendChild(el("li", "ga-src",
+            citation.source + " · " + citation.label + " — “" + citation.quote + "”"));
+        });
+        li.appendChild(citations);
+        list.appendChild(li);
+      });
+      card.appendChild(list);
+    });
+
+    const status = el("p", "ga-note", suggestionStatusText(s));
+    status.setAttribute("data-ga-suggestion-status", "true");
+    card.appendChild(status);
+    const row = el("div", "ga-see");
+    const accept = el("button", "ga-chip", "Accept");
+    accept.type = "button";
+    accept.setAttribute("data-ga-suggestion-accept", "true");
+    const reject = el("button", "ga-chip", "Reject");
+    reject.type = "button";
+    reject.setAttribute("data-ga-suggestion-reject", "true");
+    accept.disabled = s.status !== "ready";
+    reject.disabled = s.status !== "ready";
+    accept.addEventListener("click", function () {
+      acceptSuggestion(msg, accept, reject, status);
+    });
+    reject.addEventListener("click", function () {
+      if (s.status !== "ready") { return; }
+      s.status = "dismissed";
+      s.error = "";
+      accept.disabled = true;
+      reject.disabled = true;
+      status.textContent = suggestionStatusText(s);
+      persist(true);
+    });
+    row.appendChild(accept);
+    row.appendChild(reject);
+    card.appendChild(row);
   }
 
   /* ---------- markdown-lite, built as DOM nodes (no innerHTML, no XSS) ------ */
@@ -4795,7 +4877,7 @@ window.GUIDE_DOMAIN = {
     window.addEventListener("hashchange", scheduleBuildSync);
   }
 
-  function persist() {
+  function persist(localOnly) {
     try {
       localStorage.setItem(STORE, JSON.stringify({
         v: 3,
@@ -4805,7 +4887,7 @@ window.GUIDE_DOMAIN = {
         build: buildPosition()
       }));
     } catch (e) { /* private mode: the chat simply does not persist */ }
-    syncThread();
+    if (!localOnly) { syncThread(); }
   }
 
   /* ---- conversation memory (decisions 11's spirit: kept, never trained on) --
@@ -5163,13 +5245,24 @@ window.GUIDE_DOMAIN = {
     const input = el("textarea", "ga-input");
     input.id = "ga-input";
     input.rows = 1;
-    input.maxLength = 300;
+    input.maxLength = 500;
     input.placeholder = "e.g. thermal image is noisy at 8 Hz";
     const send = el("button", "ga-send", "Send");
     send.type = "submit";
+    const suggest = el("button", "ga-send", "Suggest an edit");
+    suggest.type = "button";
+    suggest.id = "ga-suggest";
+    suggest.title = "Draft one cited paragraph proposal for the visible section";
     form.appendChild(label);
     form.appendChild(input);
     form.appendChild(send);
+    form.appendChild(suggest);
+    suggest.addEventListener("click", function () {
+      const t = input.value.trim();
+      if (!t || UI.busy) { return; }
+      input.value = "";
+      suggestEdit(t);
+    });
 
     const settings = buildSettings();
     const history = buildHistory();
@@ -5698,6 +5791,41 @@ window.GUIDE_DOMAIN = {
     return h;
   }
 
+  function acceptSuggestion(msg, accept, reject, status) {
+    const s = msg.suggestion;
+    if (!s || s.status !== "ready") { return Promise.resolve(); }
+    s.status = "accepting";
+    s.error = "";
+    accept.disabled = true;
+    reject.disabled = true;
+    status.textContent = "Creating a proposal through the normal review loop…";
+    return fetch("/api/propose", {
+      method: "POST",
+      headers: writeTokenHeaders({ "content-type": "application/json" }),
+      body: JSON.stringify({ op: s.op })
+    }).then(function (r) {
+      return r.json().then(function (j) {
+        if (!r.ok) { throw new Error((j && j.error) || ("HTTP " + r.status)); }
+        if (!j.ok || !j.proposal || !j.proposal.slug) {
+          throw new Error((j && j.error) || "the proposal was not created");
+        }
+        return j;
+      });
+    }).then(function (j) {
+      s.status = "accepted";
+      s.proposal = j.proposal.slug;
+      status.textContent = suggestionStatusText(s);
+      persist();
+    }).catch(function (e) {
+      s.status = "ready";
+      s.error = "Could not create a proposal: " + String(e.message || e);
+      accept.disabled = false;
+      reject.disabled = false;
+      status.textContent = suggestionStatusText(s);
+      persist();
+    });
+  }
+
   function looksLikeEdit(text) {
     const t = String(text || "").toLowerCase();
     if (/^\s*(correction|correct|remember|wrong)\s*[:\-]/.test(t)) { return true; }
@@ -5752,6 +5880,67 @@ window.GUIDE_DOMAIN = {
         body: [String(e.message || e)],
         steps: [],
         src: ""
+      });
+    });
+  }
+
+  function currentSection() {
+    const panels = document.querySelectorAll("[role='tabpanel'][id^='p-']");
+    for (let i = 0; i < panels.length; i += 1) {
+      if (!panels[i].hidden) { return panels[i].id; }
+    }
+    return "p-" + buildPosition().tab;
+  }
+
+  function suggestEdit(text) {
+    const t = String(text == null ? "" : text).trim();
+    if (!t || UI.busy) { return Promise.resolve(null); }
+    if (UI.panel.hidden) { setOpen(true); }
+    push({ role: "user", text: t });
+    ctx.history.push({ role: "user", content: t });
+    UI.busy = true;
+
+    if (!settingsAvailable()) {
+      UI.busy = false;
+      return Promise.resolve(push({
+        role: "bot",
+        title: "Local server required",
+        body: ["Suggestions need the local guide server. Offline question answering and the guide are still available; no suggestion request was sent."],
+        steps: [], src: ""
+      }));
+    }
+
+    return fetch("/api/suggest", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ sentence: t, section: currentSection() })
+    }).then(function (r) {
+      return r.json().then(function (j) {
+        if (!r.ok) { throw new Error((j && j.error) || ("HTTP " + r.status)); }
+        return j;
+      });
+    }).then(function (j) {
+      UI.busy = false;
+      if (!j.ok) {
+        return push({
+          role: "bot", title: "Suggestion refused",
+          body: [j.error || "The candidate did not pass the suggestion checks."],
+          steps: [], src: ""
+        });
+      }
+      return push({
+        role: "bot",
+        title: "Suggested edit — review the evidence",
+        body: ["This is only a candidate. Accepting it creates a proposal branch; it does not change or publish the real guide."],
+        suggestion: { op: j.op, report: j.report, status: "ready", proposal: "", error: "" },
+        steps: [],
+        src: "every judgement claim cites exact corpus text"
+      });
+    }).catch(function (e) {
+      UI.busy = false;
+      return push({
+        role: "bot", title: "Could not suggest an edit",
+        body: [String(e.message || e)], steps: [], src: ""
       });
     });
   }

@@ -126,7 +126,7 @@ that chain fails, the answer comes from the offline engine with a one-line note 
 
 ## The gate
 
-22 suites, 475 named checks, one exit code:
+23 suites, 601 named checks, one exit code:
 
 ```powershell
 node scripts/dev/gate.js            # everything
@@ -154,6 +154,7 @@ node scripts/dev/gate.js --json     # machine-readable, for the agent to consume
 | write gates | 13 |
 | conversation memory | 29 |
 | build sync | 23 |
+| suggest an edit | 126 |
 | browser (Chrome) | 28 |
 | self-test served | 24 |
 | self-test single file | 24 |

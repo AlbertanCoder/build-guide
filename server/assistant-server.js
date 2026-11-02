@@ -25,8 +25,10 @@ const { execFileSync } = require("child_process");
 const REPO = path.resolve(__dirname, "..");
 const ENGINE = require("./cost-engine.js");
 const QUIZ = require("./ops/quiz-add.js");
+const PROSE = require("./ops/prose-rewrite.js");
 const JOBSPEC = require("./ops/job-spec.js");
 const DRAFT = require("./ops/draft.js");
+const SUGGEST = require("./ops/suggest.js");
 const PROPOSE = require("./ops/propose.js");
 const CORRECTION = require("./ops/correction-add.js");
 const BANS = require("./bans.js");
@@ -550,6 +552,87 @@ function domainPassages() {
   return out;
 }
 
+function hasJsonMediaType(req) {
+  const type = String(req.headers["content-type"] || "");
+  return type.split(";", 1)[0].trim().toLowerCase() === "application/json";
+}
+
+/** POST /api/suggest — cited judgement and a candidate, but never a write. */
+async function handleSuggest(req, res) {
+  const ip = req.socket.remoteAddress || "local";
+  if (rateLimited(ip)) {
+    sendJson(res, 429, { error: "Too many suggestions. Wait a minute." }); return;
+  }
+  const origin = String(req.headers.origin || "");
+  const host = String(req.headers.host || "");
+  if (!hasJsonMediaType(req)) {
+    sendJson(res, 415, { error: "Send application/json." }); return;
+  }
+  if (origin && host && origin.replace(/^https?:\/\//, "") !== host) {
+    sendJson(res, 403, { error: "Cross-origin suggestion refused." }); return;
+  }
+
+  let raw = "";
+  let size = 0;
+  let tooBig = false;
+  await new Promise((resolve) => {
+    req.on("data", (chunk) => {
+      size += chunk.length;
+      if (size > 16384) { tooBig = true; } else { raw += chunk; }
+    });
+    req.on("end", resolve);
+    req.on("error", resolve);
+  });
+  if (tooBig) { sendJson(res, 413, { error: "Request too large; the limit is 16 KiB." }); return; }
+  let body;
+  try { body = JSON.parse(raw || "{}"); } catch (e) {
+    sendJson(res, 400, { error: "Bad JSON." }); return;
+  }
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    sendJson(res, 400, { error: "Send one JSON object." }); return;
+  }
+  if (typeof body.sentence !== "string" || typeof body.section !== "string") {
+    sendJson(res, 400, { error: "Sentence and section must be strings." }); return;
+  }
+  const sentence = body.sentence.trim().slice(0, SUGGEST.MAX_SENTENCE);
+  const section = body.section.trim();
+  if (!sentence) { sendJson(res, 400, { error: "A suggestion instruction is required." }); return; }
+
+  let html;
+  let domain;
+  try {
+    html = fs.readFileSync(path.join(REPO, "index.html"), "utf8");
+    domain = domainPassages();
+  } catch (e) {
+    sendJson(res, 500, { error: "could not prepare the suggestion corpus" }); return;
+  }
+  if (PROSE.listSections(html).indexOf(section) === -1) {
+    sendJson(res, 400, { error: "Choose an existing guide section." }); return;
+  }
+  meter.count("suggestions");
+  if (meter.blocked()) {
+    meter.count("blocked");
+    sendJson(res, 402, { error: "the daily budget is spent, so no suggestions until it resets", budget: meter.snapshot() });
+    return;
+  }
+  if (!API_KEY && !/127\.0\.0\.1|localhost/.test(BASE_URL)) {
+    sendJson(res, 501, { error: "no API key yet — open the gear in the panel and add one" }); return;
+  }
+
+  try {
+    const result = await SUGGEST.suggest(
+      { sentence: sentence, section: section },
+      { html: html, domain: domain },
+      askOnce
+    );
+    sendJson(res, 200, result);
+  } catch (e) {
+    /* Provider bodies and thrown messages can contain prompts, credentials, or
+       model output. None of those diagnostics belong in the client response. */
+    sendJson(res, 502, { error: "The suggestion provider failed. No suggestion was returned." });
+  }
+}
+
 /** POST /api/propose { sentence } — the chat asks for a change and gets a branch. */
 async function handlePropose(req, res) {
   /* This writes files and runs git, so it gets the same guards as the settings
@@ -577,6 +660,60 @@ async function handlePropose(req, res) {
 
   let body;
   try { body = JSON.parse(raw || "{}"); } catch (e) { sendJson(res, 400, { error: "Bad JSON." }); return; }
+
+  /* Item D Accept: a structured prose operation still uses the one existing
+      proposal loop. This branch creates a proposal only, never merges it. */
+  if (Object.prototype.hasOwnProperty.call(body, "op")) {
+    const input = body.op;
+    if (!input || input.op !== "prose-rewrite") {
+      sendJson(res, 400, { error: 'Only a structured "prose-rewrite" operation is accepted.' }); return;
+    }
+    const op = {
+      op: "prose-rewrite",
+      section: String(input.section || "").trim(),
+      oldText: String(input.oldText || "").trim(),
+      newText: String(input.newText || "").trim()
+    };
+    const banned = BANS.screenText(JSON.stringify(op));
+    if (!banned.ok) {
+      sendJson(res, 200, { ok: false, error: BANS.blockNotice(banned.hits), rejected: [] }); return;
+    }
+    let verdict;
+    try {
+      const html = fs.readFileSync(path.join(REPO, "index.html"), "utf8");
+      verdict = PROSE.validate(op, { html: html });
+    } catch (e) {
+      sendJson(res, 500, { error: "could not prepare the operation checks" }); return;
+    }
+    if (!verdict.ok) {
+      sendJson(res, 200, { ok: false, error: verdict.errors.join("; "), rejected: [] }); return;
+    }
+
+    const tmp = path.join(REPO, "server", ".cache", "suggest-op-" + process.pid + "-" +
+      Date.now() + "-" + Math.random().toString(36).slice(2, 8) + ".json");
+    let proposed;
+    try {
+      fs.mkdirSync(path.dirname(tmp), { recursive: true });
+      fs.writeFileSync(tmp, JSON.stringify(op, null, 2), "utf8");
+      proposed = PROPOSE.propose(tmp, {});
+    } catch (e) {
+      sendJson(res, 500, { error: "could not create the proposal: " + String(e.message || e).slice(0, 200) });
+      return;
+    } finally {
+      try { fs.rmSync(tmp, { force: true }); } catch (e) { /* best effort */ }
+    }
+    sendJson(res, 200, {
+      ok: proposed.ok,
+      job: { kind: "prose-rewrite" },
+      drafted: 1,
+      rejected: [],
+      proposal: proposed.ok
+        ? { slug: proposed.slug, changes: proposed.changes, synced: proposed.synced, next: proposed.next }
+        : null,
+      error: proposed.ok ? "" : proposed.error
+    });
+    return;
+  }
 
   const sentence = String(body.sentence || "");
 
@@ -1233,6 +1370,10 @@ const server = http.createServer((req, res) => {
 
   if (u === "/api/ask" && req.method === "POST") { handleAsk(req, res); return; }
   if (u === "/api/ask") { sendJson(res, 405, { error: "POST only." }); return; }
+
+  /* Suggestions are read-only; Accept still goes through /api/propose below. */
+  if (u === "/api/suggest" && req.method === "POST") { handleSuggest(req, res); return; }
+  if (u === "/api/suggest") { sendJson(res, 405, { error: "POST only." }); return; }
 
   /* The chat asking for a change: sentence in, proposal branch out. */
   if (u === "/api/propose" && req.method === "POST") { handlePropose(req, res); return; }

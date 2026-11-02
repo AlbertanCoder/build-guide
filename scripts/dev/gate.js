@@ -119,6 +119,11 @@ const SUITES = [
     expect: 23
   },
   {
+    name: "suggest an edit",
+    cmd: ["node", ["scripts/dev/check-suggest.js"]],
+    expect: 126
+  },
+  {
     name: "browser",
     cmd: ["node", ["scripts/dev/check-browser.js"]],
     expect: 28,
