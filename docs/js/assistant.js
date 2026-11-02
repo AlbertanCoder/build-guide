@@ -2131,9 +2131,11 @@
       });
   }
 
-  /* Layer 0 of the cost plan: when a curated entry matches confidently, the
-     answer is already written by hand for this build and costs nothing. Calling
-     a model here would be paying to reword a paragraph we already own.
+  /* With a model connected, only greetings and thanks are answered locally.
+     Keyword matching sent real questions to the wrong curated card, so every
+     other question goes to the model, which still receives the curated entry
+     as its first passage and the `curated` hint for cheap-tier routing.
+     Without a model, curatedAnswer/answerLocal remain the whole engine.
      opts.forceModel exists for the test hook and for askAI(), which spend on
      purpose. */
   /* ======================================================================
@@ -2315,6 +2317,11 @@
     return hit && hit.confident ? answerLocal(text) : null;
   }
 
+  function greetingAnswer(text) {
+    const q = norm(text);
+    return q && (anyStarts(q, GREETING) || anyStarts(q, THANKS)) ? answerLocal(text) : null;
+  }
+
   function ask(text, opts) {
     const t = String(text == null ? "" : text).trim();
     if (!t || UI.busy) { return Promise.resolve(null); }
@@ -2334,7 +2341,7 @@
       if (settingsAvailable() && looksLikeEdit(t)) {
         return proposeChange(t).then(function (msg) { UI.busy = false; return msg; });
       }
-      const free = curatedAnswer(t);
+      const free = greetingAnswer(t);
       if (free) {
         ctx.history.push({ role: "assistant", content: historyText(free) });
         UI.busy = false;
