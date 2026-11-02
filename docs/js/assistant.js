@@ -1327,8 +1327,11 @@
       note.textContent = isFile
         ? "This is the offline copy: 44 written answers, no AI, and no API key can be entered here. " +
           "For AI, run  node server/assistant-server.js  then open  http://localhost:8790/"
-        : "No local server, so these are the 44 written answers only. " +
-          "For AI, run  node server/assistant-server.js  and reload.";
+        : SERVER_PRESENT
+          ? "No API key yet, so these are the 44 written answers only. " +
+            "Open \u2699 Settings, paste your provider key, and press Save key."
+          : "No local server, so these are the 44 written answers only. " +
+            "For AI, run  node server/assistant-server.js  and reload.";
     }
   }
 
@@ -1342,7 +1345,7 @@
     return fetch("/api/health", { cache: "no-store" })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (j) {
-        if (j && j.ok) { SERVER_PRESENT = true; }
+        if (j && j.ok) { SERVER_PRESENT = true; setMode(); }
         if (j && j.ok && (j.keyConfigured || j.local)) {
           ENDPOINT = "/api/ask";
           setMode();
@@ -1960,6 +1963,7 @@
       post({ apiKey: "" })
         .then(function (s) {
           paint(s);
+          if (!s.keyConfigured && !s.local && ENDPOINT === "/api/ask") { ENDPOINT = ""; setMode(); }
           setNote("Key cleared. The assistant falls back to the offline engine.");
         })
         .catch(function (e) { setNote(e.message, true); });
