@@ -219,13 +219,19 @@ function systemPrompt() {
     "receiver on UART2/CRSF. Analog video: RunCam Phoenix 2 + TBS Unify Pro 5G8 HV + Skyzone M5F.",
     "",
     "The author's credibility rests on verified, sourced, honest claims. Obey these rules:",
-    "1. Answer ONLY from the PASSAGES provided. They are excerpts from the guide itself plus",
+    "1. Answer from the PASSAGES provided first. They are excerpts from the guide itself plus",
     "   curated troubleshooting entries written for this exact build.",
     "2. Never invent a part number, price, fee or regulation. If a passage states a number you",
     "   may repeat it and attribute it. If no passage states it, say what the guide does say.",
-    "3. If the passages do not answer the question, reply exactly: That is not in this guide.",
-  "3b. Corrections on file (passages labelled \"Correction on file\") supersede the guide: when one disagrees with a guide passage, show both and say the correction is authoritative for this build.",
+    "3. If the passages do not answer the question, first line exactly: That is not in this guide.",
     "   Then say in one sentence what the user could check instead. Never guess.",
+    "   If the question is general (programming, electronics concepts, tools, learning, how-to),",
+    "   you may then add a short answer under a line that reads exactly:",
+    "   General knowledge, not from this guide:",
+    "   Never use general knowledge for part numbers, prices, fees, regulations, flight-safety",
+    "   limits or detection performance. A greeting or \"can you help me\" gets one or two",
+    "   sentences on what you can help with, drawn from the passages.",
+  "3b. Corrections on file (passages labelled \"Correction on file\") supersede the guide: when one disagrees with a guide passage, show both and say the correction is authoritative for this build.",
     "4. Safety before cleverness: props off for any configuration, never charge a LiPo",
     "   unattended, never power a VTX without its antenna, sensors are 3.3V only, CAR 601.15",
     "   keeps you away from wildfires, Basic operations keeps you more than 30 m from anyone.",
@@ -1042,7 +1048,8 @@ async function handleAsk(req, res) {
     return { text: text, usage: usage };
   };
 
-  const REFUSAL = /that is not in this guide/i;
+  const BARE_REFUSAL = /that is not in this guide/i;
+  const REFUSAL = { test: (t) => BARE_REFUSAL.test(t) && !/general knowledge, not from this guide/i.test(t) };
   let spent = 0;
 
   try {

@@ -5678,8 +5678,13 @@ window.GUIDE_DOMAIN = {
   }
 
   function askModel(question, sink, signal) {
-    const passages = buildContext(question);
-    /* No retrieved evidence means no model call at all. */
+    let passages = buildContext(question);
+    /* Nothing retrieved ("can you help me?", a general how-to): send the guide's
+       overview so the model can say what it covers or label a general answer. */
+    if (!passages.length) {
+      passages = PASSAGES.filter(function (p) { return p.tab === "why"; }).slice(0, 2)
+        .map(function (p) { return { label: p.label || TABS[p.tab] || p.tab, tab: p.tab, step: p.step || null, text: p.text }; });
+    }
     if (!passages.length) { return Promise.reject(new Error("no passages")); }
     return fetch(ENDPOINT, {
       method: "POST",
@@ -5961,9 +5966,12 @@ window.GUIDE_DOMAIN = {
     return hit && hit.confident ? answerLocal(text) : null;
   }
 
+  /* Only a bare greeting or thanks stays local; "hello, can you help me with
+     the GPS?" is a real question and goes to the model. */
   function greetingAnswer(text) {
     const q = norm(text);
-    return q && (anyStarts(q, GREETING) || anyStarts(q, THANKS)) ? answerLocal(text) : null;
+    if (!q || q.split(/\s+/).length > 3) { return null; }
+    return anyStarts(q, GREETING) || anyStarts(q, THANKS) ? answerLocal(text) : null;
   }
 
   function ask(text, opts) {
