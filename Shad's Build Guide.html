@@ -5381,23 +5381,21 @@ window.GUIDE_DOMAIN = {
     providerNote.id = "ga-provider-note";
 
     const modelLabel = el("label", null, "Model");
-    const modelSel = el("select", "ga-select");
-    modelSel.id = "ga-model-pick";
-    const OTHER_MODEL = "__other";
     let lastSettings = null;
     let providerModels = [];
     let modelListSig = "";
     const modelInput = el("input", "ga-key-input");
     modelInput.id = "ga-model";
     modelInput.autocomplete = "off";
-    modelInput.placeholder = "exact model id, e.g. vendor/model-name";
-    modelInput.hidden = true;
+    modelInput.placeholder = "type to search, e.g. sonnet";
+    modelInput.setAttribute("list", "ga-model-list");
+    const modelList = document.createElement("datalist");
+    modelList.id = "ga-model-list";
     const modelRow = el("div", "ga-row");
     const saveModel = el("button", "ga-chip", "Use this model");
     saveModel.type = "button";
     saveModel.id = "ga-model-save";
     modelRow.appendChild(saveModel);
-    modelRow.hidden = true;
 
     const keyLabel = el("label", null, "API key");
     const keyState = el("span", "ga-sub");
@@ -5479,8 +5477,8 @@ window.GUIDE_DOMAIN = {
     node.appendChild(providerSel);
     node.appendChild(providerNote);
     node.appendChild(modelLabel);
-    node.appendChild(modelSel);
     node.appendChild(modelInput);
+    node.appendChild(modelList);
     node.appendChild(modelRow);
     node.appendChild(keyLabel);
     node.appendChild(keyInput);
@@ -5501,7 +5499,7 @@ window.GUIDE_DOMAIN = {
     }
 
     function setDisabled(on) {
-      [providerSel, modelSel, modelInput, saveModel, keyInput, saveKey, testKey, clearKey, budget].forEach(function (n) {
+      [providerSel, modelInput, saveModel, keyInput, saveKey, testKey, clearKey, budget].forEach(function (n) {
         n.disabled = !!on;
       });
     }
@@ -5563,31 +5561,18 @@ window.GUIDE_DOMAIN = {
       const suggested = (preset && preset.models ? preset.models : []).slice();
       if (s.cheapModel && suggested.indexOf(s.cheapModel) === -1 &&
           providerModels.indexOf(s.cheapModel) === -1) { suggested.unshift(s.cheapModel); }
-      function option(parent, value, text) {
-        const opt = document.createElement("option");
-        opt.value = value;
-        opt.textContent = text;
-        parent.appendChild(opt);
-      }
-      modelSel.textContent = "";
-      const top = document.createElement("optgroup");
-      top.label = "Suggested";
-      suggested.forEach(function (m) { option(top, m, m); });
-      modelSel.appendChild(top);
-      const groups = {};
-      providerModels.forEach(function (m) {
-        if (suggested.indexOf(m) !== -1) { return; }
-        const maker = m.indexOf("/") > 0 ? m.slice(0, m.indexOf("/")) : "Your provider's models";
-        (groups[maker] = groups[maker] || []).push(m);
-      });
-      Object.keys(groups).sort().forEach(function (maker) {
-        const g = document.createElement("optgroup");
-        g.label = maker;
-        groups[maker].forEach(function (m) { option(g, m, m); });
-        modelSel.appendChild(g);
-      });
-      option(modelSel, OTHER_MODEL, "Other (type a model name)");
-      modelSel.value = modelInput.hidden ? (s.cheapModel || OTHER_MODEL) : OTHER_MODEL;
+      modelList.textContent = "";
+      suggested.concat(providerModels.filter(function (m) { return suggested.indexOf(m) === -1; }))
+        .forEach(function (m) {
+          const opt = document.createElement("option");
+          opt.value = m;
+          if (suggested.indexOf(m) !== -1) { opt.label = "Suggested"; }
+          modelList.appendChild(opt);
+        });
+    }
+
+    function knownModel(v) {
+      return [].some.call(modelList.options, function (o) { return o.value === v; });
     }
 
     function load() {
@@ -5632,39 +5617,44 @@ window.GUIDE_DOMAIN = {
         .catch(function (e) { setNote(e.message, true); });
     });
 
-    function showCustomModel(on) {
-      modelInput.hidden = !on;
-      modelRow.hidden = !on;
-    }
-
-    modelSel.addEventListener("change", function () {
-      if (modelSel.value === OTHER_MODEL) {
-        showCustomModel(true);
-        modelInput.focus();
-        return;
+    /* An input filled with the current model would filter the suggestion list
+       down to just that model, so it is emptied on focus (the current model
+       stays visible as the placeholder) and put back if nothing was typed. */
+    modelInput.addEventListener("focus", function () {
+      if (lastSettings && modelInput.value === lastSettings.cheapModel) {
+        modelInput.placeholder = lastSettings.cheapModel;
+        modelInput.value = "";
       }
-      showCustomModel(false);
-      post({ model: modelSel.value })
-        .then(function (s) {
-          paint(s);
-          setNote("Model set to " + s.cheapModel + ". Ask a question to try it.");
-        })
-        .catch(function (e) { setNote(e.message, true); });
+    });
+    modelInput.addEventListener("blur", function () {
+      if (!modelInput.value.trim() && lastSettings) { modelInput.value = lastSettings.cheapModel || ""; }
+      modelInput.placeholder = "type to search, e.g. sonnet";
     });
 
-    saveModel.addEventListener("click", function () {
+    function saveTypedModel() {
       const v = modelInput.value.trim();
-      if (!v) { setNote("Type an exact model id first, e.g. vendor/model-name.", true); return; }
+      if (!v) { setNote("Type a model name first, e.g. anthropic/claude-sonnet-5.5.", true); return; }
       saveModel.disabled = true;
       post({ model: v })
         .then(function (s) {
-          showCustomModel(false);
           paint(s);
-          setNote("Model set to " + s.cheapModel + ". Press Test key, then ask a real question.");
+          setNote("Model set to " + s.cheapModel + "." +
+            (providerModels.length && providerModels.indexOf(s.cheapModel) === -1
+              ? " Your provider did not list that name, so ask a question to check it works."
+              : " Ask a question to try it."));
         })
         .catch(function (e) { setNote(e.message, true); })
         .then(function () { saveModel.disabled = false; });
+    }
+
+    modelInput.addEventListener("change", function () {
+      const v = modelInput.value.trim();
+      if (v && knownModel(v) && (!lastSettings || v !== lastSettings.cheapModel)) { saveTypedModel(); }
     });
+    modelInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { e.preventDefault(); saveTypedModel(); }
+    });
+    saveModel.addEventListener("click", saveTypedModel);
 
     saveKey.addEventListener("click", function () {
       const v = keyInput.value.trim();

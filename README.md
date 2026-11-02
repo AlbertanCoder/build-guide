@@ -125,11 +125,11 @@ edit to a guide paragraph, with every claim backed by an exact quote from the gu
    credit by itself. For a free tier, use [Groq](https://console.groq.com/keys) instead.
 2. Open the guide at `http://localhost:8790/`, click **Ask the guide**, then the **⚙** button.
 3. **Provider:** choose OpenRouter (or Groq).
-4. **Model:** pick one from the dropdown; it is saved straight away. Once a key is saved, the
-   dropdown fills with every model that key can use, fetched from the provider (a free call) and
-   grouped by maker. For the best suggestions on OpenRouter, pick `anthropic/claude-sonnet-5.5`
-   from the Suggested group. To use a model that is not listed, pick
-   **Other (type a model name)**, type its exact id and press **Use this model**.
+4. **Model:** click the box and start typing, e.g. `sonnet`. Once a key is saved, it suggests
+   matching names from every model that key can use, fetched from the provider (a free call).
+   Picking a suggestion saves it straight away; for a name that is not suggested, type it in full
+   and press Enter or **Use this model**. For the best suggestions on OpenRouter, use
+   `anthropic/claude-sonnet-5.5`.
 5. **API key:** paste the key, press **Save key**, then **Test key**. "The provider accepted the
    key" means you are done; the header changes to *AI answers · grounded in this guide*.
 6. **Daily budget:** set a cap (for example $0.50). When it is reached the assistant switches back
