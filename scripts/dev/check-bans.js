@@ -290,7 +290,9 @@ const BASE = "http://127.0.0.1:" + APP_PORT;
 function start(script, args, env) {
   return spawn(process.execPath, [path.join(ROOT, script)].concat(args || []), {
     cwd: ROOT, windowsHide: true,
-    env: Object.assign({}, process.env, env || {})
+    env: Object.assign({}, process.env,
+      { SETTINGS_FILE: path.join(require("os").tmpdir(), "ga-bans-settings-" + process.pid + ".json") },
+      env || {})
   });
 }
 async function waitFor(url, tries) {

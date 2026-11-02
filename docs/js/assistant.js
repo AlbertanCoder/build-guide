@@ -29,6 +29,10 @@
      before this file loads to let a model write the answers. The page stays
      fully functional without it. Never put an API key in this file. */
   let ENDPOINT = typeof CONFIG.endpoint === "string" ? CONFIG.endpoint.trim() : "";
+  /* True once our own server answered /api/health, even with no key saved yet:
+     the settings drawer must work before AI does, or the first key can never
+     be entered from the page. */
+  let SERVER_PRESENT = false;
 
   /* ?endpoint=http://localhost:8790/api/ask points any copy of this page at a
      proxy (handy for testing); #ga-local forces the offline engine even then. */
@@ -1338,6 +1342,7 @@
     return fetch("/api/health", { cache: "no-store" })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (j) {
+        if (j && j.ok) { SERVER_PRESENT = true; }
         if (j && j.ok && (j.keyConfigured || j.local)) {
           ENDPOINT = "/api/ask";
           setMode();
@@ -1698,7 +1703,7 @@
   function settingsAvailable() {
     /* "/api/ask" means our local server answered /api/health. An absolute URL
        means a Cloudflare Worker, which has no settings endpoint. */
-    return ENDPOINT === "/api/ask";
+    return ENDPOINT === "/api/ask" || SERVER_PRESENT;
   }
 
   function buildSettings() {
@@ -1944,6 +1949,7 @@
         .then(function (s) {
           keyInput.value = "";
           paint(s);
+          if (s.keyConfigured && !ENDPOINT) { ENDPOINT = "/api/ask"; setMode(); }
           setNote("Key saved on this machine only. Press Test key to prove it works.");
         })
         .catch(function (e) { setNote(e.message, true); })

@@ -34,7 +34,9 @@ const procs = [];
 function start(script, args, env) {
   const p = spawn(process.execPath, [path.join(ROOT, script)].concat(args || []), {
     cwd: ROOT,
-    env: Object.assign({}, process.env, env || {}),
+    env: Object.assign({}, process.env,
+      { SETTINGS_FILE: path.join(require("os").tmpdir(), "ga-cost-path-settings-" + process.pid + ".json") },
+      env || {}),
     stdio: "ignore"
   });
   procs.push(p);
