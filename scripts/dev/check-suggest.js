@@ -240,6 +240,23 @@ refuses("refuses an unknown source id", mutated((v) => {
 refuses("refuses a misquoted source", mutated((v) => {
   v.report.improves[0].citations[0].quote = "this exact sentence is not in the cited entry";
 }));
+{
+  const wrappedEntry = corpus.guide.find((e) => /\S\s*\n\s*\S/.test(e.raw));
+  const wrapped = mutated((v) => { if (wrappedEntry) { v.op.oldText = wrappedEntry.raw.replace(/\s+/g, " "); } });
+  const r = SUGGEST.validateSuggestion(wrapped, { html: html, section: SECTION, corpus: corpus });
+  check("a hard-wrapped anchor copied back with collapsed line breaks is accepted and restored exactly",
+    !!wrappedEntry && r.ok && r.op.oldText === wrappedEntry.raw, errorsOf(r));
+
+  const quoteEntry = corpus.domain.find((e) => /[a-z,] *\r?\n *[a-z]/.test(e.text));
+  const m = quoteEntry ? /[a-z,] *\r?\n *[a-z]/.exec(quoteEntry.text) : null;
+  const span = m ? quoteEntry.text.slice(Math.max(0, m.index - 30), m.index + 30) : "";
+  const quoted = mutated((v) => {
+    v.report.corpusSupport[0].citations[0] = { source: quoteEntry ? quoteEntry.id : "D1", quote: span.replace(/\s+/g, " ").trim() };
+  });
+  const q = SUGGEST.validateSuggestion(quoted, { html: html, section: SECTION, corpus: corpus });
+  check("a quote spanning a source line break is accepted when the model writes a space",
+    !!m && /\n/.test(span) && q.ok, errorsOf(q));
+}
 refuses("refuses a real quote attributed to the wrong source", mutated((v) => {
   v.report.improves[0].citations[0].source = "G2";
 }));

@@ -73,12 +73,16 @@ function buildPrompt(request, corpus) {
   const lines = [
     "Suggest one safer, clearer rewrite of one existing guide paragraph.",
     "Return ONLY one JSON object, optionally in a json fence, with op and report.",
+    "Shape: {\"op\":{\"op\":\"prose-rewrite\",\"section\":\"" + request.section + "\",\"oldText\":\"...\",\"newText\":\"...\"},",
+    "\"report\":{\"improves\":[{\"claim\":\"...\",\"citations\":[{\"source\":\"G1\",\"quote\":\"...\"}]}],\"corpusSupport\":[...],\"conflicts\":[...]}}",
     "op must be prose-rewrite, stay in section " + request.section + ", and copy oldText",
     "exactly from one RAW guide paragraph below. newText must be one safe <p> paragraph.",
     "report must contain exactly improves, corpusSupport and conflicts arrays. Each array",
     "has at most six claims; improves and corpusSupport need at least one. Every claim",
     "needs one to four citations {source,quote}, using only the ids below. Each quote",
-    "must be a nontrivial exact substring of that entry's VISIBLE/TEXT evidence.",
+    "must be a nontrivial exact substring of that entry's VISIBLE/TEXT evidence: copy it",
+    "character for character from one entry, never shortened, reworded or joined across",
+    "sentences. A short exact quote is better than a long paraphrase.",
     "Do not add confidence, percentages, reasoning, labels, or uncited claims.",
     "An empty conflicts array means no conflict was found, not that none can exist.",
     "",
@@ -144,6 +148,11 @@ function entriesById(corpus) {
   return map;
 }
 
+/* Source files hard-wrap prose (CRLF on a Windows checkout) and a model copying
+   it back collapses those breaks, so exactness is judged on words and
+   punctuation with every whitespace run treated as one space. */
+function spaced(s) { return String(s).replace(/\s+/g, " ").trim(); }
+
 function validateReport(input, corpus) {
   const errors = [];
   const report = {};
@@ -195,7 +204,7 @@ function validateReport(input, corpus) {
           errors.push(quoteAt + " is not nontrivial evidence");
           return;
         }
-        if (entry.text.indexOf(quote) === -1) {
+        if (spaced(entry.text).indexOf(spaced(quote)) === -1) {
           errors.push(quoteAt + " is not an exact substring of " + source);
           return;
         }
@@ -226,8 +235,8 @@ function validateSuggestion(candidate, ctx) {
   };
   if (op.op !== "prose-rewrite") { errors.push('op must be "prose-rewrite"'); }
   if (op.section !== c.section) { errors.push("the operation must stay in the requested section"); }
-  const knownAnchor = (corpus.guide || []).some(function (entry) { return entry.raw === op.oldText; });
-  if (!knownAnchor) { errors.push("oldText must be copied from a guide paragraph in the prompt"); }
+  const anchor = (corpus.guide || []).find(function (entry) { return spaced(entry.raw) === spaced(op.oldText); });
+  if (anchor) { op.oldText = anchor.raw; } else { errors.push("oldText must be copied from a guide paragraph in the prompt"); }
 
   const verdict = PROSE.validate(op, { html: c.html });
   if (!verdict.ok) { errors.push.apply(errors, verdict.errors); }
