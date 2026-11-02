@@ -85,7 +85,8 @@ const FIXTURE = "proposal/review-fixture-" + NONCE;
     /* ---- start the server from the clone ---------------------------------- */
     server = spawn(process.execPath, [path.join(CLONE, "server", "assistant-server.js")], {
       cwd: CLONE, windowsHide: true,
-      env: Object.assign({}, process.env, { PORT: String(PORT), GA_TEST: "" })
+      env: Object.assign({}, process.env, { PORT: String(PORT), GA_TEST: "",
+        SETTINGS_FILE: path.join(TMP, "settings.json"), CONVERSATIONS_DIR: path.join(TMP, "conversations") })
     });
     const up = await waitFor(BASE + "/api/health");
     check("the review server starts", up, up ? BASE : "never became healthy");

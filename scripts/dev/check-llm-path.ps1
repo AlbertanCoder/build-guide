@@ -39,6 +39,7 @@ $env:API_KEY = 'test-key-not-real'
 $env:PORT = "$appPort"
 $env:GA_TEST = '1'
 $env:SETTINGS_FILE = Join-Path $env:TEMP "ga-llm-path-settings-$PID.json"
+$env:CONVERSATIONS_DIR = Join-Path $env:TEMP "ga-llm-path-conversations-$PID"
 $app = Start-Process -FilePath 'node' -ArgumentList (Join-Path $repo 'server\assistant-server.js') `
   -WorkingDirectory $repo -WindowStyle Hidden -PassThru
 $browser = $null
@@ -95,7 +96,8 @@ try {
 }
 finally {
   foreach ($p in @($browser, $app, $mock)) { if ($p -and -not $p.HasExited) { Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue } }
-  Remove-Item Env:PROVIDER, Env:BASE_URL, Env:MODEL, Env:API_KEY, Env:PORT, Env:GA_TEST, Env:SETTINGS_FILE -ErrorAction SilentlyContinue
+  Remove-Item Env:PROVIDER, Env:BASE_URL, Env:MODEL, Env:API_KEY, Env:PORT, Env:GA_TEST, Env:SETTINGS_FILE, Env:CONVERSATIONS_DIR -ErrorAction SilentlyContinue
+  Remove-Item -LiteralPath (Join-Path $env:TEMP "ga-llm-path-conversations-$PID") -Recurse -Force -ErrorAction SilentlyContinue
   Remove-Item -LiteralPath (Join-Path $env:TEMP "ga-profile-$PID") -Recurse -Force -ErrorAction SilentlyContinue
 }
 

@@ -291,7 +291,8 @@ function start(script, args, env) {
   return spawn(process.execPath, [path.join(ROOT, script)].concat(args || []), {
     cwd: ROOT, windowsHide: true,
     env: Object.assign({}, process.env,
-      { SETTINGS_FILE: path.join(require("os").tmpdir(), "ga-bans-settings-" + process.pid + ".json") },
+      { SETTINGS_FILE: path.join(require("os").tmpdir(), "ga-bans-settings-" + process.pid + ".json"),
+        CONVERSATIONS_DIR: path.join(require("os").tmpdir(), "ga-bans-conversations-" + process.pid) },
       env || {})
   });
 }

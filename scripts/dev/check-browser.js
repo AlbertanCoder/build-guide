@@ -64,7 +64,8 @@ async function waitFor(url) {
       API_KEY: "",
       PORT: String(APP_PORT),
       GA_TEST: "1",
-      SETTINGS_FILE: SETTINGS_FILE
+      SETTINGS_FILE: SETTINGS_FILE,
+      CONVERSATIONS_DIR: path.join(TMP, "conversations")
     });
     check("mock provider started", await waitFor("http://127.0.0.1:" + MOCK_PORT + "/v1/models"));
     check("assistant server started", await waitFor("http://127.0.0.1:" + APP_PORT + "/api/health"));

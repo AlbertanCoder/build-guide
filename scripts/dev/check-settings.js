@@ -51,7 +51,8 @@ const appEnv = (extra) => Object.assign({
   API_KEY: "",
   PORT: String(APP_PORT),
   GA_TEST: "1",
-  SETTINGS_FILE: SETTINGS_FILE
+  SETTINGS_FILE: SETTINGS_FILE,
+  CONVERSATIONS_DIR: path.join(TMP, "conversations")
 }, extra || {});
 
 async function getSettings() {

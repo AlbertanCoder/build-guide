@@ -28,6 +28,7 @@ function start(port, extra) {
     env: Object.assign({}, process.env, {
       PORT: String(port),
       SETTINGS_FILE: path.join(TMP, "settings-" + port + ".json"),
+      CONVERSATIONS_DIR: path.join(TMP, "conversations-" + port),
       BASE_URL: "http://127.0.0.1:1/v1"
     }, extra || {})
   });

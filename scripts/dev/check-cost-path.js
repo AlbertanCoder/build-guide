@@ -35,7 +35,8 @@ function start(script, args, env) {
   const p = spawn(process.execPath, [path.join(ROOT, script)].concat(args || []), {
     cwd: ROOT,
     env: Object.assign({}, process.env,
-      { SETTINGS_FILE: path.join(require("os").tmpdir(), "ga-cost-path-settings-" + process.pid + ".json") },
+      { SETTINGS_FILE: path.join(require("os").tmpdir(), "ga-cost-path-settings-" + process.pid + ".json"),
+        CONVERSATIONS_DIR: path.join(require("os").tmpdir(), "ga-cost-path-conversations-" + process.pid) },
       env || {}),
     stdio: "ignore"
   });
