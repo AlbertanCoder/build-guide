@@ -751,7 +751,7 @@
       steps: [],
       note: "",
       src: ENDPOINT
-        ? "Written by an AI model from this guide's own passages, then shown with its source."
+        ? "Answers below are written by an AI model from this guide's own passages, each shown with its source."
         : "No network, no API key: answers come from this page and its built-in troubleshooting set.",
       see: [],
       chips: ["No video on the monitor", "Thermal image is noisy at 8 Hz", "Receiver won't bind", "Pi keeps rebooting", "What does it cost?"]
@@ -2146,10 +2146,11 @@
       });
   }
 
-  /* With a model connected, only greetings and thanks are answered locally.
-     Keyword matching sent real questions to the wrong curated card, so every
-     other question goes to the model, which still receives the curated entry
-     as its first passage and the `curated` hint for cheap-tier routing.
+  /* With a model connected, every message goes to it, greetings included: a
+     canned intro card for "hello" reads as a script, and keyword matching sent
+     real questions to the wrong curated card. The model still receives the
+     curated entry as its first passage and the `curated` hint for cheap-tier
+     routing.
      Without a model, curatedAnswer/answerLocal remain the whole engine.
      opts.forceModel exists for the test hook and for askAI(), which spend on
      purpose. */
@@ -2331,15 +2332,6 @@
     const hit = matchEntry(q);
     return hit && hit.confident ? answerLocal(text) : null;
   }
-
-  /* Only a bare greeting or thanks stays local; "hello, can you help me with
-     the GPS?" is a real question and goes to the model. */
-  function greetingAnswer(text) {
-    const q = norm(text);
-    if (!q || q.split(/\s+/).length > 3) { return null; }
-    return anyStarts(q, GREETING) || anyStarts(q, THANKS) ? answerLocal(text) : null;
-  }
-
   function ask(text, opts) {
     const t = String(text == null ? "" : text).trim();
     if (!t || UI.busy) { return Promise.resolve(null); }
@@ -2358,12 +2350,6 @@
     if (!(opts && opts.forceModel)) {
       if (settingsAvailable() && looksLikeEdit(t)) {
         return proposeChange(t).then(function (msg) { UI.busy = false; return msg; });
-      }
-      const free = greetingAnswer(t);
-      if (free) {
-        ctx.history.push({ role: "assistant", content: historyText(free) });
-        UI.busy = false;
-        return Promise.resolve(push(free));
       }
     }
 
