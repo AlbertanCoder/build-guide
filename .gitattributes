@@ -1,3 +1,7 @@
 # Generated files are written with LF. Pin them so a Windows checkout does not
 # rewrite them and make docs/js/domain.js look stale to build-domain.js --check.
 docs/js/domain.js text eol=lf
+
+# cmd.exe misparses LF-only batch files, and a GitHub ZIP download keeps the
+# stored line endings.
+*.cmd text eol=crlf
