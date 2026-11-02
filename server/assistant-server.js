@@ -138,7 +138,7 @@ const PRESETS = [
   { id: "groq", label: "Groq", kind: "openai", baseUrl: "https://api.groq.com/openai/v1",
     cheap: "llama-3.3-70b-versatile", strong: "llama-3.3-70b-versatile" },
   { id: "openrouter", label: "OpenRouter", kind: "openai", baseUrl: "https://openrouter.ai/api/v1",
-    cheap: "anthropic/claude-3.5-haiku", strong: "anthropic/claude-sonnet-4.5" },
+    cheap: "anthropic/claude-haiku-5.5", strong: "anthropic/claude-sonnet-5.5" },
   { id: "deepseek", label: "DeepSeek", kind: "openai", baseUrl: "https://api.deepseek.com/v1",
     cheap: "deepseek-chat", strong: "deepseek-chat" },
   { id: "mistral", label: "Mistral", kind: "openai", baseUrl: "https://api.mistral.ai/v1",
