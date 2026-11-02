@@ -92,10 +92,30 @@ The build steps tab is deep-linkable: `#p-steps` opens it directly.
 ### Guide Assistant (an AI that answers from this guide)
 
 A chat panel in the bottom-right corner (**Ask the guide**) answers questions about *this* build,
-streams the answer, and links straight to the tab or assembly step it used. It can also suggest an
-edit to a guide paragraph, with every claim backed by an exact quote from the guide.
+streams the answer, and links straight to the tab or assembly step it used. It can also draw a new
+3D view of anything you are stuck on, and suggest an edit to a guide paragraph, with every claim
+backed by an exact quote from the guide.
 
-[![The guide with the assistant open](docs/images/guide-with-assistant.png)](docs/images/guide-with-assistant.png)
+[![The guide with the assistant open, showing a 3D view it made](docs/images/guide-with-assistant.png)](docs/images/guide-with-assistant.png)
+
+#### The localhost page
+
+`http://localhost:8790/` is the whole guide, served from your own computer by a small Node server
+(`server/assistant-server.js`), with the AI switched on:
+
+- **The guide itself:** all seven tabs (What & Why, How It Works, Parts & Budget, Build Steps,
+  Career & Pay, Quizzes, Limits), the build-time calculator, the eight-step assembly manual and its
+  interactive 3D models. Progress and quiz scores are kept in your browser.
+- **Ask the guide** (bottom right) opens the assistant. Its header buttons are **⌘** for past
+  conversations (kept on this computer and restored on reload), **⚙** for Settings, **Clear** for a
+  fresh chat and **✕** to close it. Under the message box: **Send** asks a question,
+  **Suggest an edit** proposes a change to the tab you are on, and **Show in 3D** makes a 3D view of
+  whatever you type.
+- **[localhost:8790/review](http://localhost:8790/review)** lists the edit proposals you accepted,
+  each with its change shown side by side, waiting for you to apply or discard.
+
+Your API key, settings, conversations and 3D views stay in git-ignored folders under `server/`.
+Nothing leaves the machine except the questions sent to the AI provider you chose.
 
 #### Set it up (about 5 minutes, Windows)
 
@@ -113,6 +133,9 @@ edit to a guide paragraph, with every claim backed by an exact quote from the gu
 
    Use that address, not a double-clicked `.html` file: the double-clickable copy is offline-only
    and cannot hold a key. Closing the server window turns the AI off until you start it again.
+4. **Optional, for Show in 3D: install Blender.** Download it free from
+   [blender.org](https://www.blender.org/download/) and install it with its defaults. The server
+   finds it by itself (Settings shows **✓ found**). Everything else works without it.
 
 #### Add your API key
 
@@ -134,9 +157,16 @@ edit to a guide paragraph, with every claim backed by an exact quote from the gu
    key" means you are done; the header changes to *AI answers · grounded in this guide*.
 6. **Daily budget:** set a cap (for example $0.50). When it is reached the assistant switches back
    to its built-in answers instead of spending more.
-7. Press **Done** (top or bottom of Settings, or Esc) to go back to the chat. There is nothing else
+7. **3D views** (near the bottom of Settings) have their own model and thinking effort, because
+   placing parts in space is harder than answering from text. Recommended:
+   `anthropic/claude-sonnet-5.5` with **Medium** thinking, about 2 cents a view (measured). A cheaper
+   answer model such as DeepSeek or Haiku can stay on for questions. Leave the 3D model empty to use
+   the answer model, and choose **High** only if layouts come out muddled.
+8. Press **Done** (top or bottom of Settings, or Esc) to go back to the chat. There is nothing else
    to save: every change saves itself, and the green box at the top of Settings confirms it. The
    Model line shows **✓ saved** with the model in use.
+
+[![The 3D views settings: model, thinking effort and Blender](docs/images/assistant-3d-settings.png)](docs/images/assistant-3d-settings.png)
 
 The key is stored only on this machine, in `server/.settings.json`, which git ignores; the page
 only ever sees its last four characters. No key and no money? Choose **Ollama** as the provider and run a local model.
@@ -153,6 +183,19 @@ only ever sees its last four characters. No key and no money? Choose **Ollama** 
 - **Prices and regulations** are only stated with the date the guide checked them; otherwise it
   points you to the Parts tab. Five safety bans (detection claims, undated prices, flying near
   wildfires, certification claims, unapproved edits) are enforced in code, not just requested.
+- **Show in 3D, when a step does not make sense:** press **Show this in 3D** under any AI answer,
+  or type what you want to see ("where the receiver wires go", "which way the thermal lens faces")
+  and press **Show in 3D**. In about 10 to 30 seconds a new interactive model appears in the chat,
+  built from the same part models as the guide's own steps and labelled with the guide's real pad
+  and part names. Drag to rotate, scroll to zoom, and press **Full screen** for a proper look. Old
+  views reopen from the conversation with **Open 3D view**.
+
+[![A 3D view made on request: receiver wiring, crossed TX/RX to the R2/T2 pads](docs/images/assistant-3d-full.png)](docs/images/assistant-3d-full.png)
+
+  How it stays safe: the AI never writes code. It returns a scene plan, which is a list of the
+  guide's own parts, plus simple boxes, wires, arrows and labels. The server keeps only the entries
+  on an allowed list, and the fixed Blender script `scripts/build/build_from_plan.py` checks them
+  again before building. The last 30 views are kept in `server/.renders/`.
 - **Suggest an edit:** open the tab you want to improve, type what to change ("make the opening
   paragraph clearer for a beginner") and press **Suggest an edit**. You get a proposed paragraph
   plus a report of what improves, what the guide supports, and any conflicts, each with exact
@@ -196,7 +239,7 @@ on spend, falling back to the offline engine rather than billing past it.
 Run the tests:
 
 ```powershell
-# Everything at once: 23 suites, 603 named checks, one exit code.
+# Everything at once: 24 suites, 625 named checks, one exit code.
 node scripts/dev/gate.js
 node scripts/dev/gate.js --quick    # skip the browser suite (needs Chrome)
 node scripts/dev/gate.js --json     # machine-readable

@@ -26,8 +26,8 @@ PINE = (0.106, 0.369, 0.310, 1.0)    # #1b5e4f primary green
 ACCENT = (0.761, 0.341, 0.106, 1.0)  # #c2571b warning / marker orange
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
-OUT_DIR = os.path.normpath(os.path.join(_HERE, "..", "..", "docs", "models"))
-PREVIEW_DIR = os.path.normpath(os.path.join(_HERE, "..", "..", "docs", "renders"))
+OUT_DIR = os.environ.get("GA_MODEL_OUT") or os.path.normpath(os.path.join(_HERE, "..", "..", "docs", "models"))
+PREVIEW_DIR = os.environ.get("GA_MODEL_OUT") or os.path.normpath(os.path.join(_HERE, "..", "..", "docs", "renders"))
 
 
 def reset():

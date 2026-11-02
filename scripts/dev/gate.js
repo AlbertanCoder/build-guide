@@ -46,7 +46,7 @@ const SUITES = [
   {
     name: "cost engine",
     cmd: ["node", ["scripts/dev/check-cost-engine.js"]],
-    expect: 26
+    expect: 27
   },
   {
     name: "cost path",
@@ -138,6 +138,11 @@ const SUITES = [
     name: "self-test single file",
     cmd: PS("scripts/dev/check-assistant.ps1", ["-Target", "dist/Shad's Build Guide.html"]),
     expect: 24
+  },
+  {
+    name: "3d views",
+    cmd: ["node", ["scripts/dev/check-render.js"]],
+    expect: 21
   },
   {
     name: "ai path",

@@ -44,9 +44,12 @@ const PRICES = {
   __default: { input: 0.15, cached: 0.075, output: 0.6 }
 };
 
+/* OpenRouter names models "maker/model" and sometimes adds ":variant"; the
+   bare name is what the table lists. */
 function priceFor(model) {
   const key = String(model || "").toLowerCase();
-  return PRICES[key] || PRICES.__default;
+  const bare = key.replace(/^[^/]+\//, "").replace(/:.*$/, "");
+  return PRICES[key] || PRICES[bare] || PRICES.__default;
 }
 
 /* ---------------------------------------------------------------------------

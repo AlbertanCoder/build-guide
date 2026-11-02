@@ -70,6 +70,11 @@ const dupA = { label: "A", tab: "steps", text: long };
 const dupB = { label: "B", tab: "steps", text: long };
 check("duplicate passages are collapsed", eng.dedupePassages([dupA, dupB]).length === 1);
 
+check("an OpenRouter model id (maker/model:variant) is priced like the bare model, not the cheap default",
+  eng.priceFor("anthropic/claude-sonnet-5.5") === eng.PRICES["claude-sonnet-5.5"] &&
+  eng.priceFor("anthropic/claude-sonnet-5.5:beta") === eng.PRICES["claude-sonnet-5.5"] &&
+  eng.priceFor("someone/unlisted-model") === eng.PRICES.__default);
+
 /* ---- history shrinks to a recap plus the last turns ---------------------- */
 const history = [];
 for (let i = 0; i < 6; i += 1) {

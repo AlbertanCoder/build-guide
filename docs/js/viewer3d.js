@@ -187,6 +187,13 @@ class ModelViewer {
     this.controls.enablePan = true;
     this.controls.zoomSpeed = 0.9;
     this.controls.addEventListener('change', () => this.render());
+    /* Full screen and panel resizes change the canvas without resizing the
+       window, so watch the canvas itself or the picture stretches and the
+       labels stay at their old positions. */
+    if (window.ResizeObserver) {
+      this.sizeWatch = new ResizeObserver(() => this.resize());
+      this.sizeWatch.observe(this.canvasHost);
+    }
 
     if (this.status) this.status.textContent = 'Loading 3D…';
 
@@ -416,6 +423,18 @@ function boot() {
     }, 160);
   });
 }
+
+/* For views made after the page loaded (the Guide Assistant's 3D answers):
+   same markup as the guide's own viewers, mounted on demand. */
+window.BuildGuideViewer = {
+  mount(root) {
+    if (!hasWebGL()) { root.classList.add('is-failed'); return null; }
+    const viewer = new ModelViewer(root);
+    viewer.visible = true;
+    viewer.init();
+    return viewer;
+  }
+};
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', boot);

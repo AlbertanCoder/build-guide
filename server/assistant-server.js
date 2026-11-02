@@ -32,6 +32,7 @@ const SUGGEST = require("./ops/suggest.js");
 const PROPOSE = require("./ops/propose.js");
 const CORRECTION = require("./ops/correction-add.js");
 const BANS = require("./bans.js");
+const RENDER = require("./ops/render.js");
 
 /* ---------- .env (no dependency) ---------- */
 function loadEnv() {
@@ -126,6 +127,14 @@ let CHEAP_MODEL = SETTINGS.cheapModel || ENV.CHEAP_MODEL || MODEL;
 let STRONG_MODEL = SETTINGS.strongModel || ENV.STRONG_MODEL || (MODEL_EXPLICIT ? MODEL : DEFAULT_STRONG);
 /* Derived, never stored: escalation only exists when the two tiers differ. */
 function canEscalate() { return STRONG_MODEL !== CHEAP_MODEL; }
+
+/* 3D views have their own model and thinking effort: placing parts in space
+   is harder than answering from text, so it is worth a stronger model there
+   even when answers run on a cheap one. Empty model = use the answer model. */
+let RENDER_MODEL = SETTINGS.renderModel || ENV.RENDER_MODEL || "";
+let RENDER_EFFORT = SETTINGS.renderEffort || ENV.RENDER_EFFORT || "medium";
+let BLENDER_PATH = SETTINGS.blenderPath || ENV.BLENDER || "";
+const RENDER_SUGGESTED = "anthropic/claude-sonnet-5.5";
 
 /* Provider presets. `kind` is the adapter — anything OpenAI-compatible is
    "openai", the Messages API is "anthropic". This exists so the drawer can offer
@@ -480,7 +489,15 @@ function settingsPayload() {
     remainingUsd: snap.remainingUsd,
     spentTodayUsd: snap.totals.usd,
     blocked: snap.blocked,
-    local: /127\.0\.0\.1|localhost/.test(BASE_URL)
+    local: /127\.0\.0\.1|localhost/.test(BASE_URL),
+    renderModel: RENDER_MODEL,
+    renderModelInUse: RENDER_MODEL || CHEAP_MODEL,
+    renderSuggested: /openrouter\.ai/.test(BASE_URL) ? RENDER_SUGGESTED
+      : (PRESETS.find((p) => p.id === presetFor()) || {}).strong || "",
+    renderEffort: RENDER_EFFORT,
+    efforts: EFFORTS,
+    effortSupported: !!effortStyle(),
+    blenderPath: RENDER.findBlender(BLENDER_PATH)
   };
 }
 
@@ -535,37 +552,63 @@ async function listModels() {
 
 /* One non-streaming call, used by the drafter. Streaming is for answers; a
    drafting job wants the whole JSON array before it does anything. */
-async function askOnce(prompt) {
+/* Thinking effort, for the providers whose API takes one. The token figures
+   are the Anthropic thinking budgets; the others take the word itself. */
+const EFFORTS = ["off", "low", "medium", "high"];
+const THINK_BUDGET = { low: 2048, medium: 6000, high: 12000 };
+function effortStyle() {
+  if (PROVIDER === "anthropic") { return "anthropic"; }
+  if (/openrouter\.ai/.test(BASE_URL)) { return "openrouter"; }
+  if (/api\.openai\.com/.test(BASE_URL)) { return "openai"; }
+  return "";
+}
+
+async function askOnce(prompt, opts) {
+  opts = opts || {};
+  const model = opts.model || CHEAP_MODEL;
+  const effort = EFFORTS.indexOf(opts.effort) > 0 ? opts.effort : "";
+  const style = effort ? effortStyle() : "";
+  const maxTokens = opts.maxTokens || 1500;
   if (!API_KEY && !/127\.0\.0\.1|localhost/.test(BASE_URL)) {
     throw new Error("no API key yet — open the gear in the panel and add one");
   }
   if (PROVIDER === "anthropic") {
+    const body = { model: model, max_tokens: maxTokens, temperature: 0.4, messages: [{ role: "user", content: prompt }] };
+    if (style === "anthropic") {
+      body.thinking = { type: "enabled", budget_tokens: THINK_BUDGET[effort] };
+      body.max_tokens = maxTokens + THINK_BUDGET[effort];
+      delete body.temperature;
+    }
     const res = await fetch(BASE_URL + "/v1/messages", {
       method: "POST",
       headers: { "content-type": "application/json", "x-api-key": API_KEY, "anthropic-version": "2023-06-01" },
-      body: JSON.stringify({
-        model: CHEAP_MODEL, max_tokens: 1500, temperature: 0.4,
-        messages: [{ role: "user", content: prompt }]
-      })
+      body: JSON.stringify(body)
     });
     if (!res.ok) { throw new Error("provider " + res.status + ": " + (await res.text()).slice(0, 180)); }
     const json = await res.json();
-    if (json.usage) { meter.record(CHEAP_MODEL, { inputTokens: json.usage.input_tokens || 0, outputTokens: json.usage.output_tokens || 0 }); }
+    if (json.usage) { meter.record(model, { inputTokens: json.usage.input_tokens || 0, outputTokens: json.usage.output_tokens || 0 }); }
     const block = (json.content || []).find((b) => b.type === "text");
     return block ? block.text : "";
+  }
+  const body = { model: model, temperature: 0.4, max_tokens: maxTokens, messages: [{ role: "user", content: prompt }] };
+  if (style === "openrouter") {
+    body.reasoning = { effort: effort };
+    body.max_tokens = maxTokens + THINK_BUDGET[effort];
+  } else if (style === "openai") {
+    body.reasoning_effort = effort;
+    body.max_completion_tokens = maxTokens + THINK_BUDGET[effort];
+    delete body.max_tokens;
+    delete body.temperature;
   }
   const res = await fetch(BASE_URL + "/chat/completions", {
     method: "POST",
     headers: { "content-type": "application/json", authorization: "Bearer " + (API_KEY || "local") },
-    body: JSON.stringify({
-      model: CHEAP_MODEL, temperature: 0.4, max_tokens: 1500,
-      messages: [{ role: "user", content: prompt }]
-    })
+    body: JSON.stringify(body)
   });
   if (!res.ok) { throw new Error("provider " + res.status + ": " + (await res.text()).slice(0, 180)); }
   const json = await res.json();
   if (json.usage) {
-    meter.record(CHEAP_MODEL, {
+    meter.record(model, {
       inputTokens: json.usage.prompt_tokens || 0,
       outputTokens: json.usage.completion_tokens || 0
     });
@@ -598,6 +641,91 @@ function hasJsonMediaType(req) {
 }
 
 /** POST /api/suggest — cited judgement and a candidate, but never a write. */
+/* 3D explainer views. The AI returns a scene plan (data), RENDER.checkPlan
+   keeps only allow-listed parts and numbers, and Blender builds it with the
+   fixed scripts/build/build_from_plan.py. One build at a time; old views are
+   pruned so the folder cannot grow without bound. */
+const RENDERS_DIR = ENV.RENDERS_DIR || path.join(__dirname, ".renders");
+const RENDERS_KEPT = 30;
+let renderBusy = false;
+
+function pruneRenders() {
+  try {
+    const dirs = fs.readdirSync(RENDERS_DIR)
+      .map((d) => ({ d: d, t: fs.statSync(path.join(RENDERS_DIR, d)).mtimeMs }))
+      .sort((a, b) => b.t - a.t);
+    dirs.slice(RENDERS_KEPT).forEach((x) => fs.rmSync(path.join(RENDERS_DIR, x.d), { recursive: true, force: true }));
+  } catch (e) { /* nothing to prune */ }
+}
+
+async function handleRender(req, res) {
+  const ip = req.socket.remoteAddress || "local";
+  if (rateLimited(ip)) { sendJson(res, 429, { error: "Too many requests. Wait a minute." }); return; }
+  const origin = String(req.headers.origin || "");
+  const host = String(req.headers.host || "");
+  if (!hasJsonMediaType(req)) { sendJson(res, 415, { error: "Send application/json." }); return; }
+  if (origin && host && origin.replace(/^https?:\/\//, "") !== host) {
+    sendJson(res, 403, { error: "Cross-origin 3D request refused." }); return;
+  }
+  let raw = "";
+  let tooBig = false;
+  await new Promise((resolve) => {
+    req.on("data", (chunk) => { if (raw.length + chunk.length > 16384) { tooBig = true; } else { raw += chunk; } });
+    req.on("end", resolve);
+    req.on("error", resolve);
+  });
+  if (tooBig) { sendJson(res, 413, { error: "Request too large; the limit is 16 KiB." }); return; }
+  let body;
+  try { body = JSON.parse(raw || "{}"); } catch (e) { sendJson(res, 400, { error: "Bad JSON." }); return; }
+  const request = body && typeof body.request === "string" ? body.request.trim().slice(0, RENDER.MAX_REQUEST) : "";
+  const context = body && typeof body.context === "string" ? body.context.trim().slice(0, RENDER.MAX_CONTEXT) : "";
+  if (!request) { sendJson(res, 400, { error: "Say what you want to see." }); return; }
+
+  const blender = RENDER.findBlender(BLENDER_PATH);
+  if (!blender) {
+    sendJson(res, 501, { error: "Blender is not installed, so 3D views cannot be made. Install it free from blender.org, or set its path in Settings." });
+    return;
+  }
+  if (meter.blocked()) {
+    sendJson(res, 402, { error: "the daily budget is spent, so no 3D views until it resets", budget: meter.snapshot() }); return;
+  }
+  if (!API_KEY && !/127\.0\.0\.1|localhost/.test(BASE_URL)) {
+    sendJson(res, 501, { error: "no API key yet — open the gear in the panel and add one" }); return;
+  }
+  if (renderBusy) { sendJson(res, 429, { error: "A 3D view is already being made. Wait for it to finish." }); return; }
+  renderBusy = true;
+  meter.count("renders");
+  try {
+    const ask = (prompt) => askOnce(prompt, { model: RENDER_MODEL || CHEAP_MODEL, effort: RENDER_EFFORT, maxTokens: 3000 });
+    let checked = RENDER.checkPlan(RENDER.extractJson(await ask(RENDER.buildPrompt({ request: request, context: context }))));
+    if (checked.errors.length) {
+      checked = RENDER.checkPlan(RENDER.extractJson(await ask(RENDER.buildPrompt({ request: request, context: context }, checked.errors.slice(0, 12)))));
+    }
+    if (!checked.plan || (!checked.plan.parts.length && !checked.plan.shapes.length)) {
+      sendJson(res, 422, { error: "The AI did not produce a usable 3D plan. Try asking again, or describe one thing to show." }); return;
+    }
+    const id = Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
+    const dir = path.join(RENDERS_DIR, id);
+    fs.mkdirSync(dir, { recursive: true });
+    const planFile = path.join(dir, "plan.json");
+    fs.writeFileSync(planFile, JSON.stringify(checked.plan), "utf8");
+    const built = await RENDER.runBlender(blender, planFile, dir, 120000);
+    if (!built.ok) {
+      const why = RENDER.blenderError(built.log);
+      sendJson(res, 500, { error: "Blender could not build that view" + (why ? ": " + why : ".") }); return;
+    }
+    pruneRenders();
+    sendJson(res, 200, {
+      ok: true, id: id, title: checked.plan.title, explain: checked.plan.explain,
+      url: "/api/render/" + id + "/view.glb", warnings: checked.errors.slice(0, 6)
+    });
+  } catch (e) {
+    sendJson(res, 502, { error: "The 3D request failed: " + String(e.message || e).replace(/sk-[\w-]+/g, "[key]").slice(0, 160) });
+  } finally {
+    renderBusy = false;
+  }
+}
+
 async function handleSuggest(req, res) {
   const ip = req.socket.remoteAddress || "local";
   if (rateLimited(ip)) {
@@ -1340,6 +1468,25 @@ const server = http.createServer((req, res) => {
         patch.cheapModel = model;
         patch.strongModel = model;
       }
+      if (typeof body.renderModel === "string") {
+        RENDER_MODEL = body.renderModel.trim().slice(0, 120);
+        patch.renderModel = RENDER_MODEL;
+      }
+      if (typeof body.renderEffort === "string") {
+        if (EFFORTS.indexOf(body.renderEffort) === -1) {
+          sendJson(res, 400, { error: "Thinking effort must be one of: " + EFFORTS.join(", ") + "." }); return;
+        }
+        RENDER_EFFORT = body.renderEffort;
+        patch.renderEffort = RENDER_EFFORT;
+      }
+      if (typeof body.blenderPath === "string") {
+        const p = body.blenderPath.trim().replace(/^"|"$/g, "");
+        if (p && (!/blender(\.exe)?$/i.test(p) || !fs.existsSync(p))) {
+          sendJson(res, 400, { error: "That is not a Blender program on this computer (it should end in blender.exe)." }); return;
+        }
+        BLENDER_PATH = p;
+        patch.blenderPath = p;
+      }
       if (typeof body.apiKey === "string") {
         const key = body.apiKey.trim();
         if (key && key.length < 8) {
@@ -1419,6 +1566,17 @@ const server = http.createServer((req, res) => {
   if (u === "/api/ask") { sendJson(res, 405, { error: "POST only." }); return; }
 
   /* Suggestions are read-only; Accept still goes through /api/propose below. */
+  if (u === "/api/render" && req.method === "POST") { handleRender(req, res); return; }
+  if (u === "/api/render") { sendJson(res, 405, { error: "POST only." }); return; }
+  const renderFile = /^\/api\/render\/([a-z0-9]+-[a-z0-9]+)\/view\.glb$/.exec(u);
+  if (renderFile) {
+    const file = path.join(RENDERS_DIR, renderFile[1], "view.glb");
+    if (req.method !== "GET" || !fs.existsSync(file)) { res.writeHead(404); res.end("not found"); return; }
+    res.writeHead(200, { "content-type": "model/gltf-binary", "cache-control": "no-store" });
+    fs.createReadStream(file).pipe(res);
+    return;
+  }
+
   if (u === "/api/suggest" && req.method === "POST") { handleSuggest(req, res); return; }
   if (u === "/api/suggest") { sendJson(res, 405, { error: "POST only." }); return; }
 

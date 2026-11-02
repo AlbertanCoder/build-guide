@@ -973,7 +973,9 @@
     }
     if (msg.note) { card.appendChild(el("p", "ga-note", msg.note)); }
     if (msg.suggestion) { renderSuggestion(card, msg); }
+    if (msg.view3d) { renderView3d(card, msg.view3d); }
     if (msg.src) { card.appendChild(el("p", "ga-src", "Source: " + msg.src)); }
+    if (msg.md) { card.appendChild(show3dButton(msg)); }
     if (msg.see && msg.see.length) {
       const row = el("div", "ga-see");
       msg.see.forEach(function (s) {
@@ -1153,6 +1155,7 @@
       });
       card.foot.appendChild(row);
     }
+    if (msg.md) { card.foot.appendChild(show3dButton(msg)); }
     card.card.classList.remove("ga-live");
     UI.log.scrollTop = UI.log.scrollHeight;
   }
@@ -1621,6 +1624,20 @@
     form.appendChild(input);
     form.appendChild(send);
     form.appendChild(suggest);
+    const show3d = el("button", "ga-send", "Show in 3D");
+    show3d.type = "button";
+    show3d.id = "ga-3d";
+    show3d.title = "Type what you want to see, e.g. where the receiver wires go, and get a 3D view of it";
+    form.appendChild(show3d);
+    show3d.addEventListener("click", function () {
+      const t = input.value.trim();
+      if (!t || UI.busy) {
+        if (!t) { input.focus(); input.placeholder = "Type what you want to see in 3D, then press Show in 3D"; }
+        return;
+      }
+      input.value = "";
+      make3d(t);
+    });
     suggest.addEventListener("click", function () {
       const t = input.value.trim();
       if (!t || UI.busy) { return; }
@@ -1835,6 +1852,41 @@
     budget.value = "0.25";
     const scaleNote = el("p", "ga-sub");
 
+    const viewsHead = el("h4", "ga-settings-section", "3D views");
+    const viewsNote = el("p", "ga-sub",
+      "\u201cShow in 3D\u201d asks the AI to plan a scene from the guide's part models, and Blender builds it on this computer.");
+    const renderLabel = el("label", null, "3D model");
+    const renderState = el("span", "ga-sub");
+    renderState.id = "ga-render-model-state";
+    renderLabel.appendChild(renderState);
+    const renderInput = el("input", "ga-key-input");
+    renderInput.id = "ga-render-model";
+    renderInput.autocomplete = "off";
+    renderInput.setAttribute("list", "ga-model-list");
+    renderInput.placeholder = "empty = same as the answer model";
+    const renderNote = el("p", "ga-sub");
+    renderNote.id = "ga-render-model-note";
+    const effortLabel = el("label", null, "Thinking effort");
+    const effortSel = el("select", "ga-select");
+    effortSel.id = "ga-render-effort";
+    [["off", "Off \u2014 cheapest, fine for simple views"], ["low", "Low"],
+      ["medium", "Medium \u2014 recommended"], ["high", "High \u2014 best layouts, costs the most"]].forEach(function (o) {
+      const opt = document.createElement("option");
+      opt.value = o[0];
+      opt.textContent = o[1];
+      effortSel.appendChild(opt);
+    });
+    const effortNote = el("p", "ga-sub");
+    effortNote.id = "ga-render-effort-note";
+    const blenderLabel = el("label", null, "Blender");
+    const blenderState = el("span", "ga-sub");
+    blenderState.id = "ga-blender-state";
+    blenderLabel.appendChild(blenderState);
+    const blenderInput = el("input", "ga-key-input");
+    blenderInput.id = "ga-blender-path";
+    blenderInput.autocomplete = "off";
+    blenderInput.placeholder = "only if not found: paste the path to blender.exe, then press Enter";
+
     const settingsHead = el("div", "ga-settings-head");
     settingsHead.appendChild(el("h4", null, "Settings"));
     const doneTop = el("button", "ga-chip", "Done");
@@ -1867,6 +1919,16 @@
     node.appendChild(budgetLabel);
     node.appendChild(budget);
     node.appendChild(scaleNote);
+    node.appendChild(viewsHead);
+    node.appendChild(viewsNote);
+    node.appendChild(renderLabel);
+    node.appendChild(renderInput);
+    node.appendChild(renderNote);
+    node.appendChild(effortLabel);
+    node.appendChild(effortSel);
+    node.appendChild(effortNote);
+    node.appendChild(blenderLabel);
+    node.appendChild(blenderInput);
     node.appendChild(openServer);
     node.appendChild(doneBottom);
 
@@ -1877,7 +1939,7 @@
     }
 
     function setDisabled(on) {
-      [providerSel, modelInput, saveModel, keyInput, saveKey, testKey, clearKey, budget].forEach(function (n) {
+      [providerSel, modelInput, saveModel, renderInput, effortSel, blenderInput, keyInput, saveKey, testKey, clearKey, budget].forEach(function (n) {
         n.disabled = !!on;
       });
     }
@@ -1885,6 +1947,16 @@
     function paint(s) {
       keyState.textContent = s.keyConfigured ? "saved, ending " + s.keyHint : "not set";
       modelState.textContent = s.cheapModel ? "\u2713 saved: " + s.cheapModel : "not set";
+      renderState.textContent = "\u2713 saved: " + (s.renderModel ? s.renderModel : "same as answers (" + s.renderModelInUse + ")");
+      if (document.activeElement !== renderInput) { renderInput.value = s.renderModel || ""; }
+      renderNote.textContent = s.renderSuggested && s.renderModelInUse !== s.renderSuggested
+        ? "Recommended for 3D: " + s.renderSuggested + ". Placing parts in space is harder than answering, so a strong model pays off here."
+        : "This is the recommended model for 3D views.";
+      if (s.renderEffort) { effortSel.value = s.renderEffort; }
+      effortNote.textContent = s.effortSupported
+        ? "Thinking lets the model check its layout before answering. With Sonnet 5.5 on medium, a view costs about 2 cents."
+        : "Your provider does not take a thinking setting, so this is ignored there.";
+      blenderState.textContent = s.blenderPath ? "\u2713 found: " + s.blenderPath : "not found \u2014 install it free from blender.org";
       try {
         tokenState.textContent = (localStorage.getItem("ga-write-token") || "")
           ? "saved on this device" : "not set";
@@ -2041,6 +2113,35 @@
       if (e.key === "Enter") { e.preventDefault(); saveTypedModel(); }
     });
     saveModel.addEventListener("click", saveTypedModel);
+
+    function saveSetting(payload, done) {
+      post(payload)
+        .then(function (s) { paint(s); setNote("\u2713 Saved. " + done(s)); })
+        .catch(function (e) { setNote(e.message, true); });
+    }
+    function saveRenderModel() {
+      saveSetting({ renderModel: renderInput.value.trim() }, function (s) {
+        return s.renderModel ? "3D views now use " + s.renderModel + "." : "3D views now use the answer model.";
+      });
+    }
+    renderInput.addEventListener("change", function () {
+      const v = renderInput.value.trim();
+      if (lastSettings && v !== (lastSettings.renderModel || "") && (!v || knownModel(v))) { saveRenderModel(); }
+    });
+    renderInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { e.preventDefault(); saveRenderModel(); }
+    });
+    effortSel.addEventListener("change", function () {
+      saveSetting({ renderEffort: effortSel.value }, function (s) { return "Thinking effort for 3D views is now " + s.renderEffort + "."; });
+    });
+    blenderInput.addEventListener("keydown", function (e) {
+      if (e.key !== "Enter") { return; }
+      e.preventDefault();
+      saveSetting({ blenderPath: blenderInput.value.trim() }, function (s) {
+        blenderInput.value = "";
+        return s.blenderPath ? "Blender found at " + s.blenderPath + "." : "Blender path cleared.";
+      });
+    });
 
     saveKey.addEventListener("click", function () {
       const v = keyInput.value.trim();
@@ -2421,6 +2522,114 @@
         body: [String(e.message || e)], steps: [], src: ""
       });
     });
+  }
+
+  /* ---------- 3D views ------------------------------------------------------
+     The server asks the AI for a scene plan and has Blender build it from the
+     guide's own part models; the page only shows the finished file. */
+  function lastAnswerText() {
+    for (let i = MESSAGES.length - 1; i >= 0; i--) {
+      const m = MESSAGES[i];
+      if (m.role === "bot" && m.md) { return [m.title].concat(m.body || [], m.steps || []).join("\n"); }
+    }
+    return "";
+  }
+
+  function make3d(request, context) {
+    const t = String(request == null ? "" : request).trim();
+    if (!t || UI.busy) { return Promise.resolve(null); }
+    if (UI.panel.hidden) { setOpen(true); }
+    push({ role: "user", text: "3D view: " + t });
+    UI.busy = true;
+    if (!settingsAvailable()) {
+      UI.busy = false;
+      return Promise.resolve(push({
+        role: "bot", title: "Local server required",
+        body: ["3D views are built on this computer by the guide server. Start it with Start Guide Assistant.cmd and open http://localhost:8790/."],
+        steps: [], src: ""
+      }));
+    }
+    const wait = streamingCard();
+    wait.title.textContent = "Making a 3D view\u2026";
+    wait.body.appendChild(el("p", "ga-body", "The AI is planning the scene, then Blender builds it from the guide's part models. This takes about 20 to 60 seconds."));
+    wait.stop.parentNode.removeChild(wait.stop);
+    wait.card.classList.add("ga-live");
+    function done() {
+      UI.busy = false;
+      if (wait.wrap.parentNode) { wait.wrap.parentNode.removeChild(wait.wrap); }
+    }
+    return fetch("/api/render", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ request: t, context: context == null ? lastAnswerText() : context })
+    }).then(function (r) {
+      return r.json().then(function (j) {
+        if (!r.ok) { throw new Error((j && j.error) || ("HTTP " + r.status)); }
+        return j;
+      });
+    }).then(function (j) {
+      done();
+      return push({
+        role: "bot", title: j.title || "3D view", body: [], steps: [],
+        view3d: { url: j.url, title: j.title || "3D view", explain: j.explain || "", fresh: true },
+        src: "a 3D view built from the guide's own part models"
+      });
+    }).catch(function (e) {
+      done();
+      return push({ role: "bot", title: "Could not make a 3D view", body: [String(e.message || e)], steps: [], src: "" });
+    });
+  }
+
+  function mountView3d(root) {
+    if (window.BuildGuideViewer) { window.BuildGuideViewer.mount(root); return; }
+    root.querySelector(".viewer3d-status").textContent = "The 3D viewer did not load on this page.";
+  }
+
+  function renderView3d(card, v) {
+    if (v.explain) { card.appendChild(el("p", "ga-body", v.explain)); }
+    const root = el("div", "viewer3d ga-viewer");
+    root.setAttribute("data-model", v.url);
+    root.setAttribute("data-title", v.title);
+    const canvas = el("div", "viewer3d-canvas");
+    canvas.appendChild(el("div", "viewer3d-labels"));
+    canvas.appendChild(el("span", "viewer3d-status", "Loading 3D\u2026"));
+    root.appendChild(canvas);
+    root.appendChild(el("p", "viewer3d-nogl", "This view needs WebGL, which this browser has turned off."));
+    const bar = el("div", "viewer3d-bar");
+    bar.appendChild(el("span", "viewer3d-hint", "Drag to rotate \u00b7 scroll to zoom"));
+    [["reset", "Reset view"], ["labels", "Labels"], ["fullscreen", "Full screen"]].forEach(function (b) {
+      const btn = el("button", null, b[1]);
+      btn.type = "button";
+      btn.setAttribute("data-action", b[0]);
+      if (b[0] === "labels") { btn.setAttribute("aria-pressed", "true"); }
+      bar.appendChild(btn);
+    });
+    root.appendChild(bar);
+    card.appendChild(root);
+    /* A browser only allows a handful of live 3D views, so views restored from
+       history wait for a click instead of all starting at once. */
+    if (v.fresh) {
+      delete v.fresh;
+      setTimeout(function () { mountView3d(root); }, 0);
+    } else {
+      const status = canvas.querySelector(".viewer3d-status");
+      status.textContent = "";
+      const open = el("button", "ga-link", "Open 3D view");
+      open.type = "button";
+      open.addEventListener("click", function () { status.textContent = "Loading 3D\u2026"; mountView3d(root); });
+      status.appendChild(open);
+    }
+  }
+
+  function show3dButton(msg) {
+    const b = el("button", "ga-link ga-3d-btn", "Show this in 3D");
+    b.type = "button";
+    b.title = "Make a 3D view of what this answer describes (about 20 to 60 seconds)";
+    b.addEventListener("click", function () {
+      make3d("Show what this answer describes, so I can see where each part goes.",
+        [msg.title].concat(msg.body || [], msg.steps || []).join("\n"));
+    });
+    return b;
   }
 
   function curatedAnswer(text) {

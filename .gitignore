@@ -20,3 +20,6 @@ server/.cache/
 
 # Conversation memory: the user's own threads, mirrored from the page
 server/.conversations/
+
+# 3D views made on request: rebuilt from their plan, never committed
+server/.renders/

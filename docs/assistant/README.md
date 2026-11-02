@@ -128,7 +128,7 @@ that chain fails, the answer comes from the offline engine with a one-line note 
 
 ## The gate
 
-23 suites, 603 named checks, one exit code:
+24 suites, 625 named checks, one exit code:
 
 ```powershell
 node scripts/dev/gate.js            # everything
@@ -141,7 +141,7 @@ node scripts/dev/gate.js --json     # machine-readable, for the agent to consume
 | encoding | 3 |
 | price guard | 4 |
 | domain pack | 1 |
-| cost engine | 26 |
+| cost engine | 27 |
 | cost path | 30 |
 | quiz operation | 29 |
 | prose operation | 38 |
@@ -160,6 +160,7 @@ node scripts/dev/gate.js --json     # machine-readable, for the agent to consume
 | browser (Chrome) | 28 |
 | self-test served | 24 |
 | self-test single file | 24 |
+| 3d views (needs Blender) | 21 |
 | ai path | 11 |
 
 Two deliberate strictnesses, both proved by hand:
@@ -184,6 +185,17 @@ state.
 |---|---|---|
 | **API key** | — | POSTed once to the local server, written to `server/.settings.json` (git-ignored). The endpoint returns only `keyConfigured` plus the last four characters — **the key is never sent back to the page** |
 | **Daily budget** | $0.10 – $2.00 | Enforced by the server. Out-of-range values are clamped, not trusted. A research job's own budget is `min($0.05, cap ÷ 2)`, so one job can never eat a whole day |
+| **Model** | any id | Typeable, with suggestions from the provider's own `/models` list (`GET /api/models`, a free call cached ten minutes) |
+| **3D model / Thinking effort** | off, low, medium, high | Used only by **Show in 3D**. Empty model = the answer model. Effort is sent as OpenRouter `reasoning.effort`, OpenAI `reasoning_effort`, or an Anthropic thinking budget (2k / 6k / 12k tokens); other providers ignore it |
+| **Blender** | path | Found automatically in `Program Files\Blender Foundation`; set a path only for an unusual install. Must end in `blender.exe` and exist |
+
+**Show in 3D** (`POST /api/render { request, context }`) asks the 3D model for a scene plan,
+keeps only allow-listed parts, shapes, colours and in-range numbers (`server/ops/render.js`), and
+has Blender build it with the fixed `scripts/build/build_from_plan.py`, which checks the plan
+again on its own. One build runs at a time; it obeys the daily budget like any answer; the finished
+model is served from `GET /api/render/<id>/view.glb` and the newest 30 are kept in
+`server/.renders/` (git-ignored). The prompt includes every label from the guide's own step
+models, so the views name the real pads and parts.
 
 **Test key** asks the provider whether the key resolves and reports the verdict
 honestly — including "could not check", which is not the same as "invalid".
@@ -268,7 +280,10 @@ from storage.
 | `scripts/dev/check-encoding.js` | fails if a shipped file has double-encoded UTF-8 |
 | `scripts/dev/check-kb-prices.js` | fails if a knowledge-base price drifts from the guide, if the budget arithmetic stops closing, or if the superseded total returns |
 | `server/cost-engine.js` | the zero-dependency cost engine: cache, router, compression, meter |
-| `scripts/dev/check-cost-engine.js` | 26 unit checks on the engine |
+| `scripts/dev/check-cost-engine.js` | 27 unit checks on the engine |
+| `server/ops/render.js` | Show in 3D: the scene-plan prompt, the allow-list check, finding and running Blender |
+| `scripts/build/build_from_plan.py` | the only Blender script a 3D view ever runs; reads a JSON plan, refuses anything off its allow-list |
+| `scripts/dev/check-render.js` | 21 checks: allow-lists match, bad plans refused, a real Blender build, the routes and settings |
 | `scripts/dev/check-cost-path.js` | 30 end-to-end checks: cache, compression, stats, budget, escalation |
 | `scripts/dev/check-settings.js` | 29 checks on the key, budget and provider endpoints |
 | `server/ops/undo.js` | reverts an accepted proposal, then rebuilds and re-mirrors |
