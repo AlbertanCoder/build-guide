@@ -441,6 +441,9 @@
   .ga-panel [hidden] { display: none !important; }
   .ga-settings { padding: 12px; border-top: 1px solid var(--line); background: var(--card); overflow-y: auto; }
   .ga-settings h4 { margin: 0 0 4px; font-size: 14px; color: var(--pine-deep); }
+  .ga-settings-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .ga-settings-head h4 { margin: 0; }
+  .ga-settings-done { display: block; width: 100%; margin-top: 16px; padding: 10px 14px; }
   .ga-settings label { display: block; margin: 12px 0 5px; font-size: 11.5px; font-weight: 700;
     text-transform: uppercase; letter-spacing: .5px; color: var(--soft); }
   .ga-settings label .ga-sub { text-transform: none; letter-spacing: 0; font-weight: 400; margin-left: 6px; }
@@ -5334,6 +5337,10 @@ window.GUIDE_DOMAIN = {
       }
     });
     document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && settingsOpen) {
+        if (e.target && e.target.id !== "ga-model") { showSettings(false); }
+        return;
+      }
       if (e.key === "Escape" && !panel.hidden) { setOpen(false); launcher.focus(); }
     });
   }
@@ -5381,6 +5388,9 @@ window.GUIDE_DOMAIN = {
     providerNote.id = "ga-provider-note";
 
     const modelLabel = el("label", null, "Model");
+    const modelState = el("span", "ga-sub");
+    modelState.id = "ga-model-state";
+    modelLabel.appendChild(modelState);
     let lastSettings = null;
     let providerModels = [];
     let modelListSig = "";
@@ -5472,7 +5482,22 @@ window.GUIDE_DOMAIN = {
     budget.value = "0.25";
     const scaleNote = el("p", "ga-sub");
 
-    node.appendChild(el("h4", null, "Settings"));
+    const settingsHead = el("div", "ga-settings-head");
+    settingsHead.appendChild(el("h4", null, "Settings"));
+    const doneTop = el("button", "ga-chip", "Done");
+    doneTop.type = "button";
+    doneTop.id = "ga-settings-done";
+    settingsHead.appendChild(doneTop);
+    const doneBottom = el("button", "ga-send ga-settings-done", "Done \u2014 back to chat");
+    doneBottom.type = "button";
+    doneBottom.id = "ga-settings-done-bottom";
+    [doneTop, doneBottom].forEach(function (b) {
+      b.addEventListener("click", function () { if (UI.showSettings) { UI.showSettings(false); } });
+    });
+
+    node.appendChild(settingsHead);
+    node.appendChild(el("p", "ga-sub", "Changes save by themselves. Each one is confirmed in the green box below this line."));
+    node.appendChild(note);
     node.appendChild(providerLabel);
     node.appendChild(providerSel);
     node.appendChild(providerNote);
@@ -5489,8 +5514,8 @@ window.GUIDE_DOMAIN = {
     node.appendChild(budgetLabel);
     node.appendChild(budget);
     node.appendChild(scaleNote);
-    node.appendChild(note);
     node.appendChild(openServer);
+    node.appendChild(doneBottom);
 
     function setNote(text, bad) {
       note.textContent = text || "";
@@ -5506,6 +5531,7 @@ window.GUIDE_DOMAIN = {
 
     function paint(s) {
       keyState.textContent = s.keyConfigured ? "saved, ending " + s.keyHint : "not set";
+      modelState.textContent = s.cheapModel ? "\u2713 saved: " + s.cheapModel : "not set";
       try {
         tokenState.textContent = (localStorage.getItem("ga-write-token") || "")
           ? "saved on this device" : "not set";
@@ -5630,6 +5656,13 @@ window.GUIDE_DOMAIN = {
       if (!modelInput.value.trim() && lastSettings) { modelInput.value = lastSettings.cheapModel || ""; }
       modelInput.placeholder = "type to search, e.g. sonnet";
     });
+    modelInput.addEventListener("input", function () {
+      const v = modelInput.value.trim();
+      if (!lastSettings) { return; }
+      modelState.textContent = v && v !== lastSettings.cheapModel
+        ? "not saved yet: pick a suggestion or press Enter"
+        : (lastSettings.cheapModel ? "\u2713 saved: " + lastSettings.cheapModel : "not set");
+    });
 
     function saveTypedModel() {
       const v = modelInput.value.trim();
@@ -5638,7 +5671,7 @@ window.GUIDE_DOMAIN = {
       post({ model: v })
         .then(function (s) {
           paint(s);
-          setNote("Model set to " + s.cheapModel + "." +
+          setNote("\u2713 Saved. The model is now " + s.cheapModel + "." +
             (providerModels.length && providerModels.indexOf(s.cheapModel) === -1
               ? " Your provider did not list that name, so ask a question to check it works."
               : " Ask a question to try it."));

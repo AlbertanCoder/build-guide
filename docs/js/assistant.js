@@ -1690,6 +1690,10 @@
       }
     });
     document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && settingsOpen) {
+        if (e.target && e.target.id !== "ga-model") { showSettings(false); }
+        return;
+      }
       if (e.key === "Escape" && !panel.hidden) { setOpen(false); launcher.focus(); }
     });
   }
@@ -1737,6 +1741,9 @@
     providerNote.id = "ga-provider-note";
 
     const modelLabel = el("label", null, "Model");
+    const modelState = el("span", "ga-sub");
+    modelState.id = "ga-model-state";
+    modelLabel.appendChild(modelState);
     let lastSettings = null;
     let providerModels = [];
     let modelListSig = "";
@@ -1828,7 +1835,22 @@
     budget.value = "0.25";
     const scaleNote = el("p", "ga-sub");
 
-    node.appendChild(el("h4", null, "Settings"));
+    const settingsHead = el("div", "ga-settings-head");
+    settingsHead.appendChild(el("h4", null, "Settings"));
+    const doneTop = el("button", "ga-chip", "Done");
+    doneTop.type = "button";
+    doneTop.id = "ga-settings-done";
+    settingsHead.appendChild(doneTop);
+    const doneBottom = el("button", "ga-send ga-settings-done", "Done \u2014 back to chat");
+    doneBottom.type = "button";
+    doneBottom.id = "ga-settings-done-bottom";
+    [doneTop, doneBottom].forEach(function (b) {
+      b.addEventListener("click", function () { if (UI.showSettings) { UI.showSettings(false); } });
+    });
+
+    node.appendChild(settingsHead);
+    node.appendChild(el("p", "ga-sub", "Changes save by themselves. Each one is confirmed in the green box below this line."));
+    node.appendChild(note);
     node.appendChild(providerLabel);
     node.appendChild(providerSel);
     node.appendChild(providerNote);
@@ -1845,8 +1867,8 @@
     node.appendChild(budgetLabel);
     node.appendChild(budget);
     node.appendChild(scaleNote);
-    node.appendChild(note);
     node.appendChild(openServer);
+    node.appendChild(doneBottom);
 
     function setNote(text, bad) {
       note.textContent = text || "";
@@ -1862,6 +1884,7 @@
 
     function paint(s) {
       keyState.textContent = s.keyConfigured ? "saved, ending " + s.keyHint : "not set";
+      modelState.textContent = s.cheapModel ? "\u2713 saved: " + s.cheapModel : "not set";
       try {
         tokenState.textContent = (localStorage.getItem("ga-write-token") || "")
           ? "saved on this device" : "not set";
@@ -1986,6 +2009,13 @@
       if (!modelInput.value.trim() && lastSettings) { modelInput.value = lastSettings.cheapModel || ""; }
       modelInput.placeholder = "type to search, e.g. sonnet";
     });
+    modelInput.addEventListener("input", function () {
+      const v = modelInput.value.trim();
+      if (!lastSettings) { return; }
+      modelState.textContent = v && v !== lastSettings.cheapModel
+        ? "not saved yet: pick a suggestion or press Enter"
+        : (lastSettings.cheapModel ? "\u2713 saved: " + lastSettings.cheapModel : "not set");
+    });
 
     function saveTypedModel() {
       const v = modelInput.value.trim();
@@ -1994,7 +2024,7 @@
       post({ model: v })
         .then(function (s) {
           paint(s);
-          setNote("Model set to " + s.cheapModel + "." +
+          setNote("\u2713 Saved. The model is now " + s.cheapModel + "." +
             (providerModels.length && providerModels.indexOf(s.cheapModel) === -1
               ? " Your provider did not list that name, so ask a question to check it works."
               : " Ask a question to try it."));

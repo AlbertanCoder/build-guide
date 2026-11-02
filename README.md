@@ -134,6 +134,9 @@ edit to a guide paragraph, with every claim backed by an exact quote from the gu
    key" means you are done; the header changes to *AI answers · grounded in this guide*.
 6. **Daily budget:** set a cap (for example $0.50). When it is reached the assistant switches back
    to its built-in answers instead of spending more.
+7. Press **Done** (top or bottom of Settings, or Esc) to go back to the chat. There is nothing else
+   to save: every change saves itself, and the green box at the top of Settings confirms it. The
+   Model line shows **✓ saved** with the model in use.
 
 The key is stored only on this machine, in `server/.settings.json`, which git ignores; the page
 only ever sees its last four characters. No key and no money? Choose **Ollama** as the provider and run a local model.
