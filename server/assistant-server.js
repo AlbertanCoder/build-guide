@@ -982,6 +982,15 @@ async function handleAsk(req, res) {
    missing file is never fatal — the page's localStorage copy keeps it. */
 const CONVERSATIONS_DIR = ENV.CONVERSATIONS_DIR || path.join(__dirname, ".conversations");
 const THREAD_ID = /^[a-z0-9-]{1,64}$/i;
+const BUILD_TABS = ["why", "build", "parts", "steps", "career", "quiz", "limits"];
+
+function cleanBuild(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) { return null; }
+  const tab = BUILD_TABS.indexOf(value.tab) !== -1 ? value.tab : "why";
+  const n = Number(value.step);
+  const step = tab === "steps" && Number.isInteger(n) && n >= 1 && n <= 8 ? n : null;
+  return { tab: tab, step: step };
+}
 
 function convFile(id) {
   return path.join(CONVERSATIONS_DIR, id + ".json");
@@ -1030,7 +1039,8 @@ async function handleConversations(req, res, u) {
           title: t.title || "conversation",
           messages: Array.isArray(t.messages) ? t.messages : [],
           history: Array.isArray(t.history) ? t.history : [],
-          lastId: String(t.lastId || "")
+          lastId: String(t.lastId || ""),
+          build: cleanBuild(t.build)
         }
       });
     } catch (e) {
@@ -1074,6 +1084,7 @@ async function handleConversations(req, res, u) {
     messages: Array.isArray(body.messages) ? body.messages.slice(-200) : [],
     history: Array.isArray(body.history) ? body.history.slice(-12) : [],
     lastId: String(body.lastId || "").slice(0, 200),
+    build: cleanBuild(body.build),
     updatedAt: Date.now()
   };
   try {

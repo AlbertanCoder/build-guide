@@ -114,6 +114,11 @@ const SUITES = [
     expect: 29
   },
   {
+    name: "build sync",
+    cmd: ["node", ["scripts/dev/check-build-sync.js"]],
+    expect: 23
+  },
+  {
     name: "browser",
     cmd: ["node", ["scripts/dev/check-browser.js"]],
     expect: 28,

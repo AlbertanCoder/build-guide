@@ -1111,13 +1111,59 @@
     return [msg.title || ""].concat(msg.steps || []).join(". ").trim();
   }
 
+  /* Build position is conversation state too: the phone can reopen the tab and
+     assembly step where the desktop stopped. Read the page's own controls rather
+     than maintaining a second stepper that could drift out of sync. */
+  function normaliseBuild(value) {
+    if (!value || typeof value !== "object" || !TABS[value.tab]) { return null; }
+    const n = Number(value.step);
+    return {
+      tab: value.tab,
+      step: value.tab === "steps" && Number.isInteger(n) && n >= 1 && n <= 8 ? n : null
+    };
+  }
+  function buildPosition() {
+    const selected = document.querySelector("[role='tab'][aria-selected='true']");
+    const tab = selected && selected.id.indexOf("t-") === 0 ? selected.id.slice(2) : "why";
+    let step = null;
+    if (tab === "steps") {
+      const dot = document.querySelector("[data-asm-dot][aria-current='step']");
+      const n = dot ? Number(dot.getAttribute("data-asm-dot")) : NaN;
+      if (Number.isInteger(n) && n >= 1 && n <= 8) { step = n; }
+    }
+    return { tab: TABS[tab] ? tab : "why", step: step };
+  }
+  function restoreBuild(value) {
+    const build = normaliseBuild(value);
+    return build ? jump(build.tab, build.step) : false;
+  }
+  let buildSyncTimer = null;
+  function scheduleBuildSync() {
+    if (buildSyncTimer) { clearTimeout(buildSyncTimer); }
+    buildSyncTimer = setTimeout(function () { buildSyncTimer = null; persist(); }, 80);
+  }
+  function watchBuildPosition() {
+    document.addEventListener("click", function (e) {
+      const target = e.target && e.target.closest;
+      if (target && e.target.closest("#tabs, [data-assembly]")) { scheduleBuildSync(); }
+    });
+    document.addEventListener("keydown", function (e) {
+      const target = e.target && e.target.closest;
+      if (target && e.target.closest("#tabs") && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
+        scheduleBuildSync();
+      }
+    });
+    window.addEventListener("hashchange", scheduleBuildSync);
+  }
+
   function persist() {
     try {
       localStorage.setItem(STORE, JSON.stringify({
-        v: 2,
+        v: 3,
         lastId: ctx.lastId,
         history: ctx.history.slice(-12),
-        messages: MESSAGES.slice(-MAX_TURNS)
+        messages: MESSAGES.slice(-MAX_TURNS),
+        build: buildPosition()
       }));
     } catch (e) { /* private mode: the chat simply does not persist */ }
     syncThread();
@@ -1143,25 +1189,26 @@
     return String((first && (first.text || first.title)) || "conversation").slice(0, 70);
   }
   function syncThread() {
-    if (!ENDPOINT || typeof fetch !== "function") { return; }
+    if (!ENDPOINT || typeof fetch !== "function") { return null; }
     try {
-      fetch("/api/conversations/" + threadId(), {
+      return fetch("/api/conversations/" + threadId(), {
         method: "PUT",
         headers: writeTokenHeaders({ "content-type": "application/json" }),
         body: JSON.stringify({
           title: threadTitle(),
           messages: MESSAGES.slice(-200),
           history: ctx.history.slice(-12),
-          lastId: ctx.lastId
+          lastId: ctx.lastId,
+          build: buildPosition()
         })
-      }).catch(function () { /* offline: the localStorage copy keeps it */ });
-    } catch (e) { /* ignore */ }
+      }).catch(function () { return null; /* offline: localStorage keeps it */ });
+    } catch (e) { return null; }
   }
   function loadThread(id) {
     return fetch("/api/conversations/" + encodeURIComponent(id), { cache: "no-store" })
       .then(function (r) { return r.json(); })
       .then(function (j) {
-        if (!j || !j.ok) { return; }
+        if (!j || !j.ok) { return null; }
         MESSAGES.length = 0;
         UI.log.textContent = "";
         (j.thread.messages || []).forEach(function (m) {
@@ -1171,9 +1218,12 @@
         ctx.history = (j.thread.history || []).slice(-12);
         ctx.lastId = j.thread.lastId || "";
         try { localStorage.setItem(THREAD_KEY, id); } catch (e) { /* ignore */ }
+        restoreBuild(j.thread.build);
         UI.log.scrollTop = UI.log.scrollHeight;
+        persist();
+        return j.thread;
       })
-      .catch(function () { /* leave the view alone */ });
+      .catch(function () { return null; /* leave the view alone */ });
   }
 
   function modeLabel() {
@@ -1251,6 +1301,58 @@
         }).catch(function () { /* no test server listening: fine */ });
       } catch (e) { /* ignore */ }
       return report;
+    });
+  }
+
+  /* Real-browser Item C probe: save a position, move away, then load the same
+     thread as another device would. Results go only to a GA_TEST=1 server. */
+  function runBuildSyncProbe() {
+    const lines = [];
+    const add = function (name, ok, info) {
+      lines.push((ok ? "PASS " : "FAIL ") + name + (info ? "  [" + info + "]" : ""));
+    };
+    jump("steps", 4);
+    const wanted = buildPosition();
+    add("the browser reads the current tab and assembly step",
+      wanted.tab === "steps" && wanted.step === 4, JSON.stringify(wanted));
+
+    return Promise.resolve(syncThread()).then(function (r) {
+      add("the browser's thread sync succeeds", !!r && r.ok === true, r ? "status " + r.status : "no response");
+      return fetch("/api/conversations/" + encodeURIComponent(threadId()), { cache: "no-store" });
+    }).then(function (r) { return r.json(); }).then(function (j) {
+      const build = j && j.thread && j.thread.build;
+      add("the server stores the browser's build position",
+        !!build && build.tab === "steps" && build.step === 4, JSON.stringify(build || null));
+      jump("why", null);
+      add("moving away really changes the visible tab",
+        document.getElementById("p-why").hidden === false && buildPosition().tab === "why");
+      return loadThread(threadId());
+    }).then(function (thread) {
+      add("loading the thread restores its tab",
+        !!thread && document.getElementById("p-steps").hidden === false);
+      const dot = document.querySelector("[data-asm-dot][aria-current='step']");
+      add("loading the thread restores its assembly step",
+        !!dot && Number(dot.getAttribute("data-asm-dot")) === 4,
+        dot ? dot.getAttribute("data-asm-dot") : "no current step");
+      let local = null;
+      try { local = JSON.parse(localStorage.getItem(STORE) || "null"); } catch (e) { /* reported below */ }
+      add("the local thread copy restores the same build position",
+        !!local && local.build && local.build.tab === "steps" && local.build.step === 4,
+        JSON.stringify(local && local.build));
+      add("loading a build position preserves the conversation",
+        !!thread && Array.isArray(thread.messages) && thread.messages.length === MESSAGES.length,
+        MESSAGES.length + " messages");
+    }).catch(function (e) {
+      add("the build-sync browser probe ran without throwing", false, String(e && e.message ? e.message : e));
+    }).then(function () {
+      try {
+        fetch("/api/probe", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ buildSync: lines })
+        }).catch(function () { /* no test server: fine */ });
+      } catch (e) { /* ignore */ }
+      return lines;
     });
   }
 
@@ -2077,6 +2179,7 @@
       MESSAGES.push(m);
       UI.log.appendChild(renderMessage(m));
     });
+    restoreBuild(data.build);
     UI.log.scrollTop = UI.log.scrollHeight;
     return MESSAGES.length > 0;
   }
@@ -2495,6 +2598,7 @@
     buildIndex();
     mount();
     if (!restore()) { push(introMessage()); }
+    watchBuildPosition();
     const flags = String(location.hash) + String(location.search);
     if (/ga-open/.test(flags)) {
       setOpen(true);
@@ -2509,6 +2613,8 @@
     if (/ga-drawer-test/.test(flags)) {
       /* Drives the settings drawer for real. See runDrawerProbe. */
       probeEndpoint().then(function () { return runDrawerProbe(); });
+    } else if (/ga-build-sync-test/.test(flags)) {
+      probeEndpoint().then(function () { return runBuildSyncProbe(); });
     } else if (/ga-quiz-test/.test(flags)) {
       /* Proves an earned quiz pass survives the bank growing. See runQuizProbe. */
       runQuizProbe();
