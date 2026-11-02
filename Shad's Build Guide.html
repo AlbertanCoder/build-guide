@@ -5769,7 +5769,13 @@ window.GUIDE_DOMAIN = {
       .catch(function (err) {
         if (card.wrap.parentNode) { card.wrap.parentNode.removeChild(card.wrap); }
         const aborted = err && err.name === "AbortError";
-        const local = answerLocal(question);
+        /* Only a confident curated match is a fair stand-in; a loose keyword hit
+           answered a budget question with the motor-direction card. */
+        const local = curatedAnswer(question) || {
+          role: "bot", title: "The AI did not answer",
+          body: ["Nothing was answered for that question. Ask again, or split a long question into shorter ones."],
+          steps: [], note: "", src: ""
+        };
         local.note = (local.note ? local.note + " " : "") + (aborted
           ? "(Stopped, so this answer came from the offline guide instead.)"
           : "(The AI service did not answer \u2014 " +
