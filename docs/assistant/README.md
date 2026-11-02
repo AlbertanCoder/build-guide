@@ -1,19 +1,21 @@
 ﻿# Guide Assistant
 
 An AI assistant inside the build guide, for the part static docs cannot do: a confused builder
-mid-assembly. It answers off-script troubleshooting questions â€” *"the MLX90640 is noisy at 8 Hz"*,
-*"my receiver won't bind, the LED double-blinks"*, *"the Pi reboots when I throttle up"* â€” streams
+mid-assembly. It answers off-script troubleshooting questions — *"the MLX90640 is noisy at 8 Hz"*,
+*"my receiver won't bind, the LED double-blinks"*, *"the Pi reboots when I throttle up"* — streams
 the answer token by token, and links straight into the tab or assembly step it used.
 
 Three design rules, because the guide's value is that it only states what was checked:
 
 1. **Grounded.** Every request carries passages retrieved from this guide plus curated
-   troubleshooting entries for the exact parts ordered. The system prompt forbids answering from
-   general knowledge, and the proxy refuses to call a model at all if no passages arrive (`422`).
+   troubleshooting entries for the exact parts ordered. Build answers must come from them; a
+   general question may get a short answer only under the label *General knowledge, not from this
+   guide*, never for parts, prices, regulations, safety limits or detection performance. The proxy
+   refuses to call a model at all if no passages arrive (`422`).
    Evidence first, model second.
 2. **Attributed.** Answers show a source line and up to two navigation buttons. The model asks for
    those with a `[[NAV steps 6]]` directive which is stripped from the prose and turned into a real
-   button â€” so a model can never inject markup or a URL into the page.
+   button — so a model can never inject markup or a URL into the page.
 3. **Degradable.** No key, no network, or a provider outage: the page silently falls back to its
    built-in offline answers and says so in the message. The guide never becomes unusable because an
    API is down.
@@ -29,7 +31,7 @@ Three design rules, because the guide's value is that it only states what was ch
 The browser never holds a key in any route. GitHub Pages only serves static files, so the public
 site needs route C; routes A and B run on your machine.
 
-## Route A â€” hosted API (3 minutes)
+## Route A — hosted API (3 minutes)
 
 ```powershell
 cd build-guide-repo
@@ -38,13 +40,13 @@ Copy-Item server/.env.example server/.env
 node server/assistant-server.js
 ```
 
-Open <http://localhost:8790/> â€” the guide, with the assistant switched to AI automatically. The
-badge reads **"AI answers Â· grounded in this guide"**. `/api/health` shows what it is using.
+Open <http://localhost:8790/> — the guide, with the assistant switched to AI automatically. The
+badge reads **"AI answers · grounded in this guide"**. `/api/health` shows what it is using.
 
 Any OpenAI-compatible provider works (OpenAI, Groq, OpenRouter, DeepSeek, Mistral, Together, vLLM).
 Anthropic's Messages API is supported natively with `PROVIDER=anthropic`.
 
-## Route B â€” a local model, no key, no bill
+## Route B — a local model, no key, no bill
 
 ```powershell
 ollama pull qwen2.5:7b      # or llama3.1:8b, mistral-nemo
@@ -60,9 +62,9 @@ API_KEY=ollama
 ```
 
 LM Studio works the same way on `http://127.0.0.1:1234/v1`. Small local models follow the grounding
-rules less reliably than frontier models â€” run the evaluation below before trusting the output.
+rules less reliably than frontier models — run the evaluation below before trusting the output.
 
-## Route C â€” the public site (Cloudflare Pages + Worker)
+## Route C — the public site (Cloudflare Pages + Worker)
 
 The free, one-account setup: **Cloudflare Pages** serves the static guide (the
 repo root - `index.html` plus `docs/`, including the 3D viewer and the domain

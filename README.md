@@ -1,8 +1,8 @@
 # Shad's Fire-Detecting Drone Build Guide
 
-## [â–¶ Open the Interactive HTML Guide](https://albertancoder.github.io/build-guide/)
+## [▶ Open the Interactive HTML Guide](https://albertancoder.github.io/build-guide/)
 
-**Quick links:** [Live guide](https://albertancoder.github.io/build-guide/) Â· [HTML source file](index.html) Â· [Exact order list](Shad-Drone-Order-List.md) Â· [Audit report](Shad-Drone-Audit-Report.md) Â· [Payload software](Shad-Drone-Payload/)
+**Quick links:** [Live guide](https://albertancoder.github.io/build-guide/) · [HTML source file](index.html) · [Exact order list](Shad-Drone-Order-List.md) · [Audit report](Shad-Drone-Audit-Report.md) · [Payload software](Shad-Drone-Payload/)
 
 A single-page, interactive order and build guide for a 5-inch analog FPV quadcopter with a Raspberry Pi thermal/GPS payload.
 
@@ -14,8 +14,8 @@ A single-page, interactive order and build guide for a 5-inch analog FPV quadcop
 
 ### Parts and interactive budget
 
-Open **3 Parts & Budget** for the interactive order plan â€” every row links to its live retailer
-listing â€” plus the **pay-as-you-go staging plan**: nine affordable purchase stages (CA$0â€“400
+Open **3 Parts & Budget** for the interactive order plan — every row links to its live retailer
+listing — plus the **pay-as-you-go staging plan**: nine affordable purchase stages (CA$0–400
 each) that each deliver something to build, test or learn the day they arrive, ending at the
 same CA$1,714.94 complete plan without one big bill.
 
@@ -30,8 +30,8 @@ same CA$1,714.94 complete plan without one big bill.
 Open **4 Build Steps** in the guide for the assembly manual: one step at a time, each with
 its interactive 3D model and flat picture, a parts strip, numbered actions, a safety note
 and a check gate before the next step. Big Previous/Next buttons walk through the eight
-steps â€” inventory, frame assembly, soldering, receiver/FPV wiring, charging, Pi/sensor
-wiring, payload mounting and testing â€” or a toggle shows all eight at once.
+steps — inventory, frame assembly, soldering, receiver/FPV wiring, charging, Pi/sensor
+wiring, payload mounting and testing — or a toggle shows all eight at once.
 
 [![Illustrated 8-step build](docs/images/illustrated-build.png)](docs/images/illustrated-build.png)
 
@@ -39,11 +39,11 @@ The individual SVG diagrams are also available in `docs/images/build/`.
 
 ### Interactive 3D models
 
-Each of the eight steps â€” plus the finished aircraft â€” is an interactive 3D model you can
+Each of the eight steps — plus the finished aircraft — is an interactive 3D model you can
 orbit, zoom and pan, with HTML part labels read from the model itself. three.js is vendored in
 `docs/vendor/three` (no CDN), models are lazy-loaded on scroll, and each step also shows its
 flat picture underneath the model. Step 8's six test stages are clickable hotspots
-(Aâ€“F) that highlight the hardware each stage exercises.
+(A–F) that highlight the hardware each stage exercises.
 
 Models are generated from committed Blender scripts, so they can be rebuilt at any time:
 
@@ -71,7 +71,7 @@ python -m http.server 8000
 ### Opening the guide by double-click (no server)
 
 Browsers block ES modules and `.glb` fetches on `file://`, so opening `index.html` directly shows
-the page but no 3D. For a double-clickable copy, build the self-contained single file instead â€”
+the page but no 3D. For a double-clickable copy, build the self-contained single file instead —
 three.js, all nine models, every diagram and the Guide Assistant get inlined, and the result works
 from any folder:
 
@@ -91,36 +91,95 @@ The build steps tab is deep-linkable: `#p-steps` opens it directly.
 
 ### Guide Assistant (an AI that answers from this guide)
 
-A panel in the bottom-right corner answers troubleshooting questions about *this* build â€” "the
-thermal image is noisy at 8 Hz", "the receiver won't bind", "i2cdetect shows nothing" â€” streams the
-answer, and links straight into the tab or assembly step it used.
+A chat panel in the bottom-right corner (**Ask the guide**) answers questions about *this* build,
+streams the answer, and links straight to the tab or assembly step it used. It can also suggest an
+edit to a guide paragraph, with every claim backed by an exact quote from the guide.
 
-**Run it as a real AI assistant (3 minutes, needs a key):**
+[![The guide with the assistant open](docs/images/guide-with-assistant.png)](docs/images/guide-with-assistant.png)
 
-```powershell
-Copy-Item server/.env.example server/.env   # add one provider key, or point it at Ollama
-node server/assistant-server.js             # http://localhost:8790/
-```
+#### Set it up (about 5 minutes, Windows)
 
-`server/assistant-server.js` is a zero-dependency proxy: it serves the guide and streams answers from
-any OpenAI-compatible provider or Anthropic, with the key kept server-side. The page detects the
-server and switches itself on. No key at all? Put the same `.env` on Ollama or LM Studio and it runs
-free and offline. While the server runs, `http://localhost:8790/review` is a read-only review
-page: any open proposal shown as a diff next to a live rendering of the change.
+1. **Install Node.js.** Download the LTS version from [nodejs.org](https://nodejs.org/) and run the
+   installer with its defaults. Nothing else needs installing: the server has no dependencies.
+2. **Get the code.** Either `git clone https://github.com/AlbertanCoder/build-guide.git`, or use
+   **Code → Download ZIP** on GitHub and unzip it.
+3. **Start it.** Double-click **`Start Guide Assistant.cmd`** in the repo folder. It starts the local
+   server (a minimised window called "Guide Assistant server") and opens
+   [http://localhost:8790/](http://localhost:8790/). The same thing by hand:
+
+   ```powershell
+   node server/assistant-server.js --allow-write   # then open http://localhost:8790/
+   ```
+
+   Use that address, not a double-clicked `.html` file: the double-clickable copy is offline-only
+   and cannot hold a key. Closing the server window turns the AI off until you start it again.
+
+#### Add your API key
+
+[![The settings drawer, with no key saved yet](docs/images/assistant-settings.png)](docs/images/assistant-settings.png)
+
+1. **Get a key.** [OpenRouter](https://openrouter.ai/settings/keys) is the recommended choice: one
+   key reaches Claude, GPT, Gemini and others. Create a key, give it a credit limit (for example
+   $5 a week), and add a few dollars of credit at
+   [openrouter.ai/settings/credits](https://openrouter.ai/settings/credits); a limit does not add
+   credit by itself. For a free tier, use [Groq](https://console.groq.com/keys) instead.
+2. Open the guide at `http://localhost:8790/`, click **Ask the guide**, then the **⚙** button.
+3. **Provider:** choose OpenRouter (or Groq).
+4. **Model:** the provider's default is filled in. For the best suggestions on OpenRouter, type
+   `anthropic/claude-sonnet-5.5` and press **Use this model**.
+5. **API key:** paste the key, press **Save key**, then **Test key**. "The provider accepted the
+   key" means you are done; the header changes to *AI answers · grounded in this guide*.
+6. **Daily budget:** set a cap (for example $0.50). When it is reached the assistant switches back
+   to its built-in answers instead of spending more.
+
+The key is stored only on this machine, in `server/.settings.json`, which git ignores; the page
+only ever sees its last four characters. No key and no money? Choose **Ollama** as the provider and run a local model.
+
+#### Use it
+
+[![An AI answer citing the guide](docs/images/assistant-answer.png)](docs/images/assistant-answer.png)
+
+- **Ask anything about the build** — parts, wiring, a fault, what to buy first. Answers come from
+  the guide's own text and the curated troubleshooting set, with a source line and buttons that
+  jump to the step used.
+- **General questions** (learning Python, how I2C works) get a short answer clearly labelled
+  *General knowledge, not from this guide*.
+- **Prices and regulations** are only stated with the date the guide checked them; otherwise it
+  points you to the Parts tab. Five safety bans (detection claims, undated prices, flying near
+  wildfires, certification claims, unapproved edits) are enforced in code, not just requested.
+- **Suggest an edit:** open the tab you want to improve, type what to change ("make the opening
+  paragraph clearer for a beginner") and press **Suggest an edit**. You get a proposed paragraph
+  plus a report of what improves, what the guide supports, and any conflicts, each with exact
+  quotes. Occasionally a suggestion is refused by the checks; just ask again.
+
+[![A suggested edit with its cited report](docs/images/assistant-suggestion.png)](docs/images/assistant-suggestion.png)
+
+- **Accept** creates a proposal branch only; the real guide does not change. **Reject** discards
+  it without any network call. Review open proposals at
+  [http://localhost:8790/review](http://localhost:8790/review), then apply or discard one:
+
+  ```powershell
+  node server/ops/accept.js proposal/<name>   # runs the full test gate, merges only if green, rebuilds
+  node server/ops/reject.js proposal/<name>   # deletes the branch; main is never touched
+  node server/ops/undo.js                     # reverts the last accepted change and rebuilds
+  ```
 
 **Grounding is enforced, not requested.** Every request carries passages retrieved from the guide
-plus curated troubleshooting entries for the exact parts ordered; the proxy refuses to call a model
-when no passages arrive (`422`); the prompt forbids answering from general knowledge; and answers
-show a source line plus up to two navigation buttons. If the service is unreachable the assistant
-falls back to its built-in offline answers and says so.
+plus curated troubleshooting entries for the exact parts ordered; build answers must come from
+them, general knowledge is labelled as such, and the five bans are checked on every answer before
+it is shown or cached. If the AI service fails, the assistant says so instead of guessing.
+
+**Troubleshooting:** *"No local server"* means you opened a file instead of
+`http://localhost:8790/`, or the server window is closed: double-click `Start Guide Assistant.cmd`.
+*"No API key yet"* means step 5 above has not been done. A credit or billing error on Test key
+means the provider account needs credit.
 
 For the public site, publish the repo root on **Cloudflare Pages** and deploy
 `docs/assistant/worker.js` to Cloudflare Workers (Pages cannot run
-Node) and point the page at it. Everything â€” routes, costs, the evaluation checklist for trusting a
-model â€” is in [docs/assistant/README.md](docs/assistant/README.md).
+Node) and point the page at it. Everything — routes, costs, the evaluation checklist for trusting a
+model — is in [docs/assistant/README.md](docs/assistant/README.md).
 
-**It is built to be cheap as well as good.** Five layers, cheapest first: a
-confident curated entry answers locally with no model call at all; a repeat
+**It is built to be cheap as well as good.** Four layers, cheapest first: a repeat
 question is replayed from a signature cache; the cheap tier answers by default and
 the strong tier is reached only when a question needs it; passages are compressed
 to the sentences that answer the question; and `DAILY_USD_MAX` puts a hard ceiling
@@ -160,13 +219,13 @@ Open `index.html` in a browser. Tabs, build checkboxes, progress, quizzes, flash
 
 ## Included documents
 
-- `Shad-Drone-Order-List.md` â€” exact parts, quantities, live retailer links, prices, compatibility and cost breakdown.
-- `Shad-Drone-Audit-Report.md` â€” Aâ€“G review, component substitutions, compatibility and validation results.
-- `Shad-Drone-Payload/` â€” thermal hotspot grouping, geolocation, real/synthetic payload backends, offline coordinate viewer and unit tests.
-- `shad-drone-icon.svg` â€” current favicon/header artwork.
-- `docs/js/assistant.js` + `docs/assistant/` â€” the offline Guide Assistant, plus the optional Cloudflare Worker that lets a model draft answers from retrieved passages.
+- `Shad-Drone-Order-List.md` — exact parts, quantities, live retailer links, prices, compatibility and cost breakdown.
+- `Shad-Drone-Audit-Report.md` — A–G review, component substitutions, compatibility and validation results.
+- `Shad-Drone-Payload/` — thermal hotspot grouping, geolocation, real/synthetic payload backends, offline coordinate viewer and unit tests.
+- `shad-drone-icon.svg` — current favicon/header artwork.
+- `docs/js/assistant.js` + `docs/assistant/` — the offline Guide Assistant, plus the optional Cloudflare Worker that lets a model draft answers from retrieved passages.
 
-The unavailable stack, thermal camera, Pi and goggles were replaced with live alternatives, then re-checked on **31 October 2026**. Every link loads, but **a working link is not stock** â€” the frame and the GEPRC 50A stack were out of stock on that re-check, so confirm availability and freight at checkout. The complete selected plan costs **CA$1,714.94**, or **CA$1,799.69 after 5% GST**, before remaining retailer freight â€” roughly **CA$1,840â€“1,870 landed**.
+The unavailable stack, thermal camera, Pi and goggles were replaced with live alternatives, then re-checked on **31 October 2026**. Every link loads, but **a working link is not stock** — the frame and the GEPRC 50A stack were out of stock on that re-check, so confirm availability and freight at checkout. The complete selected plan costs **CA$1,714.94**, or **CA$1,799.69 after 5% GST**, before remaining retailer freight — roughly **CA$1,840–1,870 landed**.
 
 ## Payload setup
 
@@ -191,12 +250,12 @@ The viewer defaults to `http://127.0.0.1:8000` and the append-only log is `fligh
   before the model call, and an empty-passage request was rejected with `422`.
 - 4/4 Guide Assistant price checks passed (`scripts/dev/check-kb-prices.js`): every figure in the
   assistant's knowledge base also appears in the guide, the budget arithmetic closes
-  (CA$1,694.94 Ã— 5% = CA$84.75; CA$1,714.94 + CA$84.75 = CA$1,799.69), and the superseded
+  (CA$1,694.94 × 5% = CA$84.75; CA$1,714.94 + CA$84.75 = CA$1,799.69), and the superseded
   CA$1,678.00 total is absent. Verified non-vacuous by re-running it against a deliberately
   reverted copy, where it failed as intended.
 - 26/26 cost-engine unit checks passed (`scripts/dev/check-cost-engine.js`), and 30/30 cost-path
   checks passed end to end (`scripts/dev/check-cost-path.js`) against a mock provider: a repeat
-  question produced **zero** upstream calls, passages were compressed 2,308 â†’ 698 characters,
+  question produced **zero** upstream calls, passages were compressed 2,308 → 698 characters,
   duplicates were dropped, `/api/stats` accounted the spend, the daily cap returned `402` without
   calling the provider, and a cheap-tier refusal escalated exactly once to the strong tier.
 - 14/14 Guide Assistant offline self-tests passed, including that a confident curated question is
