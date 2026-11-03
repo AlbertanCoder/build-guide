@@ -10,7 +10,7 @@
 <rect x="700" y="70" width="205" height="150" class="w"/><text x="803" y="103" text-anchor="middle" class="t">BIND + TEST</text><text x="722" y="137" class="s">UART serial RX</text><text x="722" y="167" class="s">Protocol = CRSF</text><text x="722" y="197" class="s">Channels + failsafe</text>
 <rect x="50" y="275" width="185" height="100" class="b"/><text x="143" y="310" text-anchor="middle" class="t">PHOENIX 2</text><text x="143" y="342" text-anchor="middle" class="s">analog camera</text>
 <rect x="285" y="275" width="185" height="100" class="b"/><text x="378" y="310" text-anchor="middle" class="t">UNIFY HV</text><text x="378" y="342" text-anchor="middle" class="s">2–6S, not Pi 5V</text>
-<rect x="520" y="275" width="185" height="100" class="b"/><text x="613" y="310" text-anchor="middle" class="t">SMA ANTENNA</text><text x="613" y="342" text-anchor="middle" class="s">TBS Diamond</text>
+<rect x="520" y="275" width="185" height="100" class="b"/><text x="613" y="310" text-anchor="middle" class="t">SMA ANTENNA</text><text x="613" y="342" text-anchor="middle" class="s">TBS Triumph PRO</text>
 <rect x="755" y="275" width="155" height="100" class="a"/><text x="833" y="310" text-anchor="middle" class="t">M5 MONITOR</text><text x="833" y="342" text-anchor="middle" class="s">analog 5.8GHz</text>
 <path d="M235 325 H285 M470 325 H520 M705 325 H755" class="u"/>
 <rect x="130" y="420" width="700" height="70" class="w"/><text x="480" y="450" text-anchor="middle" class="t">Never power the VTX without its antenna attached</text><text x="480" y="478" text-anchor="middle" class="s">Use a legal channel/power level; confirm the FC pinout before connecting</text>

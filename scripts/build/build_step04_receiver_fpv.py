@@ -1,10 +1,11 @@
 """
-build_step04_receiver_fpv.py - the electrical 3D wiring diagram.
+build_step04_receiver_fpv.py - Step 4 "Add control and video".
 
-Step 4: "Receiver first, then the separate analog video chain". Components float
-in space above a faint frame silhouette so the TX->R2 / RX->T2 crossover and the
-video chain are readable.
-Run:  blender -b --factory-startup -P build_step04_receiver_fpv.py
+Text (STEP-TRUTH S4.1-S4.7, approved wording): RP1 V2 on UART2 (receiver T -> R2, R -> T2, 5V, GND) with its
+UFL antenna; camera into the FC's CAM socket; VTX video from the FC's VTX pad, power from the 9V pad, control
+wire to T1; Triumph PRO screwed on the VTX's SMA socket before any power; Betaflight on USB only (no battery,
+no props); monitor (runs from a 4S pack on its cable) for the picture later; top plate fitted last (item 32). Positions the V6 drawing does not settle are 'planned'.
+Run:  blender -b --factory-startup -P scripts/build/build_step04_receiver_fpv.py
 """
 
 import os
@@ -12,111 +13,112 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+import lib_anim as A
 import lib_core as C
 import lib_kit as K
 import lib_quad as Q
 
-Z = 0.072          # height the components float at
 
-
-def board(P, name, w, d, loc, color="pcb_black"):
-    return C.plate(name, w, d, 0.0016, loc, mat=P[color], corner=0.001)
+def wire(name, a, b, key, P, lift=0.008):
+    mid = ((a[0] + b[0]) / 2.0, (a[1] + b[1]) / 2.0, max(a[2], b[2]) + lift)
+    return C.tube(name, [a, mid, b], 0.0006, P[key], res=5)
 
 
 def build():
     C.reset()
     P = C.palette()
 
-    # faint frame silhouette for spatial reference only
-    ghost = C.material("GhostFrame", (0.35, 0.42, 0.42, 1), 0.0, 0.6, alpha=0.16)
-    Q.frame(P, carbon=ghost)
+    Q.frame(P)                     # last action (change request 32): fit the top plate
+    for name, (mx, my) in Q.MOTORS.items():
+        Q.motor(P, name, (mx, my))
+    stack, fc_top = Q.flight_stack(P)
+    Q.motor_wires(P)
+    Q.battery_lead(P, tip=(-0.100, 0.0, Q.Z_MID_TOP + 0.006))
 
-    # --- receiver <-> flight controller ----------------------------------
-    rx_x, rx_y = -0.105, 0.030
-    board(P, "rp1_board", 0.020, 0.012, (rx_x, rx_y, Z), "pcb_black")
-    C.box("rp1_shield", (0.008, 0.008, 0.0016), (rx_x + 0.004, rx_y, Z + 0.0016),
-          mat=P["alu"])
-    C.tube("rp1_antenna", [(rx_x - 0.008, rx_y, Z + 0.001),
-                           (rx_x - 0.016, rx_y + 0.006, Z + 0.026),
-                           (rx_x - 0.020, rx_y + 0.008, Z + 0.040)],
-           0.0010, P["wire_black"], res=5)
+    # receiver on UART2 with the stack box's own 4-wire cable (approved batch D, S4.1): its plug in the FC's 4-pin
+    # socket "G, 5V, R2, T2" (GEPRC diagram), the cut end soldered to the receiver: G-G, 5V-5, R2-T, T2-R.
+    # The cable's wire colours are not published, so the model keeps the drawing colours.
+    rx_loc = (-0.030, 0.015, Q.PLATE_T + 0.002)
+    rx = Q.receiver(P, rx_loc)
+    C.mark_planned(rx, "receiver position on the frame not confirmed")
+    pads = [Q.fc_pad(p_) for p_ in ("R2", "T2", "5V_rx", "G_rx")]
+    plug = (sum(p_[0] for p_ in pads) / 4.0, sum(p_[1] for p_ in pads) / 4.0, fc_top + 0.0015)
+    C.box("rx_box_cable_plug", (0.0045, 0.0060, 0.0030), plug, mat=P["plastic_white"])
+    for k, (pad, key) in enumerate((("R2", "wire_white"), ("T2", "wire_yellow"), ("5V_rx", "wire_red"), ("G_rx", "wire_black"))):
+        wire(f"rx_box_cable_{pad}", (rx_loc[0] + 0.006, rx_loc[1] - 0.003 + k * 0.002, rx_loc[2] + 0.003),
+             (plug[0] - 0.0015 + k * 0.001, plug[1], plug[2]), key, P)
 
-    fc_x, fc_y = 0.0, 0.0
-    board(P, "f405_board", 0.030, 0.030, (fc_x, fc_y, Z + 0.012), "pcb_black")
-    C.box("f405_usb", (0.008, 0.006, 0.003),
-          (fc_x + 0.014, fc_y, Z + 0.0146), mat=P["alu"], bevel=0.0004)
-    for i, (off, tag) in enumerate(((-0.004, "r2"), (0.004, "t2"),
-                                    (-0.010, "5v"), (0.010, "gnd"))):
-        C.box(f"f405_pad_{tag}", (0.003, 0.003, 0.0012),
-              (fc_x + off, fc_y - 0.013, Z + 0.0132), mat=P["gold"])
+    # camera into the CAM socket
+    cam = Q.front_camera(P)
+    C.mark_planned(cam, "camera mount on the V6 not confirmed (Phoenix 2 is 19 mm)")
+    cpx, cpy = Q.fc_pad("CAM")
+    C.tube("cam_cable", [(0.055, 0.0, Q.Z_MID_TOP + 0.010), (0.030, cpy * 0.5, fc_top + 0.006), (cpx, cpy, fc_top)],
+           0.0011, P["wire_black"], res=6)
 
-    # TX -> R2 crosses RX -> T2 on purpose: that is the mistake to avoid
-    C.tube("sig_tx_to_r2", [(rx_x + 0.010, rx_y - 0.002, Z),
-                            (rx_x + 0.032, rx_y - 0.020, Z + 0.004),
-                            (fc_x - 0.004, fc_y - 0.013, Z + 0.0132)],
-           0.0011, P["pine"], res=6)
-    C.tube("sig_rx_to_t2", [(rx_x + 0.010, rx_y + 0.002, Z),
-                            (rx_x + 0.028, rx_y - 0.006, Z + 0.018),
-                            (fc_x + 0.004, fc_y - 0.013, Z + 0.0132)],
-           0.0011, P["wire_blue"], res=6)
-    C.tube("pwr_5v", [(rx_x + 0.006, rx_y + 0.006, Z),
-                      (rx_x + 0.040, rx_y - 0.004, Z + 0.030),
-                      (fc_x - 0.010, fc_y - 0.013, Z + 0.0132)],
-           0.0010, P["wire_red"], res=6)
-    C.tube("gnd", [(rx_x + 0.006, rx_y - 0.006, Z),
-                   (rx_x + 0.044, rx_y - 0.014, Z + 0.026),
-                   (fc_x + 0.010, fc_y - 0.013, Z + 0.0132)],
-           0.0010, P["wire_black"], res=6)
+    # VTX: power from 9V, video from the VTX pad, control to T1, then the antenna
+    Q.vtx_and_antenna(P, antenna_x=-0.085)
+    vtx_in = (-0.045 + 0.0155, 0.0, Q.PLATE_T + 0.007)
+    for k, (pad, key) in enumerate((("9V", "wire_red"), ("G_vtx", "wire_black"), ("VTX", "wire_yellow"), ("T1", "wire_white"))):
+        px, py = Q.fc_pad(pad)
+        wire(f"vtx_wire_{pad}", (vtx_in[0], vtx_in[1] - 0.003 + k * 0.002, vtx_in[2]), (px, py, fc_top), key, P)
+    # the VTX's two unused wires (TBS manual: orange "5V out", green "Audio"), cut short and capped (approved D, S4.3)
+    for k, (tag, key) in enumerate((("orange", "copper"), ("green", "pcb_green"))):
+        a = (vtx_in[0], vtx_in[1] + 0.006 + k * 0.002, vtx_in[2])
+        b = (vtx_in[0] + 0.010, vtx_in[1] + 0.008 + k * 0.003, vtx_in[2] + 0.002)
+        C.tube(f"vtx_wire_unused_{tag}", [a, b], 0.0006, P[key], res=5)
+        c = (b[0] + 0.004, b[1] + 0.0004, b[2] + 0.0002)
+        C.tube(f"vtx_wire_cap_{tag}", [(b[0] - 0.001, b[1], b[2]), c], 0.0011, P["plastic_black"], res=6)
 
-    # --- analog video chain ----------------------------------------------
-    cam = (0.100, 0.026, Z - 0.006)
-    C.box("phoenix2_body", (0.019, 0.019, 0.019), cam, mat=P["plastic_black"],
-          bevel=0.0012)
-    C.cyl("phoenix2_lens", 0.0068, 0.006, (cam[0] + 0.011, cam[1], cam[2]),
-          rot=(0, 1.5708, 0), mat=P["plastic_black"], seg=16)
+    # Betaflight on USB only, from your laptop; monitor and its cell waiting on the bench
+    K.laptop(P, (0.0, 0.330, 0.0), rot_z=0.0, lid_angle=105.0)
+    C.tube("usb_cable", [(0.0, 0.0145, fc_top + 0.0015), (0.0, 0.080, 0.010), (0.0, 0.295, 0.004)], 0.0016,
+           P["plastic_black"], res=6)
+    K.monitor_skyzone(P, (0.0, -0.250, 0.0))
 
-    vtx = (0.052, -0.062, Z - 0.004)
-    board(P, "unify_hv_board", 0.030, 0.020, vtx, "pcb_black")
-    C.cyl("unify_sma", 0.0032, 0.006, (vtx[0] - 0.020, vtx[1], vtx[2]),
-          rot=(0, 1.5708, 0), mat=P["alu"], seg=12)
+    C.label("RP1 V2 RECEIVER ON UART2", (rx_loc[0], rx_loc[1], rx_loc[2] + 0.012), detail="UART2: receiver T to R2, R to T2, plus 5V and GND")
+    C.label("TX -> R2  /  RX -> T2 (Crossed on purpose)", (rx_loc[0] + 0.012, rx_loc[1] + 0.012, rx_loc[2] + 0.020),
+            detail="receiver TX to the FC's R2, receiver RX to T2 (GEPRC manual, UART2)")
+    C.label("RECEIVER ANTENNA", (rx_loc[0] - 0.040, rx_loc[1] + 0.030, rx_loc[2] + 0.028), detail="clip on before any power")
+    C.label("PHOENIX 2 CAMERA", (0.072, 0.0, Q.Z_TOP + 0.004), detail="plug into the FC's CAM socket")
+    C.label("UNIFY PRO HV VTX", (-0.045, -0.018, Q.PLATE_T + 0.016), detail="video from the FC's VTX pad, control to T1")
+    C.label("VTX POWER: 9V PAD", (-0.020, -0.020, fc_top + 0.010), detail="and ground")
+    C.label("TRIUMPH PRO ANTENNA (SMA)", (-0.091, 0.0, Q.PLATE_T + 0.090), detail="screw on before any power")
+    C.label("USB ONLY: NO BATTERY, NO PROPS", (0.0, 0.120, 0.030), detail="Betaflight setup on your laptop")
+    C.label("YOUR LAPTOP (NOT IN THE BOX)", (0.0, 0.330, 0.012))
+    C.label("TOP PLATE: FIT IT LAST", (0.030, 0.0, Q.Z_TOP_TOP + 0.006), detail="on the 22 mm and 30 mm standoffs")
+    C.label("M5F MONITOR (RUNS FROM A CHARGED 4S PACK ON ITS XT60 CABLE)", (0.0, -0.250, 0.040), detail="for the picture test in step 8; no 18650 needed")
 
-    # camera -> VTX (video + power), VTX -> antenna, VTX -> monitor
-    C.tube("video_cam_vtx", [cam, (0.080, -0.010, Z + 0.010),
-                             (vtx[0] + 0.012, vtx[1] + 0.008, vtx[2])],
-           0.0011, P["wire_yellow"], res=6)
-    C.tube("vtx_to_antenna", [(vtx[0] - 0.020, vtx[1], vtx[2]),
-                              (vtx[0] - 0.034, vtx[1] - 0.010, vtx[2] + 0.004)],
-           0.0013, P["wire_black"], res=6)
-    C.cyl("antenna_sma_stem", 0.0022, 0.018,
-          (vtx[0] - 0.038, vtx[1] - 0.012, vtx[2] + 0.012),
-          mat=P["plastic_black"], seg=10)
-    for i, tag in enumerate(("a", "b")):
-        C.box(f"antenna_lobe_{tag}", (0.020, 0.0018, 0.030),
-              (vtx[0] - 0.038, vtx[1] - 0.012, vtx[2] + 0.034),
-              rot=(0, 0, 0.7854 * i), mat=P["plastic_grey"], bevel=0.0006)
+    # ---- clip ----
+    A.appear(A.named("rx_rp1", "rx_box_cable_"), 0.0, 1.6)
+    A.appear(A.named("rx_antenna"), 2.0, 2.8)
+    A.appear(A.named("cam_cable", "vtx_wire_"), 3.2, 5.0)
+    A.appear(A.named("antenna_triumph", "vtx_foam_tape", "antenna_zip_tie_"), 5.4, 6.6)
+    A.appear(A.named("usb_cable"), 7.0, 8.0)
+    A.slide(A.named("frame_top_plate"), (0, 0, 0.040), 10.6, 11.8)
+    rxf = [rx_loc[0], rx_loc[1], rx_loc[2]]
+    actions = [
+        {"id": "S4.1", "hold": 1.7, "shows": ["rx_rp1", "rx_box_cable_R2", "rx_box_cable_T2", "rx_box_cable_plug"], "hides": ["frame_top_plate"], "time": 0.0, "short": "Receiver on UART2",
+         "text": "Wire the receiver with one of the two small 4-wire cables from the stack box. Its plug goes into the flight controller's 4-pin socket marked G, 5V, R2, T2. Cut the other end and solder its four wires to the receiver's pads: G (ground) goes to the receiver's G pad 5V goes to the receiver's 5 pad R2 (the FC listens here) goes to the receiver's T pad (the receiver talks here) T2 (the FC talks here) goes to the receiver's R pad (the receiver listens here) A talking pin always goes to a listening pin. Follow each wire from its socket pin with the meter before you cut. When the stack box arrives, check: the colours of the wires in the 4-wire cable, and that its plug fits the 4-pin socket.",
+         "focus": rxf, "dist": 0.09},
+        {"id": "S4.2", "hold": 1.0, "shows": ["rx_antenna"], "hides": ["frame_top_plate"], "time": 2.0, "short": "Receiver antenna", "text": "Press the 65 mm T antenna that came with the receiver onto its tiny UFL socket, straight down until it clicks, before any power. Point the antenna's two arms away from carbon and out of the prop circles, for example taped along a rear arm."},
+        {"id": "S4.3", "hold": 1.7, "shows": ["cam_cable", "vtx_wire_9V", "vtx_wire_VTX", "vtx_wire_T1", "vtx_wire_cap_orange", "vtx_wire_cap_green"], "hides": ["frame_top_plate"], "time": 3.2, "short": "Camera and VTX wires",
+         "text": "Camera: connect its video, GND and 5V wires to the flight controller's pads marked CAM, GND and 5V. (The camera runs on 5 to 36 V.) The stack box's camera cable may plug straight in: check when it arrives. VTX (video transmitter): red to the FC's 9V pad, both black wires to GND, yellow (video) to the FC's VTX pad, white (control) to T1. The VTX also has an orange wire (5 V out) and a green wire (audio). You do not use them. Cut each one short and cover it with heat shrink, so it touches nothing. This way the OSD (the numbers on your video: pack voltage, timer, warnings) reaches your screen. When the stack arrives, check: does the camera cable plug straight in, or does the camera go on the pads?"},
+        {"id": "S4.3b", "hold": 0.3, "shows": ["cam_body", "cam_lens"], "hides": ["frame_top_plate"], "time": 5.0,
+         "short": "Camera tilt about 10° up", "text": "Tilt the flying camera up about 10°. Loosen the two side screws on the camera mount, tilt the camera, then tighten the screws again. Use a free phone level app to read the angle. Once you are hovering and the controls feel easy, raise it 5° at a time. The beginner range is 10 to 15°. When the frame arrives, check: does the camera mount (the plastic holder that comes with the frame) tilt by loosening two side screws? If it works another way, follow the frame’s manual.",
+         "focus": [0.0675, 0.0, 0.021], "dist": 0.09},
+        {"id": "S4.4", "hold": 1.3, "shows": ["antenna_triumph_head", "vtx_foam_tape", "antenna_zip_tie_l", "antenna_zip_tie_r"], "hides": ["frame_top_plate"], "time": 5.4, "short": "VTX antenna on", "text": "Stick the VTX to the bottom plate behind the stack with a strip of the foam mounting tape. Screw the 5.8 GHz antenna onto its gold SMA socket, finger tight, before any power. Hold the antenna's base with two zip ties to the two rear standoffs, so it points up and back, out of the props. If the drone lands upside down, the antenna takes the hit first: check its nut and the two zip ties. When the frame arrives, check: does it have a hole for the antenna's SMA nut?"},
+        {"id": "S4.5", "hold": 0.6, "shows": [], "hides": ["frame_top_plate", "battery_pack"], "time": 7.0, "short": "Bind on ISM 2400",
+         "text": "In Betaflight's Ports tab, turn on Serial RX for UART2, then Save. In the Receiver tab, pick Serial (via UART) and CRSF, then Save. On the radio, press SYS, open ExpressLRS in the Tools menu and scroll to the bottom. Note the version shown. Install the ExpressLRS Configurator on the laptop (github.com/ExpressLRS/ExpressLRS-Configurator/releases). Build the RP1 V2 firmware for the same version as the radio, with regulatory domain ISM 2400 and a bind phrase of your own. (ExpressLRS has no separate Canada option. Do not pick EU CE/LBT.) Write the phrase down. The receiver ships on v2.4. Flash the receiver through the flight controller: keep the receiver wired to UART2 and the flight controller on USB, and close Betaflight. In the Configurator pick the RP1 V2 target, set Flashing Method to BetaflightPassthrough, and press Flash. (If you use the receiver's own Wi-Fi instead: on firmware v2.4 there is no Update tab; scroll down to the Firmware Update section.) Put the same bind phrase and ISM 2400 on the radio: press SYS, open ExpressLRS, choose WiFi Connectivity, then Enable WiFi. On the laptop, join the Wi-Fi network \"ExpressLRS TX\" (password expresslrs). In the Configurator pick the RadioMaster Pocket target, Flashing Method WiFi, the same version, ISM 2400 and the same bind phrase, and press Flash. With a bind phrase on both, they connect on their own. When the receiver arrives, check: it powers from USB alone (arrival test \"Receiver works on USB alone\"), and what Wi-Fi name it shows."},
+        {"id": "S4.6", "hold": 0.6, "shows": ["usb_cable"], "hides": ["frame_top_plate", "battery_pack"], "time": 8.2, "short": "Betaflight on USB only",
+         "text": "Set up Betaflight with the flight controller on USB only: no battery, no propellers. Press Save on each tab before you leave it. Setup tab: check the board says GEPRCF405. Calibrate Accelerometer with the frame level. Configuration tab: ESC protocol DShot (as the ESC manual names). Receiver tab: Serial (via UART), CRSF. Move the sticks and check the bars move. Modes tab: Add Range for ARM on the switch you choose. Failsafe tab: Stage 2 = Drop, so the motors stop if the radio link is lost. Power & Battery tab: maximum cell voltage 4.40 V. (The packs are LiHV and charge to 4.35 V per cell. At 4.35, Betaflight would count a full pack as 5 cells.)"},
+        {"id": "S4.7", "hold": 0.6, "shows": [], "hides": ["frame_top_plate"], "time": 9.4, "short": "VTX at 25 mW", "text": "The VTX comes locked to 25 mW, its lowest power. (Higher powers need a HAM licence and a long button press.) Check it at the first battery power-up in Step 8, with the antenna on. When it powers up, its red light flashes 3 times and then its blue light flashes once. That means power level 1: 25 mW. To change the channel or the power from Betaflight later, set UART1 to SmartAudio in the Ports tab. At the first battery power-up, check: the VTX light flashes red 3 times, then blue once (25 mW). The VTX does not power from USB."},
+        {"id": "S4.8", "hold": 1.3, "shows": ["frame_top_plate"], "hides": [], "time": 10.6, "short": "Fit the top plate", "text": "Fit the top plate on the eight standoffs with eight of the frame's short screws (likely the M3 x 10 ones). Before tightening, check that no wire is trapped between the plate and a standoff. When the frame arrives, check: the screw size its manual names for the top plate, and whether it wants threadlock."},
+    ]
+    A.finish("step-04-main", 13.0, actions)
 
-    # the monitor is ground equipment: draw it lower and to the side
-    K.monitor_skyzone(P, (0.140, -0.075, 0.0))
-    C.tube("video_vtx_to_monitor",
-           [(vtx[0] + 0.010, vtx[1] - 0.010, vtx[2]),
-            (0.110, -0.110, 0.030), (0.140, -0.100, 0.026)],
-           0.0009, P["wire_white"], res=5)
-
-    C.label("RP1 V2 RECEIVER", (rx_x, rx_y, Z + 0.048),
-            detail="5V + GND, UART serial RX, CRSF")
-    C.label("GEPRC F405", (fc_x, fc_y, Z + 0.034), detail="Bind + failsafe here")
-    C.label("TX -> R2  /  RX -> T2", (rx_x + 0.040, rx_y - 0.026, Z + 0.026),
-            detail="Crossed on purpose")
-    C.label("PHOENIX 2 CAMERA", (cam[0], cam[1] + 0.026, Z + 0.010))
-    C.label("UNIFY HV VTX", (vtx[0], vtx[1] - 0.018, Z + 0.006),
-            detail="2-6S, never without antenna")
-    C.label("SMA ANTENNA", (vtx[0] - 0.038, vtx[1] - 0.012, vtx[2] + 0.056))
-    C.label("M5 MONITOR", (0.140, -0.075, 0.062), detail="Analog 5.8 GHz")
-
-    print("STEP 4 - receiver + analog FPV wiring")
+    print("STEP 4 - receiver and video")
     C.summary()
-    C.export("step-04-receiver-fpv", preview=True,
-             camera_at=(0.26, -0.34, 0.26), target=(0.02, -0.02, 0.045))
+    C.export("step-04-receiver-fpv", preview=False, animate=True)
 
 
 build()

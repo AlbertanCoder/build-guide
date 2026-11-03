@@ -1,0 +1,472 @@
+{
+ "checks": [
+  {
+   "item": "Landing-leg standoffs + set screws",
+   "parcel": "Rotor Village (legs) + set-screw assortment",
+   "test": "Screw two leg standoffs together with one M3 x 10 set screw, then screw that onto a frame standoff.",
+   "pass": "Both ends take the set screw and the joint feels tight with no wobble.",
+   "fail": "If an end is not threaded inside, use M3 x 25 + M3 x 28 male-female standoffs instead, or one long M3 screw through both.",
+   "needs_buy": [
+    "legs-25",
+    "legs-28",
+    "legs-setscrews",
+    "frame"
+   ],
+   "shop": "Rotor Village",
+   "shops": [
+    "Amazon",
+    "Rotor Village"
+   ]
+  },
+  {
+   "item": "Stack",
+   "parcel": "Rotor Village (GEPRC stack)",
+   "test": "Fit the ESC and FC on the four stack screws and check each nut is fully on; feel under the bottom plate where the pad goes. Find the + and - marks beside the ESC's battery pads, any arrow or FRONT mark on the FC, whether the camera cable plugs straight in or the camera goes on pads, and (battery in, props off) that the GND/5V/LED pad group reads about 5 V.",
+   "pass": "Nuts fully on, nothing sticks out more than about 1 mm under the plate, the marks are found, the camera connection is known, and the LED group reads about 5 V.",
+   "fail": "Nut will not go on: use the longer screws. Something sticks out: cut a hole in the pad there. No 5 V on the LED pads: ask before soldering the pigtail there.",
+   "needs_buy": [
+    "stack",
+    "frame"
+   ],
+   "shop": "Rotor Village",
+   "shops": [
+    "Rotor Village"
+   ]
+  },
+  {
+   "item": "Top plate sits flat",
+   "parcel": "Frame",
+   "test": "Fit the top plate on all eight standoffs and press each corner.",
+   "pass": "It sits flat and does not rock.",
+   "fail": "Swap standoffs between corners until it sits flat; if one is clearly short, ask Rotor Village or TBS for a spare.",
+   "needs_buy": [
+    "frame"
+   ],
+   "shop": "Rotor Village",
+   "shops": [
+    "Rotor Village"
+   ]
+  },
+  {
+   "item": "Drone stands level on its legs",
+   "parcel": "Rotor Village (legs) + feet",
+   "test": "After fitting the legs, stand the drone on a flat table and look from the side.",
+   "pass": "All four feet touch and it does not rock.",
+   "fail": "Swap leg pieces between corners until it stands steady.",
+   "needs_buy": [
+    "legs-feet",
+    "legs-25",
+    "legs-28",
+    "legs-footscrews"
+   ],
+   "shop": "other",
+   "shops": [
+    "Rotor Village",
+    "other"
+   ]
+  },
+  {
+   "item": "Battery and GPS do not touch",
+   "parcel": "Battery + GPS (after balancing)",
+   "test": "Measure the pack: the design assumes 79 mm; a pack over 81 mm closes the 2 mm gap. After balancing (S7.7), look at the gap between the front of the battery and the GPS board.",
+   "pass": "The pack is 81 mm long or less, and the battery and the GPS do not touch.",
+   "fail": "Move the GPS forward, up to the front edge of the top plate.",
+   "needs_buy": [
+    "batteries",
+    "gps"
+   ],
+   "shop": "Rotor Village",
+   "shops": [
+    "PiShop",
+    "Rotor Village"
+   ]
+  },
+  {
+   "item": "Motor screw length",
+   "parcel": "Frame + motors",
+   "test": "Before fitting, hold a motor screw against the arm and the motor: arm (6 mm) plus thread inside the motor base.",
+   "pass": "The screw goes in fully and the motor still spins freely by hand.",
+   "fail": "If it rubs or stops, use a 1-2 mm shorter screw (motor box or frame hardware).",
+   "needs_buy": [
+    "motors",
+    "frame"
+   ],
+   "shop": "Rotor Village",
+   "shops": [
+    "Rotor Village"
+   ]
+  },
+  {
+   "item": "Packs and charger",
+   "parcel": "Rotor Village (packs, charger)",
+   "test": "Read each pack's label for HV or LiHV. Plug a pack's XT60 and balance plug into the charger (charger off) to see they fit. Then see whether LipoStorage brings a FULL pack down to 3.85 V.",
+   "pass": "Labels say HV or LiHV, both plugs fit, and you know whether storage mode can lower a full pack.",
+   "fail": "No HV on the label: charge as LiPo (4.20 V). Main socket is XT30: buy an XT60-to-XT30 charge lead. Storage cannot lower a pack: fly it down or leave it a few days before storing.",
+   "needs_buy": [
+    "batteries",
+    "charger"
+   ],
+   "shop": "Rotor Village",
+   "shops": [
+    "Rotor Village"
+   ]
+  },
+  {
+   "item": "Iron adapter",
+   "parcel": "Amazon.ca (24 V adapter)",
+   "test": "Read the adapter's label: it should say 24 V and 5 A. Meter on DC volts: red probe in the plug's centre, black on the outside sleeve, adapter in the wall.",
+   "pass": "About +24 V (positive), within what the label allows.",
+   "fail": "A minus reading: do not use it with the iron; message the shop with a photo. A reading far from the label: do not use it.",
+   "needs_buy": [
+    "iron-psu",
+    "tools"
+   ],
+   "shop": "Amazon",
+   "shops": [
+    "Amazon",
+    "Rotor Village"
+   ]
+  },
+  {
+   "item": "Pi standoffs fit the Pi",
+   "parcel": "PiShop",
+   "test": "Screw one M2.5 nylon standoff into a Pi corner hole by hand.",
+   "pass": "It goes through and sits flat.",
+   "fail": "If the hole is too small, use the M2.5 screws from the nylon set, not a bigger size.",
+   "needs_buy": [
+    "standoffs",
+    "pi"
+   ],
+   "shop": "PiShop",
+   "shops": [
+    "PiShop"
+   ]
+  },
+  {
+   "item": "Foam tape and boards",
+   "parcel": "Canadian Tire (foam tape) + PiShop (thermal camera, GPS)",
+   "test": "Measure the foam tape's thickness and stick two layers on scrap; press the thermal camera's back and the GPS board's back onto a tape square; wrap a string round the Pi on its standoffs and measure the loop; check the foot screw length against a foot.",
+   "pass": "Two layers stay put, both boards sit flat on the tape, the loop is shorter than two joined 100 mm zip ties (about 168 mm usable), and the foot screw holds the foot.",
+   "fail": "Boards do not sit flat: add a second layer of tape so parts sit in the foam. Loop too long: join a third tie or buy longer ties. Foot screw wrong: buy the right length (Stage 4 list).",
+   "needs_buy": [
+    "foam-tape",
+    "thermal",
+    "gps"
+   ],
+   "shop": "Canadian Tire",
+   "shops": [
+    "Canadian Tire",
+    "PiShop"
+   ]
+  },
+  {
+   "item": "Camera tilt adjust",
+   "parcel": "Frame (TPU camera mount) + camera",
+   "test": "Fit the camera and look for side screws that let it tilt.",
+   "pass": "It tilts to about 10 degrees up and locks.",
+   "fail": "If it is fixed, check the frame's other camera plates or ask on the TBS page; do not print a part.",
+   "needs_buy": [
+    "fpv-camera",
+    "frame"
+   ],
+   "shop": "Rotor Village",
+   "shops": [
+    "Rotor Village"
+   ]
+  },
+  {
+   "item": "Receiver, video transmitter and smoke stopper",
+   "parcel": "Rotor Village (receiver, VTX, smoke stopper)",
+   "test": "Step 4: plug only USB into the FC and look at the receiver's light; note the Wi-Fi name it shows in Wi-Fi mode. Step 3 (S3.5), the first battery power-up through the smoke stopper: find the smoke stopper's light. Step 8 (S8.2): watch the VTX's light at start-up.",
+   "pass": "The receiver light is on with USB alone; the smoke stopper shows solid green; the VTX's start-up flashes end with the power group, 3 red then 1 blue (25 mW, its lowest power), then a steady blue light (locked to the legal channels).",
+   "fail": "No receiver light on USB: do the channel check on a battery through the smoke stopper (props off). Smoke stopper light off and beeping: unplug at once. Other VTX flashes: check the manual's table before flying.",
+   "needs_buy": [
+    "receiver",
+    "stack",
+    "vtx",
+    "smoke-stopper"
+   ],
+   "shop": "Rotor Village",
+   "shops": [
+    "Rotor Village"
+   ]
+  },
+  {
+   "item": "5 V rail carries the Pi, camera and receiver",
+   "parcel": "Everything on the drone",
+   "test": "With props off and the payload fitted, power on and run 'vcgencmd get_throttled' on the Pi.",
+   "pass": "It prints throttled=0x0.",
+   "fail": "Any other value: power the Pi from a separate 5 V regulator.",
+   "needs_buy": [
+    "pi",
+    "stack",
+    "fpv-camera",
+    "receiver"
+   ],
+   "shop": "PiShop",
+   "shops": [
+    "PiShop",
+    "Rotor Village"
+   ]
+  },
+  {
+   "item": "Practice boards",
+   "parcel": "Amazon.ca (Eiechip practice boards)",
+   "test": "When the boards arrive, check that the pads take solder on the side you use: tin one pad on each side of a board (the listing says double-sided; pad size and hole spacing are not stated).",
+   "pass": "Solder flows onto the pads on the side you use and they stay on the board.",
+   "fail": "A side will not take solder: use the other side, or another board from the set. Pads lift off: use a lower iron temperature and less time.",
+   "needs_buy": [
+    "practice-board"
+   ],
+   "shop": "Amazon",
+   "shops": [
+    "Amazon"
+   ]
+  },
+  {
+   "item": "Pi joins the iPhone hotspot",
+   "parcel": "PiShop (Raspberry Pi kit) + your iPhone + laptop",
+   "test": "After you write the card (S6.0), turn on the iPhone's Personal Hotspot with Maximize Compatibility on (2.4 GHz). Power the Pi from the kit's supply in PWR IN, join the laptop to the same hotspot, and type ssh username@raspberrypi.local.",
+   "pass": "The Pi joins the hotspot and the laptop logs in over ssh.",
+   "fail": "Check Maximize Compatibility is on (the Pi Zero 2 W has 2.4 GHz Wi-Fi only), and that the hotspot name and password in Imager are exact; write the card again.",
+   "needs_buy": [
+    "pi"
+   ],
+   "shop": "PiShop",
+   "shops": [
+    "PiShop"
+   ]
+  },
+  {
+   "item": "Radio on USB power alone",
+   "parcel": "Rotor Village (radio)",
+   "test": "Does the radio work on USB power alone? With its 18650 cells out, plug its USB-C cord into a USB charger and switch the radio on.",
+   "pass": "You know whether it switches on and its screen works on USB alone (useful for setup at the desk).",
+   "fail": "It does not switch on without cells: put the charged cells back in. Either way, fly on its cells.",
+   "needs_buy": [
+    "radio"
+   ],
+   "shop": "Rotor Village",
+   "shops": [
+    "Rotor Village"
+   ]
+  },
+  {
+   "item": "Software and props",
+   "parcel": "Rotor Village (props) + your laptop",
+   "test": "In Betaflight's Motors tab, see whether there is a slider for each motor or only the Master slider. Try the kit's prop tool on a prop nut. Read the props' CW/CCW marking.",
+   "pass": "You know how the Motors tab spins one motor, the prop tool fits the nut, and you can tell CW from CCW props.",
+   "fail": "Only a Master slider: spin one motor at a time with the others' sliders at zero as the tab allows, or ask. No letters on a prop: hold it flat, the leading edge is the higher edge; match it to the motor's spin.",
+   "needs_buy": [
+    "props",
+    "tools"
+   ],
+   "shop": "Rotor Village",
+   "shops": [
+    "Rotor Village"
+   ]
+  },
+  {
+   "item": "Quad battery lead reaches the pack",
+   "parcel": "Stack (XT60 lead) + pack",
+   "test": "With the pack strapped on, plug the pack's XT60 into the quad's lead.",
+   "pass": "They meet without stretching and stay clear of the props.",
+   "fail": "Solder a longer XT60 lead (same wire size) or move the pack within its balance range.",
+   "needs_buy": [
+    "stack",
+    "batteries"
+   ],
+   "shop": "Rotor Village",
+   "shops": [
+    "Rotor Village"
+   ]
+  },
+  {
+   "item": "Camera cable length",
+   "parcel": "Stack (camera cable) + camera",
+   "test": "Hold the camera in its mount and run its cable to the FC's CAM socket.",
+   "pass": "It reaches with a little slack.",
+   "fail": "Use the camera's own 6-pin cable or splice in silicone wire.",
+   "needs_buy": [
+    "fpv-camera",
+    "stack"
+   ],
+   "shop": "Rotor Village",
+   "shops": [
+    "Rotor Village"
+   ]
+  },
+  {
+   "item": "Multimeter basics",
+   "parcel": "Rotor Village (tool kit) + two 1.5 V batteries you have at home",
+   "test": "Find the meter's battery cover (and whether it needs the kit's small screwdriver); put in two 1.5 V batteries. Find the dial position for DC volts that covers about 24 V, the two sockets the leads use for volts, and the beep (continuity) symbol. Touch the probes together on beep.",
+   "pass": "You know the battery cover, the DC volts position, the two sockets, and it beeps when the probes touch.",
+   "fail": "No beep symbol: use the lowest resistance (ohms) setting instead; touching probes should read close to 0.",
+   "needs_buy": [
+    "tools"
+   ],
+   "shop": "Rotor Village",
+   "shops": [
+    "Rotor Village"
+   ]
+  },
+  {
+   "item": "Heat source for the heat shrink",
+   "parcel": "Rotor Village (tool kit + 3 mm heat shrink)",
+   "test": "Slide a spare 1 cm piece of the 3 mm heat shrink onto a scrap of wire, heat the iron, and stroke the tube with the side of the iron (not the tip).",
+   "pass": "The tube shrinks tight round the wire and is not melted through.",
+   "fail": "Use a lighter held well back (about 3 cm), moving it all the time. No lighter at home: it is not on the list yet, ask before buying.",
+   "needs_buy": [
+    "tools",
+    "heat-shrink-3mm"
+   ],
+   "shop": "Rotor Village",
+   "shops": [
+    "Rotor Village"
+   ]
+  },
+  {
+   "item": "Iron and its cables",
+   "parcel": "Rotor Village (tool kit)",
+   "test": "Look at both ends of the kit's XT60 to DC cable, and find the iron's polarity drawing (a dot and ring with + and -). The first time the iron is on, time how long it takes to melt solder, find how to set the temperature, and write the time down.",
+   "pass": "You know which end goes into the battery and which into the iron, the iron's drawing matches the adapter, and you have its heat-up time.",
+   "fail": "No polarity drawing: power the iron only from a charged pack on the kit's own XT60 to DC cable, and message the shop.",
+   "needs_buy": [
+    "tools"
+   ],
+   "shop": "Rotor Village",
+   "shops": [
+    "Rotor Village"
+   ]
+  },
+  {
+   "item": "Micro-USB cable for the pigtail",
+   "parcel": "PiShop (micro-USB cable)",
+   "test": "Before cutting, look inside the small micro-USB plug for the row of five pins, and note the wire colours once the jacket is stripped (Stage 1 pigtail).",
+   "pass": "You can see pin 1 at one end and pin 5 at the other, and the two thicker wires are found.",
+   "fail": "If the colours do not match red/black, go by the thicker wires and the meter check (Stage 1).",
+   "needs_buy": [
+    "micro-usb"
+   ],
+   "shop": "PiShop",
+   "shops": [
+    "PiShop"
+   ]
+  },
+  {
+   "item": "Stack box 4-wire cable",
+   "parcel": "Rotor Village (GEPRC stack box)",
+   "test": "Note the four wire colours on the small 4-wire cable, and push its plug into the FC's 4-pin socket marked G, 5V, R2, T2 (no power).",
+   "pass": "It plugs in fully one way only, and you know which colour comes from which socket pin.",
+   "fail": "If it does not fit that socket, use the other 4-wire cable from the box, or solder to the R2/T2 pads instead.",
+   "needs_buy": [
+    "stack"
+   ],
+   "shop": "Rotor Village",
+   "shops": [
+    "Rotor Village"
+   ]
+  },
+  {
+   "item": "Frame",
+   "parcel": "Rotor Village (TBS Source One V6)",
+   "test": "Look for a hole that fits the antenna's SMA nut, and for any sheet in the frame box naming the top-plate screw size and threadlock.",
+   "pass": "You know where the antenna mounts and which screws hold the top plate.",
+   "fail": "No SMA hole: hold the antenna's base with the two zip ties to the rear standoffs (Step 4). No sheet: use the short M3 screws, no threadlock.",
+   "needs_buy": [
+    "frame"
+   ],
+   "shop": "Rotor Village",
+   "shops": [
+    "Rotor Village"
+   ]
+  },
+  {
+   "item": "GPS cable route",
+   "parcel": "Frame + PiShop (Pi, HAT) + GPS + Qwiic cable",
+   "test": "Before you cut anything, hold the Pi and the GPS in place and lay a piece of string along the cable's path in the 3D view: from the HAT's second Qwiic port, up through the bottom plate's window, over the flight controller, round the front of the top plate to the GPS pins. Measure the string.",
+   "pass": "The string is no longer than 250 mm (the 150 mm cable plus the 12 cm extension, less the joints).",
+   "fail": "Cut longer extension pieces (the string length minus 140 mm, plus 10 mm), from the same silicone wire.",
+   "needs_buy": [
+    "qwiic",
+    "gps",
+    "pi",
+    "frame"
+   ],
+   "shop": "other",
+   "shops": [
+    "PiShop",
+    "Rotor Village",
+    "other"
+   ]
+  },
+  {
+   "item": "Motor screws line up with the arm slots",
+   "parcel": "Frame + motors",
+   "test": "Sit one motor on an arm and look through the arm's four slots from below.",
+   "pass": "All four motor screw holes show through a slot.",
+   "fail": "If one hole sits just past a slot's end, try the motor turned a quarter turn; if it still misses, ask TBS or Rotor Village before forcing a screw.",
+   "needs_buy": [
+    "motors",
+    "frame"
+   ],
+   "shop": "Rotor Village",
+   "shops": [
+    "Rotor Village"
+   ]
+  },
+  {
+   "item": "Iron reaches the flight controller pad with the top plate on",
+   "parcel": "Frame + stack (after step 4)",
+   "test": "With the top plate fitted, slide the cold iron tip in from the side to the FC's 5V and GND pads.",
+   "pass": "The tip touches the pads without touching the top plate or other parts.",
+   "fail": "Take the top plate off (4 screws) to solder the pigtail, then put it back.",
+   "needs_buy": [
+    "stack",
+    "frame",
+    "tools"
+   ],
+   "shop": "Rotor Village",
+   "shops": [
+    "Rotor Village"
+   ]
+  },
+  {
+   "item": "USB-C plug with the top plate on",
+   "parcel": "Stack + USB-C cable",
+   "test": "With the top plate fitted, plug the USB-C cable into the FC.",
+   "pass": "It goes fully in without pushing on the top plate.",
+   "fail": "Use a thinner or right-angle USB-C plug, or loosen the top plate for the Motors tab.",
+   "needs_buy": [
+    "usbc-cable",
+    "stack",
+    "frame"
+   ],
+   "shop": "PiShop",
+   "shops": [
+    "PiShop",
+    "Rotor Village"
+   ]
+  },
+  {
+   "item": "Payload fit under the plate",
+   "parcel": "Frame + Pi + thermal camera + foam tape",
+   "test": "Hold the Pi on its standoffs and the thermal camera on the foam under the bottom plate at the marked spots.",
+   "pass": "Both sit flat on carbon, the zip-tie windows are next to the Pi, and nothing touches the stack screws.",
+   "fail": "Slide the pod a few mm forward or back (simulation allows this) and recheck the lens view.",
+   "needs_buy": [
+    "pi",
+    "thermal",
+    "foam-tape",
+    "frame"
+   ],
+   "shop": "PiShop",
+   "shops": [
+    "Canadian Tire",
+    "PiShop",
+    "Rotor Village"
+   ]
+  }
+ ],
+ "shop_note": "shop = where the part being tested comes from (from buy_list.json); shops = every parcel the test needs; 'other' = SparkFun (US), GetFPV (US)"
+}

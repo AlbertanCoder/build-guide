@@ -1,0 +1,701 @@
+{
+ "units": "mm",
+ "axes": "+X forward, +Y left, Z up; origin stack centre, underside of bottom plate",
+ "parts": {
+  "FRAME": {
+   "values_mm": {
+    "wheelbase": 240.0,
+    "arm_t": 6.0,
+    "plate_t": 2.0,
+    "standoff_long": 30.0,
+    "standoff_short": 22.0,
+    "standoff_od": 5.0,
+    "stack_hole": 30.5
+   },
+   "accuracy": "CAD",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "R3",
+     "url": "https://rotorvillage.ca/tbs-source-one-v6-5/",
+     "quote": "Wheelbase 5\": 240 ... Arm thickness 5\": 6mm ... Standoff height: 30 and 22mm"
+    },
+    {
+     "id": "TBS So1-V6-2025-AUG-19.dxf",
+     "url": "https://github.com/tbs-trappy/source_one",
+     "quote": "maker drawing, plate and arm outlines; labels '2mm', '6mm'"
+    }
+   ]
+  },
+  "MOTOR": {
+   "values_mm": {
+    "dia": 28.6,
+    "height": 32.8,
+    "shaft_dia": 5.0,
+    "mount": 16.0,
+    "lead_len": 120.0,
+    "lead_awg": 20
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "R4",
+     "url": "https://www.rotorama.com/product/emax-eco-iii-2207-1900kv",
+     "quote": "Mounting holes: 16mm M3 ... Outer shaft diameter: 5mm"
+    },
+    {
+     "id": "R5",
+     "url": "https://www.racedayquads.com/products/emax-e3-series-2207-motor-1700kv-1900kv-2400kv",
+     "quote": "Motor Dimensions: 28.6 x 32.8 mm ... Lead: 20# AWG 120mm"
+    }
+   ],
+   "note": "Listings disagree on the screw pattern (16 mm vs 19x19 mm). The V6 arm's radial slots (TBS drawing) let screw centres sit 8.0-9.5 mm from the shaft, so either pattern fits."
+  },
+  "MOTOR_SPLIT": {
+   "values_mm": {
+    "base_h": 4.0,
+    "bell_h": 20.0,
+    "shaft_above": 8.8
+   },
+   "accuracy": "ESTIMATED",
+   "why_estimated": "bell/stator/shaft split not published",
+   "sources": [
+    {
+     "id": "none",
+     "url": "",
+     "quote": "no source: drawn"
+    }
+   ]
+  },
+  "PROP": {
+   "values_mm": {
+    "dia": 129.54,
+    "pitch_in": 4.99,
+    "hub_bore": 5.0,
+    "hub_t": 7.0,
+    "blades": 3
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "R6",
+     "url": "https://rotorvillage.ca/gemfan-51499-hurricane-tri-blade-prop-2cw-2ccw/",
+     "quote": "Length: 5.1 inch ... Hub size: 5mm (inner) ... Hub thickness: 7mm"
+    }
+   ]
+  },
+  "ESC": {
+   "values_mm": {
+    "w": 42.9,
+    "d": 39.7,
+    "holes": 30.5
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "R2",
+     "url": "https://rotorvillage.ca/geprc-taker-f405-bls-50a-combo-stack/",
+     "quote": "Size: 42.9×39.7mm, hole30.5×30.5mm ... Size: 36.8×36.8mm"
+    }
+   ]
+  },
+  "FC": {
+   "values_mm": {
+    "w": 36.8,
+    "d": 36.8,
+    "holes": 30.5
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "R2",
+     "url": "https://rotorvillage.ca/geprc-taker-f405-bls-50a-combo-stack/",
+     "quote": "Size: 42.9×39.7mm, hole30.5×30.5mm ... Size: 36.8×36.8mm"
+    }
+   ]
+  },
+  "PCB_T": {
+   "values_mm": {
+    "t": 1.6
+   },
+   "accuracy": "ESTIMATED",
+   "why_estimated": "board thickness not published",
+   "sources": [
+    {
+     "id": "none",
+     "url": "",
+     "quote": "no source: drawn"
+    }
+   ]
+  },
+  "STACK_GAP": {
+   "values_mm": {
+    "esc_above_plate": 3.0,
+    "fc_above_esc": 7.0
+   },
+   "accuracy": "ESTIMATED",
+   "why_estimated": "grommet/nut heights not published",
+   "sources": [
+    {
+     "id": "none",
+     "url": "",
+     "quote": "no source: drawn"
+    }
+   ]
+  },
+  "CAPACITOR": {
+   "values_mm": {
+    "dia": 10.0,
+    "h": 20.0
+   },
+   "accuracy": "ESTIMATED",
+   "why_estimated": "35V 1000uF given; can size not published",
+   "sources": [
+    {
+     "id": "R3",
+     "url": "https://rotorvillage.ca/tbs-source-one-v6-5/",
+     "quote": "Wheelbase 5\": 240 ... Arm thickness 5\": 6mm ... Standoff height: 30 and 22mm"
+    },
+    {
+     "id": "R34",
+     "url": "https://oscarliang.com/geprc-taker-f405/",
+     "quote": "1x 35V 1000uF capacitor"
+    }
+   ]
+  },
+  "RX": {
+   "values_mm": {
+    "w": 13.0,
+    "d": 11.0,
+    "h": 3.0,
+    "antenna_len": 65.0
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "R7",
+     "url": "https://rotorvillage.ca/radiomaster-rp1-v2-tcxo-expresslrs-2-4ghz-receiver/",
+     "quote": "Dimension: 13mm*11mm*3mm ... 65mm 2.4ghz T Antenna"
+    }
+   ]
+  },
+  "CAMERA": {
+   "values_mm": {
+    "w": 19.0,
+    "h": 19.0,
+    "depth": 22.0
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "R2",
+     "url": "https://rotorvillage.ca/geprc-taker-f405-bls-50a-combo-stack/",
+     "quote": "Size: 42.9×39.7mm, hole30.5×30.5mm ... Size: 36.8×36.8mm"
+    },
+    {
+     "id": "rv-phoenix",
+     "url": "https://rotorvillage.ca/runcam-phoenix-2-special-edition/",
+     "quote": "Dimensions: 19mm*19mm*22mm ... FOV D:160° H:124° V:95°"
+    }
+   ]
+  },
+  "VTX": {
+   "values_mm": {
+    "w": 31.0,
+    "d": 22.0,
+    "h": 6.0
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "R8",
+     "url": "https://rotorvillage.ca/tbs-unify-pro-5g8-hv-vtx/",
+     "quote": "31x22x6mm form factor"
+    }
+   ]
+  },
+  "ANTENNA": {
+   "values_mm": {
+    "height": 78.0
+   },
+   "accuracy": "ESTIMATED",
+   "why_estimated": "only height and weight published; shape drawn simple",
+   "sources": [
+    {
+     "id": "R10",
+     "url": "https://rotorvillage.ca/tbs-triumph-pro-sma-rhcp/",
+     "quote": "Height: 78mm"
+    }
+   ]
+  },
+  "PI": {
+   "values_mm": {
+    "w": 65.0,
+    "d": 30.0,
+    "hole_inset": 3.5,
+    "hole_dx": 58.0,
+    "hole_dy": 23.0
+   },
+   "accuracy": "CAD",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "pizero2-brief",
+     "url": "https://datasheets.raspberrypi.com/rpizero2/raspberry-pi-zero-2-w-product-brief.pdf",
+     "quote": "Form factor: 65mm×30mm; holes 3.5 from the edges"
+    }
+   ]
+  },
+  "HAT": {
+   "values_mm": {
+    "w": 52.32,
+    "d": 22.99
+   },
+   "accuracy": "ESTIMATED",
+   "why_estimated": "design file may be an earlier revision than DEV-14459",
+   "sources": [
+    {
+     "id": "SparkFun Qwiic_Hat_for_Raspberry_Pi .brd",
+     "url": "https://github.com/sparkfun/Qwiic_Hat_for_Raspberry_Pi",
+     "quote": "board outline 52.32 x 22.99 mm (Eagle layer 20)"
+    }
+   ]
+  },
+  "MLX": {
+   "values_mm": {
+    "w": 19.0,
+    "d": 22.0,
+    "t": 2.75,
+    "hole_dx": 13.6,
+    "hole_from_top": 2.7
+   },
+   "accuracy": "CAD",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "R19",
+     "url": "https://shop.pimoroni.com/products/mlx90640-thermal-camera-breakout",
+     "quote": "Dimensions: 19x19x2.75mm; Field of view: 55°x35°; drawing: holes 13.60 apart"
+    }
+   ]
+  },
+  "GPS": {
+   "values_mm": {
+    "w": 28.0,
+    "d": 21.0,
+    "h": 9.0
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "R2",
+     "url": "https://rotorvillage.ca/geprc-taker-f405-bls-50a-combo-stack/",
+     "quote": "Size: 42.9×39.7mm, hole30.5×30.5mm ... Size: 36.8×36.8mm"
+    },
+    {
+     "id": "R20",
+     "url": "https://shop.pimoroni.com/products/pa1010d-gps-breakout",
+     "quote": "Dimensions: approx 28x21x9mm"
+    }
+   ]
+  },
+  "STANDOFF_PI": {
+   "values_mm": {
+    "len": 12.0,
+    "thread": "M2.5"
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "R2",
+     "url": "https://rotorvillage.ca/geprc-taker-f405-bls-50a-combo-stack/",
+     "quote": "Size: 42.9×39.7mm, hole30.5×30.5mm ... Size: 36.8×36.8mm"
+    },
+    {
+     "id": "R25",
+     "url": "https://www.pishop.ca/product/nylon-11mm-m2-5-standoff-set-pack-of-4/",
+     "quote": "Nylon Standoffs - M2.5x12mm"
+    }
+   ]
+  },
+  "QWIIC_CABLE": {
+   "values_mm": {
+    "len": 150.0
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "R2",
+     "url": "https://rotorvillage.ca/geprc-taker-f405-bls-50a-combo-stack/",
+     "quote": "Size: 42.9×39.7mm, hole30.5×30.5mm ... Size: 36.8×36.8mm"
+    },
+    {
+     "id": "R22",
+     "url": "https://www.sparkfun.com/flexible-qwiic-cable-female-jumper-4-pin.html",
+     "quote": "length is 150mm"
+    }
+   ]
+  },
+  "GPS_EXT": {
+   "values_mm": {
+    "cut": 120.0,
+    "joint_loss": 5.0,
+    "joints_per_wire": 2,
+    "stagger": 20.0,
+    "from_plug": 50.0
+   },
+   "accuracy": "ESTIMATED",
+   "why_estimated": "extension piece and joint overlap: my proposal",
+   "sources": [
+    {
+     "id": "Shad decision 2026-11-03 + change request 43",
+     "url": "",
+     "quote": ""
+    }
+   ]
+  },
+  "PACK": {
+   "values_mm": {
+    "l": 79.0,
+    "w": 38.0,
+    "h": 26.0,
+    "xt60_lead": 85.0,
+    "balance_lead": 40.0
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "R12",
+     "url": "https://rotorvillage.ca/gnb-1500mah-4s-120c-hv-lipo-xt60/",
+     "quote": "Dimensions: 79mm x 38mm x 26mm (LxWxH)"
+    }
+   ]
+  },
+  "STRAP": {
+   "values_mm": {
+    "len": 245.0,
+    "w": 20.0
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "R18",
+     "url": "https://rotorvillage.ca/rvs-kevlar-battery-strap-2pk/",
+     "quote": "Length: 245mm ... Width: 20mm"
+    }
+   ]
+  },
+  "CELL_18650": {
+   "values_mm": {
+    "dia": 18.33,
+    "len": 64.85
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "rv sam30q",
+     "url": "https://rotorvillage.ca/samsung-30q-18650-3000mah-15a-li-ion-2pc/",
+     "quote": "Approximate Dimensions: 18.33mm x 64.85mm"
+    }
+   ]
+  },
+  "CHARGER": {
+   "values_mm": {
+    "l": 75.0,
+    "w": 54.0,
+    "h": 30.0
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "R11",
+     "url": "https://www.toolkitrc.com/m4ac/",
+     "quote": "Product size 75*54*30mm"
+    }
+   ]
+  },
+  "SMOKE_STOPPER": {
+   "values_mm": {
+    "l": 42.0,
+    "w": 32.0,
+    "h": 11.0
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "R14",
+     "url": "https://rotorvillage.ca/iflight-smart-smoke-stopper-xt30-xt60/",
+     "quote": "Size(L x W x H): 42 x 32 x 11 mm"
+    }
+   ]
+  },
+  "LIPO_BAG": {
+   "values_mm": {
+    "w": 220.0,
+    "d": 110.0,
+    "h": 170.0
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "R16",
+     "url": "https://rotorvillage.ca/rvs-lipo-storage-bag/",
+     "quote": "Height: 170mm Width: 220mm Depth: 110mm"
+    }
+   ]
+  },
+  "RADIO": {
+   "values_mm": {
+    "w": 156.6,
+    "d": 65.1,
+    "h": 125.3
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "R13",
+     "url": "https://rotorvillage.ca/radiomaster-pocket-transmitter-elrs-charcoal-edition/",
+     "quote": "156.6*65.1*125.3mm (Folded size)"
+    }
+   ]
+  },
+  "MONITOR": {
+   "values_mm": {
+    "w": 135.0,
+    "d": 88.0,
+    "h": 16.0
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "R17",
+     "url": "https://rotorvillage.ca/skyzone-m5-diversity-fpv-monitor/",
+     "quote": "Dimension: 135x88x16mm"
+    }
+   ]
+  },
+  "IRON": {
+   "values_mm": {
+    "handle_l": 110.0,
+    "handle_w": 16.0,
+    "tip_l": 115.0,
+    "tip_d": 5.5
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "R15",
+     "url": "https://rotorvillage.ca/flywoo-fpv-quad-tool-kit-w-multimeter-and-soldering-iron/",
+     "quote": "Size of Control Handle: 110x16x15mm"
+    }
+   ]
+  },
+  "MULTIMETER": {
+   "values_mm": {
+    "l": 120.0,
+    "w": 80.0,
+    "h": 20.0
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "R15",
+     "url": "https://rotorvillage.ca/flywoo-fpv-quad-tool-kit-w-multimeter-and-soldering-iron/",
+     "quote": "Size of Control Handle: 110x16x15mm"
+    }
+   ]
+  },
+  "LAPTOP": {
+   "values_mm": {
+    "w": 320.0,
+    "d": 220.0,
+    "h": 14.0
+   },
+   "accuracy": "ESTIMATED",
+   "why_estimated": "Shad's own laptop; size unknown",
+   "sources": [
+    {
+     "id": "none",
+     "url": "",
+     "quote": "no source: drawn"
+    }
+   ]
+  },
+  "PILOT_CAM": {
+   "values_mm": {
+    "hfov": 124.0,
+    "vfov": 95.0
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "rv-phoenix",
+     "url": "https://rotorvillage.ca/runcam-phoenix-2-special-edition/",
+     "quote": "Dimensions: 19mm*19mm*22mm ... FOV D:160° H:124° V:95°"
+    }
+   ]
+  },
+  "CAM_TILT": {
+   "values_mm": {
+    "default": 10.0,
+    "min": 0.0,
+    "max": 40.0,
+    "step": 5.0
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "oscarliang camera-angle",
+     "url": "https://oscarliang.com/camera-angle/",
+     "quote": "If you're new to FPV, a 10°–15° camera angle is an excellent starting point."
+    }
+   ]
+  },
+  "THERMAL_CAM": {
+   "values_mm": {
+    "hfov": 55.0,
+    "vfov": 35.0
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "R19",
+     "url": "https://shop.pimoroni.com/products/mlx90640-thermal-camera-breakout",
+     "quote": "Dimensions: 19x19x2.75mm; Field of view: 55°x35°; drawing: holes 13.60 apart"
+    }
+   ]
+  },
+  "LAYOUT": {
+   "values_mm": {
+    "pi_x": -36.0,
+    "standoff": 12.0,
+    "mlx_gap": 4.0,
+    "gps_x": 58.0,
+    "battery_x": 2.5,
+    "battery_ok_from": -6.0,
+    "battery_ok_to": 2.5,
+    "legs_min": 40.0
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "sim L515, Shad option 1",
+     "url": "docs/build-truth/SIMULATION.md",
+     "quote": "Recommended layout L515, approved by Shad (DECISIONS.md)"
+    }
+   ]
+  },
+  "PAD": {
+   "values_mm": {
+    "t": 2.0,
+    "margin": 3.0
+   },
+   "accuracy": "ESTIMATED",
+   "why_estimated": "foam/rubber pad: off-the-shelf, size cut to fit",
+   "sources": [
+    {
+     "id": "none",
+     "url": "",
+     "quote": "no source: drawn"
+    }
+   ]
+  },
+  "LEGS": {
+   "values_mm": {
+    "rear_piece": 25.0,
+    "front_piece": 28.0,
+    "pieces": 2,
+    "od": 5.0,
+    "foot_h": 6.3,
+    "foot_d": 9.6
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "rv-so25",
+     "url": "https://rotorvillage.ca/m3-x-25mm-knurled-black-textured-stand-off-10pk/",
+     "quote": "Material: Aluminum; Height: 25mm; 68 in stock; $7.99"
+    },
+    {
+     "id": "rv-so28",
+     "url": "https://rotorvillage.ca/m3-x-28mm-knurled-black-textured-stand-off-10pk/",
+     "quote": "Height: 28mm; 59 in stock; $7.99"
+    },
+    {
+     "id": "gf-feet",
+     "url": "https://www.getfpv.com/lumenier-m3-rubber-landing-feet-8pcs.html",
+     "quote": "Height: 6.3mm; In Stock; $7.99 (US shop)"
+    }
+   ]
+  }
+ },
+ "motor_layout": {
+  "M1": {
+   "pos": "rear right",
+   "sx": -1,
+   "sy": -1,
+   "spin": "CW"
+  },
+  "M2": {
+   "pos": "front right",
+   "sx": 1,
+   "sy": -1,
+   "spin": "CCW"
+  },
+  "M3": {
+   "pos": "rear left",
+   "sx": -1,
+   "sy": 1,
+   "spin": "CCW"
+  },
+  "M4": {
+   "pos": "front left",
+   "sx": 1,
+   "sy": 1,
+   "spin": "CW"
+  }
+ },
+ "motor_xy_mm": {
+  "M1": [
+   -84.85281374238569,
+   -84.85281374238569
+  ],
+  "M2": [
+   84.85281374238569,
+   -84.85281374238569
+  ],
+  "M3": [
+   -84.85281374238569,
+   84.85281374238569
+  ],
+  "M4": [
+   84.85281374238569,
+   84.85281374238569
+  ]
+ }
+}

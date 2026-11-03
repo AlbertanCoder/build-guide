@@ -1,0 +1,287 @@
+# Step truth table: the eight build steps, checked against sources
+
+Written 2026-11-03 by the Opus session (Phase A of `.claude/audit-2026-11-03/OPUS-HANDOFF-3D-ANIMATIONS.md`).
+Step text is read from `index.html` (tab 4, `section.asm-step`) as it stood on 2026-11-03, including the Sonnet session's uncommitted edits.
+
+How to read this:
+- **Id**: S{step}.{action}. `S4.C` is a step's "Before you go on" check, `S4.S` its safety line, `S4.N` its "You will need" list.
+- **Verdict**: CONFIRMED (a source says so, or the action makes no factual claim), NEEDS CHANGE (a source says something different, or a needed action is missing), CANNOT VERIFY (no source I could open says it; marked `[REQUIRES REAL INPUT]` when only Shad holding the real part can settle it).
+- **Sources** are numbered [R1]... and listed at the bottom with the URL and the exact quote. Every source was fetched on 2026-11-03; local copies are in `.claude/audit-2026-11-03/sources/` (not committed).
+- **3D must show** is the contract for Phase B/C. If it says "nothing new", the model shows only what the step text names.
+
+The biggest change since the audits: GEPRC's own manual for this exact stack **is** downloadable (it is a one-page wiring diagram, [R1]). It settles the receiver pads (UART2: R2/T2), the camera and video pads, and the motor pad layout.
+
+---
+
+## Step 1. Lay out all the parts
+
+| Id | Exact text | Claim inside it | Source | Verdict | 3D must show |
+|---|---|---|---|---|---|
+| S1.N | "Order-list document · Every part — 5 groups · Laptop" | The order list covers every part | `Shad-Drone-Order-List.md` lines 34-129; FIX-LIST.md §1 "Missing from every list" | NEEDS CHANGE | Nothing new |
+| S1.1 | "Put the parts in 5 piles: airframe · radio & power · video · thermal payload · tools." | None (sorting) | No claim | CONFIRMED | Five labelled piles on a bench, using only parts on the list |
+| S1.2 | "Tick every pile against the order list." | None | No claim | CONFIRMED | A tick per pile |
+| S1.3 | "Download the manuals for the stack, receiver, VTX and Pi sensors." | Those manuals exist online | Stack [R1]; VTX [R9]; receiver: RadioMaster page lists "1 x User Manual" in the box [R7]; sensors [R19][R20] | CONFIRMED | A laptop with the manuals (no brand names on screen) |
+| S1.S | "keep the propellers in the bag — they go on at the very end, after everything works." | Props are fitted last | Step 8 order (S8.4) and Betaflight "Remove propellers before testing motors" [R26] | CONFIRMED | Props stay in a closed bag |
+| S1.C | "Every item on the order list is on the bench. Nothing missing." | All parts can be present | Four parts are out of stock and on hold (ANSWERS.md #5, FIX-LIST.md §1); the page is now organised by purchase stages (ANSWERS.md #18) | NEEDS CHANGE | Nothing new |
+
+Notes:
+- S1.N/S1.C: the list still lacks thin silicone wire (the receiver needs 4 wires; the RP1 box holds only the receiver, antenna and manual [R7]), M2.5 screws and nuts for the Pi standoffs (the standoff listing is standoffs only [R25]), and a way to charge or replace the monitor's 18650 (see S5.1). The check "every item is on the bench" cannot pass while parts are on hold; it should say "every item for this stage". Parts and stages belong to Shad and the Sonnet session; flagged, not changed.
+
+## Step 2. Build the frame
+
+| Id | Exact text | Claim inside it | Source | Verdict | 3D must show |
+|---|---|---|---|---|---|
+| S2.N | "Source One V6 frame · 4 motors · Screws + standoffs · Hex drivers · Threadlock (only if the manual says so)" | Frame box holds screws and standoffs; motors come with screws | Frame "HARDWARE 20X M3x10 ... 4X OD 5mm M3 30mm standoff, 4X ... 22mm standoff, 1X ... 20mm standoff, 8x M3 press insert nut" [R3]; motor "1x Screw Set" [R4]; kit "4-in-1 Hexagon Socket Screwdriver Set" [R15] | CONFIRMED | Only these parts |
+| S2.1 | "Bolt the arms to the bottom plate." | Arms fix to the bottom plate | V6 listing gives plates and an "Arms Spacer: 6mm" but no assembly order [R3]. The only online manual is for the original Source One (4 mm arms, "Insert exploded picture of quad here") [R40] | CANNOT VERIFY `[REQUIRES REAL INPUT]` | Do not animate the plate order until Shad has the V6 printed instructions or the real frame |
+| S2.2 | "Screw the standoffs on top." | Standoffs go on top | V6 has two standoff heights, 30 mm and 22 mm, plus one 20 mm [R3]; which goes where is not stated | CANNOT VERIFY `[REQUIRES REAL INPUT]` | Same as S2.1 |
+| S2.3 | "Screw the 4 motors onto the arms — the picture shows the M1–M4 order." | Motor numbering M1-M4 | Betaflight diagram: 1 rear right, 2 front right, 3 rear left, 4 front left [R28]; GEPRC ESC pads drawn the same way, battery leads at the rear [R1] | CONFIRMED | Motors 1-4 at rear-right, front-right, rear-left, front-left, camera at the front |
+| S2.4 | "Check every motor screw underneath: none may touch the copper windings." | A visual check | No factual claim; arm is 6 mm thick [R3]; motor hole pattern disagrees between shops (16 mm [R4] vs 19x19 mm [R5]) | CONFIRMED (as a check) | Close-up: screw tip stops short of the windings |
+| S2.T | "Threadlock (only if the manual says so)" | The manual may call for threadlock | No V6 manual found [R40] | CANNOT VERIFY `[REQUIRES REAL INPUT]` | Do not show threadlock until a manual says where |
+| S2.S | "propellers still stay in the bag." | None | No claim | CONFIRMED | Props bagged |
+| S2.C | "Frame rigid · motors spin freely · no screw touches a winding." | Checks | No claim | CONFIRMED | Hand turns a motor bell |
+
+## Step 3. Solder the stack
+
+| Id | Exact text | Claim inside it | Source | Verdict | 3D must show |
+|---|---|---|---|---|---|
+| S3.N | "F405 FC + 50A ESC · XT60 battery lead · Capacitor · Solder + flux + cutters · Multimeter · Smoke stopper" | Stack box has the lead and capacitor | Stack "1 x Capacitor ... 1 x XT60 Power cable ... 1 x Flight Controller Adapter Cable ... 8 x Silicone grommets ... 4 x M3*30 Screws" [R2]; capacitor is "35V 1000uF" [R34]; kit has iron, flux pen, tin wire, cutting pliers, multimeter [R15] | CONFIRMED | Only these parts |
+| S3.0 | (missing) mount the ESC on the frame first | The ESC must sit in the frame before motor wires can be cut to reach it | Stack holes "30.5×30.5mm, φ4mm hole becomes φ3mm after using the silicone shock-absorbing circle" [R2]; frame "Stack Mounting: 30.5 × 30.5mm" [R3] | NEEDS CHANGE | ESC on its grommets in the centre bay, battery pads to the rear |
+| S3.1 | "Cut each motor wire so it just reaches the ESC." | Wires are long enough | Motor leads "20# AWG 120mm" [R5]; 240 mm wheelbase means about 120 mm from motor centre to frame centre [R3] (arithmetic) | CONFIRMED | Wire trimmed to reach the matching motor pads |
+| S3.2 | "Tin the pads. Solder the 3 wires from each motor to the ESC." | 3 pads per motor | ESC drawing shows three pads beside each "MOTOR 1..4" [R1]; pads are "pretty small" [R34] (that is the FC; the ESC motor pads are the large edge pads) | CONFIRMED | Close-up: tin pad, tin wire, join, shiny joint; motor 1 to the M1 pads at rear right |
+| S3.3 | "Solder the XT60 lead and the capacitor — + to +, − to −." | Lead and cap go on the battery pads, matching polarity | "Solder the capacitor to either the ESC power or XT60 solder pads. Negative to negative, positive to positive." "the longer leg is positive (+) ... The marking on the body (white label) also indicates which terminal is negative" [R33]; ESC drawing: red lead on the left battery pad, black on the right [R1] | CONFIRMED, wording could add how to tell the cap's legs apart | Close-up: red to +, black to −, cap stripe to − |
+| S3.4 | "Bolt the flight controller onto the standoffs, above the ESC." | FC mounts on standoffs | The stack mounts on the stack screws and grommets, not the frame standoffs [R2]; the FC and ESC are joined by the "Flight Controller Adapter Cable" (8 wires: TLM, CUR, M4, M3, M2, M1, BAT, GND) [R1][R2]; the text never says to plug it in | NEEDS CHANGE | FC on the same four screws above the ESC; the 8-wire cable plugged at both ends |
+| S3.5 | "First power-up, props off. Plug a charged pack into the smoke stopper, then plug the smoke stopper into the drone. Its light must stay solid green: that means no short. Then unplug." (new action, Fable fix M3, Shad approved; the step's note: "If you have not charged one yet, do Step 5 first.") | The first battery plug-in goes through the smoke stopper; solid green means no short | "can help avoid damage when you power on a mini quad drone for the first time", "Trip current 1.2A", "The LED indicator turns solid green in normal situation" [R14]; the replay charges the packs (Step 5) before Step 3 and records the first plug-in here (SAFE-3) | CONFIRMED | Smoke stopper and a charged pack on the bench; props absent |
+| S3.S | "glasses on, window open. First power-up goes through the smoke stopper — never direct." | Smoke stopper protects first power-up | "A smoke stopper can help avoid damage when you power on a mini quad drone for the first time" [R14] | CONFIRMED | Glasses, open window |
+| S3.C | "Meter confirms polarity · no solder bridges · every wire passes a gentle tug test." | Checks | No claim | CONFIRMED | Meter probes on + and − |
+
+Soldering-iron power (handoff check 2): the iron needs "DC12--24V", plug "5.5*2.5", "Power: 65w" [R15]. The kit also contains "1x XT60 to DC Cable" [R15], so the iron can run from a charged 4S pack once step 5 is possible. The polarity of the 24 V adapter Shad is adding is unconfirmed: `[REQUIRES REAL INPUT]` (multimeter check). Not a step-text change; noted for Shad.
+
+## Step 4. Add control and video
+
+| Id | Exact text | Claim inside it | Source | Verdict | 3D must show |
+|---|---|---|---|---|---|
+| S4.N | "RP1 V2 receiver · Phoenix 2 camera · Unify HV VTX · TBS Triumph PRO 5.8 GHz antenna (SMA) · M5F monitor + its 18650 cell" | Parts and connector | Triumph "Connector: SMA" [R10]; VTX "SMA Female Socket" [R8]; monitor "1S 18650 (NOT Included) or XT60 or USB-C Power input" [R17] | NEEDS CHANGE (add wire; see S1.N) | Only these parts |
+| S4.1 | "Wire the receiver: 5V + GND, then receiver TX → the FC's RX pad and receiver RX → the FC's TX pad on a free UART. Read the real pad name off the GEPRC manual — "R2/T2" is unconfirmed for this board." | Pad names unknown | GEPRC manual: receiver plug labelled "G 5V R2 T2", receiver T to R2 and R to T2, Ports table "UART2 ... Serial RX" on, provider "CRSF" [R1]. ExpressLRS: "The TX or T pad should be connected to an RX pad of the same UART number" [R32] | NEEDS CHANGE (pads are now confirmed: UART2) | Close-up: 4 wires, receiver T to R2, R to T2, 5V, GND |
+| S4.2 | "Clip the receiver's small antenna on before any power." | Antenna must be on before power | Antenna is a "65mm UFL 2.4Ghz T Antenna" [R7]; no source found that says the receiver is harmed without it | CANNOT VERIFY (harmless precaution; keep) | UFL clicks on |
+| S4.3 | "Wire camera → FC CAM and FC VTX → VTX, so Betaflight's OSD ... reaches your screen — this board has an AT7456E OSD chip. If it turns out to have no analog pads, wire camera → VTX direct and rely on radio telemetry instead." | FC has analog camera and video pads | Camera plug "CAM G 5V"; analog VTX wired "VTX" pad to VTX video in [R1]; "OSD: BetaFlight OSD w/ AT7456E chip" [R2]; "Yes it support analog VTX." [R34] | NEEDS CHANGE (drop the "if no analog pads" fallback; add VTX power and control wires, see S4.3b) | Camera plug to CAM socket; VTX video wire to VTX pad |
+| S4.3b | (missing) power the VTX and connect its control wire | VTX needs power; the text never says from where | GEPRC example: VTX "7-28V" to the FC "9V" pad, VTX "RX" to "T1", Ports "UART1 ... VTX,IRC Tamp" [R1]; Unify Pro HV "Input ... 6V to 28V (2S - 6S) VBat" and SmartAudio "Data" wire [R9] | NEEDS CHANGE | VTX power to the 9V pad, ground, control wire to T1 |
+| S4.4 | "Mount the VTX and screw the 5.8 GHz antenna on before any power." | SMA antenna onto SMA socket | [R8][R10] | CONFIRMED | Antenna screwed on before any battery appears |
+| S4.5 | "In Betaflight enable serial RX + CRSF on that UART. Then flash the RP1 V2 to the same major ExpressLRS version as your Pocket (the receiver ships on v2.4), set the 2.4 GHz regulatory domain to ISM 2400 (ExpressLRS has no separate Canada option; do not pick EU CE/LBT) on both the radio and the receiver, and only then bind." | CRSF; major versions must match; v2.4 shipped; domain list | "ELRS / Crossfire / Tracer — CRSF" [R26]; "The first number in the Version string should match between a TX Module and a Receiver." [R31]; "ExpressLRS v2.4 pre-installed" [R7]; domains listed are AU_915, EU_868, IN_866, FCC_915, ISM_2400, EU_CE_2400, no Canada entry [R30] | CONFIRMED | Laptop screen only; no new parts |
+| S4.6 | "Set up Betaflight with the flight controller on USB only: no battery, no propellers. Check the board target against the GEPRC manual. Set the ESC protocol ... (DShot). Set the receiver to serial RX / CRSF and confirm the channels move with the sticks. Set an arm switch. Set failsafe stage 2 to Drop ... Set the battery maximum cell voltage to 4.35 V (the packs are LiHV). Calibrate the accelerometer with the frame level." | Several | Target "GEPRCF405" [R1][R2]; ESC "Dshot 150/300/600" [R2], "usually DShot300 or DShot600" [R26]; Stage 2 "By default, the craft immediately disarms and drops" [R27]; packs "15.2V (LiHV)" [R12]; max cell voltage is "used for auto-detecting battery voltage" [R29]; accelerometer calibrated on the Setup tab [R41] | CONFIRMED for target, DShot, CRSF, arm, failsafe. **NEEDS CHANGE [SAFETY] for 4.35 V** (changed after the safety review): LiHV full charge is 4.35 V/cell [R42], but Betaflight counts cells as `(voltage / vbatmaxcellvoltage) + 1` [R43], so a full pack at 17.40 V with 4.35 is counted as 5 cells and every battery warning is wrong; 4.40 gives 4 cells (17.40/4.40 → 3 + 1). CANNOT VERIFY: "frame level" (not in the Betaflight text), and whether the receiver gets 5 V while the FC is on USB only (ExpressLRS advises "power up the flight controller with a LiPo" [R32]) `[REQUIRES REAL INPUT]` | Laptop with USB cable; no battery anywhere in the scene |
+| S4.7 | "Set the VTX to its lowest power (25 mW) on a factory-enabled channel for bench tests." | 25 mW is the lowest, factory channels | "25mW (up to 800mW with HAM license*)"; unlocking is "(FOR HAM USERS ONLY!)" [R9]; "The VTx ships with only legal channels enabled" [R8]. PitMode goes lower still [R9] | CONFIRMED (Canadian 5.8 GHz rules remain unchecked, FIX-LIST §5) | VTX LED, no menu detail |
+| S4.8 | (new, change request 32, approved) "Fit the top plate on the standoffs." | Top plate sits on the 22 mm and 30 mm standoffs | TBS drawing hole matches: top-plate holes land on middle-plate holes (22 mm) and bottom-plate holes (30 mm), 2 + 30 = 2 + 6 + 2 + 22 = 32 mm (`scripts/build/extract_so1v6.py` PROOF lines) | CONFIRMED | Top plate drops onto the standoffs last |
+| S4.S | "never power the VTX without its antenna — it burns out in seconds. Propellers stay off until Step 8." | VTX burns out in seconds without antenna | TBS manual says the VTX "will detect excess heat and shut down" [R9]; no source found for "burns out in seconds" | NEEDS CHANGE (keep the rule, drop the unsourced "in seconds") | Antenna always fitted |
+| S4.C | "Betaflight's Receiver tab shows every channel moving ... · the arm switch arms and disarms in the Configurator · both antennas fitted · nothing powered from a battery yet" | Arming can be seen on USB | Betaflight shows the arm switch as an indicator in the Modes tab: "Move the range slider so it covers the indicator when the switch is in the arm position" [R26]. No source says the board actually arms on USB | NEEDS CHANGE (say "the ARM range lights in the Modes tab"); receiver-on-USB is CANNOT VERIFY (see S4.6) | Screen only |
+
+## Step 5. Charge the batteries safely
+
+| Id | Exact text | Claim inside it | Source | Verdict | 3D must show |
+|---|---|---|---|---|---|
+| S5.N | "2× 18650 cells · USB-C cord · GNB 4S packs · M4AC charger · LiPo bag" | Parts | Pocket box has "1x USB-C Charging Cord" [R13] | CONFIRMED | Only these parts |
+| S5.1 | "Put the two 18650 cells in the radio." | Radio takes two cells | "Operational voltage: 6.6-8.4v DC", "Batteries are not included. Controller will NOT function on USB alone" [R13]; cells sold as "2 x Battery" [R13 cells page] | CONFIRMED | Two cells into the Pocket |
+| S5.1b | (missing) charge the radio by USB-C | The USB-C cord is listed but never used | "Supports USB-C direct charging" [R13] | NEEDS CHANGE | USB-C into the radio |
+| S5.1c | (missing) the monitor's own 18650 | Step 4 lists "M5F monitor + its 18650 cell", but nothing charges it | Monitor takes "1S 18650 (NOT Included) or XT60 or USB-C Power input" [R17]; the M4AC is listed for 1-4S by the maker but a shop says "You cannot charge 1s on this charger" [R11] | CANNOT VERIFY `[REQUIRES REAL INPUT]`: Shad chooses USB-C power, a 4S pack on the XT60 cable, or an 18650 charger | Nothing until chosen |
+| S5.2 | "Plug the 4S pack into the charger — main plug AND balance lead." | Pack has a main plug and a balance lead; charger accepts both | Pack "Discharge Lead: 85mm, XT60", "Balance Lead: 40mm, JST-XH" [R12]. Charger connectors are not stated by the maker ("IN THE BOX M4AC Charger × 1, AC Input Cable × 1, Quick Manual × 1"); one shop names it "XT60" while its own answer says "It is Xt30" [R11] | CONFIRMED for the pack; CANNOT VERIFY the charger's sockets `[REQUIRES REAL INPUT]` | XT60 and the white balance plug both in; charger sockets drawn generic until checked |
+| S5.3 | "Select LiHV / 4S on the charger screen." | Charger has a LiHV mode | "Battery type: LiPo LiHv LiFe LipoStorage 1-4S" [R11]; pack "15.2V (LiHV)" [R12] | CONFIRMED | Screen reads LiHV 4S |
+| S5.4 | "Charge inside the closed LiPo bag and stay next to it the whole time." | Bag is for charging; closed | Bag sold "for safely storing and transporting" [R16]; Rotor Village warning "ALWAYS charge in or on a fire-proof surface and never leave batteries charging unattended" [R16] | NEEDS CHANGE ("closed" is not sourced and the leads must come out; say "pack inside the LiPo bag, on a fireproof surface, and stay with it") | Pack in the bag, leads out through the opening, person beside it |
+| S5.3b | "Set the charge current to 1.0 A (the charger offers 0.5, 1.0, 2.0 and 2.5 A; its manual recommends 1C to 2C, and 1C for these packs is 1.5 A)." | Charge current | Change request 24 (approved): charger manual 1C-2C [R11]; pack 1500 mAh [R12] | CONFIRMED (new id for the page line that had none) | Screen shows 1.0 A |
+| S5.5 | "If you will not fly within a day or two, use the charger's storage mode." | Storage mode exists | "Battery type: LiPo LiHv LiFe LipoStorage 1-4S" [R11]; change request 26 (approved) | CONFIRMED (new id for the page line that had none) | Charger set to storage |
+| S5.S | "never charge unattended. Never charge a swollen or damaged pack." | | "never leave batteries charging unattended"; "Never use, handle or store damaged batteries." [R16] | CONFIRMED | |
+| S5.C | "Right mode selected · leads undamaged · bag closed beside you." | | See S5.4 | NEEDS CHANGE ("bag closed") | |
+
+## Step 6. Wire the Pi payload
+
+| Id | Exact text | Claim inside it | Source | Verdict | 3D must show |
+|---|---|---|---|---|---|
+| S6.N | "Pi Zero 2 WH · Qwiic HAT · MLX90640 thermal camera · PA1010D GPS · 2× CAB-17261 female-jumper cables · micro-USB pigtail" | Parts | Pi kit "pre-soldered GPIO header" [R24]; the pigtail is listed but not used in step 6 (see S7.4b) | CONFIRMED | Only these parts |
+| S6.0 | (missing) flash the card, enable I2C | The Pi must run an OS with I2C on before addresses can be read | Kit has a "32GB MicroSD Card, Class 10 (blank)" [R24]; the stage checklist (item 7, outside the 8 steps) says "enable I2C" | NEEDS CHANGE (one line pointing to the stage checklist) | Nothing (screen work) |
+| S6.1 | "Solder the 1×5 headers onto both sensor boards." | Which header | Each board ships with two headers: MLX "1x5 pin header, 1x5 right-angle socket header"; GPS "1x5 straight male header, 1x5 right angle female header" [R19][R20]. The cable needs male pins: "connect components with a Qwiic connector to the male pins" [R22] | NEEDS CHANGE (say "the straight male 1×5 header") | Close-up: straight male header, short side through the board, soldered on the back |
+| S6.2 | "Push the Qwiic HAT onto the Pi." | HAT fits a Zero | "compatible with any Raspberry Pi that utilizes the standard 2x20 GPIO header" [R21]; Zero 2 WH has the header fitted [R24] | CONFIRMED | HAT pressed onto the 40 pins |
+| S6.3 | "Connect each sensor ... The Pimoroni header order is 3V3, SDA, SCL, INT, GND (it maps to Pi pins 1,3,5,7,9), so plug the four cable ends in that order and skip pin 4. Ignore the HAT's silkscreen — SparkFun confirms its SDA/SCL labels are reversed. Trust the cable colours: black GND, red 3V3, blue SDA, yellow SCL." | Pin order, silkscreen error, colours | Boards "pop it straight onto ... pins 1, 3, 5, 7, 9" [R19][R20]; those Pi pins are "3v3 Power", "GPIO 2 (I2C1 SDA)", "GPIO 3 (I2C1 SCL)", "GPIO 4", "Ground" [R23]; drawing labels the 4th pin "INT" [R19 drawing]; "a small silk error that has reversed the SDA and SCL" [R21]; "Black = GND Red = 3.3V Blue = SDA Yellow = SCL" [R22] | CONFIRMED; wording "skip pin 4" could be read as Pi pin 4 (a 5 V pin), so say "leave the 4th pin (INT) empty" | Close-up: red on pin 1, blue 2, yellow 3, pin 4 empty, black 5; other end in a Qwiic socket |
+| S6.4 | "Power it on the bench. Check both sensors answer: camera 0x33, GPS 0x10." | Addresses | "I2C interface (address 0x33)" [R19]; "default address of 0x10" [R20]; bench supply "5.1V/2.5A" in the kit [R24] | CONFIRMED | Kit power supply into the Pi's power socket |
+| S6.S | "thermal lens points DOWN, GPS antenna points UP. Sensors are 3.3V only — never put 5V on them." | Orientation; 3.3 V only | GPS "pointing the antenna upwards" [R20]. Voltage: MLX "3.3V or 5V compatible", "3-6V supply" [R19]; GPS "3V to 5V compatible" [R20] | NEEDS CHANGE ("3.3 V only" is false; the cable supplies 3.3 V, which is correct; say "power them from the cable's red 3.3 V wire") | Lens down, GPS patch up |
+| S6.C | "Both sensor addresses answer · orientation right · no pin bent backwards." | | No claim | CONFIRMED | |
+
+## Step 7. Mount and balance
+
+| Id | Exact text | Claim inside it | Source | Verdict | 3D must show |
+|---|---|---|---|---|---|
+| S7.N | "Nylon standoffs · Zip ties · Kevlar strap · Battery grip pad" | | Standoffs "M2.5x12mm" [R25]; strap 2-pack "Length: 245mm" [R18]. M2.5 screws/nuts are not on the list (S1.N) | NEEDS CHANGE (screws) | Only these parts |
+| S7.1 | "Do not fit the payload to the aircraft until the bare quad has made its first hover (Step 8, items 2–5)..." | Order | Consistent with S8.5/S8.6 | CONFIRMED | Bench only; quad without payload |
+| S7.2 | "the thermal lens needs an unobstructed vertical line to the ground..." | Geometry | No source needed (line of sight) | CONFIRMED | Line from lens straight down, clear |
+| S7.3 | "Measure before you drill or cut ... Pi under the bottom plate (or over a cutout you have measured); the MLX90640 hangs below it, lens down; the PA1010D sits on top, patch antenna up." | A layout | Sizes: MLX "19x19x2.75mm", drawing 19 x 22 mm with header tab [R19]; GPS "28x21x9mm" [R20]; ESC "42.9×39.7mm" [R2]. Whether this layout fits the V6 is unknown | CANNOT VERIFY `[REQUIRES REAL INPUT]` (Shad must hold the parts; handoff §7) | Show only as "planned position", greyed, until Shad confirms |
+| S7.4 | "Fix the Pi on nylon standoffs and zip-tie it down, then add the Kevlar strap as the second lock. Strap the bare MLX breakout — it has no mounting holes of its own." | MLX has no holes | Pimoroni's mechanical drawing shows **two mounting holes 13.60 mm apart**, 2.70 mm from the top edge [R19 drawing] | NEEDS CHANGE (it does have holes; hole size not stated, so how to fix it is `[REQUIRES REAL INPUT]`) | Pi on 4 standoffs, ties, strap; MLX by its two holes once the screw size is known |
+| S7.4b | (missing) power the Pi from the drone | The pigtail is listed in step 6 but no step connects it | Stage checklist item 10 (outside the 8 steps) says "Connect the meter-checked 24AWG micro-USB power pigtail to the GEPRC's regulated 5V/3A output"; FC has "5V 3A" BEC [R2]; the same 5 V rail also feeds the receiver and camera [R1] | NEEDS CHANGE (add the step); whether 3 A covers Pi + camera + receiver is CANNOT VERIFY | Pigtail from a 5V/GND pad pair to the Pi's power socket |
+| S7.5 | "Nothing hanging below the bottom plate may be the lowest point ... Fit landing legs or bumpers ... (Open item: the legs are not chosen yet ...)" | Legs needed | Shad's decision (ANSWERS.md #26, no printer) | CANNOT VERIFY `[REQUIRES REAL INPUT]` (legs not chosen) | No legs modelled until chosen |
+| S7.6 | "Route every cable out of the prop circles. Tie the loose ends down." | | No claim | CONFIRMED | Prop circles drawn as discs; cables inside |
+| S7.7 | "Slide the battery on the grip pad until the drone balances on its centre." | | No claim; but the battery strap is never mentioned | NEEDS CHANGE (add "strap the battery with the second Kevlar strap"; straps are sold "to hold batteries in place" [R18]) | Pack on pad, strap over it |
+| S7.S | "no bare circuit board touches carbon fibre. Nothing loose near spinning props." | Carbon conducts | "Must insulate frame, exposed carbon will short the LEDs" (Rotor Village, LED strip) [R18 note] | CONFIRMED | Standoff gap under each board |
+| S7.C | "Lens has a clear view straight down · two holding methods (ties + strap) · balanced centre of gravity · props still off." | | No claim | CONFIRMED | |
+
+## Step 8. Test, in this order
+
+| Id | Exact text | Claim inside it | Source | Verdict | 3D must show |
+|---|---|---|---|---|---|
+| S8.N | "Acer laptop · Payload package · Legal open site · Controlled hot plate" | Acer laptop | Shad removed the Acer; he uses his own laptop (ANSWERS.md #2) | NEEDS CHANGE ("your laptop") | Generic laptop |
+| S8.1 | "Run the software tests and the demo on the laptop." | | Payload package (outside this job) | CONFIRMED | Laptop only |
+| S8.2 | "Bench power with props OFF: connect a charged pack (Step 5) through the smoke stopper. Check that every radio channel responds, that the failsafe cuts the throttle when you switch the radio off, and that the picture appears on the monitor." | All three tests can run through the smoke stopper | Smoke stopper "Hold current 0.7A, Trip current 1.2A" [R14]; one motor's no-load "Idle Current (10V): 1.5A" [R5] (a full-speed, no-prop figure, so it shows the scale, not the exact idle draw; corrected after the safety review); the failsafe test needs the quad armed, four spinning motors plus the electronics can pass 1.2 A, and a trip mid-test cuts power and hides whether failsafe worked. Betaflight also needs the throttle raised before the test: "Always test with throttle up at some point before the test." [R44] Betaflight: "On the bench, without propellers: confirm that Failsafe triggers as configured." [R26] | NEEDS CHANGE (smoke stopper for the first plug-in and the picture/channel checks; remove it before arming or spinning motors) | Smoke stopper green LED on first plug-in; then pack plugged direct for the failsafe test; props visibly absent |
+| S8.3 | "Still props OFF: in Betaflight's Motors tab, check each motor's number and spin direction against the diagram." | Diagram | "Remove propellers before testing motors. Plug in a battery" [R26]; props-in diagram [R28] | CONFIRMED, but needs "smoke stopper removed" (see S8.2) | Motor 1 rear-right clockwise, 2 front-right anticlockwise, 3 rear-left anticlockwise, 4 front-left clockwise (props-in, the Betaflight normal setting) |
+| S8.4 | "Fit the props. Each prop has a CW or CCW marking; it goes on the motor that spins that way in the Betaflight diagram. Tighten the nut and check the prop spins freely and straight." | CW/CCW per motor; markings exist | Props "2 x CW Propellers, 2 x CCW Propellers", "Hub size: 5mm (inner)" [R6]; shaft "5mm" [R4]; props-in diagram [R28]; kit has a "Prop Tool" [R15]. Not found: how Gemfan marks CW vs CCW, which face goes up, and nut torque | CONFIRMED for which prop on which motor; CANNOT VERIFY the marking style and face-up `[REQUIRES REAL INPUT]` (read it off the real props) | CW props on motors 1 and 4, CCW on 2 and 3; leading edge rising in the spin direction; no face-up claim until checked |
+| S8.5 | "First hover of the bare quad ... 1 metre up → land → feel the motors for heat. Only after you hold the Basic certificate, the drone is registered and marked, and the site checks are done. Never above 122 m (400 ft) AGL. If you fly by a screen, you need a visual observer; until then, fly looking at the drone." | Rules | Register incl. "custom-built drones" and "mark your drone with its registration number" [R36]; certificate [R35]; "400 feet (122 m) AGL" [R37]; FPV observer [R38]. Basic also requires "more than 30 metres (100 feet) horizontally from any person", "uncontrolled airspace", 5.6 km from airports [R35] | CONFIRMED; NEEDS CHANGE to name the 30 m rule instead of "site checks" | Quad at 1 m, pilot watching it, nobody within the 30 m ring |
+| S8.6 | "Now mount the payload (Step 7), wait for a GPS fix outdoors, and hover 1 metre again to check the balance." | Order | GPS works best with "an uninterrupted view of the sky" [R20] | CONFIRMED | Payload fitted, second 1 m hover |
+| S8.7 | "Heat test: a hot plate among cold things, with the drone held steady and the props OFF. Write down what it finds." | | Shad's decision: warm things only (ANSWERS.md #31) | CONFIRMED | Props off, hot plate on low, cold objects round it |
+| S8.S | "never near a wildfire — the law says 5 nautical miles (9.3 km). Only controlled targets on private land with permission." | 5 NM | "within five nautical miles of a forest fire area, at an altitude of less than 3,000 feet AGL" [R39]; 5 x 1.852 = 9.26 km | CONFIRMED | Nothing |
+| S8.C | "You have written results before you say "it detects"." | | No claim | CONFIRMED | |
+
+---
+
+## After the independent safety review (`SAFETY-REVIEW.md`)
+
+A Fable-model subagent reviewed the safety rows, given only this file. It agreed with every safety verdict except S4.6 (4.35 V), which I re-checked in Betaflight's source and changed above. It also listed missing safety items. The ones I re-checked against a source I opened myself:
+- Charge current is never set (step 5). Charger: "the current can be selected from 4 levels of values, 0.5A, 1.0A, 2.0A, 2.5A" and "it is recommended to use a charging rate of 1C- 2C" [R45]; this pack is 1500 mAh [R12], so 1C = 1.5 A (arithmetic). NEEDS CHANGE (new).
+- LiHV mode only for HV packs: "Choosing the wrong battery type to charge may damage the battery, the charger, and cause fire hazards." [R45]. NEEDS CHANGE (new).
+- Storage mode exists: "3.85V Lipo-Stroage" [R45]. No step says what to do with a full pack that is not flown. NEEDS CHANGE (new).
+- Failsafe test needs throttle up first [R44]. NEEDS CHANGE (folded into S8.2).
+- Arming: the reviewer reports Betaflight blocks arming while the Configurator is connected (flag "MSP"); I did not open that page. It only strengthens S4.C, which already needs change.
+Items the reviewer sourced that I did not re-open (Oscar Liang LiPo guide on cooling, extinguisher, bags "won't completely contain" a fire; TC "Where to fly" on controlled airspace needing an Advanced certificate and a manufacturer declaration; ExpressLRS arm on AUX1; Betaflight props-off tilt tests) are listed in `CHANGE-REQUESTS.md` as new items marked "reviewer-sourced, not re-checked".
+
+## Order and completeness (handoff check 8)
+
+The corrected order in step 8 is physically possible **except** for the smoke stopper (S8.2/S8.3): a 1.2 A trip current cannot pass an armed or spinning motor drawing about 1.5 A each. Other gaps found: the ESC is never mounted before its wires are cut (S3.0), the FC-to-ESC cable is never plugged (S3.4), the VTX is never powered (S4.3b), the Pi is never powered from the drone (S7.4b), the battery is never strapped (S7.7), the radio is never charged (S5.1b), and the sensors' OS/I2C setup is outside the eight steps (S6.0). Each has wording in `CHANGE-REQUESTS.md`.
+
+Packs are not needed before step 8 in the current text (step 4 is USB only), so "charge before step 4" from FIX-LIST no longer applies, unless Shad powers the iron from a pack (see step 3 note).
+
+## Sources
+
+All fetched 2026-11-03. Quotes are exact (spelling as on the page).
+
+- [R1] GEPRC, "TAKER F405 BLS 50A Stack Manual" (one-page diagram; PDF of outlined graphics, read from a rendered image). Listed at https://geprc.com/electronics/fc-manual/ ; file URL https://geprc.com/taker-f405-bls-50a-%E9%A3%9E%E5%A1%94_%E4%BA%A7%E5%93%81%E8%AF%B4%E6%98%8E%E4%B9%A6-2/ . English half reads: FC "Target: GEPRCF405"; camera plug "CAM / GND / 5V"; receiver plug "G 5V R2 T2", receiver R wire to "TX" (T2), T wire to "RX" (R2); Receiver ports table "UART2 ... Serial RX" on, "Serial-based receiver", "CRSF"; Analog VTX: VTX "7-28V" to FC "9V", "GND" to "GND", "VTX" to "VTX", VTX "RX" to "T1", ports table "UART1 ... VTX,IRC Tamp"; ESC: "MOTOR 1" bottom right, "MOTOR 2" top right, "MOTOR 3" bottom left, "MOTOR 4" top left, battery leads at the bottom; ESC plug "NC CUR M4 M3 M2 M1 BAT GND" to FC "R4 CUR M4 M3 M2 M1 BAT GND"; board marking "GEP-F405-HD v2-1.1".
+- [R2] Rotor Village, GEPRC TAKER F405 BLS 50A Combo Stack, https://rotorvillage.ca/geprc-taker-f405-bls-50a-combo-stack/ : "9V 2.5A + 5V 3A dual independent BEC"; "OSD: BetaFlight OSD w/ AT7456E chip"; "Firmware Target: GEPRCF405"; "UART: 6"; "Support Protocol: Oneshot125/Oneshot42/Mulishot modes/Dshot 150/300/600"; "Size: 42.9×39.7mm, hole30.5×30.5mm，φ4mm hole becomes φ3mm after using the silicone shock-absorbing circle."; package "1 x Capacitor ... 1 x Flight Controller Adapter Cable, 1 x XT60 Power cable, 4 x M3*30 Screws, 4 x M3*24 Screws, 8 x Nylon nuts, 8 x Silicone grommets ... 1 x Camera connection cable".
+- [R3] Rotor Village, TBS Source One V6 5", https://rotorvillage.ca/tbs-source-one-v6-5/ : "Wheelbase 5": 240", "Arm thickness 5": 6mm", "Bottom Plate: 2.5mm", "Arms Spacer: 6mm", "Standoff height: 30 and 22mm", "Stack Mounting: 30.5 × 30.5mm & 20 x 20", hardware "20X M3x10 allen screw ... 4X OD 5mm M3 30mm standoff, 4X OD 5mm M3 22mm standoff, 1X OD 5mm M3 20mm standoff, 8x M3 press insert nut, TPU 3D Printed Camera Mount".
+- [R4] Rotorama, Emax Eco III 2207 1900Kv, https://www.rotorama.com/product/emax-eco-iii-2207-1900kv : "Mounting holes: 16mm M3", "Outer shaft diameter: 5mm", "Cables: 120mm 20AWG", "1x Screw Set".
+- [R5] RaceDayQuads, EMAX E3 2207, https://www.racedayquads.com/products/emax-e3-series-2207-motor-1700kv-1900kv-2400kv : KV1900 "Mounting Pattern: 19x19mm", "Idle Current (10V): 1.5A", "Lead: 20# AWG 120mm". (Mounting pattern disagrees with [R4]; Rotor Village's own page lists no pattern.)
+- [R6] Rotor Village, Gemfan 51499, https://rotorvillage.ca/gemfan-51499-hurricane-tri-blade-prop-2cw-2ccw/ : "Hub size: 5mm (inner)", "2 x CW Propellers 2 x CCW Propellers".
+- [R7] Rotor Village, RadioMaster RP1 V2, https://rotorvillage.ca/radiomaster-rp1-v2-tcxo-expresslrs-2-4ghz-receiver/ : "The RP1 has a UFL antenna socket", "Working voltage: 5v", "Firmware Version: ExpressLRS v2.4 pre-installed", "Bus interface: CRSF", "1 x RP1 ExpressLRS 2.4ghz Nano Receiver, 1 x 65mm UFL 2.4Ghz T Antenna, 1 x User Manual".
+- [R8] Rotor Village, TBS Unify Pro 5G8 HV (SMA), https://rotorvillage.ca/tbs-unify-pro-5g8-hv-vtx/ : "Antenna Connector: SMA Female Socket with screw mounting holes"; "The VTx ships with only legal channels enabled". (TBS's own page shows both "SMA Female Socket" and, in another block, "Antenna Connector: u.FL"; the manual table [R9] says SMA for the HV.)
+- [R9] TBS Unify Pro 5G8 manual, https://www.team-blacksheep.com/tbs-unify-pro-5g8-manual.pdf : "25mW (up to 800mW with HAM license*)"; HV "Input ... 6V to 28V (2S - 6S) VBat"; "5V for Camera @ 0.5A max."; "Antenna ... SMA"; "(FOR HAM USERS ONLY!) Press button for 20 to 25 seconds"; "the Unify Pro will detect excess heat and shut down until it recovers".
+- [R10] Rotor Village, TBS Triumph PRO SMA, https://rotorvillage.ca/tbs-triumph-pro-sma-rhcp/ : "Frequency range: 5500-6000MHz", "Connector: SMA".
+- [R11] ToolkitRC M4AC, https://www.toolkitrc.com/m4ac/ : "IN THE BOX M4AC Charger × 1, AC Input Cable × 1, Quick Manual × 1", "Battery type LiPo LiHv LiFe LipoStorage 1-4S". RaceDayQuads listing title "... Smart Charger- XT60", Q&A "Is this xt60 or xt30 ... It is Xt30"; "You cannot charge 1s on this charger." Rotor Village: "Battery type: LiPo LiHv LiFe LipoStorage 1-4S".
+- [R12] Rotor Village, GNB 1500mAh 4S HV, https://rotorvillage.ca/gnb-1500mah-4s-120c-hv-lipo-xt60/ : "Discharge Lead: 85mm, XT60", "Balance Lead: 40mm, JST-XH". EpicFPV, https://epicfpv.ca/products/gnb-lihv-4s-15-2v-1500mah-120c-xt60-lipo-battery-longrange : "Voltage: 15.2V (LiHV)".
+- [R13] Rotor Village, RadioMaster Pocket, https://rotorvillage.ca/radiomaster-pocket-transmitter-elrs-charcoal-edition/ : "Batteries are not included. Controller will NOT function on USB alone", "Supports USB-C direct charging", "Operational voltage: 6.6-8.4v DC", "1x USB-C Charging Cord". Cells: https://rotorvillage.ca/radiomaster-pocket-18650-3200mah-3-7v-battery-2pcs/ "2 x Battery".
+- [R14] Rotor Village, iFlight Smart Smoke Stopper, https://rotorvillage.ca/iflight-smart-smoke-stopper-xt30-xt60/ : "can help avoid damage when you power on a mini quad drone for the first time", "Hold current 0.7A", "Trip current 1.2A", "Input Voltage: 7-25V (2-6S)", "The LED indicator turns solid green in normal situation".
+- [R15] Rotor Village, Flywoo tool kit, https://rotorvillage.ca/flywoo-fpv-quad-tool-kit-w-multimeter-and-soldering-iron/ : "Working voltage: DC12--24V", "Power Interface: 5.5*2.5", "Power: 65w", "1x 4-in-1 Hexagon Socket Screwdriver Set ... 1x Soldering Flux Pen ... 1x XT60 to DC Cable ... 1x Cutting pliers ... 1x Prop Tool, 1x Tin Wire".
+- [R16] Rotor Village, RVS LiPo Storage Bag V2, https://rotorvillage.ca/rvs-lipo-storage-bag/ : "the ultimate solution for safely storing and transporting your LiPo batteries", "Never use, handle or store damaged batteries." Rotor Village 18650 page (same site): "ALWAYS charge in or on a fire-proof surface and never leave batteries charging unattended".
+- [R17] Rotor Village, Skyzone M5F, https://rotorvillage.ca/skyzone-m5-diversity-fpv-monitor/ : "1S 18650 (NOT Included) or XT60 or USB-C Power input", "Antenna: Linear Included".
+- [R18] Rotor Village, Kevlar strap 2pk, https://rotorvillage.ca/rvs-kevlar-battery-strap-2pk/ : "hold batteries in place", "Length: 245mm", "2 x LiPo straps". Note source for carbon: Rotor Village LED strip, https://rotorvillage.ca/led-cob-strip-4s-1m/ : "Must insulate frame, exposed carbon will short the LEDs".
+- [R19] Pimoroni, MLX90640 Thermal Camera Breakout, https://shop.pimoroni.com/products/mlx90640-thermal-camera-breakout : "using I2C and 3-6V supply", "I2C interface (address 0x33)", "3.3V or 5V compatible", "1x5 pin header, 1x5 right-angle socket header", "pop it straight onto the bottom left 5 pins on your Raspberry Pi's GPIO header (pins 1, 3, 5, 7, 9)", "Dimensions: 19x19x2.75mm". Mechanical drawing https://cdn.shopify.com/s/files/1/0174/1800/files/MLX90640BreakoutMechanical.png : outline 19.00 wide, 22.00 tall; two round holes 13.60 apart, centres 2.70 from the top edge; 4th header pin labelled "INT".
+- [R20] Pimoroni, PA1010D GPS Breakout, https://shop.pimoroni.com/products/pa1010d-gps-breakout : "I2C interface, with a default address of 0x10", "3V to 5V compatible", "Raspberry Pi-compatible pinout (pins 1, 3, 5, 7, 9)", "1x5 straight male header, 1x5 right angle female header", "try taking it outside or pointing the antenna upwards", "Dimensions: approx 28x21x9mm".
+- [R21] SparkFun, Qwiic HAT for Raspberry Pi, https://www.sparkfun.com/sparkfun-qwiic-hat-for-raspberry-pi.html : "compatible with any Raspberry Pi that utilizes the standard 2x20 GPIO header", "There is a small silk error that has reversed the SDA and SCL."
+- [R22] SparkFun, Flexible Qwiic Cable – Female Jumper, https://www.sparkfun.com/flexible-qwiic-cable-female-jumper-4-pin.html : "connect components with a Qwiic connector to the male pins", "Black = GND, Red = 3.3V, Blue = SDA, Yellow = SCL", "length is 150mm".
+- [R23] pinout.xyz, https://pinout.xyz/ : "3v3 Power physical pin 1; GPIO 2 (I2C1 SDA) physical pin 3; GPIO 3 (I2C1 SCL) physical pin 5; GPIO 4 (GPCLK0) physical pin 7; Ground physical pin 9".
+- [R24] PiShop, Pi Zero 2 WH Pi-hole kit, https://www.pishop.ca/product/raspberry-pi-zero-2wh-pi-hole-kit/ : "pre-soldered GPIO header", "Micro-USB Power Supply, 5.1V/2.5A", "32GB MicroSD Card, Class 10 (blank)", stock "Out of stock".
+- [R25] PiShop, https://www.pishop.ca/product/nylon-11mm-m2-5-standoff-set-pack-of-4/ : "Nylon Standoffs - M2.5x12mm - Pack of 4 - Black".
+- [R26] Betaflight setup guide, https://betaflight.com/docs/wiki/getting-started/setup-guide : "ELRS / Crossfire / Tracer — CRSF"; "This is usually DShot300 or DShot600 for most modern ESCs."; "Remove propellers before testing motors. Plug in a battery, tick the confirmation checkbox, and slowly raise the Master slider."; "Move the range slider so it covers the indicator when the switch is in the arm position."; "On the bench, without propellers : confirm that Failsafe triggers as configured."
+- [R27] Betaflight failsafe, https://betaflight.com/docs/wiki/guides/current/Failsafe : "By default, the craft immediately disarms and drops."
+- [R28] Betaflight Motors tab, https://betaflight.com/docs/wiki/app/motors-tab : "Motor direction is reversed - The normal setting assumes your props will spin in towards the camera at the front of your quad "props in"". Diagram https://betaflight.com/assets/images/betaflight_props_in_out-704f91537d690070cb896197c62fbcb6.png (props in: 4 front-left and 1 rear-right clockwise, 2 front-right and 3 rear-left anticlockwise, seen from above).
+- [R29] Betaflight battery, https://betaflight.com/docs/wiki/guides/current/Battery : "vbat_max_cell_voltage - Maximum voltage per cell, used for auto-detecting battery voltage in 0.01V units, i.e. 430 = 4.3V".
+- [R30] ExpressLRS firmware options, https://www.expresslrs.org/quick-start/firmware-options/ : domains "Regulatory_Domain_AU_915, EU_868, IN_866, FCC_915, ISM_2400, EU_CE_2400"; "enable whatever regulatory domain you are in".
+- [R31] ExpressLRS binding, https://www.expresslrs.org/quick-start/binding/ : "The first number in the Version string should match between a TX Module and a Receiver."
+- [R32] ExpressLRS receiver wiring, https://www.expresslrs.org/quick-start/receivers/wiring-up/ : "The TX or T pad should be connected to an RX pad of the same UART number"; "Best to power up the flight controller with a LiPo to ensure the receiver will work normally on flight-ready conditions."
+- [R33] Oscar Liang, capacitors, https://oscarliang.com/capacitors-mini-quad/ : "the longer leg is positive (+) and the shorter leg is negative (-). The marking on the body (white label) also indicates which terminal is negative"; "Solder the capacitor to either the ESC power or XT60 solder pads. Negative to negative, positive to positive."
+- [R34] Oscar Liang, GEPRC Taker F405 review, https://oscarliang.com/geprc-taker-f405/ : "1x 35V 1000uF capacitor"; "The solder pads are pretty small"; reply "Yes it support analog VTX."
+- [R35] Transport Canada, Basic operations, https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations : "you fly your drone more than 30 metres (100 feet) horizontally from any person", "in uncontrolled airspace", "more than 5.6 kilometers (3 nautical miles) from the center of a certified airport", "You must have and be able to show your Pilot Certificate – Basic Operations and proof of drone registration when you fly."
+- [R36] Transport Canada, Registering your drone, https://tc.canada.ca/en/aviation/drone-safety/registering-your-drone : "All drones weighing at least 250 g must be registered. This includes custom-built drones"; "You must clearly mark your drone with its registration number."
+- [R37] CAR 901.25, https://laws-lois.justice.gc.ca/eng/regulations/SOR-96-433/section-901.25.html : "no pilot shall operate a remotely piloted aircraft at an altitude greater than (a) 400 feet (122 m) AGL".
+- [R38] CAR 901.38, https://laws-lois.justice.gc.ca/eng/regulations/SOR-96-433/section-901.38.html : "no pilot shall operate a remotely piloted aircraft system using a first-person view device unless a visual observer maintains unaided visual contact with the airspace beyond the field of view displayed on the device".
+- [R39] CAR 601.15, https://laws-lois.justice.gc.ca/eng/regulations/SOR-96-433/section-601.15.html : "over any area that is located within five nautical miles of a forest fire area, at an altitude of less than 3,000 feet AGL".
+- [R40] TBS, "Getting into FPV with SOURCE ONE" (linked as "Interactive Manual" from [R3]), https://docs.google.com/document/d/1b-qf9Id54_d6gRJ6ql_YT4DCBErJb9UZ3iQ-eo-tOfI : "Arms (4.0mm), 4pcs", "M3x6mm, 16pcs (arm to motor)", "(Insert exploded picture of quad here)". This describes the original frame, not the V6.
+- [R41] Betaflight Setup tab, https://betaflight.com/docs/wiki/app/setup-tab : "Calibrate Accelerometer ... You can calibrate it here, following the instructions".
+- [R42] ToolkitRC M4AC manual V1.1, http://download.toolkitrc.com/wp-content/uploads/2024/09/M4AC-Manual-V1.1-.pdf : "4.20V Lipo 4.35V LiHv 3.85V Lipo-Stroage 3.60V LiFe".
+- [R43] Betaflight source, https://raw.githubusercontent.com/betaflight/betaflight/master/src/main/sensors/battery.c line 207: `unsigned cells = (voltageMeter.displayFiltered / currentBatteryProfile->vbatmaxcellvoltage) + 1;` and battery.h line 39: `#define VBAT_CELL_VOLTAGE_DEFAULT_MAX 430`. Command run: `python -c "print(int(1740/435)+1, int(1740/440)+1)"` printed `5 4`.
+- [R44] Betaflight failsafe, https://betaflight.com/docs/wiki/guides/current/Failsafe : "Always test with throttle up at some point before the test." (same page as [R27]; quote found at line 84 of my fetched copy.)
+- [R45] Same M4AC manual as [R42]: "the current can be selected from 4 levels of values, 0.5A, 1.0A, 2.0A, 2.5A"; "it is recommended to use a charging rate of 1C- 2C"; "Choosing the wrong battery type to charge may damage the battery, the charger, and cause fire hazards."; ports named only "output main port" and "balance port" (connector type still not stated).
+
+
+## Phase D: animation against text
+
+Each action's moment was rendered in headless Chrome (`node scripts/build/check_viewer.js --sheets`), with the action's own words under its frame: `docs/build-truth/contact-step-01.png` ... `contact-step-08.png`. Raw results: `contact-results.json`.
+- **Auto check:** at the action's moment, every part the action names is at full size and every part that belongs to a later action is not there yet (e.g. no props at S8.3, no top plate before S4.8, pin 4 has no socket at S6.3).
+- **Looked:** I (Opus) looked at every frame on all eight sheets; notes say what was fixed.
+- Labels are HTML on the page, so they are not in the frames.
+
+| Id | Sheet | Moment | Auto check | Looked | Note |
+|---|---|---|---|---|---|
+| S1.1 | contact-step-01.png | 1.6 s | PASS | yes | piles appear one by one; the spread-out layout sits small in the default view |
+| S1.2 | contact-step-01.png | 7.9 s | PASS | yes |  |
+| S1.3 | contact-step-01.png | 9.1 s | PASS | yes |  |
+| S1.S | contact-step-01.png | 9.9 s | PASS | yes |  |
+| S2.1 | contact-step-02.png | 2.9 s | PASS | yes |  |
+| S2.2 | contact-step-02.png | 5.1 s | PASS | yes |  |
+| S2.3 | contact-step-02.png | 8 s | PASS | yes |  |
+| S2.4 | contact-step-02.png | 9.8 s | PASS | yes | fixed in Phase D: motor 2 lifts so the screws show stopping short of it |
+| S3.0 | contact-step-03.png | 1.3 s | PASS | yes | check fixed in Phase D (it wrongly matched the 8-wire cable) |
+| S3.1 | contact-step-03.png | 5.2 s | PASS | yes |  |
+| S3.2 | contact-step-03.png | 6.5 s | PASS | yes | close-up: three solder joints on motor 2's pads |
+| S3.3 | contact-step-03.png | 8.7 s | PASS | yes |  |
+| S3.4 | contact-step-03.png | 11.4 s | PASS | yes |  |
+| S4.1 | contact-step-04.png | 1.7 s | PASS | yes | close-up on the receiver and its wires |
+| S4.2 | contact-step-04.png | 3 s | PASS | yes |  |
+| S4.3 | contact-step-04.png | 5.1 s | PASS | yes |  |
+| S4.4 | contact-step-04.png | 6.7 s | PASS | yes |  |
+| S4.5 | contact-step-04.png | 7.6 s | PASS | yes | text-only action (setup on the laptop); frame shows the state, no new part |
+| S4.6 | contact-step-04.png | 8.8 s | PASS | yes |  |
+| S4.7 | contact-step-04.png | 10 s | PASS | yes | text-only action; no new part |
+| S4.8 | contact-step-04.png | 11.9 s | PASS | yes |  |
+| S5.1 | contact-step-05.png | 1.3 s | PASS | yes |  |
+| S5.1b | contact-step-05.png | 2.5 s | PASS | yes |  |
+| S5.2 | contact-step-05.png | 5.7 s | PASS | yes |  |
+| S5.3 | contact-step-05.png | 6.9 s | PASS | yes |  |
+| S5.4 | contact-step-05.png | 8 s | PASS | yes | text-only action; no new part |
+| S5.S | contact-step-05.png | 9.7 s | PASS | yes |  |
+| S6.0 | contact-step-06.png | 0.5 s | PASS | yes | text-only action; Pi shown before the HAT |
+| S6.1 | contact-step-06.png | 1.9 s | PASS | yes |  |
+| S6.2 | contact-step-06.png | 3.5 s | PASS | yes |  |
+| S6.3 | contact-step-06.png | 7.1 s | PASS | yes | close-up: four coloured wires, pin 4 has no socket |
+| S6.4 | contact-step-06.png | 8.5 s | PASS | yes |  |
+| S6.S | contact-step-06.png | 9.9 s | PASS | yes |  |
+| S7.1 | contact-step-07.png | 0.6 s | PASS | yes | text-only rule; payload and battery not yet fitted |
+| S7.3 | contact-step-07.png | 2.7 s | PASS | yes | fixed in Phase D: seen from below (payload hangs under the frame) |
+| S7.4 | contact-step-07.png | 4.1 s | PASS | yes | fixed in Phase D: seen from below |
+| S7.4b | contact-step-07.png | 5.5 s | PASS | yes | fixed in Phase D: seen from below |
+| S7.6 | contact-step-07.png | 6.7 s | PASS | yes |  |
+| S7.7 | contact-step-07.png | 8.5 s | PASS | yes |  |
+| S8.1 | contact-step-08.png | 0.6 s | PASS | yes | laptop shown; props and payload not yet on |
+| S8.2 | contact-step-08.png | 1.9 s | PASS | yes |  |
+| S8.3 | contact-step-08.png | 4 s | PASS | yes |  |
+| S8.4 | contact-step-08.png | 7 s | PASS | yes | see-through props; CW on M1/M4, CCW on M2/M3 (positions checked in check_models) |
+| S8.5 | contact-step-08.png | 11.5 s | PASS | yes |  |
+| S8.6 | contact-step-08.png | 14.7 s | PASS | yes | seen from below: greyed payload under the frame |
+| S8.7 | contact-step-08.png | 16.2 s | PASS | yes | fixed in Phase D: props come off again before the heat test |
+
+## Phase E updates (2026-11-03)
+
+| Id | What changed | Source | Verdict now |
+|---|---|---|---|
+| S4.N / S5.1c | Shad's decision (relayed by the architect, in DECISIONS.md): the M5F monitor runs from a charged 4S flight pack on its own XT60 cable; no 18650 for the monitor, no cell charger. The radio's two 18650 cells (S5.1) stay. Models for steps 1 and 4 no longer draw a monitor cell. | Monitor listing [R17]: "supports 2-6S Lipo via an included cable with XT60 plug or USB Type-C power" | CONFIRMED (S5.1c closed) |
+| S4 (new, change request 34) | Flying camera tilt: start at 10 degrees up, raise 5 degrees at a time; the model has a tilt slider (0-40). | Oscar Liang, https://oscarliang.com/camera-angle/ : "If you're new to FPV, a 10°–15° camera angle is an excellent starting point." | CONFIRMED (how the V6 mount adjusts: `[REQUIRES REAL INPUT]`) |
+| S7.3 | Payload layout chosen by simulation (layout L515, Shad's option 1). The Pi sits under the bottom plate, centred 36 mm behind the stack, on 12 mm nylon standoffs, on a flat foam/rubber pad zip-tied through the plate's windows (no drilling). The thermal camera is just ahead of it, lens straight down. The GPS is on the top plate in front of the battery; the battery balances from 10 mm behind to 2 mm ahead of centre. | docs/build-truth/SIMULATION.md, sim-results.csv | CONFIRMED by simulation; physical fit `[REQUIRES REAL INPUT]` |
+| S7.5 | Legs must stand at least 40 mm below the bottom plate (the payload's lowest part is about 29 mm below it with the 2 mm pad). | simulation ("leg_needed_mm" plus the pad) | CONFIRMED by simulation; which legs: `[REQUIRES REAL INPUT]` (question to Shad) |
+| S6.4 / S8.1 | The payload tests are now 31 (the Builder added 3 bench-mode tests for "python payload.py --bench", Fable W1). | `python -B -m unittest discover` in build-guide-ui/Shad-Drone-Payload, 2026-11-03: "Ran 31 tests in 0.020s", "OK" | CONFIRMED |
+| S4.3b | New step-4 action (change request 34, approved, on the page between S4.3 and S4.4): "Set the flying camera's tilt to about 10° up ..." The step-4 clip has its own button with a close-up of the camera; the viewer's tilt slider shows the angle. | Oscar Liang camera-angle guide (quoted in the S4 row above) | CONFIRMED; how the V6 mount adjusts: `[REQUIRES REAL INPUT]` |
+| S7.8 | New step-7 action (change request 39, approved, with "check on arrival" labels): fit the landing legs, two stacked M3 standoffs plus a rubber foot in each spare standoff hole (25 mm rear, 28 mm front). The step-7 clip's legs button is S7.8; S7.5 stays the legs rule. | Rotor Village standoff pages (opened 2026-11-03); simulation "chosen legs" checks | CONFIRMED by simulation; thread ends and set screws `[REQUIRES REAL INPUT]` |
+
+## Phase F updates (2026-11-03): from the build check (scripts/build/verify_build.py)
+
+| Id | What changed | Source | Verdict now |
+|---|---|---|---|
+| S6.2b | New step-6 action (change request 43a, approved by Shad): lengthen the GPS cable with 12 cm of silicone wire per wire, one wire at a time, joints in 3 mm heat shrink, continuity check. The step-6 clip has its own button with a close-up of one joint. | Cable 150 mm [R22]; route needs about 239 mm (verify_build.py WIRE-qwiic-gps, routes.json); with the extension about 21 mm spare, all 10,000 runs pass | CONFIRMED by simulation; route length to measure on arrival (arrival check "GPS cable route"); meter beep setting to check on arrival |
+| S7.3 | Two sentences added (change requests 42 and 43b, approved): cut a hole in the pad over any stack screw that sticks out; run the GPS cable through the window next to the Pi, over the FC, round the top plate's front edge. The drone models draw that route. | verify_build.py FIT-pad-screws (all 4 stack screws inside the pad footprint), WIRE-qwiic-gps | CONFIRMED by simulation; screw heads/tips to check on arrival |
+| S7.7 | Rewritten (change request 43c, approved): battery forward to about 2 mm from the GPS; the drone sits about 3 mm tail-heavy, inside the 5 mm limit. Models now place the battery 2.5 mm ahead of centre. | verify_build.py WEIGHT-forward-stop (balance point 2.5 mm behind centre; all runs within 5 mm), including about 46 g of unweighed parts (my estimates) | CONFIRMED by simulation; check by lifting on two fingers |
+
+## Ease pass updates (2026-11-03): approved batches, as the Builder merged them on the page
+
+| Id | What changed | Source | Verdict now |
+|---|---|---|---|
+| S5.2-S5.4 | Step 5 re-ordered (change request 82, approved): fireproof surface and mains cable (S5.2); set LiHV and 1.0 A before the pack is connected (S5.3); pack into the bag (S5.3c, new); main plug and balance lead, charging starts by itself (S5.4a, new); stay beside it until the screen shows F (S5.4). S5.3b's 1.0 A line is now inside S5.3. | ToolkitRC M4AC manual ("After setting the battery voltage and current, connect the battery", "it will automatically start charging", "F: The battery or one of the cells is full"); "AC Input Cable × 1" | CONFIRMED by the manual |
+| S5.3c | New id: "Put the pack in the LiPo bag with its leads out through the opening." | Page wording (approved batch H) | CONFIRMED |
+| S5.4a | New id: plug in the XT60 main plug and the balance lead; charging starts by itself; no Start button. | M4AC manual Quick start step 7 | CONFIRMED |

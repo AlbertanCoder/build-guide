@@ -6,9 +6,10 @@
 <text x="32" y="42" class="t">2 · Build the X frame — props stay OFF</text>
 <path d="M410 250 L260 155 M550 250 L700 155 M410 290 L260 385 M550 290 L700 385" class="f"/>
 <circle cx="240" cy="140" r="72" class="p"/><circle cx="720" cy="140" r="72" class="p"/><circle cx="240" cy="400" r="72" class="p"/><circle cx="720" cy="400" r="72" class="p"/>
-<rect x="390" y="215" width="180" height="110" rx="12" class="a"/><text x="480" y="253" text-anchor="middle" class="t">F405 + ESC</text><text x="480" y="283" text-anchor="middle" class="s">30.5 mm holes</text>
+<rect x="390" y="215" width="180" height="110" rx="12" class="a"/><text x="480" y="253" text-anchor="middle" class="t">Stack holes</text><text x="480" y="283" text-anchor="middle" class="s">30.5 mm holes</text>
 <circle cx="240" cy="140" r="34" class="m"/><circle cx="720" cy="140" r="34" class="m"/><circle cx="240" cy="400" r="34" class="m"/><circle cx="720" cy="400" r="34" class="m"/>
-<text x="240" y="147" text-anchor="middle" class="t">M1</text><text x="720" y="147" text-anchor="middle" class="t">M2</text><text x="240" y="407" text-anchor="middle" class="t">M3</text><text x="720" y="407" text-anchor="middle" class="t">M4</text>
+<text x="240" y="147" text-anchor="middle" class="t">M4</text><text x="720" y="147" text-anchor="middle" class="t">M2</text><text x="240" y="407" text-anchor="middle" class="t">M3</text><text x="720" y="407" text-anchor="middle" class="t">M1</text>
 <path d="M120 265 H360 M600 265 H840" stroke="#1b5e4f" stroke-width="8"/>
-<rect x="70" y="445" width="820" height="68" class="w"/><text x="480" y="475" text-anchor="middle" class="t">Motor screws: snug, not stripped — never into windings</text><text x="480" y="501" text-anchor="middle" class="s">Verify M1–M4 in Betaflight later; do not trust position alone</text>
+<rect x="70" y="445" width="820" height="68" class="w"/><text x="480" y="475" text-anchor="middle" class="t">Motor screws: snug, not stripped — never into windings</text><text x="480" y="501" text-anchor="middle" class="s">M1 rear right · M2 front right · M3 rear left · M4 front left (check in Betaflight)</text>
+<text x="480" y="128" text-anchor="middle" class="t">▲ FRONT (camera end)</text>
 </svg>

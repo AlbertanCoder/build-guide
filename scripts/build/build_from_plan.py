@@ -20,7 +20,6 @@ import lib_kit as K
 import lib_quad as Q
 
 REACH = 0.40                      # metres: nothing is placed further out
-BAT = (-0.050, 0.0, 0.016)        # same pack position as the finished build
 MAX_SHAPES = 40
 MAX_LABELS = 14
 COLOURS = (
@@ -68,10 +67,9 @@ def payload(P, o):
 
 
 def pack(P, o):
-    Q.battery_pad(P, BAT)
-    Q.battery(P, BAT)
-    for sx in (-0.058, -0.038):
-        Q.strap(P, sx, z_top=BAT[2] + 0.0265, z_bottom=BAT[2])
+    Q.battery_pad(P, Q.BAT)
+    Q.battery(P, Q.BAT)
+    Q.strap(P, 0.0)
 
 
 def motors(P, o):
@@ -81,8 +79,7 @@ def motors(P, o):
 
 def props(P, o):
     for name, (mx, my) in Q.MOTORS.items():
-        Q.propeller(P, "prop_" + name, (mx, my), ghost=bool(o.get("ghost")),
-                    rot_z=0.35 * (1 if mx * my > 0 else -1))
+        Q.propeller(P, "prop_" + name, (mx, my), ghost=bool(o.get("ghost")), spin=Q.SPIN[name])
 
 
 PARTS = {

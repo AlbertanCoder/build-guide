@@ -8,6 +8,9 @@ All low-poly, all named, all label-friendly. Sizes are the real ones in metres.
 import math
 
 import lib_core as C
+import parts as S
+
+mm = S.mm
 
 
 def cells_18650(P, loc, count=2, gap=0.021):
@@ -16,10 +19,10 @@ def cells_18650(P, loc, count=2, gap=0.021):
     objs = []
     for i in range(count):
         ox = (i - (count - 1) / 2.0) * gap
-        objs.append(C.cyl(f"cell_18650_{i}", 0.0092, 0.065,
-                          (x + ox, y, z + 0.0325), mat=P["plastic_grey"], seg=16))
+        objs.append(C.cyl(f"cell_18650_{i}", mm(S.CELL_18650["dia"]) / 2.0, mm(S.CELL_18650["len"]),
+                          (x + ox, y, z + mm(S.CELL_18650["len"]) / 2.0), mat=P["plastic_grey"], seg=16))
         objs.append(C.cyl(f"cell_18650_cap_{i}", 0.0045, 0.0025,
-                          (x + ox, y, z + 0.0662), mat=P["alu"], seg=12))
+                          (x + ox, y, z + mm(S.CELL_18650["len"]) + 0.0012), mat=P["alu"], seg=12))
     return objs
 
 
@@ -27,7 +30,7 @@ def radio_pocket(P, loc=(0, 0, 0), rot_z=0.0):
     """RadioMaster Pocket: 145 x 75 x 25 mm body, screen, twin gimbals."""
     x0, y0, z0 = loc
     objs = [
-        C.box("radio_body", (0.145, 0.075, 0.025), (x0, y0, z0 + 0.0125),
+        C.box("radio_body", (mm(S.RADIO["w"]), 0.075, 0.025), (x0, y0, z0 + 0.0125),
               rot=(0, 0, rot_z), mat=P["plastic_black"], bevel=0.004, seg=2),
         C.box("radio_face", (0.135, 0.066, 0.004), (x0, y0, z0 + 0.026),
               rot=(0, 0, rot_z), mat=P["rubber"], bevel=0.002),
@@ -55,7 +58,7 @@ def charger_m4ac(P, loc=(0, 0, 0)):
     """ToolkitRC M4AC: 30 W AC charger with a readable LiHV 4S screen."""
     x0, y0, z0 = loc
     objs = [
-        C.box("charger_body", (0.080, 0.060, 0.030), (x0, y0, z0 + 0.015),
+        C.box("charger_body", (mm(S.CHARGER["l"]), mm(S.CHARGER["w"]), mm(S.CHARGER["h"])), (x0, y0, z0 + mm(S.CHARGER["h"]) / 2.0),
               mat=P["plastic_black"], bevel=0.004, seg=2),
         C.box("charger_screen", (0.034, 0.022, 0.0016), (x0 - 0.010, y0, z0 + 0.0306),
               mat=P["screen"]),
@@ -75,9 +78,9 @@ def charger_m4ac(P, loc=(0, 0, 0)):
 
 
 def lipo_bag(P, loc=(0, 0, 0), open_top=True):
-    """Fire-retardant LiPo bag with the flap folded open."""
+    """RVS LiPo bag (220 x 110 mm footprint; drawn low and open so the pack inside shows)."""
     x0, y0, z0 = loc
-    w, d, h, t = 0.185, 0.130, 0.055, 0.004
+    w, d, h, t = mm(S.LIPO_BAG["w"]), mm(S.LIPO_BAG["d"]), 0.055, 0.004
     objs = [
         C.box("bag_floor", (w, d, t), (x0, y0, z0 + t / 2), mat=P["bag"]),
         C.box("bag_wall_left", (t, d, h), (x0 - w / 2, y0, z0 + h / 2), mat=P["bag"]),
@@ -100,7 +103,7 @@ def smoke_stopper(P, loc=(0, 0, 0), rot_z=0.0):
     """iFlight smart smoke stopper: inline XT60 module with a status LED."""
     x0, y0, z0 = loc
     objs = [
-        C.box("smokestopper_body", (0.034, 0.022, 0.014), (x0, y0, z0),
+        C.box("smokestopper_body", (mm(S.SMOKE_STOPPER["l"]), mm(S.SMOKE_STOPPER["w"]), mm(S.SMOKE_STOPPER["h"])), (x0, y0, z0),
               rot=(0, 0, rot_z), mat=P["plastic_white"], bevel=0.002),
         C.box("smokestopper_label", (0.020, 0.016, 0.0012), (x0, y0, z0 + 0.0074),
               mat=P["accent"]),
@@ -118,7 +121,7 @@ def monitor_skyzone(P, loc=(0, 0, 0), rot_z=0.0):
     """Skyzone M5 5-inch analog diversity monitor with sun hood."""
     x0, y0, z0 = loc
     objs = [
-        C.box("monitor_body", (0.135, 0.085, 0.024), (x0, y0, z0 + 0.012),
+        C.box("monitor_body", (mm(S.MONITOR["w"]), mm(S.MONITOR["d"]), mm(S.MONITOR["h"])), (x0, y0, z0 + mm(S.MONITOR["h"]) / 2.0),
               rot=(0, 0, rot_z), mat=P["plastic_black"], bevel=0.004, seg=2),
         C.box("monitor_screen", (0.100, 0.062, 0.002), (x0, y0, z0 + 0.0245),
               rot=(0, 0, rot_z), mat=P["screen"]),
@@ -136,8 +139,16 @@ def monitor_skyzone(P, loc=(0, 0, 0), rot_z=0.0):
 
 
 def laptop(P, loc=(0, 0, 0), rot_z=0.0, lid_angle=100.0):
+    """Your own laptop is not part of the kit, so the models show a flat tag instead of a laptop."""
+    x0, y0, z0 = loc
+    return [C.box("laptop_tag", (0.120, 0.070, 0.002), (x0, y0, z0 + 0.001), rot=(0, 0, rot_z), mat=P["paper"], bevel=0.003),
+            C.box("laptop_tag_stripe", (0.110, 0.008, 0.0006), (x0, y0 + 0.024, z0 + 0.0023), rot=(0, 0, rot_z),
+                  mat=P["pine"])]
+
+
+def _old_laptop_drawing(P, loc=(0, 0, 0), rot_z=0.0, lid_angle=100.0):
     """
-    Acer-style laptop with the lid open.
+    Your own laptop with the lid open (size drawn, not measured).
 
     The lid is a plate whose *thickness* runs along local X, width along Y and
     height along Z, hinged on the back edge; lid_angle is measured from the
@@ -197,7 +208,7 @@ def soldering_iron(P, loc=(0, 0, 0), rot_z=0.0):
               mat=P["steel"], bevel=0.002),
         C.cyl("iron_coil", 0.008, 0.026, (x0, y0, z0 + 0.030),
               mat=P["steel"], seg=12, radius_top=0.005),
-        C.cyl("iron_handle", 0.011, 0.100, (x0 + 0.030, y0, z0 + 0.062),
+        C.cyl("iron_handle", mm(S.IRON["handle_w"]) / 2.0, mm(S.IRON["handle_l"]), (x0 + 0.030, y0, z0 + 0.062),
               rot=(math.radians(28), 0, rot_z), mat=P["plastic_black"], seg=14),
         C.cyl("iron_barrel", 0.0045, 0.048, (x0 - 0.004, y0, z0 + 0.035),
               rot=(math.radians(64), 0, rot_z), mat=P["alu"], seg=12),
@@ -209,7 +220,7 @@ def soldering_iron(P, loc=(0, 0, 0), rot_z=0.0):
 def multimeter(P, loc=(0, 0, 0), rot_z=0.0):
     x0, y0, z0 = loc
     return [
-        C.box("meter_body", (0.075, 0.100, 0.022), (x0, y0, z0 + 0.011),
+        C.box("meter_body", (mm(S.MULTIMETER["w"]), mm(S.MULTIMETER["l"]), mm(S.MULTIMETER["h"])), (x0, y0, z0 + mm(S.MULTIMETER["h"]) / 2.0),
               rot=(0, 0, rot_z), mat=P["plastic_grey"], bevel=0.004, seg=2),
         C.box("meter_screen", (0.052, 0.028, 0.0016),
               (x0, y0 + 0.024, z0 + 0.0232), rot=(0, 0, rot_z),

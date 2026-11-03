@@ -1,0 +1,415 @@
+{
+ "nets": [
+  {
+   "net": "BAT+",
+   "ends": [
+    "XT60 lead +",
+    "ESC battery pad +",
+    "capacitor +"
+   ],
+   "wire": "stack box XT60 lead",
+   "len_mm": null,
+   "src": "R33 'Negative to negative, positive to positive'; R1 battery leads"
+  },
+  {
+   "net": "BAT-",
+   "ends": [
+    "XT60 lead -",
+    "ESC battery pad -",
+    "capacitor -"
+   ],
+   "wire": "stack box XT60 lead",
+   "len_mm": null,
+   "src": "R33"
+  },
+  {
+   "net": "M1-phase-1",
+   "ends": [
+    "motor M1 lead 1",
+    "ESC pad M1-1"
+   ],
+   "wire": "motor lead",
+   "len_mm": 120.0,
+   "src": "R5 'Lead: 20# AWG 120mm'; R1 MOTOR 1-4 pads"
+  },
+  {
+   "net": "M1-phase-2",
+   "ends": [
+    "motor M1 lead 2",
+    "ESC pad M1-2"
+   ],
+   "wire": "motor lead",
+   "len_mm": 120.0,
+   "src": "R5 'Lead: 20# AWG 120mm'; R1 MOTOR 1-4 pads"
+  },
+  {
+   "net": "M1-phase-3",
+   "ends": [
+    "motor M1 lead 3",
+    "ESC pad M1-3"
+   ],
+   "wire": "motor lead",
+   "len_mm": 120.0,
+   "src": "R5 'Lead: 20# AWG 120mm'; R1 MOTOR 1-4 pads"
+  },
+  {
+   "net": "M2-phase-1",
+   "ends": [
+    "motor M2 lead 1",
+    "ESC pad M2-1"
+   ],
+   "wire": "motor lead",
+   "len_mm": 120.0,
+   "src": "R5 'Lead: 20# AWG 120mm'; R1 MOTOR 1-4 pads"
+  },
+  {
+   "net": "M2-phase-2",
+   "ends": [
+    "motor M2 lead 2",
+    "ESC pad M2-2"
+   ],
+   "wire": "motor lead",
+   "len_mm": 120.0,
+   "src": "R5 'Lead: 20# AWG 120mm'; R1 MOTOR 1-4 pads"
+  },
+  {
+   "net": "M2-phase-3",
+   "ends": [
+    "motor M2 lead 3",
+    "ESC pad M2-3"
+   ],
+   "wire": "motor lead",
+   "len_mm": 120.0,
+   "src": "R5 'Lead: 20# AWG 120mm'; R1 MOTOR 1-4 pads"
+  },
+  {
+   "net": "M3-phase-1",
+   "ends": [
+    "motor M3 lead 1",
+    "ESC pad M3-1"
+   ],
+   "wire": "motor lead",
+   "len_mm": 120.0,
+   "src": "R5 'Lead: 20# AWG 120mm'; R1 MOTOR 1-4 pads"
+  },
+  {
+   "net": "M3-phase-2",
+   "ends": [
+    "motor M3 lead 2",
+    "ESC pad M3-2"
+   ],
+   "wire": "motor lead",
+   "len_mm": 120.0,
+   "src": "R5 'Lead: 20# AWG 120mm'; R1 MOTOR 1-4 pads"
+  },
+  {
+   "net": "M3-phase-3",
+   "ends": [
+    "motor M3 lead 3",
+    "ESC pad M3-3"
+   ],
+   "wire": "motor lead",
+   "len_mm": 120.0,
+   "src": "R5 'Lead: 20# AWG 120mm'; R1 MOTOR 1-4 pads"
+  },
+  {
+   "net": "M4-phase-1",
+   "ends": [
+    "motor M4 lead 1",
+    "ESC pad M4-1"
+   ],
+   "wire": "motor lead",
+   "len_mm": 120.0,
+   "src": "R5 'Lead: 20# AWG 120mm'; R1 MOTOR 1-4 pads"
+  },
+  {
+   "net": "M4-phase-2",
+   "ends": [
+    "motor M4 lead 2",
+    "ESC pad M4-2"
+   ],
+   "wire": "motor lead",
+   "len_mm": 120.0,
+   "src": "R5 'Lead: 20# AWG 120mm'; R1 MOTOR 1-4 pads"
+  },
+  {
+   "net": "M4-phase-3",
+   "ends": [
+    "motor M4 lead 3",
+    "ESC pad M4-3"
+   ],
+   "wire": "motor lead",
+   "len_mm": 120.0,
+   "src": "R5 'Lead: 20# AWG 120mm'; R1 MOTOR 1-4 pads"
+  },
+  {
+   "net": "ESC-FC harness",
+   "ends": [
+    "ESC 8-pin",
+    "FC 8-pin"
+   ],
+   "wire": "stack box 8-wire cable",
+   "len_mm": null,
+   "src": "R1, R2"
+  },
+  {
+   "net": "RX 5V",
+   "ends": [
+    "RP1 5",
+    "FC 5V (UART2 plug)"
+   ],
+   "wire": "stack box 4-wire cable (sh1.0 plug)",
+   "len_mm": "cut",
+   "src": "R1, R32; stack box '2 x sh1.0 4pinsilicone cable'",
+   "volts": 5.0
+  },
+  {
+   "net": "RX GND",
+   "ends": [
+    "RP1 G",
+    "FC G (UART2 plug)"
+   ],
+   "wire": "cut silicone wire",
+   "len_mm": "cut",
+   "src": "R1"
+  },
+  {
+   "net": "RX TX->FC",
+   "ends": [
+    "RP1 T",
+    "FC R2"
+   ],
+   "wire": "cut silicone wire",
+   "len_mm": "cut",
+   "src": "R1 'receiver T to R2', R32",
+   "uart": [
+    "T",
+    "R"
+   ]
+  },
+  {
+   "net": "FC TX->RX",
+   "ends": [
+    "FC T2",
+    "RP1 R"
+   ],
+   "wire": "cut silicone wire",
+   "len_mm": "cut",
+   "src": "R1, R32",
+   "uart": [
+    "T",
+    "R"
+   ]
+  },
+  {
+   "net": "Camera",
+   "ends": [
+    "Phoenix 2 plug",
+    "FC CAM/G/5V socket"
+   ],
+   "wire": "stack box camera cable",
+   "len_mm": null,
+   "src": "R1, R2"
+  },
+  {
+   "net": "VTX power",
+   "ends": [
+    "FC 9V",
+    "VTX 7-28V in"
+   ],
+   "wire": "VTX cable or cut wire",
+   "len_mm": "cut",
+   "src": "R1 '7-28V' to '9V', R9",
+   "volts": 9.0
+  },
+  {
+   "net": "VTX video",
+   "ends": [
+    "FC VTX",
+    "VTX video in"
+   ],
+   "wire": "VTX cable or cut wire",
+   "len_mm": "cut",
+   "src": "R1"
+  },
+  {
+   "net": "VTX control",
+   "ends": [
+    "FC T1",
+    "VTX RX (SmartAudio)"
+   ],
+   "wire": "VTX cable or cut wire",
+   "len_mm": "cut",
+   "src": "R1 'UART1 VTX,IRC Tamp'",
+   "uart": [
+    "T",
+    "R"
+   ]
+  },
+  {
+   "net": "Pi 5V",
+   "ends": [
+    "FC 5V pad",
+    "Pi micro-USB power"
+   ],
+   "wire": "micro-USB pigtail (1.42 m cable, cut)",
+   "len_mm": 1420.0,
+   "src": "PiShop 'Length: 56.25\" / 1.42m'",
+   "volts": 5.0
+  },
+  {
+   "net": "I2C to MLX90640",
+   "ends": [
+    "HAT Qwiic port 0",
+    "MLX pins 1,2,3,5 (INT empty)"
+   ],
+   "wire": "CAB-17261",
+   "len_mm": 150.0,
+   "src": "R22 'length is 150mm'; R19 pin order",
+   "pins": [
+    "3V3",
+    "SDA",
+    "SCL",
+    "GND"
+   ]
+  },
+  {
+   "net": "I2C to PA1010D",
+   "ends": [
+    "HAT Qwiic port 1",
+    "GPS pins 1,2,3,5 (INT empty)"
+   ],
+   "wire": "CAB-17261 lengthened: 120 mm of 26 AWG silicone wire spliced into each wire (2 joints each, 3 mm heat shrink)",
+   "len_mm": 260.0,
+   "src": "R22; R20; Shad's decision 2026-11-03; change request 43",
+   "pins": [
+    "3V3",
+    "SDA",
+    "SCL",
+    "GND"
+   ]
+  },
+  {
+   "net": "Video RF",
+   "ends": [
+    "VTX SMA female",
+    "Triumph PRO SMA"
+   ],
+   "wire": "connector",
+   "len_mm": 0,
+   "src": "R8, R10"
+  },
+  {
+   "net": "Receiver RF",
+   "ends": [
+    "RP1 UFL",
+    "65 mm T antenna UFL"
+   ],
+   "wire": "connector",
+   "len_mm": 0,
+   "src": "R7"
+  }
+ ],
+ "pimoroni_pin_order": [
+  "3V3",
+  "SDA",
+  "SCL",
+  "INT",
+  "GND"
+ ],
+ "cable_colours": {
+  "3V3": "red",
+  "SDA": "blue",
+  "SCL": "yellow",
+  "GND": "black"
+ },
+ "silicone_uses": [
+  [
+   "VTX wires 9V, video, T1 if its own cable is too short (S4.3)",
+   3,
+   60.0
+  ],
+  [
+   "GPS cable extension (change request 43)",
+   4,
+   120.0
+  ]
+ ],
+ "zip_tie": {
+  "single_mm": 100.0,
+  "head_mm": 6.0,
+  "grip_tail_mm": 10.0,
+  "joined": 2,
+  "note": "list item 'Zip ties 3 mm x 100 mm'; head length and the tail needed to grip are my estimates"
+ },
+ "silicone_waste_mm": 15.0,
+ "connectors": [
+  {
+   "pair": "flight pack -> quad",
+   "a": "XT60 (pack, R12 'Discharge Lead: 85mm, XT60')",
+   "b": "XT60 (stack box 'XT60 Power cable', R2)",
+   "mates": true
+  },
+  {
+   "pair": "pack -> smoke stopper",
+   "a": "XT60",
+   "b": "XT30 & XT60 in and out (R14)",
+   "mates": true
+  },
+  {
+   "pair": "pack -> monitor",
+   "a": "XT60",
+   "b": "monitor 'included cable with XT60 plug' (R17)",
+   "mates": true
+  },
+  {
+   "pair": "pack -> charger",
+   "a": "XT60 + JST-XH balance (R12)",
+   "b": "charger 'output main port', 'balance port': type not published (R11, R45)",
+   "mates": null
+  },
+  {
+   "pair": "VTX -> antenna",
+   "a": "SMA Female Socket (R8)",
+   "b": "Connector: SMA (R10)",
+   "mates": true
+  },
+  {
+   "pair": "receiver -> antenna",
+   "a": "UFL socket (R7)",
+   "b": "65mm UFL T antenna (R7)",
+   "mates": true
+  },
+  {
+   "pair": "HAT -> sensors",
+   "a": "Qwiic 1 mm JST (R21, R22)",
+   "b": "CAB-17261 female jumpers onto male 1x5 header (R22)",
+   "mates": true
+  },
+  {
+   "pair": "FC -> laptop",
+   "a": "USB Type-C (R2)",
+   "b": "USB-C data cable (buy list)",
+   "mates": true
+  },
+  {
+   "pair": "pigtail -> Pi",
+   "a": "micro-USB male (PiShop cable)",
+   "b": "Pi Zero micro-USB power",
+   "mates": true
+  },
+  {
+   "pair": "iron -> adapter",
+   "a": "Power Interface: 5.5*2.5 (R15)",
+   "b": "24 V 3 A, 5.5 x 2.5 mm plug (shopping list)",
+   "mates": true,
+   "check": "polarity: centre-positive not confirmed for the iron"
+  },
+  {
+   "pair": "legs -> frame standoffs",
+   "a": "M3 knurled standoff (female assumed)",
+   "b": "frame standoff M3 (R3) via M3 set screw",
+   "mates": null
+  }
+ ]
+}

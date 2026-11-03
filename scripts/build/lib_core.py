@@ -115,7 +115,7 @@ def palette():
         # battery / soft goods
         "battery": material("BatteryWrap", (0.055, 0.095, 0.240, 1), 0.0, 0.36),
         "battery_label": material("BatteryLabel", (0.78, 0.79, 0.80, 1), 0.0, 0.44),
-        "strap": material("KevlarStrap", (0.16, 0.14, 0.11, 1), 0.0, 0.72),
+        "strap": material("KevlarStrapVisible", (0.96, 0.80, 0.08, 1), 0.0, 0.60),   # colour shown for visibility
         "bag": material("LiPoBag", (0.44, 0.20, 0.14, 1), 0.0, 0.78),
         "rubber": material("Rubber", (0.070, 0.072, 0.075, 1), 0.0, 0.75),
         # glazing / display
@@ -130,7 +130,72 @@ def palette():
         "accent": material("AccentOrange", ACCENT, 0.0, 0.42),
         "pine": material("PineGreen", PINE, 0.0, 0.44),
         "paper": material("PaperCream", CREAM, 0.0, 0.80),
+        # bright colours for small accessories so they read against black carbon (tap-to-name says so)
+        "vis_cyan": material("VisCyan", (0.00, 0.72, 0.83, 1), 0.0, 0.45),
+        "vis_magenta": material("VisMagenta", (0.85, 0.12, 0.62, 1), 0.0, 0.50),
+        # camera view cones (hidden until a camera-view button turns one on)
+        "cone_pilot": material("ConePilot", (0.20, 0.62, 0.45, 1), 0.0, 0.5, alpha=0.20),
+        "cone_thermal": material("ConeThermal", (1.00, 0.42, 0.10, 1), 0.0, 0.5, alpha=0.22),
+        # greyed, see-through: a position or part that is NOT confirmed yet (truth table CANNOT VERIFY)
+        "planned": material("PlannedGrey", (0.55, 0.57, 0.58, 1), 0.0, 0.6, alpha=0.42),
     }
+
+
+def cone(name, apex, direction, hfov_deg, vfov_deg, length, mat, up=(0, 0, 1)):
+    """Translucent view pyramid from a camera lens: apex at the lens, opening along `direction` (build axes)."""
+    d = Vector(direction).normalized()
+    u = Vector(up)
+    if abs(d.dot(u)) > 0.98:
+        u = Vector((1, 0, 0))
+    side = d.cross(u).normalized()
+    upv = side.cross(d).normalized()
+    hw = length * math.tan(math.radians(hfov_deg) / 2.0)
+    hh = length * math.tan(math.radians(vfov_deg) / 2.0)
+    c = d * length
+    verts = [(0, 0, 0)] + [tuple(c + side * sx * hw + upv * sy * hh) for sx, sy in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
+    faces = [(0, 1, 2), (0, 2, 3), (0, 3, 4), (0, 4, 1), (4, 3, 2, 1)]
+    ob = _link(name, verts, faces, mat, loc=apex)
+    return ob
+
+
+def tag_parts():
+    """Give every mesh its plain name and accuracy tag (parts.PART_INFO) for tap-to-name."""
+    import parts as S
+    for ob in bpy.context.scene.objects:
+        if ob.type != "MESH":
+            continue
+        info = S.part_info(ob.name)
+        if info:
+            ob["part"], ob["acc"] = info[0], info[1]
+            if info[2]:
+                ob["vis_colour"] = True
+
+
+def mark_planned(objs, why):
+    """Tag meshes as 'planned, not confirmed' so the viewer and the checks can tell them apart."""
+    for ob in objs:
+        ob["planned"] = True
+        ob["why"] = why
+    return objs
+
+
+def extrude(name, outline_mm, thickness_mm, z0_mm=0.0, mat=None, loc=(0, 0, 0), rot_z=0.0):
+    """Extrude a 2-D outline (list of (x, y) in mm) upward from z0. Concave outlines are fine."""
+    pts = [(x / 1000.0, y / 1000.0) for x, y in outline_mm]
+    if len(pts) > 2 and pts[0] == pts[-1]:
+        pts = pts[:-1]
+    area = sum(pts[i][0] * pts[(i + 1) % len(pts)][1] - pts[(i + 1) % len(pts)][0] * pts[i][1]
+               for i in range(len(pts)))
+    if area < 0:
+        pts = pts[::-1]
+    n = len(pts)
+    z0, z1 = z0_mm / 1000.0, (z0_mm + thickness_mm) / 1000.0
+    verts = [(x, y, z0) for x, y in pts] + [(x, y, z1) for x, y in pts]
+    faces = [tuple(range(n - 1, -1, -1)), tuple(range(n, 2 * n))]
+    for i in range(n):
+        j = (i + 1) % n
+        faces.append((i, j, n + j, n + i))
+    return _link(name, verts, faces, mat, loc, (0, 0, rot_z))
 
 
 # ----------------------------------------------------------------------------
@@ -362,7 +427,10 @@ def collect(fn, *args, **kwargs):
 
 
 def shift(objs, dx=0.0, dy=0.0, dz=0.0):
+    moving = set(objs)
     for ob in objs:
+        if ob.parent in moving:      # children ride along with their parent; moving them too would double it
+            continue
         ob.location.x += dx
         ob.location.y += dy
         ob.location.z += dz
@@ -373,7 +441,7 @@ def shift(objs, dx=0.0, dy=0.0, dz=0.0):
 # export + preview
 # ----------------------------------------------------------------------------
 def export(name, preview=False, camera_at=(0.30, -0.32, 0.22),
-           target=(0, 0, 0.012), ortho_scale=None, res=None, samples=None):
+           target=(0, 0, 0.012), ortho_scale=None, res=None, samples=None, animate=False):
     """Write docs/models/<name>.glb and optionally a preview PNG.
 
     Preview resolution/samples can be raised for gallery renders via the
@@ -385,6 +453,7 @@ def export(name, preview=False, camera_at=(0.30, -0.32, 0.22),
     os.makedirs(OUT_DIR, exist_ok=True)
     path = os.path.join(OUT_DIR, name + ".glb")
 
+    tag_parts()
     bpy.ops.object.select_all(action="DESELECT")
     bpy.ops.export_scene.gltf(
         filepath=path,
@@ -396,7 +465,11 @@ def export(name, preview=False, camera_at=(0.30, -0.32, 0.22),
         export_cameras=False,
         export_lights=False,
         export_materials="EXPORT",
-        export_animations=False,
+        export_animations=animate,
+        # one clip for the whole scene, named after the scene; still pose = the current (end) frame
+        **({"export_animation_mode": "SCENE", "export_anim_scene_split_object": False,
+            "export_current_frame": True, "export_frame_range": True,
+            "export_force_sampling": True, "export_frame_step": 3} if animate else {}),
     )
     print(f"EXPORTED {path} ({os.path.getsize(path) / 1024.0:.1f} KB)")
 

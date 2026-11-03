@@ -7,10 +7,14 @@
  *  - HTML labels via CSS2DRenderer, read from the GLB's own "extras"
  *  - 3/4 isometric default, full orbit, zoom limits, pan
  *  - reset / fullscreen / labels chrome only
- *  - lazy init on scroll, one active renderer, DPR capped at 2
+ *  - lazy init on scroll, DPR capped at 2
+ *  - one short looping clip per model with play / pause / scrub and one chip per numbered action
+ *    (the action list travels in the GLB as scene extras "actions": [{id, time, text, focus?, dist?}])
+ *  - at most MAX_ALIVE viewers hold a WebGL context; a viewer that leaves the screen releases
+ *    everything (geometry, materials, textures, renderer, canvas, labels, clock) and comes back
+ *    where it was when it returns
  *
- * Rendering is on-demand: frames are drawn only when the camera moves, so a
- * page with nine viewers costs nothing while the reader scrolls past them.
+ * Rendering is on-demand: frames are drawn only when the camera moves or a clip is playing on screen.
  */
 
 import * as THREE from 'three';
@@ -21,7 +25,14 @@ import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer
 const CREAM = 0xf7f2e8;
 
 // Bumped when the GLBs are rebuilt, so browsers never serve a stale model.
-const MODEL_VERSION = '2026-10-31d';
+const MODEL_VERSION = '2026-11-03e';
+
+// Most WebGL contexts alive at once (the current step plus one neighbour). Old laptops freeze with more.
+const MAX_ALIVE = 2;
+
+const reducedMotion = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+let liveRenderers = 0;
 
 /**
  * Resolve a model URL.
@@ -50,9 +61,10 @@ function collectCorners(model) {
   const box = new THREE.Box3();
   model.updateWorldMatrix(true, true);
   model.traverse((obj) => {
-    if (!obj.isMesh || !obj.geometry) return;
+    if (!obj.isMesh || !obj.geometry || obj.userData.kind === 'cone') return;
     obj.geometry.computeBoundingBox();
     box.copy(obj.geometry.boundingBox).applyMatrix4(obj.matrixWorld);
+    if (box.isEmpty()) return;
     for (let i = 0; i < 8; i += 1) {
       points.push(new THREE.Vector3(
         i & 1 ? box.max.x : box.min.x,
@@ -89,13 +101,63 @@ function fitCamera(camera, points, centre, dir, fill = 0.9) {
   return { centre, dist };
 }
 
+function injectStyle() {
+  if (document.getElementById('viewer3d-anim-style')) return;
+  const s = document.createElement('style');
+  s.id = 'viewer3d-anim-style';
+  s.textContent = [
+    '.viewer3d-anim{display:flex;align-items:center;gap:8px;flex-wrap:wrap}',
+    '.viewer3d-anim input[type=range]{flex:1 1 140px;min-width:120px;accent-color:#1b5e4f}',
+    '.viewer3d-anim .viewer3d-time{font-size:12px;font-variant-numeric:tabular-nums;min-width:7ch}',
+    '.viewer3d-chips{display:flex;gap:6px;flex-wrap:wrap;width:100%}',
+    '.viewer3d-chips button.is-active{background:#1b5e4f;color:#fff;border-color:#1b5e4f}',
+    '.viewer3d-views{display:inline-flex;gap:6px;flex-wrap:wrap}',
+    '.viewer3d-tilt{display:inline-flex;align-items:center;gap:6px;font-size:12px}',
+    '.viewer3d-tilt input{width:110px;accent-color:#c2571b}',
+    '.viewer3d-views button[aria-pressed=true]{background:#c2571b;color:#fff;border-color:#c2571b}',
+    '.viewer3d-tag{position:absolute;z-index:3;display:none;max-width:240px;padding:5px 8px;border-radius:6px;background:rgba(20,30,26,.88);color:#fff;font-size:12px;line-height:1.35;pointer-events:none}',
+    '.viewer3d-tag b{display:block;font-size:12.5px}.viewer3d-tag span{display:block;opacity:.85}',
+    '.viewer3d-inset{position:absolute;z-index:2;display:none;border:2px solid #ff6a1a;border-radius:4px;color:#ff6a1a;font:700 11px sans-serif;padding:2px 5px;box-sizing:border-box;pointer-events:none}',
+  ].join('\n');
+  document.head.appendChild(s);
+}
+
+/* Remembered viewer choices (labels, focus). Private browsing may block storage, so fail quietly. */
+const store = {
+  get(k) { try { return window.localStorage.getItem('bg3d-' + k); } catch (e) { return null; } },
+  set(k, v) { try { window.localStorage.setItem('bg3d-' + k, v); } catch (e) { /* not available */ } },
+};
+
+const EMBER = 0xff6a1a;          // focus outline / arrow colour: readable against black carbon
+const ACC_TEXT = {
+  CAD: 'from the maker\'s drawing',
+  DATASHEET: 'from the datasheet',
+  ESTIMATED: 'estimate: check with the real part',
+};
+
+function disposeMaterial(m) {
+  if (!m) return;
+  for (const key of Object.keys(m)) {
+    const v = m[key];
+    if (v && v.isTexture) v.dispose();
+  }
+  m.dispose();
+}
+
 class ModelViewer {
   constructor(root) {
     this.root = root;
     this.src = root.dataset.model;
-    this.labelsOn = true;
+    // Labels start OFF (Shad's choice); the Labels button turns them on and the choice is remembered.
+    this.labelsOn = store.get('labels') === '1';
+    this.focusOn = store.get('focus') !== '0';
+    this.coneOn = { pilot: false, thermal: false };
+    this.dimmed = [];
+    this.matCache = new Map();
     this.ready = false;
     this.visible = false;
+    this.gen = 0;              // bumped on release so a late load callback is ignored
+    this.saved = null;         // camera and clip position kept across release / re-init
 
     this.canvasHost = root.querySelector('.viewer3d-canvas');
     this.labelHost = root.querySelector('.viewer3d-labels');
@@ -109,10 +171,15 @@ class ModelViewer {
     root.querySelectorAll('[data-action]').forEach((btn) => {
       btn.addEventListener('click', () => this.action(btn.dataset.action));
     });
+    if (this.labelHost) this.labelHost.style.display = this.labelsOn ? '' : 'none';
+    const lbtn = root.querySelector('[data-action="labels"]');
+    if (lbtn) lbtn.setAttribute('aria-pressed', String(this.labelsOn));
   }
 
   action(name) {
     if (name === 'reset' && this.home) {
+      this.controls.maxPolarAngle = Math.PI * 0.495;   // back above the bench after a from-below close-up
+      this.applyFocus(null);
       this.camera.position.copy(this.home.position);
       this.controls.target.copy(this.home.target);
       this.controls.update();
@@ -124,6 +191,7 @@ class ModelViewer {
       this.render();
     } else if (name === 'labels') {
       this.labelsOn = !this.labelsOn;
+      store.set('labels', this.labelsOn ? '1' : '0');
       this.labelHost.style.display = this.labelsOn ? '' : 'none';
       const btn = this.root.querySelector('[data-action="labels"]');
       if (btn) btn.setAttribute('aria-pressed', String(this.labelsOn));
@@ -137,6 +205,7 @@ class ModelViewer {
   init() {
     if (this.ready || this.failed || this.initing) return;
     this.initing = true;
+    const gen = this.gen;
 
     const width = this.canvasHost.clientWidth || 640;
     const height = this.canvasHost.clientHeight || 420;
@@ -148,6 +217,7 @@ class ModelViewer {
     this.camera.position.set(0.30, 0.22, 0.34);
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    liveRenderers += 1;
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     this.renderer.setSize(width, height, false);
     this.renderer.shadowMap.enabled = true;
@@ -176,9 +246,12 @@ class ModelViewer {
     fill.position.set(-0.5, 0.3, 0.25);
     this.scene.add(fill);
 
-    const rim = new THREE.DirectionalLight(0xffe9d8, 0.5);
+    const rim = new THREE.DirectionalLight(0xffe9d8, 1.3);
     rim.position.set(-0.2, 0.35, -0.55);
     this.scene.add(rim);
+    const back = new THREE.DirectionalLight(0xffffff, 0.8);   // edges on black parts
+    back.position.set(0.1, 0.15, -0.7);
+    this.scene.add(back);
 
     this.scene.add(new THREE.HemisphereLight(0xffffff, 0xd8d2c4, 1.15));
 
@@ -187,6 +260,12 @@ class ModelViewer {
     this.controls.enablePan = true;
     this.controls.zoomSpeed = 0.9;
     this.controls.addEventListener('change', () => this.render());
+    const cnv = this.renderer.domElement;
+    cnv.addEventListener('pointerdown', (e) => { this.downAt = [e.clientX, e.clientY]; });
+    cnv.addEventListener('pointerup', (e) => {
+      const d = this.downAt; this.downAt = null;
+      if (d && Math.hypot(e.clientX - d[0], e.clientY - d[1]) < 6) this.pick(e.clientX, e.clientY);
+    });
     /* Full screen and panel resizes change the canvas without resizing the
        window, so watch the canvas itself or the picture stretches and the
        labels stay at their old positions. */
@@ -196,12 +275,14 @@ class ModelViewer {
     }
 
     if (this.status) this.status.textContent = 'Loading 3D…';
+    if (this.onInit) this.onInit(this);
 
     loader.load(
       resolveModelUri(this.src),
-      (gltf) => this.onLoaded(gltf),
+      (gltf) => { if (gen === this.gen) this.onLoaded(gltf); },
       undefined,
       (err) => {
+        if (gen !== this.gen) return;
         this.failed = true;
         console.warn('3D model failed to load:', this.src, err);
         if (this.status) this.status.textContent = '3D model unavailable';
@@ -213,6 +294,10 @@ class ModelViewer {
   onLoaded(gltf) {
     const model = gltf.scene;
     this.scene.add(model);
+    const cones = [];
+    this.cones = {};
+    this.camPoses = {};
+    this.tiltPivot = null;
 
     model.traverse((obj) => {
       if (obj.isMesh) {
@@ -222,8 +307,12 @@ class ModelViewer {
       const data = obj.userData || {};
       if (data.kind === 'part' && data.label) this.addLabel(obj, data);
       if (data.kind === 'hotspot' && data.label) this.addPin(obj, data);
+      if (data.kind === 'cone') cones.push(obj);
+      if (data.kind === 'campose' && data.cam) this.camPoses[data.cam] = obj;
+      if (data.kind === 'tilt') this.tiltPivot = obj;
     });
     this.model = model;
+    cones.forEach((c) => { c.visible = false; c.castShadow = false; this.cones[c.userData.cam] = c; });
 
     const box = this.meshBounds(model);
     const centre = box.getCenter(new THREE.Vector3());
@@ -247,17 +336,29 @@ class ModelViewer {
     this.keyLight.position.copy(centre)
       .add(new THREE.Vector3(0.35, 0.55, 0.32).multiplyScalar(size.length()));
 
-    // 3/4 view from above: the drone reads as a planform, not edge-on
-    const dir = new THREE.Vector3(0.86, 1.02, 1.12).normalize();
+    // 3/4 view from above: the drone reads as a planform, not edge-on. Keep that height angle, but turn
+    // around the model to the side that lets it sit closest, so it fills wide (laptop) and tall (phone) frames.
+    const base = new THREE.Vector3(0.86, 1.02, 1.12).normalize();
+    const elev = Math.asin(base.y);
+    const az0 = Math.atan2(base.x, base.z);
     const corners = collectCorners(model);
-    const fit = fitCamera(this.camera, corners, centre, dir);
+    let fit = null;
+    let dir = base;
+    for (let k = 0; k < 16; k += 1) {
+      const az = az0 + (k * Math.PI) / 8;
+      const d = new THREE.Vector3(Math.sin(az) * Math.cos(elev), Math.sin(elev), Math.cos(az) * Math.cos(elev));
+      const f = fitCamera(this.camera, corners, centre.clone(), d);
+      // prefer the usual corner unless another side is clearly (8 %) closer
+      if (!fit || f.dist < fit.dist * (k === 0 ? 1 : 0.92)) { fit = f; dir = d; }
+    }
+    fitCamera(this.camera, corners, fit.centre, dir);
     const dist = fit.dist;
     this.camera.near = Math.max(dist / 400, 0.002);
     this.camera.far = dist * 8;
     this.camera.updateProjectionMatrix();
 
     this.controls.target.copy(fit.centre);
-    this.controls.minDistance = dist * 0.45;
+    this.controls.minDistance = dist * 0.25;
     this.controls.maxDistance = dist * 3.2;
     this.controls.maxPolarAngle = Math.PI * 0.495;   // never dip under the bench
     this.controls.update();
@@ -266,11 +367,425 @@ class ModelViewer {
       position: this.camera.position.clone(),
       target: centre.clone(),
     };
+    if (this.saved && this.saved.position) {
+      this.camera.position.copy(this.saved.position);
+      this.controls.target.copy(this.saved.target);
+      this.controls.update();
+    }
 
     this.ready = true;
+    this.initing = false;
     if (this.status) this.status.textContent = '';
     this.root.classList.add('is-ready');
+    this.setupAnimation(gltf);
+    this.setupViews();
     this.render();
+  }
+
+  // -------------------------------------------------------------------------
+  // animation: one clip, play / pause / scrub, one chip per numbered action
+  // -------------------------------------------------------------------------
+  setupAnimation(gltf) {
+    const clip = gltf.animations && gltf.animations[0];
+    if (!clip) return;
+    let actions = (gltf.scene.userData && gltf.scene.userData.actions) || [];
+    if (typeof actions === 'string') {
+      try { actions = JSON.parse(actions); } catch (e) { actions = []; }
+    }
+    this.clip = clip;
+    this.duration = clip.duration;
+    this.actionList = Array.isArray(actions) ? actions.slice().sort((a, b) => a.time - b.time) : [];
+    this.mixer = new THREE.AnimationMixer(this.model);
+    this.clipAction = this.mixer.clipAction(clip);
+    this.clipAction.play();
+
+    injectStyle();
+    const bar = document.createElement('div');
+    bar.className = 'viewer3d-bar viewer3d-anim';
+    bar.innerHTML = '<button type="button" data-anim="play" aria-pressed="false">Play</button>'
+      + '<input type="range" min="0" step="0.01" aria-label="Animation time">'
+      + '<span class="viewer3d-time"></span><div class="viewer3d-chips"></div>';
+    this.playBtn = bar.querySelector('[data-anim="play"]');
+    this.scrub = bar.querySelector('input');
+    this.timeText = bar.querySelector('.viewer3d-time');
+    this.scrub.max = String(this.duration);
+    this.playBtn.addEventListener('click', () => (this.playing ? this.pause() : this.play()));
+    this.scrub.addEventListener('input', () => { this.pause(); this.seek(Number(this.scrub.value)); });
+    const chips = bar.querySelector('.viewer3d-chips');
+    this.chips = this.actionList.map((a, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = (i + 1) + '. ' + (a.short || a.id);
+      b.title = a.text || a.id;
+      b.dataset.actionId = a.id;
+      b.addEventListener('click', () => this.jumpTo(i));
+      chips.appendChild(b);
+      return b;
+    });
+    const oldBar = this.root.querySelector('.viewer3d-bar:not(.viewer3d-anim)');
+    this.root.insertBefore(bar, oldBar || null);
+    this.animBar = bar;
+
+    const start = this.saved ? this.saved.time : (reducedMotion() ? this.duration : 0);
+    this.seek(Math.min(start, this.duration));
+    if (this.saved ? !this.saved.paused : !reducedMotion()) this.play();
+  }
+
+  play() {
+    if (!this.mixer) return;
+    this.playing = true;
+    this.playBtn.textContent = 'Pause';
+    this.playBtn.setAttribute('aria-pressed', 'true');
+    this.kick();
+  }
+
+  pause() {
+    this.playing = false;
+    if (this.raf) cancelAnimationFrame(this.raf);
+    this.raf = 0;
+    if (this.playBtn) {
+      this.playBtn.textContent = 'Play';
+      this.playBtn.setAttribute('aria-pressed', 'false');
+    }
+  }
+
+  /* Start the frame loop only if the clip is playing, the viewer is on screen and the tab is shown. */
+  kick() {
+    if (!this.playing || !this.ready || this.raf || !this.visible || document.hidden) return;
+    let last = performance.now();
+    const step = (now) => {
+      this.raf = 0;
+      if (!this.playing || !this.ready || !this.visible || document.hidden) return;
+      const dt = Math.min((now - last) / 1000, 0.1);
+      last = now;
+      this.mixer.update(dt);
+      this.syncUi();
+      this.render();
+      this.raf = requestAnimationFrame(step);
+    };
+    this.raf = requestAnimationFrame(step);
+  }
+
+  seek(t) {
+    if (!this.mixer) return;
+    // a looping clip set to exactly its length wraps to 0 (the unassembled pose), so stop just short of it
+    this.mixer.setTime(Math.max(0, Math.min(t, this.duration - 0.001)));
+    this.syncUi();
+    this.render();
+  }
+
+  currentTime() {
+    return this.clipAction ? this.clipAction.time : 0;
+  }
+
+  syncUi() {
+    const t = this.currentTime();
+    if (this.scrub) this.scrub.value = String(t);
+    if (this.timeText) this.timeText.textContent = t.toFixed(1) + ' / ' + this.duration.toFixed(1) + ' s';
+    let active = -1;
+    this.actionList.forEach((a, i) => { if (t + 1e-3 >= a.time) active = i; });
+    if (active !== this.activeChip) {
+      this.activeChip = active;
+      this.chips.forEach((c, i) => c.classList.toggle('is-active', i === active));
+      if (this.hint && active >= 0) this.hint.textContent = this.actionList[active].text;
+      this.applyFocus(active >= 0 ? this.actionList[active] : null);
+    }
+  }
+
+  jumpTo(i) {
+    const a = this.actionList[i];
+    if (!a) return;
+    this.pause();
+    // land just after the action's moment, so its pose is complete
+    this.seek(Math.min(a.time + (a.hold || 0.6), this.duration));
+    this.controls.maxPolarAngle = Math.PI * 0.495;
+    if (a.focus && this.camera) {
+      const f = new THREE.Vector3(a.focus[0], a.focus[2], -a.focus[1]);   // build axes -> Y-up
+      let dir = this.camera.position.clone().sub(this.controls.target).normalize();
+      if (a.view) {   // this moment needs its own angle, e.g. from below for a payload under the frame
+        dir = new THREE.Vector3(a.view[0], a.view[2], -a.view[1]).normalize();
+        if (dir.y < 0) this.controls.maxPolarAngle = Math.PI * 0.97;
+      }
+      const d = a.dist || this.camera.position.distanceTo(this.controls.target) * 0.45;
+      this.controls.target.copy(f);
+      this.camera.position.copy(f).addScaledVector(dir, d);
+      this.controls.update();
+    }
+    this.render();
+  }
+
+  // -------------------------------------------------------------------------
+  // seeing small parts: tap-to-name, focus (dim + ember outline + arrow), magnifier, camera views
+  // -------------------------------------------------------------------------
+  partInfo(obj) {
+    const d = obj.userData || {};
+    const name = d.part || obj.name.replace(/_\d+$/, '').replace(/_/g, ' ');
+    let acc = ACC_TEXT[d.acc] || '';
+    if (d.planned) acc = 'planned spot: not confirmed' + (acc ? '; ' + acc : '');
+    if (d.vis_colour) acc += (acc ? '; ' : '') + 'colour shown for visibility; yours may differ';
+    return { name, acc };
+  }
+
+  pick(cx, cy) {
+    if (!this.ready || !this.model) return;
+    const r = this.renderer.domElement.getBoundingClientRect();
+    const ndc = new THREE.Vector2(((cx - r.left) / r.width) * 2 - 1, -((cy - r.top) / r.height) * 2 + 1);
+    const ray = new THREE.Raycaster();
+    ray.setFromCamera(ndc, this.camera);
+    const hits = ray.intersectObject(this.model, true).filter((h) => h.object.isMesh && h.object.visible
+      && h.object.userData.kind !== 'cone' && h.object.scale.x > 0.05);
+    this.showTag(hits.length ? this.partInfo(hits[0].object) : null, cx - r.left, cy - r.top);
+  }
+
+  showTag(info, x, y) {
+    if (!this.tag) {
+      this.tag = document.createElement('div');
+      this.tag.className = 'viewer3d-tag';
+      this.canvasHost.appendChild(this.tag);
+    }
+    clearTimeout(this.tagTimer);
+    if (!info) { this.tag.style.display = 'none'; return; }
+    this.tag.replaceChildren();
+    const b = document.createElement('b'); b.textContent = info.name; this.tag.appendChild(b);
+    if (info.acc) { const s = document.createElement('span'); s.textContent = info.acc; this.tag.appendChild(s); }
+    this.tag.style.left = Math.round(x + 10) + 'px';
+    this.tag.style.top = Math.round(y + 10) + 'px';
+    this.tag.style.display = 'block';
+    this.lastTag = info;
+    this.tagTimer = setTimeout(() => { if (this.tag) this.tag.style.display = 'none'; }, 5000);
+  }
+
+  setupViews() {
+    const names = { pilot: 'Flying camera view', thermal: 'Thermal camera view' };
+    const keys = Object.keys(this.cones || {}).filter((k) => names[k]);
+    const bar = this.animBar || this.root.querySelector('.viewer3d-bar');
+    if (!bar || (!keys.length && !this.animBar)) return;
+    const holder = document.createElement('span');
+    holder.className = 'viewer3d-views';
+    if (this.animBar) {
+      const fbtn = document.createElement('button');
+      fbtn.type = 'button'; fbtn.dataset.view = 'focus'; fbtn.textContent = 'Focus';
+      fbtn.setAttribute('aria-pressed', String(this.focusOn));
+      fbtn.title = 'Dim everything else and outline the parts this step uses';
+      fbtn.addEventListener('click', () => {
+        this.focusOn = !this.focusOn; store.set('focus', this.focusOn ? '1' : '0');
+        fbtn.setAttribute('aria-pressed', String(this.focusOn));
+        this.applyFocus(this.activeChip >= 0 ? this.actionList[this.activeChip] : null);
+      });
+      holder.appendChild(fbtn);
+    }
+    keys.forEach((k) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.dataset.view = k; b.textContent = names[k];
+      b.setAttribute('aria-pressed', String(!!this.coneOn[k]));
+      b.title = k === 'pilot' ? 'What the flying camera sees (you fly by this picture)'
+        : 'What the thermal camera sees (it finds heat; it points straight down)';
+      b.addEventListener('click', () => this.toggleView(k));
+      holder.appendChild(b);
+    });
+    Object.keys(this.cones).forEach((c) => { this.cones[c].visible = !!this.coneOn[c]; });
+    if (this.tiltPivot) {
+      const d = this.tiltPivot.userData;
+      const q0 = this.tiltPivot.quaternion.clone();
+      const lab = document.createElement('label');
+      lab.className = 'viewer3d-tilt';
+      lab.title = d.why || '';
+      const span = document.createElement('span');
+      const inp = document.createElement('input');
+      inp.type = 'range'; inp.min = String(d.min); inp.max = String(d.max); inp.step = String(d.step || 5);
+      inp.value = String(this.savedTilt != null ? this.savedTilt : d.default);
+      inp.setAttribute('aria-label', 'Flying camera tilt in degrees');
+      const apply = () => {
+        const deg = Number(inp.value);
+        this.tiltDeg = deg;
+        span.textContent = 'Flying camera tilt ' + deg + '\u00b0' + (deg === d.default ? ' (start here)' : '');
+        // up-tilt about the camera's side axis: build +Y is three -Z, so +delta about three +Z
+        const dq = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), ((deg - d.default) * Math.PI) / 180);
+        this.tiltPivot.quaternion.copy(dq.multiply(q0));
+        this.render();
+      };
+      inp.addEventListener('input', apply);
+      lab.append(span, inp);
+      holder.appendChild(lab);
+      this.tiltInput = inp;
+      apply();
+    }
+    bar.insertBefore(holder, bar.querySelector('.viewer3d-chips') || null);
+    this.viewHolder = holder;
+  }
+
+  toggleView(k) {
+    this.coneOn[k] = !this.coneOn[k];
+    if (this.coneOn[k]) Object.keys(this.coneOn).forEach((o) => { if (o !== k) this.coneOn[o] = false; });
+    if (this.viewHolder) {
+      this.viewHolder.querySelectorAll('[data-view]').forEach((x) => {
+        if (x.dataset.view !== 'focus') x.setAttribute('aria-pressed', String(!!this.coneOn[x.dataset.view]));
+      });
+    }
+    Object.keys(this.cones || {}).forEach((c) => { this.cones[c].visible = !!this.coneOn[c]; });
+    this.render();
+  }
+
+  material(kind, orig) {
+    const key = kind + ':' + orig.uuid;
+    let m = this.matCache.get(key);
+    if (!m) {
+      m = orig.clone();
+      if (kind === 'dim') { m.transparent = true; m.opacity = 0.16; m.depthWrite = false; }
+      else {
+        // the parts this step uses: ember glow, tinted toward ember, and solid enough to see even when
+        // the part is pale (paper) or see-through (props, 'planned' payload)
+        m.emissive = new THREE.Color(EMBER); m.emissiveIntensity = 0.75;
+        if (m.color) {
+          const hsl = {}; m.color.getHSL(hsl);
+          m.color = m.color.clone().lerp(new THREE.Color(EMBER), hsl.l > 0.75 ? 0.9 : 0.65);   // near-white parts need more
+          if (hsl.l > 0.75) { m.emissiveIntensity = 0.1; m.color.multiplyScalar(0.5); }   // strong light washes pale parts to peach
+        }
+        if (m.transparent) { m.opacity = 1; m.transparent = false; m.depthWrite = true; }
+      }
+      this.matCache.set(key, m);
+    }
+    return m;
+  }
+
+  involvedFor(a) {
+    const pre = (a && a.shows) || [];
+    if (!pre.length || !this.model) return [];
+    const out = [];
+    this.model.traverse((o) => { if (o.isMesh && pre.some((p) => o.name.startsWith(p))) out.push(o); });
+    return out;
+  }
+
+  applyFocus(a) {
+    if (!this.model) return;
+    this.clearHighlight();
+    for (const o of this.dimmed) o.material = o.userData._orig;
+    this.dimmed = [];
+    if (this.arrow) { this.scene.remove(this.arrow); this.arrow.dispose?.(); this.arrow = null; }
+    this.focusParts = this.focusOn && a ? this.involvedFor(a) : [];
+    if (this.focusParts.length) {
+      const inv = new Set(this.focusParts);
+      this.model.traverse((o) => {
+        if (!o.isMesh || o.userData.kind === 'cone') return;
+        if (!o.userData._orig) o.userData._orig = o.material;
+        o.material = this.material(inv.has(o) ? 'glow' : 'dim', o.userData._orig);
+        this.dimmed.push(o);
+      });
+      this.arrow = new THREE.ArrowHelper(new THREE.Vector3(0, -1, 0), new THREE.Vector3(), 0.03, EMBER, 0.012, 0.008);
+      this.scene.add(this.arrow);
+    }
+    this.render();
+  }
+
+  focusBox() {
+    const box = new THREE.Box3();
+    const tmp = new THREE.Box3();
+    this.model.updateMatrixWorld(true);
+    for (const o of this.focusParts) {
+      if (o.scale.x < 0.05) continue;
+      o.geometry.computeBoundingBox();
+      tmp.copy(o.geometry.boundingBox).applyMatrix4(o.matrixWorld);
+      box.union(tmp);
+    }
+    return box;
+  }
+
+  /* The magnifier: a second camera drawn into a corner of the SAME canvas (scissor), never a second WebGL context. */
+  insetCamera() {
+    const pose = Object.keys(this.coneOn).find((k) => this.coneOn[k] && this.camPoses && this.camPoses[k]);
+    if (pose) {
+      const p = this.camPoses[pose];
+      const d = p.userData;
+      const cam = this.viewCam || (this.viewCam = new THREE.PerspectiveCamera(50, 1.5, 0.005, 20));
+      cam.fov = d.vfov;
+      cam.aspect = Math.tan((d.hfov * Math.PI) / 360) / Math.tan((d.vfov * Math.PI) / 360);
+      cam.updateProjectionMatrix();
+      p.getWorldPosition(cam.position);
+      const dir = new THREE.Vector3(d.dir[0], d.dir[2], -d.dir[1])
+        .applyQuaternion(p.getWorldQuaternion(new THREE.Quaternion()));
+      cam.up.set(0, 1, 0);
+      if (Math.abs(dir.clone().normalize().y) > 0.98) cam.up.set(1, 0, 0);   // looking straight down
+      cam.lookAt(cam.position.clone().add(dir));
+      return { cam, title: pose === 'pilot' ? 'Flying camera sees' : 'Thermal camera sees (heat finder)' };
+    }
+    if (!this.focusParts || !this.focusParts.length) return null;
+    const box = this.focusBox();
+    if (box.isEmpty()) return null;
+    const c = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3()).length();
+    const dir = this.camera.position.clone().sub(this.controls.target).normalize();
+    const cam = this.magCam || (this.magCam = new THREE.PerspectiveCamera(32, 4 / 3, 0.002, 20));
+    cam.aspect = 4 / 3; cam.updateProjectionMatrix();
+    cam.position.copy(c).addScaledVector(dir, Math.max(size * 2.0, 0.04));
+    cam.lookAt(c);
+    if (this.arrow) {
+      const len = Math.max(size * 0.9, 0.02);
+      this.arrow.position.copy(c).add(new THREE.Vector3(0, len + size * 0.5, 0));
+      this.arrow.setLength(len, Math.min(len * 0.4, 0.014), Math.min(len * 0.25, 0.009));
+    }
+    return { cam, title: 'Close-up' };
+  }
+
+  // -------------------------------------------------------------------------
+  // release: give the WebGL context back; re-init restores where it was
+  // -------------------------------------------------------------------------
+  release() {
+    if (!this.ready && !this.initing) return;
+    if (document.fullscreenElement === this.root) return;
+    if (this.ready && this.camera) {
+      this.savedTilt = this.tiltDeg;
+      this.saved = {
+        position: this.camera.position.clone(),
+        target: this.controls.target.clone(),
+        time: this.currentTime(),
+        paused: !this.playing,
+      };
+    }
+    this.gen += 1;
+    this.pause();
+    this.clearHighlight();
+    for (const o of this.dimmed) o.material = o.userData._orig;
+    this.dimmed = [];
+    this.focusParts = [];
+    for (const m of this.matCache.values()) m.dispose();
+    this.matCache.clear();
+    if (this.tag) { this.tag.remove(); this.tag = null; }
+    if (this.insetBox) { this.insetBox.remove(); this.insetBox = null; }
+    if (this.viewHolder) { this.viewHolder.remove(); this.viewHolder = null; }
+    this.arrow = this.magCam = this.viewCam = null;
+    if (this.sizeWatch) { this.sizeWatch.disconnect(); this.sizeWatch = null; }
+    if (this.controls) this.controls.dispose();
+    if (this.mixer) {
+      this.mixer.stopAllAction();
+      if (this.model) this.mixer.uncacheRoot(this.model);
+    }
+    if (this.scene) {
+      this.scene.traverse((obj) => {
+        if (obj.geometry) obj.geometry.dispose();
+        if (obj.material) [].concat(obj.material).forEach(disposeMaterial);
+        if (obj.isLight && obj.shadow && obj.shadow.map) obj.shadow.dispose();
+      });
+    }
+    if (this.renderer) {
+      this.renderer.dispose();
+      this.renderer.forceContextLoss();
+      this.renderer.domElement.remove();
+      liveRenderers -= 1;
+    }
+    if (this.labelHost) this.labelHost.replaceChildren();
+    if (this.animBar) this.animBar.remove();
+    this.animBar = this.playBtn = this.scrub = this.timeText = null;
+    this.chips = [];
+    this.labels = [];
+    this.pins = [];
+    this.scene = this.camera = this.renderer = this.labelRenderer = this.controls = null;
+    this.model = this.mixer = this.clip = this.clipAction = null;
+    this.activeChip = undefined;
+    this.ready = false;
+    this.initing = false;
+    this.root.classList.remove('is-ready');
+    if (this.status) this.status.textContent = 'Loading 3D…';
+    if (this.onRelease) this.onRelease(this);
   }
 
   meshBounds(model) {
@@ -278,10 +793,10 @@ class ModelViewer {
     const tmp = new THREE.Box3();
     model.updateWorldMatrix(true, true);
     model.traverse((obj) => {
-      if (obj.isMesh && obj.geometry) {
+      if (obj.isMesh && obj.geometry && obj.userData.kind !== 'cone') {
         obj.geometry.computeBoundingBox();
         tmp.copy(obj.geometry.boundingBox).applyMatrix4(obj.matrixWorld);
-        box.union(tmp);
+        if (!tmp.isEmpty()) box.union(tmp);
       }
     });
     return box;
@@ -316,7 +831,8 @@ class ModelViewer {
   }
 
   activatePin(el, data) {
-    this.pins.forEach((pin, i) => {
+    if (this.dimmed.length) { for (const o of this.dimmed) o.material = o.userData._orig; this.dimmed = []; this.focusParts = []; }
+    this.pins.forEach((pin) => {
       if (pin.element) pin.element.classList.remove('is-active');
     });
     el.classList.add('is-active');
@@ -375,7 +891,37 @@ class ModelViewer {
 
   render() {
     if (!this.ready) return;
-    this.renderer.render(this.scene, this.camera);
+    const r = this.renderer;
+    const inset = this.insetCamera();
+    if (this.arrow) this.arrow.visible = !!inset;
+    const W = this.canvasHost.clientWidth || 640;
+    const H = this.canvasHost.clientHeight || 420;
+    r.setScissorTest(false);
+    r.setViewport(0, 0, W, H);
+    r.render(this.scene, this.camera);
+    if (inset) {
+      const w = Math.round(Math.min(W * 0.38, 300));
+      const h = Math.round(w / inset.cam.aspect);
+      const x = W - w - 8;
+      const y = 8;
+      r.setScissorTest(true);
+      r.setScissor(x, y, w, h);
+      r.setViewport(x, y, w, h);
+      r.render(this.scene, inset.cam);
+      r.setScissorTest(false);
+      r.setViewport(0, 0, W, H);
+      if (!this.insetBox) {
+        this.insetBox = document.createElement('div');
+        this.insetBox.className = 'viewer3d-inset';
+        this.canvasHost.appendChild(this.insetBox);
+      }
+      Object.assign(this.insetBox.style, { display: 'block', right: '8px', bottom: '8px', width: w + 'px', height: h + 'px' });
+      this.insetBox.textContent = inset.title;
+      this.insetShown = inset.title;
+    } else {
+      this.insetShown = null;
+      if (this.insetBox) this.insetBox.style.display = 'none';
+    }
     if (this.labelsOn) this.labelRenderer.render(this.scene, this.camera);
   }
 }
@@ -393,6 +939,8 @@ function hasWebGL() {
   }
 }
 
+let pageViewers = [];
+
 function boot() {
   const roots = [...document.querySelectorAll('.viewer3d[data-model]')];
   if (!roots.length) return;
@@ -403,17 +951,43 @@ function boot() {
   }
 
   const viewers = roots.map((root) => new ModelViewer(root));
+  pageViewers = viewers;
+  const alive = new Set();
+
+  /* Keep at most MAX_ALIVE contexts: release the live viewers furthest from the middle of the screen. */
+  const distance = (v) => {
+    const r = v.root.getBoundingClientRect();
+    return Math.abs((r.top + r.bottom) / 2 - window.innerHeight / 2);
+  };
+  const enforce = (keep) => {
+    if (alive.size <= MAX_ALIVE) return;
+    const extra = [...alive].filter((v) => v !== keep).sort((a, b) => distance(b) - distance(a));
+    while (alive.size > MAX_ALIVE && extra.length) extra.shift().release();
+  };
+  viewers.forEach((v) => {
+    v.onInit = (me) => { alive.add(me); enforce(me); };
+    v.onRelease = (me) => { alive.delete(me); };
+  });
 
   const io = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       const viewer = viewers[roots.indexOf(entry.target)];
       if (!viewer) return;
       viewer.visible = entry.isIntersecting;
-      if (entry.isIntersecting) viewer.init();
+      if (entry.isIntersecting) {
+        viewer.init();
+        viewer.kick();
+      } else {
+        viewer.release();
+      }
     });
   }, { rootMargin: '250px 0px' });
 
   roots.forEach((root) => io.observe(root));
+
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) viewers.forEach((v) => v.kick());
+  });
 
   let resizeTimer = 0;
   window.addEventListener('resize', () => {
@@ -433,7 +1007,22 @@ window.BuildGuideViewer = {
     viewer.visible = true;
     viewer.init();
     return viewer;
-  }
+  },
+  /* The page's viewers, for the test page that proves each action's pose (scripts/build/viewer-test.html). */
+  instances() {
+    return pageViewers.slice();
+  },
+  /* Read-only numbers for tests and for measuring load on a slow laptop. */
+  stats() {
+    return {
+      liveRenderers,
+      viewers: pageViewers.map((v) => ({
+        src: v.src, ready: v.ready, visible: v.visible, playing: !!v.playing,
+        clip: v.clip ? v.clip.name : null, duration: v.duration || 0,
+        actions: (v.actionList || []).map((a) => a.id), chips: (v.chips || []).length,
+      })),
+    };
+  },
 };
 
 if (document.readyState === 'loading') {

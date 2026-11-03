@@ -128,7 +128,7 @@ that chain fails, the answer comes from the offline engine with a one-line note 
 
 ## The gate
 
-24 suites, 625 named checks, one exit code:
+28 suites, 1499 named checks, one exit code:
 
 ```powershell
 node scripts/dev/gate.js            # everything

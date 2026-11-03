@@ -35,7 +35,7 @@
   :focus-visible { outline: 3px solid var(--ember); outline-offset: 2px; border-radius: 4px; }
   /* Hero + tabs */
   header.hero { background: linear-gradient(135deg, var(--pine-deep) 0%, var(--pine) 55%, #2a7a63 100%);
-                color: #fff; padding: 26px 20px 0; position: relative; overflow: hidden; }
+                color: #fff; padding: 16px 20px 0; position: relative; overflow: hidden; }
   header.hero::after { content: ""; position: absolute; inset: 0; pointer-events: none;
     background: radial-gradient(600px 200px at 85% -30%, rgba(255,180,90,.18), transparent 70%); }
   .wrap { max-width: 1020px; margin: 0 auto; position: relative; z-index: 1; }
@@ -45,16 +45,34 @@
   .brand .mark { flex: none; width: 56px; height: 56px; filter: drop-shadow(0 2px 10px rgba(0,0,0,.35)); }
   .brand .mark svg { display: block; width: 100%; height: 100%; }
   @media (max-width: 480px) { .brand { gap: 12px; } .brand .mark { width: 44px; height: 44px; } }
-  header.hero .sub { color: #d9ebe3; max-width: 720px; margin: 10px 0 16px; font-size: 16px; }
-  .build-time { margin: 0 0 16px; padding: 14px 16px; border: 1px solid rgba(255,255,255,.24);
-                border-radius: 12px; background: rgba(0,0,0,.16); }
+  header.hero .sub { color: #d9ebe3; max-width: 720px; margin: 8px 0 10px; font-size: 15px; }
+  .build-time { margin: 0; padding: 14px 16px; border: 1px solid var(--line);
+                border-radius: 12px; background: var(--pine-pale); }
   .build-time label { display: flex; justify-content: space-between; gap: 12px; font-weight: 700; }
-  .build-time input[type="range"] { width: 100%; margin: 10px 0 12px; accent-color: #ffd9a8; }
+  .build-time input[type="range"] { width: 100%; margin: 10px 0 12px; accent-color: var(--pine); }
   .build-time .time-results { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-  .build-time .time-result { padding: 8px 10px; border-radius: 8px; background: rgba(255,255,255,.1); }
-  .build-time .time-result strong { display: block; color: #ffd9a8; font-size: 18px; }
-  .build-time .time-result span { color: #d9ebe3; font-size: 12.5px; }
+  .build-time .time-result { padding: 8px 10px; border-radius: 8px; background: #fff; }
+  .build-time .time-result strong { display: block; color: var(--pine); font-size: 18px; }
+  .build-time .time-result span { color: var(--soft); font-size: 12.5px; }
   @media (max-width: 600px) { .build-time .time-results { grid-template-columns: 1fr; } }
+  /* "Where you are" card: the first thing on the page */
+  .here-wrap { margin-top: 18px; padding: 0 20px; }
+  .here-card { display: grid; grid-template-columns: 1.1fr 1fr; gap: 18px; align-items: start;
+               background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+               padding: 18px 20px; box-shadow: var(--shadow); }
+  .here-label { display: block; font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+                font-weight: 700; color: var(--ember); margin: 0 0 4px; }
+  .here-step { font-size: 19px; line-height: 1.35; font-weight: 700; color: var(--pine-deep); margin: 0 0 10px; }
+  .here-go { border: 0; background: var(--pine); color: #fff; border-radius: 999px; padding: 10px 20px;
+             font-weight: 700; font-size: 15px; margin: 0 0 14px; }
+  .here-go:hover { background: var(--pine-deep); }
+  .here-go[hidden] { display: none; }
+  .here-note-label { display: block; font-size: 13px; font-weight: 700; color: var(--soft); margin: 0 0 4px; }
+  .here-note { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px;
+               resize: vertical; background: #fffdf8; color: var(--ink); font: inherit; font-size: 14.5px; }
+  .here-card .build-time output { white-space: nowrap; }
+  .here-card .build-time .time-result strong { font-size: 16px; }
+  @media (max-width: 760px) { .here-card { grid-template-columns: 1fr; } }
   .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
   .pill { display: inline-block; font-size: 12.5px; padding: 5px 13px; border-radius: 999px;
           font-weight: 600; background: rgba(255,255,255,.14); color: #fff;
@@ -533,32 +551,41 @@
         <h1>Build a Fire-Detecting Drone</h1>
       </div>
     </div>
-    <p class="sub">A complete order and build plan for a thermal-camera FPV quadcopter.
-    Unavailable parts are replaced with live alternatives, every required category is priced, and
-    the payload software is included and tested. Follow the assembly and acceptance checks before flight.</p>
+    <p class="sub">A parts list, step-by-step build and tested heat-detector software for a thermal-camera FPV drone.</p>
     <div class="pill-row">
       <span class="pill">&#127841; CA$1,799.69 before freight</span>
       <span class="pill">&#9201; 46-hour estimate</span>
       <span class="pill">&#128293; 32&times;24 thermal prototype</span>
-      <span class="pill">&#128218; 7 interactive tabs</span>
     </div>
     <div class="progressrow">
       <div class="bar"><span id="globalBar"></span></div>
       <div id="globalLabel">0% complete</div>
     </div>
-    <section class="build-time" aria-labelledby="build-time-title">
-      <label id="build-time-title" for="hours-week">Hours you can put in per week
-        <output id="hours-week-value" for="hours-week">8 hours/week</output></label>
-      <input id="hours-week" type="range" min="2" max="40" step="2" value="8">
-      <div class="time-results" aria-live="polite">
-        <div class="time-result"><strong>46 hours</strong><span>Estimated total hands-on build time</span></div>
-        <div class="time-result"><strong id="build-weeks">6 weeks</strong><span>Estimated time to finish</span></div>
-        <div class="time-result"><strong id="build-finish-date">—</strong><span>Projected finish date from today</span></div>
-      </div>
-    </section>
     <div role="tablist" aria-label="Guide sections" id="tabs"></div>
   </div>
 </header>
+
+<div class="wrap here-wrap">
+  <section class="here-card" id="where-you-are" aria-labelledby="here-title">
+    <div class="here-main">
+      <span class="here-label" id="here-title">Where you are</span>
+      <p class="here-step" id="here-step" aria-live="polite">Loading your next step&hellip;</p>
+      <button type="button" class="here-go" id="here-go" hidden>Go to this step</button>
+      <label class="here-note-label" for="here-note-text">Where I left off</label>
+      <textarea id="here-note-text" class="here-note" rows="2" maxlength="300" placeholder="One line for next time, for example: soldered 2 of 4 motors"></textarea>
+    </div>
+    <section class="build-time" aria-labelledby="build-time-title">
+      <label id="build-time-title" for="hours-week">Hours this week
+        <output id="hours-week-value" for="hours-week">8 hours/week</output></label>
+      <input id="hours-week" type="range" min="2" max="40" step="2" value="8">
+      <div class="time-results" aria-live="polite">
+        <div class="time-result"><strong>46 hours</strong><span>Total hands-on build time</span></div>
+        <div class="time-result"><strong id="build-weeks">6 weeks</strong><span>Time to finish</span></div>
+        <div class="time-result"><strong id="build-finish-date">—</strong><span>Finish date from today</span></div>
+      </div>
+    </section>
+  </section>
+</div>
 
 <main class="wrap">
 <section role="tabpanel" id="p-why" aria-labelledby="t-why">
@@ -1430,14 +1457,16 @@
                   <li>Clip the receiver's small antenna on before any power.</li>
                   <li>Wire camera &rarr; FC <code>CAM</code> and FC <code>VTX</code> &rarr; VTX, so Betaflight's OSD (pack voltage, timer, warnings) reaches your screen &mdash; this board has an AT7456E OSD chip. If it turns out to have no analog pads, wire camera &rarr; VTX direct and rely on radio telemetry instead.</li>
                   <li>Mount the VTX and screw the <strong>5.8 GHz</strong> antenna on <em>before</em> any power.</li>
-                  <li>In Betaflight enable serial RX + CRSF on that UART. Then flash the RP1 V2 to the same major ExpressLRS version as your Pocket (the receiver ships on v2.4), set the Canada regulatory domain, and only then bind.</li>
+                  <li>In Betaflight enable serial RX + CRSF on that UART. Then flash the RP1 V2 to the same major ExpressLRS version as your Pocket (the receiver ships on v2.4), set the 2.4 GHz regulatory domain to ISM 2400 (ExpressLRS has no separate Canada option; do not pick EU CE/LBT) on both the radio and the receiver, and only then bind.</li>
+                  <li>Set up Betaflight with the flight controller on <strong>USB only: no battery, no propellers</strong>. Check the board target against the GEPRC manual. Set the ESC protocol to the one the ESC manual names (DShot). Set the receiver to serial RX / CRSF and confirm the channels move with the sticks. Set an arm switch. Set <strong>failsafe stage 2 to Drop</strong>, so the motors stop if the radio link is lost. Set the battery maximum cell voltage to <strong>4.35 V</strong> (the packs are LiHV). Calibrate the accelerometer with the frame level.</li>
+                  <li>Set the VTX to its lowest power (25 mW) on a factory-enabled channel for bench tests.</li>
                 </ol>
               </div>
-              <p class="asm-warn"><strong>&#9888; Safety:</strong> never power the VTX without its antenna &mdash; it burns out in seconds.</p>
+              <p class="asm-warn"><strong>&#9888; Safety:</strong> never power the VTX without its antenna &mdash; it burns out in seconds. Propellers stay off until Step 8.</p>
               <div class="asm-check">
                 <span class="asm-label">&#10003; Before you go on</span>
                 <ul>
-                  <li>All radio channels respond &middot; failsafe cuts the throttle &middot; picture on the monitor.</li>
+                  <li>Betaflight's Receiver tab shows every channel moving with the sticks &middot; the arm switch arms and disarms in the Configurator &middot; both antennas fitted &middot; nothing powered from a battery yet (the picture and failsafe tests come in Step 8).</li>
                 </ul>
               </div>
               <label class="asm-done"><input type="checkbox" data-asm="4"> This step is done</label>
@@ -1604,9 +1633,11 @@
               <div class="asm-do">
                 <span class="asm-label">What to do</span>
                 <ol class="asm-actions">
+                  <li><strong>Do not fit the payload to the aircraft until the bare quad has made its first hover</strong> (Step 8, items 2&ndash;5). Do the measuring and the bench work below first; the final mounting comes after that hover.</li>
                   <li><strong>The rule: the thermal lens needs an unobstructed vertical line to the ground.</strong> Mounted on top of the frame it just stares at the top plate and the battery.</li>
                   <li><strong>Measure before you drill or cut.</strong> Hold the Pi and both sensor boards in place and sight down through the lens position. Pi under the bottom plate (or over a cutout you have measured); the MLX90640 hangs below it, lens down; the PA1010D sits on top, patch antenna up.</li>
                   <li>Fix the Pi on nylon standoffs and zip-tie it down, then add the Kevlar strap as the second lock. Strap the bare MLX breakout &mdash; it has no mounting holes of its own.</li>
+                  <li>Nothing hanging below the bottom plate may be the lowest point of the aircraft: a landing on the lens or the Pi will break it. Fit landing legs or bumpers that stand lower than the payload before you fly with it. <em>(Open item: the legs are not chosen yet; no 3D printer, so they must be off-the-shelf parts.)</em></li>
                   <li>Route every cable out of the prop circles. Tie the loose ends down.</li>
                   <li>Slide the battery on the grip pad until the drone balances on its centre.</li>
                 </ol>
@@ -1664,11 +1695,12 @@
                 <span class="asm-label">What to do &mdash; in this order</span>
                 <ol class="asm-actions">
                   <li>Run the software tests and the demo on the laptop.</li>
-                  <li>Power up and wait for a GPS fix.</li>
-                  <li>Check the radio and the video on the bench.</li>
-                  <li>Props OFF &mdash; check motor order and direction in Betaflight.</li>
-                  <li>First hover: 1 metre up &rarr; land &rarr; feel the motors for heat. Never above 122 m (400 ft) AGL.</li>
-                  <li>Heat test: a hot plate among cold things. Write down what it finds.</li>
+                  <li>Bench power with props OFF: connect a charged pack (Step 5) through the smoke stopper. Check that every radio channel responds, that the failsafe cuts the throttle when you switch the radio off, and that the picture appears on the monitor.</li>
+                  <li>Still props OFF: in Betaflight's Motors tab, check each motor's number and spin direction against the diagram.</li>
+                  <li>Fit the props. Each prop has a CW or CCW marking; it goes on the motor that spins that way in the Betaflight diagram. Tighten the nut and check the prop spins freely and straight.</li>
+                  <li>First hover of the <strong>bare quad</strong>, payload not yet mounted: 1 metre up &rarr; land &rarr; feel the motors for heat. Only after you hold the Basic certificate, the drone is registered and marked, and the site checks are done. Never above 122 m (400 ft) AGL. If you fly by a screen, you need a visual observer; until then, fly looking at the drone.</li>
+                  <li>Now mount the payload (Step 7), wait for a GPS fix outdoors, and hover 1 metre again to check the balance.</li>
+                  <li>Heat test: a hot plate among cold things, with the drone held steady and the props OFF. Write down what it finds.</li>
                 </ol>
               </div>
               <p class="asm-warn"><strong>&#9888; Safety:</strong> never near a wildfire &mdash; the law says 5 nautical miles (9.3 km). Only controlled targets on private land with permission.</p>
@@ -1710,7 +1742,7 @@
         <li><label><input type="checkbox" data-key="s-3"><span><strong>3 &middot; Solder and inspect the stack</strong>
           <small>Follow the exact FC/ESC manual for motor order, battery lead and capacitor. Use eye protection, ventilation and a smoke stopper on first power. Done: polarity and continuity checked, no bridges or loose wires.</small></span></label></li>
         <li><label><input type="checkbox" data-key="s-4"><span><strong>4 &middot; RP1 V2 serial receiver + flight controller</strong>
-          <small>Do not use the PWM-only ER4 example. Wire the RP1's 5V and GND, receiver TX to FC R2 and receiver RX to FC T2; secure the included UFL antenna. Enable UART2 serial RX and CRSF, then bind with compatible ELRS firmware.</small></span></label></li>
+          <small>Do not use the PWM-only ER4 example. Wire the RP1's 5V and GND, receiver TX to the FC's RX pad and receiver RX to the FC's TX pad on a free UART (read the real pad name from the GEPRC manual; "R2/T2" is unconfirmed for this board); secure the included UFL antenna. Enable serial RX and CRSF on that UART. Flash the receiver to the same major ExpressLRS version as the radio (it ships on v2.4), set the ISM 2400 domain on both, then bind.</small></span></label></li>
         <li><label><input type="checkbox" data-key="s-5"><span><strong>5 &middot; Betaflight setup (props OFF)</strong>
           <small>Verify motor order/direction at a safe minimum output, channel map, arm switch and failsafe. Configure motor behaviour deliberately rather than assuming armed motors must idle. Done: correct channel response and immediate disarm/throttle-cut behaviour.</small></span></label></li>
         <li><label><input type="checkbox" data-key="s-6"><span><strong>6 &middot; First hover &mdash; legal area, no payload</strong>
@@ -2150,6 +2182,34 @@ while True:
     const pass = quizPassCount();
     document.getElementById("score-overview").textContent =
       pass + " of " + Object.keys(QUIZZES).length + " passed";
+    paintHere();
+  }
+
+  /* ---------- "Where you are": the one next action, plus a note to your future self ---------- */
+  const hereStep = document.getElementById("here-step");
+  const hereGo = document.getElementById("here-go");
+  const hereNote = document.getElementById("here-note-text");
+  hereNote.value = typeof saved.note === "string" ? saved.note : "";
+  hereNote.addEventListener("input", function () { saved.note = hereNote.value; save(); });
+  let hereTarget = null;
+  hereGo.addEventListener("click", function () {
+    if (!hereTarget) { return; }
+    openTab("steps");
+    const group = hereTarget.closest("details");
+    if (group) { group.open = true; }
+    hereTarget.scrollIntoView({ block: "center" });
+    hereTarget.focus();
+  });
+  function paintHere() {
+    hereTarget = boxes.find(function (b) { return /^s-/.test(b.dataset.key) && !b.checked; }) || null;
+    if (!hereTarget) {
+      hereStep.textContent = "Every build step is ticked. Nice work.";
+      hereGo.hidden = true;
+      return;
+    }
+    const title = hereTarget.parentElement.querySelector("strong");
+    hereStep.textContent = "Next: " + (title ? title.textContent.replace(/\s+/g, " ").trim() : hereTarget.dataset.key);
+    hereGo.hidden = false;
   }
   /* ---------- Quiz bank: answers verified against sources ---------- */
   const QUIZZES = {

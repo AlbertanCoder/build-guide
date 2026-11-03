@@ -1,0 +1,129 @@
+{
+ "pack_v": {
+  "min": 13.2,
+  "nominal": 15.2,
+  "max": 17.4,
+  "src": "R12 '15.2V (LiHV)'; R42 '4.35V LiHv' x 4"
+ },
+ "rated": [
+  {
+   "part": "ESC",
+   "min": 9.0,
+   "max": 26.099999999999998,
+   "on": "pack",
+   "src": "R2 'Input Voltage: 3-6S Lipo'"
+  },
+  {
+   "part": "FC",
+   "min": 9.0,
+   "max": 26.099999999999998,
+   "on": "pack",
+   "src": "R2 'Input Voltage: 3-6S LiPo'"
+  },
+  {
+   "part": "VTX",
+   "min": 6.0,
+   "max": 28.0,
+   "on": "9V rail",
+   "src": "R9 'Input ... 6V to 28V (2S - 6S) VBat'"
+  },
+  {
+   "part": "camera",
+   "min": 5.0,
+   "max": 36.0,
+   "on": "5V rail",
+   "src": "rv-phoenix 'Power: DC 5-36V'"
+  },
+  {
+   "part": "receiver",
+   "min": 5.0,
+   "max": 5.0,
+   "on": "5V rail",
+   "src": "R7 'Working voltage: 5v'"
+  },
+  {
+   "part": "Pi Zero 2 W",
+   "min": 5.0,
+   "max": 5.25,
+   "on": "5V rail",
+   "src": "kit supply 'Micro-USB Power Supply, 5.1V/2.5A' (R24); 5.25 V upper limit NOT sourced"
+  },
+  {
+   "part": "MLX90640",
+   "min": 3.0,
+   "max": 6.0,
+   "on": "3V3 (HAT)",
+   "src": "R19 '3-6V supply'"
+  },
+  {
+   "part": "PA1010D",
+   "min": 3.0,
+   "max": 5.0,
+   "on": "3V3 (HAT)",
+   "src": "R20 '3V to 5V compatible'"
+  },
+  {
+   "part": "smoke stopper",
+   "min": 7.0,
+   "max": 25.0,
+   "on": "pack",
+   "src": "R14 'Input Voltage: 7-25V'"
+  },
+  {
+   "part": "monitor",
+   "min": 6.0,
+   "max": 26.099999999999998,
+   "on": "pack",
+   "src": "R17 '2-6S DC IN'"
+  }
+ ],
+ "rails": {
+  "5V": {
+   "amps": 3.0,
+   "src": "R2 '5V 3A'"
+  },
+  "9V": {
+   "amps": 2.5,
+   "src": "R2 '9V 2.5A'"
+  }
+ },
+ "loads": [
+  {
+   "part": "VTX at 25 mW",
+   "rail": "9V",
+   "amps": 0.25,
+   "src": "R9 '25mW: 250mA'"
+  },
+  {
+   "part": "Pi Zero 2 W",
+   "rail": "5V",
+   "amps": null,
+   "src": "not published as a draw (the kit's 2.5 A is the supply rating)"
+  },
+  {
+   "part": "receiver",
+   "rail": "5V",
+   "amps": null,
+   "src": "not published"
+  },
+  {
+   "part": "camera",
+   "rail": "5V",
+   "amps": null,
+   "src": "not published"
+  },
+  {
+   "part": "MLX90640 + PA1010D",
+   "rail": "5V via the Pi's 3V3",
+   "amps": null,
+   "src": "not fetched"
+  }
+ ],
+ "iron": {
+  "watts": 65.0,
+  "src_w": "R15 'Power: 65w'",
+  "adapter_v": 24.0,
+  "adapter_a": 5.0,
+  "src_adapter": "buy list (live page, iron-psu): 'SHNITPWR 24 V DC 5 A 120 W power supply for the iron (5.5 x 2.5 mm plug)'"
+ }
+}

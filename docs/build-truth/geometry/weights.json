@@ -1,0 +1,141 @@
+{
+ "asOf": "2026-11-03",
+ "parts": [
+  {
+   "name": "Frame, TBS Source One V6 5-inch",
+   "qty": 1,
+   "g": 136.5,
+   "source": "Rotor Village listing",
+   "url": "https://rotorvillage.ca/tbs-source-one-v6-5/",
+   "note": "The listing prints 136.5 g with an asterisk and no footnote, so it is not clear whether screws are included.",
+   "opus_flag": "listing asterisk unexplained: screws may not be included"
+  },
+  {
+   "name": "Flight controller, GEPRC TAKER F405",
+   "qty": 1,
+   "g": 7.7,
+   "source": "Rotor Village listing",
+   "url": "https://rotorvillage.ca/geprc-taker-f405-bls-50a-combo-stack/",
+   "note": "",
+   "opus_flag": ""
+  },
+  {
+   "name": "Speed controller board (50 A 4-in-1)",
+   "qty": 1,
+   "g": 13.7,
+   "source": "Rotor Village listing",
+   "url": "https://rotorvillage.ca/geprc-taker-f405-bls-50a-combo-stack/",
+   "note": "The capacitor and cables in the box are not weighed on the listing.",
+   "opus_flag": ""
+  },
+  {
+   "name": "Motors, Emax ECO III 2207 1900KV",
+   "qty": 4,
+   "g": 31.6,
+   "source": "RaceDayQuads listing (Rotor Village gives none)",
+   "url": "https://www.racedayquads.com/products/emax-e3-series-2207-motor-1700kv-1900kv-2400kv",
+   "note": "Listed as without the silicone wire.",
+   "opus_flag": ""
+  },
+  {
+   "name": "Propellers, Gemfan 51499",
+   "qty": 4,
+   "g": 4.96,
+   "source": "ThingBits listing",
+   "url": "https://thingbits.in/products/gemfan-hurricane-51499-3-5-inch-fpv-racing-propellers",
+   "note": "Rotor Village gives no weight. Other shops quote about 5 g (not opened).",
+   "opus_flag": "CHECK: the source URL says '3-5-inch'; weight may belong to another listing"
+  },
+  {
+   "name": "Radio receiver, RadioMaster RP1 V2",
+   "qty": 1,
+   "g": 2.2,
+   "source": "Rotor Village listing",
+   "url": "https://rotorvillage.ca/radiomaster-rp1-v2-tcxo-expresslrs-2-4ghz-receiver/",
+   "note": "Includes its antenna.",
+   "opus_flag": ""
+  },
+  {
+   "name": "Flight battery, GNB 1500 mAh 4S",
+   "qty": 1,
+   "g": 146,
+   "source": "Rotor Village listing",
+   "url": "https://rotorvillage.ca/gnb-1500mah-4s-120c-hv-lipo-xt60/",
+   "note": "Listed as plus or minus 1%. One pack in the air.",
+   "opus_flag": ""
+  },
+  {
+   "name": "Camera, RunCam Phoenix 2 Special Edition",
+   "qty": 1,
+   "g": 8.6,
+   "source": "Rotor Village listing (net weight)",
+   "url": "https://rotorvillage.ca/runcam-phoenix-2-special-edition/",
+   "note": "",
+   "opus_flag": ""
+  },
+  {
+   "name": "Video transmitter, TBS Unify Pro HV",
+   "qty": 1,
+   "g": 7,
+   "source": "Rotor Village listing",
+   "url": "https://rotorvillage.ca/tbs-unify-pro-5g8-hv-vtx/",
+   "note": "With the SMA connector, without an antenna.",
+   "opus_flag": ""
+  },
+  {
+   "name": "Video antenna, TBS Triumph PRO",
+   "qty": 1,
+   "g": 11.5,
+   "source": "Rotor Village listing",
+   "url": "https://rotorvillage.ca/tbs-triumph-pro-sma-rhcp/",
+   "note": "",
+   "opus_flag": ""
+  },
+  {
+   "name": "Raspberry Pi Zero 2 W (board)",
+   "qty": 1,
+   "g": 10,
+   "source": "Little Bird Electronics listing",
+   "url": "https://littlebirdelectronics.com.au/products/raspberry-pi-zero-2-w",
+   "note": "Bare board. The kit's pre-soldered header adds a little that no listing gives.",
+   "opus_flag": ""
+  },
+  {
+   "name": "Thermal camera board, MLX90640",
+   "qty": 1,
+   "g": 3.5,
+   "source": "Adafruit listing (the same chip on Adafruit's own board)",
+   "url": "https://www.adafruit.com/product/4407",
+   "note": "Pimoroni's page gives no weight.",
+   "opus_flag": "STAND-IN: Adafruit's own board, not the Pimoroni one"
+  },
+  {
+   "name": "GPS board, PA1010D",
+   "qty": 1,
+   "g": 5,
+   "source": "Adafruit listing (the same module on Adafruit's own board)",
+   "url": "https://www.adafruit.com/product/4415",
+   "note": "Pimoroni's page gives no weight.",
+   "opus_flag": "STAND-IN: Adafruit's own board, not the Pimoroni one"
+  },
+  {
+   "name": "Battery strap, Rotor Village Kevlar",
+   "qty": 1,
+   "g": 7.2,
+   "source": "Rotor Village listing",
+   "url": "https://rotorvillage.ca/rvs-kevlar-battery-strap-2pk/",
+   "note": "7.2 g is printed next to a 2-strap pack, so one strap may be lighter.",
+   "opus_flag": ""
+  }
+ ],
+ "unlisted": [
+  "Qwiic HAT and the two Qwiic cables",
+  "Micro-USB power cable",
+  "Standoffs, screws, nuts and zip ties",
+  "Motor, battery and signal wires, the XT60 plug and solder",
+  "LED strip and battery grip pad",
+  "Anything else you add"
+ ],
+ "reused_from": "build-guide-ui/index.html #weight-data (Builder session), read-only copy 2026-11-03",
+ "sum_g_listed": 505.14
+}

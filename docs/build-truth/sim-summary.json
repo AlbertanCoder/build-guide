@@ -1,0 +1,279 @@
+{
+ "runs": 11220,
+ "layout_variants": 1020,
+ "prop_angles_per_thermal_run": 40,
+ "families": {
+  "A forward pod under the plate": {
+   "variants": 504,
+   "passing": 24
+  },
+  "B rear pod under the plate": {
+   "variants": 432,
+   "passing": 40
+  },
+  "C Pi on top, MLX through a plate window": {
+   "variants": 84,
+   "passing": 0
+  }
+ },
+ "best": [
+  {
+   "id": "L306",
+   "family": "A forward pod under the plate",
+   "pi_x": -18.0,
+   "standoff_mm": 12.0,
+   "mlx_pos": "rear-end",
+   "orient": "wide-X",
+   "mount": "pad",
+   "gps": "rear",
+   "leg_h_mm": 40,
+   "thermal_blocked_pct": 0.0,
+   "thermal_side_margin_mm": 7.6,
+   "hole_edge_margin_mm": 2.9,
+   "battery_x_ok_from": -5.0,
+   "battery_x_ok_to": 27.0,
+   "battery_margin_mm": 16.0,
+   "cg_x_mm": 0.1,
+   "cg_y_mm": 0.1,
+   "mass_listed_g": 505.1,
+   "lowest_part_mm": -28.7,
+   "leg_needed_mm": 38.7,
+   "gps_sky_blocked_pct": 30.9,
+   "wire_to_prop_mm": 43.3,
+   "PASS": true,
+   "score": 1.25
+  },
+  {
+   "id": "L312",
+   "family": "A forward pod under the plate",
+   "pi_x": -18.0,
+   "standoff_mm": 12.0,
+   "mlx_pos": "rear-end",
+   "orient": "wide-Y",
+   "mount": "pad",
+   "gps": "rear",
+   "leg_h_mm": 40,
+   "thermal_blocked_pct": 0.0,
+   "thermal_side_margin_mm": 8.8,
+   "hole_edge_margin_mm": 2.9,
+   "battery_x_ok_from": -5.0,
+   "battery_x_ok_to": 27.0,
+   "battery_margin_mm": 16.0,
+   "cg_x_mm": 0.1,
+   "cg_y_mm": 0.1,
+   "mass_listed_g": 505.1,
+   "lowest_part_mm": -28.7,
+   "leg_needed_mm": 38.7,
+   "gps_sky_blocked_pct": 30.9,
+   "wire_to_prop_mm": 43.3,
+   "PASS": true,
+   "score": 1.25
+  },
+  {
+   "id": "L378",
+   "family": "A forward pod under the plate",
+   "pi_x": -21.0,
+   "standoff_mm": 12.0,
+   "mlx_pos": "rear-end",
+   "orient": "wide-X",
+   "mount": "pad",
+   "gps": "rear",
+   "leg_h_mm": 40,
+   "thermal_blocked_pct": 0.0,
+   "thermal_side_margin_mm": 7.6,
+   "hole_edge_margin_mm": 3.0,
+   "battery_x_ok_from": -5.0,
+   "battery_x_ok_to": 27.0,
+   "battery_margin_mm": 16.0,
+   "cg_x_mm": 0.0,
+   "cg_y_mm": 0.1,
+   "mass_listed_g": 505.1,
+   "lowest_part_mm": -28.7,
+   "leg_needed_mm": 38.7,
+   "gps_sky_blocked_pct": 30.9,
+   "wire_to_prop_mm": 43.3,
+   "PASS": true,
+   "score": 1.25
+  },
+  {
+   "id": "L384",
+   "family": "A forward pod under the plate",
+   "pi_x": -21.0,
+   "standoff_mm": 12.0,
+   "mlx_pos": "rear-end",
+   "orient": "wide-Y",
+   "mount": "pad",
+   "gps": "rear",
+   "leg_h_mm": 40,
+   "thermal_blocked_pct": 0.0,
+   "thermal_side_margin_mm": 8.8,
+   "hole_edge_margin_mm": 3.0,
+   "battery_x_ok_from": -5.0,
+   "battery_x_ok_to": 27.0,
+   "battery_margin_mm": 16.0,
+   "cg_x_mm": 0.0,
+   "cg_y_mm": 0.1,
+   "mass_listed_g": 505.1,
+   "lowest_part_mm": -28.7,
+   "leg_needed_mm": 38.7,
+   "gps_sky_blocked_pct": 30.9,
+   "wire_to_prop_mm": 43.3,
+   "PASS": true,
+   "score": 1.25
+  },
+  {
+   "id": "L450",
+   "family": "A forward pod under the plate",
+   "pi_x": -24.0,
+   "standoff_mm": 12.0,
+   "mlx_pos": "rear-end",
+   "orient": "wide-X",
+   "mount": "pad",
+   "gps": "rear",
+   "leg_h_mm": 40,
+   "thermal_blocked_pct": 0.0,
+   "thermal_side_margin_mm": 7.6,
+   "hole_edge_margin_mm": 3.0,
+   "battery_x_ok_from": -5.0,
+   "battery_x_ok_to": 27.0,
+   "battery_margin_mm": 16.0,
+   "cg_x_mm": -0.1,
+   "cg_y_mm": 0.1,
+   "mass_listed_g": 505.1,
+   "lowest_part_mm": -28.7,
+   "leg_needed_mm": 38.7,
+   "gps_sky_blocked_pct": 30.9,
+   "wire_to_prop_mm": 43.3,
+   "PASS": true,
+   "score": 1.25
+  },
+  {
+   "id": "L456",
+   "family": "A forward pod under the plate",
+   "pi_x": -24.0,
+   "standoff_mm": 12.0,
+   "mlx_pos": "rear-end",
+   "orient": "wide-Y",
+   "mount": "pad",
+   "gps": "rear",
+   "leg_h_mm": 40,
+   "thermal_blocked_pct": 0.0,
+   "thermal_side_margin_mm": 8.8,
+   "hole_edge_margin_mm": 3.0,
+   "battery_x_ok_from": -5.0,
+   "battery_x_ok_to": 27.0,
+   "battery_margin_mm": 16.0,
+   "cg_x_mm": -0.1,
+   "cg_y_mm": 0.1,
+   "mass_listed_g": 505.1,
+   "lowest_part_mm": -28.7,
+   "leg_needed_mm": 38.7,
+   "gps_sky_blocked_pct": 30.9,
+   "wire_to_prop_mm": 43.3,
+   "PASS": true,
+   "score": 1.25
+  }
+ ],
+ "pilot_camera": [
+  {
+   "tilt_deg": 0,
+   "frame_in_view_pct": 0.0,
+   "props_in_view_pct_min": 0.0,
+   "props_in_view_pct_max": 5.51,
+   "sky_pct": 48.4
+  },
+  {
+   "tilt_deg": 5,
+   "frame_in_view_pct": 0.0,
+   "props_in_view_pct_min": 0.16,
+   "props_in_view_pct_max": 6.45,
+   "sky_pct": 54.8
+  },
+  {
+   "tilt_deg": 10,
+   "frame_in_view_pct": 0.0,
+   "props_in_view_pct_min": 0.31,
+   "props_in_view_pct_max": 6.92,
+   "sky_pct": 61.3
+  },
+  {
+   "tilt_deg": 15,
+   "frame_in_view_pct": 0.0,
+   "props_in_view_pct_min": 0.16,
+   "props_in_view_pct_max": 7.71,
+   "sky_pct": 64.5
+  },
+  {
+   "tilt_deg": 20,
+   "frame_in_view_pct": 0.0,
+   "props_in_view_pct_min": 0.31,
+   "props_in_view_pct_max": 8.18,
+   "sky_pct": 71.0
+  },
+  {
+   "tilt_deg": 25,
+   "frame_in_view_pct": 0.0,
+   "props_in_view_pct_min": 0.16,
+   "props_in_view_pct_max": 9.13,
+   "sky_pct": 74.2
+  },
+  {
+   "tilt_deg": 30,
+   "frame_in_view_pct": 0.0,
+   "props_in_view_pct_min": 0.47,
+   "props_in_view_pct_max": 9.76,
+   "sky_pct": 80.6
+  },
+  {
+   "tilt_deg": 35,
+   "frame_in_view_pct": 0.0,
+   "props_in_view_pct_min": 0.31,
+   "props_in_view_pct_max": 10.54,
+   "sky_pct": 87.1
+  },
+  {
+   "tilt_deg": 40,
+   "frame_in_view_pct": 0.0,
+   "props_in_view_pct_min": 0.16,
+   "props_in_view_pct_max": 10.86,
+   "sky_pct": 90.3
+  }
+ ],
+ "estimated_inputs": [
+  "prop chord 17 mm",
+  "board thickness 1.6 mm",
+  "header 8.5 mm",
+  "Qwiic plug 3 mm",
+  "MLX lens 6 mm below its board",
+  "motor bell/shaft split",
+  "VTX, receiver, antenna, camera positions",
+  "leg positions (legs not chosen)"
+ ],
+ "my_thresholds": {
+  "obstacle_inflation_mm": 2.0,
+  "balance_tolerance_mm": 5.0,
+  "ground_margin_mm": 10.0,
+  "hole_edge_margin_mm": 2.0,
+  "wire_to_prop_min_mm": 5.0
+ },
+ "unweighed": [
+  "Qwiic HAT and the two Qwiic cables",
+  "Micro-USB power cable",
+  "Standoffs, screws, nuts and zip ties",
+  "Motor, battery and signal wires, the XT60 plug and solder",
+  "LED strip and battery grip pad",
+  "Anything else you add"
+ ],
+ "chosen_legs": {
+  "rear_bottom_mm": -56.3,
+  "front_bottom_mm": -54.3,
+  "thermal_blocked_pct": 0.0,
+  "payload_ground_clearance_mm": 25.6,
+  "pad_gap_mm": 6.8,
+  "cg_xy_mm": [
+   -1.1,
+   0.1
+  ],
+  "side_margin_mm": 10.9
+ }
+}

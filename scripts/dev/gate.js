@@ -148,6 +148,32 @@ const SUITES = [
     name: "ai path",
     cmd: PS("scripts/dev/check-llm-path.ps1", []),
     expect: 11
+  },
+  {
+    /* Phase D: each step model against its step text - budgets, labels, motor positions, one clip per step,
+       every action id in STEP-TRUTH.md and in its own step section, every part an action or pin names exists. */
+    name: "step models",
+    cmd: ["python", ["-I", "scripts/build/check_models.py"]],
+    expect: 493   /* 488 -> 493 (2026-11-03 re-sync): the new S3.5 first power-up action adds its clip, order, step, part-name and on-the-page checks; the Step 3 "no battery_pack" rule became "battery_pack only on the bench" (S3.5 puts a pack there), same count. Before: 435 -> 488 (2026-11-03): check_models now reads the LIVE page (build-guide-ui/index.html, or --page); it had read the repo's old 05:06 copy, which has no data-action-ids, so 53 "action is on the page" checks were silently skipped and now really run */
+  },
+  {
+    /* Phase D: the viewer in headless Chrome - at most 2 WebGL contexts, release / re-init, play / pause / scrub,
+       chips, reduced motion, and every action's pose shows what its text names. */
+    name: "3d viewer",
+    cmd: ["node", ["scripts/build/check_viewer.js"]],
+    expect: 178   /* 177 -> 178 (2026-11-03): the new S3.5 action's pose shows what its text names */
+  },
+  {
+    /* Phase E: payload layout sweeps on the real frame outlines (thermal view, fit, balance, legs, wires) */
+    name: "design simulations",
+    cmd: ["python", ["-I", "scripts/build/simulate_design.py", "--check"]],
+    expect: 13
+  },
+  {
+    /* Phase F: build verification (replay, fit, access, clearance, wiring, power, weight, cross-checks; 10,000 tolerance runs) */
+    name: "build verification",
+    cmd: ["python", ["-I", "scripts/build/verify_build.py"]],
+    expect: 190   /* 190 (2026-11-03 re-sync): +1 replay check for the new S3.5 (DEP-S3.5); the first battery plug-in moved from S8.2 to S3.5 (SAFE-3 still passes); the iron adapter is now 24 V 5 A. Before: 179 -> 178 (AAA line left the buy list), then 181: zip-tie length and camera-tape checks added; 182: crash tip check (crash review C1); 184: prop-direction and battery-GPS design-overlap checks (Fable M5) ; 189: the buy list is now read from the live page's buy-data (it was a 10:10 copy): -1 glasses (now owned, not bought), +3 new lines checked (extinguisher, practice board, X30 spray), +2 LED strip and DVR card moved to optional stage 8 (exempt PASS, were PAGE FIX), +1 required-stage-lines-all-used check (Fable M5). One BUY-used check per buy line, so adding or removing a buy line moves this count by 1 */
   }
 ];
 

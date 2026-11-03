@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>viewer3d test page (check_viewer.js)</title>
+<style>
+  body { margin: 0; font-family: sans-serif; }
+  .viewer3d { width: 640px; margin: 0 auto; }
+  .viewer3d-canvas { position: relative; height: 360px; }
+  .viewer3d-labels { position: absolute; inset: 0; pointer-events: none; }
+  .gap { height: 1400px; }
+</style>
+<script type="importmap">
+{ "imports": { "three": "/docs/vendor/three/build/three.module.js", "three/addons/": "/docs/vendor/three/addons/" } }
+</script>
+</head>
+<body>
+<div id="views"></div>
+<script>
+  // Same markup as index.html's viewers, one per model, far apart so only one is near the screen at a time.
+  const models = ["step-01-parts", "step-02-frame", "step-03-stack", "step-04-receiver-fpv", "step-05-power",
+                  "step-06-payload", "step-07-mount", "step-08-test", "final-product"];
+  const host = document.getElementById("views");
+  for (const m of models) {
+    host.insertAdjacentHTML("beforeend",
+      '<div class="gap"></div><div class="viewer3d" data-model="/docs/models/' + m + '.glb">' +
+      '<div class="viewer3d-canvas"><div class="viewer3d-labels"></div><span class="viewer3d-status">Loading 3D</span></div>' +
+      '<div class="viewer3d-bar"><span class="viewer3d-hint">hint</span>' +
+      '<button type="button" data-action="reset">Reset view</button>' +
+      '<button type="button" data-action="labels" aria-pressed="true">Labels</button></div></div>');
+  }
+  host.insertAdjacentHTML("beforeend", '<div class="gap"></div>');
+</script>
+<script type="module" src="/docs/js/viewer3d.js"></script>
+<script type="module">
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const SHEETS = new URLSearchParams(location.search).has("sheets");
+  function wrap(ctx, text, width) {
+    const words = String(text).split(" "); const lines = []; let line = "";
+    for (const w of words) { const tryLine = line ? line + " " + w : w;
+      if (ctx.measureText(tryLine).width > width && line) { lines.push(line); line = w; } else line = tryLine; }
+    if (line) lines.push(line); return lines;
+  }
+  /* Contact sheet: one frame per action, the action's own words under it, and the automatic check. */
+  async function sheet(model, clip, frames) {
+    const cols = 3, fw = 480, fh = 270, th = 118, pad = 14, head = 54;
+    const rows = Math.ceil(frames.length / cols);
+    const c = document.createElement("canvas");
+    c.width = cols * (fw + pad) + pad; c.height = head + rows * (fh + th + pad) + pad;
+    const g = c.getContext("2d");
+    g.fillStyle = "#f7f2e8"; g.fillRect(0, 0, c.width, c.height);
+    g.fillStyle = "#1b5e4f"; g.font = "bold 22px sans-serif";
+    g.fillText(model.split("/").pop() + "  -  clip " + clip + "  -  one frame per action (labels are HTML, not in the frames)", pad, 34);
+    for (let k = 0; k < frames.length; k += 1) {
+      const f = frames[k]; const x = pad + (k % cols) * (fw + pad); const y = head + Math.floor(k / cols) * (fh + th + pad);
+      const im = new Image(); im.src = f.img; await im.decode();
+      g.drawImage(im, x, y, fw, fh);
+      g.strokeStyle = f.ok ? "#1b5e4f" : "#c2571b"; g.lineWidth = 3; g.strokeRect(x, y, fw, fh);
+      g.fillStyle = "#222"; g.font = "bold 16px sans-serif";
+      g.fillText((k + 1) + ". " + f.a.id + "  " + (f.a.short || "") + "  (" + f.t.toFixed(1) + " s)", x, y + fh + 20);
+      g.font = "14px sans-serif";
+      wrap(g, f.a.text || "", fw).slice(0, 4).forEach((ln, j) => g.fillText(ln, x, y + fh + 40 + j * 17));
+      g.font = "bold 14px sans-serif"; g.fillStyle = f.ok ? "#1b5e4f" : "#c2571b";
+      g.fillText(f.ok ? "Auto check PASS: named parts shown" + ((f.a.hides || []).length ? ", later parts hidden" : "")
+                      : "Auto check FAIL: " + f.bad.join("; "), x, y + fh + th - 6);
+    }
+    return c.toDataURL("image/png");
+  }
+  const out = { steps: [], maxLive: 0, errors: [] };
+  window.addEventListener("error", (e) => out.errors.push(String(e.message)));
+  const live = () => window.BuildGuideViewer.stats().liveRenderers;
+  async function waitReady(i, ms = 20000) {
+    for (let t = 0; t < ms; t += 100) {
+      const v = window.BuildGuideViewer.stats().viewers[i];
+      if (v && v.ready) return v;
+      out.maxLive = Math.max(out.maxLive, live());
+      await sleep(100);
+    }
+    return window.BuildGuideViewer.stats().viewers[i];
+  }
+  (async () => {
+    await sleep(500);
+    const roots = [...document.querySelectorAll(".viewer3d")];
+    for (let i = 0; i < roots.length; i += 1) {
+      roots[i].scrollIntoView({ block: "center" });
+      const v = await waitReady(i);
+      await sleep(400);
+      out.maxLive = Math.max(out.maxLive, live());
+      const bar = roots[i].querySelector(".viewer3d-anim");
+      const rec = { model: v && v.src, ready: !!(v && v.ready), clip: v && v.clip, duration: v && v.duration,
+                    actions: v && v.actions, chips: v && v.chips, playing: v && v.playing, liveNow: live(),
+                    hasBar: !!bar, reduced: matchMedia("(prefers-reduced-motion: reduce)").matches, hidden: document.hidden, canvases: document.querySelectorAll(".viewer3d-canvas canvas").length };
+      if (bar) {
+        // play -> time moves; pause -> time stops; scrub -> time set; chip -> jumps
+        const slider = bar.querySelector("input[type=range]");
+        const playBtn = bar.querySelector('[data-anim="play"]');
+        if (rec.reduced) {   // reduced motion: no autoplay, still pose = the end of the clip
+          rec.reducedNoAutoplay = !rec.playing;
+          rec.reducedStartsAtEnd = Math.abs(Number(slider.value) - Number(slider.max)) < 0.05;
+        }
+        if (!window.BuildGuideViewer.stats().viewers[i].playing) playBtn.click();   // play
+        slider.value = "0"; slider.dispatchEvent(new Event("input")); playBtn.click();  // restart from 0, playing
+        const t0 = Number(slider.value); await sleep(700); const t1 = Number(slider.value);
+        rec.timeMovesWhilePlaying = t1 > t0;
+        playBtn.click();                                            // pause
+        const p0 = Number(slider.value); await sleep(500); const p1 = Number(slider.value);
+        rec.timeStopsWhenPaused = Math.abs(p1 - p0) < 1e-6;
+        slider.value = "1.0"; slider.dispatchEvent(new Event("input"));
+        rec.scrubSetsTime = Math.abs(Number(slider.value) - 1.0) < 0.05;
+        const chips = bar.querySelectorAll(".viewer3d-chips button");
+        if (chips.length) {
+          chips[chips.length - 1].click();
+          rec.lastChipActive = chips[chips.length - 1].classList.contains("is-active");
+        }
+      }
+      // ---- every action: jump there, check the parts it names, capture a frame (sheet mode) ----
+      const inst = window.BuildGuideViewer.instances()[i];
+      rec.actionChecks = [];
+      if (inst && inst.model) {
+        rec.labelsOffByDefault = roots[i].querySelector(".viewer3d-labels").style.display === "none";
+        let named = 0, total = 0;
+        inst.model.traverse((o) => { if (o.isMesh && o.userData.kind !== "cone") { total += 1; if (o.userData.part) named += 1; } });
+        rec.namedParts = [named, total];
+        rec.views = [...roots[i].querySelectorAll(".viewer3d-views [data-view]")].map((b) => b.dataset.view);
+        for (const k of ["pilot", "thermal"]) {
+          if (inst.cones && inst.cones[k]) {
+            inst.toggleView(k); inst.render();
+            rec[k + "Inset"] = inst.insetShown;
+            rec[k + "ConeVisible"] = inst.cones[k].visible;
+            if (k === "pilot" && inst.tiltInput) {
+              const p = new inst.camera.position.constructor();
+              inst.viewCam.getWorldDirection(p); const before = p.y;
+              inst.tiltInput.value = "30"; inst.tiltInput.dispatchEvent(new Event("input"));
+              inst.viewCam.getWorldDirection(p); rec.tiltRaisesView = p.y > before + 0.1;
+              inst.tiltInput.value = inst.tiltPivot.userData.default; inst.tiltInput.dispatchEvent(new Event("input"));
+            }
+            inst.toggleView(k);
+          }
+        }   // how much of the frame the default view fills (NDC: 1.0 = edge)
+        inst.action("reset");
+        let wx = 0, wy = 0; const v3 = new inst.camera.position.constructor();
+        inst.model.updateWorldMatrix(true, true);
+        inst.model.traverse((o) => {
+          if (!o.isMesh || o.userData.kind === 'cone') return;
+          const pos = o.geometry.attributes.position;
+          for (let q = 0; q < pos.count; q += Math.max(1, Math.floor(pos.count / 60))) {
+            v3.fromBufferAttribute(pos, q).applyMatrix4(o.matrixWorld).project(inst.camera);
+            wx = Math.max(wx, Math.abs(v3.x)); wy = Math.max(wy, Math.abs(v3.y));
+          }
+        });
+        rec.fill = [Number(wx.toFixed(2)), Number(wy.toFixed(2))];
+        rec.aspect = Number(inst.camera.aspect.toFixed(2));
+      }
+      const frames = [];
+      for (let k = 0; inst && inst.actionList && k < inst.actionList.length; k += 1) {
+        const a = inst.actionList[k];
+        inst.action("reset");
+        inst.jumpTo(k);
+        await sleep(60);
+        const find = (pre) => { const hit = []; inst.model.traverse((o) => { if (o.isMesh && o.name.startsWith(pre)) hit.push(o); }); return hit; };
+        const bad = [];
+        for (const pre of a.shows || []) {
+          const h = find(pre);
+          if (!h.length) bad.push("missing " + pre);
+          else if (h.some((o) => o.scale.x < 0.9)) bad.push(pre + " not fully shown");
+        }
+        for (const pre of a.hides || []) {
+          if (find(pre).some((o) => o.scale.x > 0.01)) bad.push(pre + " visible too early");
+        }
+        // visibility aids: focus outline, close-up inset, and ember pixels really on screen
+        let ember = 0;
+        if ((a.shows || []).length) {
+          inst.render();
+          const im = new Image(); im.src = inst.renderer.domElement.toDataURL("image/png"); await im.decode();
+          const cv = document.createElement("canvas"); cv.width = im.width; cv.height = im.height;
+          const g2 = cv.getContext("2d"); g2.drawImage(im, 0, 0);
+          const px = g2.getImageData(0, 0, cv.width, cv.height).data;
+          for (let q = 0; q < px.length; q += 4) {
+            if (px[q] > 190 && px[q + 1] > 60 && px[q + 1] < 160 && px[q + 2] < 90) ember += 1;
+          }
+          if (!inst.focusParts || !inst.focusParts.length) bad.push("focus did not outline the parts");
+          if (inst.insetShown !== "Close-up") bad.push("no close-up inset");
+          if (ember < 40) bad.push("outline not visible on screen (" + ember + " px)");
+        }
+        rec.actionChecks.push({ id: a.id, ok: bad.length === 0, bad, t: Number(inst.currentTime().toFixed(2)), ember,
+                                aids: (a.shows || []).length ? ["focus outline", "arrow", "close-up inset"].concat(a.focus ? ["camera move"] : []) : ["(no part to show)"] });
+        if (SHEETS) {
+          inst.render();
+          frames.push({ img: inst.renderer.domElement.toDataURL("image/jpeg", 0.88), a, ok: bad.length === 0, bad,
+                        t: inst.currentTime() });
+        }
+      }
+      if (SHEETS && frames.length) rec.sheet = await sheet(rec.model, rec.clip, frames);
+      out.steps.push(rec);
+    }
+    // scroll back to the first: it must come back (re-init after release)
+    roots[0].scrollIntoView({ block: "center" });
+    const back = await waitReady(0);
+    out.reinitFirst = !!(back && back.ready);
+    out.finalLive = live();
+    out.done = true;
+    await fetch("/report", { method: "POST", body: JSON.stringify(out) });
+  })();
+</script>
+</body>
+</html>

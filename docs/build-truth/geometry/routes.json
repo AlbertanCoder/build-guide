@@ -1,0 +1,136 @@
+{
+ "qwiic_to_gps_front": {
+  "len_avail": 260.0,
+  "extension": {
+   "cut": 120.0,
+   "joint_loss": 5.0,
+   "joints_per_wire": 2,
+   "stagger": 20.0,
+   "from_plug": 50.0
+  },
+  "len_note": "150 mm cable (R22) + one 120 mm silicone piece per wire, less 5 mm overlap at each of its 2 joints (my estimate)",
+  "slack": 10.0,
+  "pts": [
+   [
+    -45.5,
+    -4.989999999999998,
+    -27.200000000000003
+   ],
+   [
+    -45.5,
+    -17.0,
+    -27.200000000000003
+   ],
+   [
+    -45.5,
+    -17.0,
+    -1.0
+   ],
+   [
+    -46.8,
+    -4.0,
+    -1.0
+   ],
+   [
+    -46.8,
+    -4.0,
+    3.0
+   ],
+   [
+    -46.8,
+    -9.0,
+    26.200000000000003
+   ],
+   [
+    76.4,
+    -9.0,
+    26.200000000000003
+   ],
+   [
+    76.4,
+    -9.0,
+    35.0
+   ],
+   [
+    58.0,
+    -9.0,
+    35.6
+   ]
+  ],
+  "why": "under the Pi to its edge, up to the plate, in through window 1, over the FC, out under the top plate's front edge, round it and back to the GPS header"
+ },
+ "qwiic_to_gps_rear_option": {
+  "len_avail": 150.0,
+  "slack": 10.0,
+  "pts": [
+   [
+    -45.5,
+    -4.989999999999998,
+    -27.200000000000003
+   ],
+   [
+    -45.5,
+    -17.0,
+    -27.200000000000003
+   ],
+   [
+    -45.5,
+    -17.0,
+    -1.0
+   ],
+   [
+    -60.2,
+    -4.0,
+    -1.0
+   ],
+   [
+    -60.2,
+    -4.0,
+    3.0
+   ],
+   [
+    -85.9,
+    -9.0,
+    20.0
+   ],
+   [
+    -85.9,
+    -9.0,
+    35.0
+   ],
+   [
+    -68.0,
+    -9.0,
+    35.6
+   ]
+  ],
+  "why": "for comparison only: the same cable to the rear GPS spot, through window 2 and round the top plate's back edge"
+ },
+ "qwiic_to_mlx": {
+  "len_avail": 150.0,
+  "slack": 10.0,
+  "pts": [
+   [
+    -54.5,
+    -4.989999999999998,
+    -27.200000000000003
+   ],
+   [
+    -54.5,
+    -4.989999999999998,
+    -30.200000000000003
+   ],
+   [
+    -1.0,
+    0.0,
+    -30.200000000000003
+   ],
+   [
+    2.0,
+    0.0,
+    -7.6
+   ]
+  ],
+  "why": "along under the Pi to the thermal camera's header"
+ }
+}

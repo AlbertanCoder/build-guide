@@ -1,0 +1,18 @@
+{
+ "CAD": {
+  "mm": 0.2
+ },
+ "DATASHEET": {
+  "mm": 0.5
+ },
+ "ESTIMATED": {
+  "mm": 2.0,
+  "pct": 10.0
+ },
+ "holes_mm": 0.2,
+ "weights_pct": 5.0,
+ "hand_placement_mm": 3.0,
+ "notes": "CAD/DATASHEET/ESTIMATED and holes/weights from the Phase F brief; hand placement (+-3 mm, where Shad sets the Pi, pad and GPS by hand) is my assumption. Each sample draws uniformly inside the band.",
+ "seed": 20261103,
+ "runs": 10000
+}

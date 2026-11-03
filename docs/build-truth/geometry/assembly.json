@@ -1,0 +1,941 @@
+{
+ "actions": [
+  {
+   "id": "S1.1",
+   "step": 1,
+   "short": "Five piles",
+   "needs": [],
+   "produces": [
+    "sorted"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S1.2",
+   "step": 1,
+   "short": "Tick the order list",
+   "needs": [
+    "sorted"
+   ],
+   "produces": [
+    "checked"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S1.3",
+   "step": 1,
+   "short": "Download the manuals",
+   "needs": [
+    "checked"
+   ],
+   "produces": [
+    "manuals"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [
+    "your laptop"
+   ],
+   "notes": ""
+  },
+  {
+   "id": "S2.1",
+   "step": 2,
+   "short": "Arms on the bottom plate",
+   "needs": [
+    "buy:frame",
+    "checked"
+   ],
+   "produces": [
+    "arms_on"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [
+    "buy:tools"
+   ],
+   "notes": ""
+  },
+  {
+   "id": "S2.2",
+   "step": 2,
+   "short": "Standoffs",
+   "needs": [
+    "arms_on"
+   ],
+   "produces": [
+    "standoffs_on"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [
+    "buy:tools"
+   ],
+   "notes": ""
+  },
+  {
+   "id": "S2.3",
+   "step": 2,
+   "short": "Motors M1-M4",
+   "needs": [
+    "arms_on",
+    "buy:motors"
+   ],
+   "produces": [
+    "motors_on"
+   ],
+   "set": {},
+   "uses": {
+    "buy:motors": 4
+   },
+   "tools": [
+    "buy:tools"
+   ],
+   "notes": ""
+  },
+  {
+   "id": "S2.4",
+   "step": 2,
+   "short": "Motor screws clear the windings",
+   "needs": [
+    "motors_on"
+   ],
+   "produces": [
+    "motor_screws_ok"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S5.1",
+   "step": 5,
+   "short": "Cells into the radio",
+   "needs": [
+    "buy:radio",
+    "buy:radio-cells"
+   ],
+   "produces": [
+    "radio_cells"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S5.1b",
+   "step": 5,
+   "short": "Charge the radio",
+   "needs": [
+    "radio_cells"
+   ],
+   "produces": [
+    "radio_ready"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S5.2",
+   "step": 5,
+   "short": "Fireproof surface, charger mains cable in",
+   "needs": [
+    "buy:charger"
+   ],
+   "produces": [
+    "charger_on"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S5.3",
+   "step": 5,
+   "short": "Set LiHV and 1.0 A before the pack goes in",
+   "needs": [
+    "charger_on"
+   ],
+   "produces": [
+    "charger_set"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S5.3c",
+   "step": 5,
+   "short": "Pack into the LiPo bag",
+   "needs": [
+    "buy:batteries",
+    "buy:lipo-bag"
+   ],
+   "produces": [
+    "pack_in_bag"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S5.4a",
+   "step": 5,
+   "short": "Main plug and balance lead: it starts by itself",
+   "needs": [
+    "charger_set",
+    "pack_in_bag"
+   ],
+   "produces": [
+    "charging"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S5.4",
+   "step": 5,
+   "short": "Stay beside it until the screen shows F",
+   "needs": [
+    "charging"
+   ],
+   "produces": [
+    "packs_charged"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S5.5",
+   "step": 5,
+   "short": "Storage mode if not flying soon",
+   "needs": [
+    "charger_on"
+   ],
+   "produces": [],
+   "set": {},
+   "uses": {},
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S3.0",
+   "step": 3,
+   "short": "ESC in the frame",
+   "needs": [
+    "motors_on",
+    "buy:stack"
+   ],
+   "produces": [
+    "esc_on"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [
+    "buy:tools"
+   ],
+   "notes": ""
+  },
+  {
+   "id": "S3.1",
+   "step": 3,
+   "short": "Cut the motor wires",
+   "needs": [
+    "esc_on"
+   ],
+   "produces": [
+    "wires_cut"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [
+    "buy:tools"
+   ],
+   "notes": ""
+  },
+  {
+   "id": "S3.2",
+   "step": 3,
+   "short": "Tin and solder the motor wires",
+   "needs": [
+    "wires_cut"
+   ],
+   "produces": [
+    "motors_soldered"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [
+    "buy:tools",
+    "buy:iron-psu",
+    "safety_glasses"
+   ],
+   "notes": ""
+  },
+  {
+   "id": "S3.3",
+   "step": 3,
+   "short": "XT60 lead + capacitor",
+   "needs": [
+    "esc_on"
+   ],
+   "produces": [
+    "power_lead"
+   ],
+   "set": {},
+   "uses": {
+    "buy:heat-shrink": 2
+   },
+   "tools": [
+    "buy:tools",
+    "buy:iron-psu"
+   ],
+   "notes": ""
+  },
+  {
+   "id": "S3.4",
+   "step": 3,
+   "short": "8-wire cable, then the FC",
+   "needs": [
+    "esc_on",
+    "motors_soldered",
+    "power_lead"
+   ],
+   "produces": [
+    "fc_on"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [
+    "buy:tools"
+   ],
+   "notes": ""
+  },
+  {
+   "id": "S3.5",
+   "step": 3,
+   "short": "First power-up through the smoke stopper, props off",
+   "needs": [
+    "fc_on",
+    "packs_charged",
+    "buy:smoke-stopper"
+   ],
+   "produces": [
+    "first_power_ok"
+   ],
+   "set": {
+    "smoke_stopper_first": true,
+    "battery_connected": true
+   },
+   "uses": {},
+   "tools": [],
+   "notes": "page: 'Its light must stay solid green: that means no short. Then unplug.' The first battery plug-in is here now, not S8.2"
+  },
+  {
+   "id": "S4.1",
+   "step": 4,
+   "short": "Receiver on UART2 with the stack box 4-wire cable",
+   "needs": [
+    "fc_on",
+    "buy:receiver",
+    "buy:stack"
+   ],
+   "produces": [
+    "rx_wired"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [
+    "buy:tools",
+    "buy:strippers"
+   ],
+   "notes": ""
+  },
+  {
+   "id": "S4.2",
+   "step": 4,
+   "short": "Receiver antenna",
+   "needs": [
+    "rx_wired"
+   ],
+   "produces": [
+    "rx_antenna"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S4.3",
+   "step": 4,
+   "short": "Camera and VTX wires",
+   "needs": [
+    "fc_on",
+    "buy:fpv-camera",
+    "buy:vtx"
+   ],
+   "produces": [
+    "video_wired"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [
+    "buy:tools"
+   ],
+   "notes": ""
+  },
+  {
+   "id": "S4.3b",
+   "step": 4,
+   "short": "Camera tilt about 10 degrees",
+   "needs": [
+    "video_wired"
+   ],
+   "produces": [
+    "cam_tilted"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [
+    "buy:tools"
+   ],
+   "notes": ""
+  },
+  {
+   "id": "S4.4",
+   "step": 4,
+   "short": "VTX antenna on",
+   "needs": [
+    "video_wired",
+    "buy:vtx-antenna"
+   ],
+   "produces": [
+    "vtx_antenna"
+   ],
+   "set": {
+    "antenna_on": true
+   },
+   "uses": {},
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S4.5",
+   "step": 4,
+   "short": "Bind on ISM 2400",
+   "needs": [
+    "rx_antenna",
+    "buy:radio",
+    "radio_ready"
+   ],
+   "produces": [
+    "bound"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [
+    "your laptop",
+    "buy:usbc-cable"
+   ],
+   "notes": "needs the radio powered: the radio cells and charge come in S5.1/S5.1b; replay checks the order"
+  },
+  {
+   "id": "S4.6",
+   "step": 4,
+   "short": "Betaflight on USB only",
+   "needs": [
+    "bound"
+   ],
+   "produces": [
+    "bf_setup"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [
+    "your laptop",
+    "buy:usbc-cable"
+   ],
+   "notes": ""
+  },
+  {
+   "id": "S4.7",
+   "step": 4,
+   "short": "VTX at 25 mW",
+   "needs": [
+    "vtx_antenna"
+   ],
+   "produces": [
+    "vtx_set"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S4.8",
+   "step": 4,
+   "short": "Fit the top plate",
+   "needs": [
+    "standoffs_on",
+    "vtx_antenna",
+    "bf_setup"
+   ],
+   "produces": [
+    "top_plate"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [
+    "buy:tools"
+   ],
+   "notes": ""
+  },
+  {
+   "id": "S6.0",
+   "step": 6,
+   "short": "Card flashed, I2C on",
+   "needs": [
+    "buy:pi"
+   ],
+   "produces": [
+    "pi_ready"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [
+    "your laptop"
+   ],
+   "notes": ""
+  },
+  {
+   "id": "S6.1",
+   "step": 6,
+   "short": "Straight male headers",
+   "needs": [
+    "buy:thermal",
+    "buy:gps"
+   ],
+   "produces": [
+    "headers"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [
+    "buy:tools",
+    "buy:iron-psu"
+   ],
+   "notes": ""
+  },
+  {
+   "id": "S6.2",
+   "step": 6,
+   "short": "HAT onto the Pi",
+   "needs": [
+    "pi_ready",
+    "buy:qwiic"
+   ],
+   "produces": [
+    "hat_on"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S6.2b",
+   "step": 6,
+   "short": "Lengthen the GPS cable",
+   "needs": [
+    "buy:qwiic",
+    "buy:silicone-wire",
+    "buy:heat-shrink-3mm"
+   ],
+   "produces": [
+    "gps_cable_long"
+   ],
+   "set": {},
+   "uses": {
+    "buy:heat-shrink-3mm": 1
+   },
+   "tools": [
+    "buy:tools",
+    "buy:iron-psu",
+    "meter_batteries"
+   ],
+   "notes": "one wire at a time; continuity check with the kit's multimeter"
+  },
+  {
+   "id": "S6.3",
+   "step": 6,
+   "short": "Cables: pins 1, 2, 3, 5",
+   "needs": [
+    "hat_on",
+    "headers",
+    "gps_cable_long"
+   ],
+   "produces": [
+    "sensors_cabled"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S6.4",
+   "step": 6,
+   "short": "Bench power: 0x33, 0x10",
+   "needs": [
+    "sensors_cabled"
+   ],
+   "produces": [
+    "payload_bench_ok"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S7.1",
+   "step": 7,
+   "short": "Payload only after the first hover",
+   "needs": [
+    "top_plate"
+   ],
+   "produces": [],
+   "set": {},
+   "uses": {},
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S7.6",
+   "step": 7,
+   "short": "Cables out of the prop circles",
+   "needs": [
+    "top_plate"
+   ],
+   "produces": [
+    "cables_tidy"
+   ],
+   "set": {},
+   "uses": {
+    "buy:zip-ties": 6
+   },
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S7.7",
+   "step": 7,
+   "short": "Battery on the pad, strap, balance",
+   "needs": [
+    "top_plate",
+    "buy:battery-pad",
+    "buy:straps",
+    "packs_charged"
+   ],
+   "produces": [
+    "battery_mount"
+   ],
+   "set": {},
+   "uses": {
+    "buy:straps": 1
+   },
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S8.1",
+   "step": 8,
+   "short": "Laptop tests",
+   "needs": [],
+   "produces": [
+    "software_ok"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [
+    "your laptop"
+   ],
+   "notes": ""
+  },
+  {
+   "id": "S8.2",
+   "step": 8,
+   "short": "Bench power: smoke stopper, then failsafe",
+   "needs": [
+    "battery_mount",
+    "packs_charged",
+    "buy:smoke-stopper",
+    "buy:monitor",
+    "vtx_antenna",
+    "bound",
+    "bf_setup"
+   ],
+   "produces": [
+    "failsafe_ok",
+    "video_ok"
+   ],
+   "set": {
+    "smoke_stopper_first": true,
+    "vtx_powered": true,
+    "battery_connected": true
+   },
+   "uses": {},
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S8.3",
+   "step": 8,
+   "short": "Motors tab, props off",
+   "needs": [
+    "failsafe_ok"
+   ],
+   "produces": [
+    "motors_ok"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [
+    "your laptop",
+    "buy:usbc-cable"
+   ],
+   "notes": ""
+  },
+  {
+   "id": "S8.4",
+   "step": 8,
+   "short": "Fit the props",
+   "needs": [
+    "motors_ok",
+    "buy:props"
+   ],
+   "produces": [
+    "props_on"
+   ],
+   "set": {
+    "props_on": true,
+    "battery_connected": false
+   },
+   "uses": {
+    "buy:props": 4
+   },
+   "tools": [],
+   "notes": "battery out while fitting props"
+  },
+  {
+   "id": "S8.5",
+   "step": 8,
+   "short": "First hover, no payload",
+   "needs": [
+    "props_on",
+    "licence",
+    "registration_marked"
+   ],
+   "produces": [
+    "hovered"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S7.3",
+   "step": 7,
+   "short": "Pi 36 mm behind the stack, on a pad",
+   "needs": [
+    "hovered",
+    "payload_bench_ok",
+    "buy:foam-tape",
+    "buy:standoffs"
+   ],
+   "produces": [
+    "payload_placed"
+   ],
+   "set": {
+    "payload_on": true
+   },
+   "uses": {
+    "buy:standoffs": 6
+   },
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S7.4",
+   "step": 7,
+   "short": "Zip ties through the windows, strap",
+   "needs": [
+    "payload_placed",
+    "buy:zip-ties",
+    "buy:straps"
+   ],
+   "produces": [
+    "payload_fixed"
+   ],
+   "set": {},
+   "uses": {
+    "buy:zip-ties": 2,
+    "buy:straps": 1,
+    "buy:m25-screws": 6
+   },
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S7.4b",
+   "step": 7,
+   "short": "Pigtail from the FC 5V pad",
+   "needs": [
+    "payload_fixed",
+    "buy:micro-usb"
+   ],
+   "produces": [
+    "payload_powered"
+   ],
+   "set": {},
+   "uses": {
+    "buy:heat-shrink": 2
+   },
+   "tools": [
+    "buy:tools",
+    "buy:iron-psu"
+   ],
+   "notes": "solders to the FC with the top plate already on: see the tool-access check"
+  },
+  {
+   "id": "S7.8",
+   "step": 7,
+   "short": "Fit the landing legs",
+   "needs": [
+    "payload_fixed",
+    "buy:legs-25",
+    "buy:legs-28",
+    "buy:legs-feet",
+    "buy:legs-setscrews",
+    "buy:legs-footscrews"
+   ],
+   "produces": [
+    "legs_on"
+   ],
+   "set": {},
+   "uses": {
+    "buy:legs-25": 4,
+    "buy:legs-28": 4,
+    "buy:legs-feet": 4,
+    "buy:legs-setscrews": 8,
+    "buy:legs-footscrews": 4
+   },
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S8.6",
+   "step": 8,
+   "short": "Payload on, hover again",
+   "needs": [
+    "payload_powered",
+    "legs_on",
+    "hovered"
+   ],
+   "produces": [
+    "hovered_payload"
+   ],
+   "set": {},
+   "uses": {},
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S8.7",
+   "step": 8,
+   "short": "Heat test, props off",
+   "needs": [
+    "hovered_payload"
+   ],
+   "produces": [],
+   "set": {
+    "props_on": false
+   },
+   "uses": {},
+   "tools": [],
+   "notes": ""
+  }
+ ],
+ "always_have": [
+  "licence",
+  "registration_marked"
+ ],
+ "before_build": {
+  "radio_ready": "Stage 3 checklist: 'Charge the cells in the radio; set up EdgeTX: switches, arm switch, timer, model name.'",
+  "meter_batteries": "Stage 1 checklist: 'Put two 1.5 V batteries (AA or AAA, whichever fits the battery door) in the multimeter. The kit does not include them. You already have these.'",
+  "safety_glasses": "Stage 1 note (live page): 'Safety glasses: you already have a pair. Check the frame says Z87 or CSA.'",
+  "pigtail_built": "Stage 2 checklist: 'Build the micro-USB power pigtail: cut one end, meter-check the wires, insulate with heat shrink.'"
+ },
+ "buy_used_elsewhere": {
+  "radio-cells": "Stage 3 checklist (charge the cells in the radio) and S5.1",
+  "micro-usb": "Stage 2 checklist (build the pigtail) and S7.4b",
+  "heat-shrink": "Stage 2 checklist (insulate the pigtail), S3.3, S7.4b",
+  "threadlock": "Step 2 parts line: 'Threadlock (only if the manual says so)'",
+  "props-spare": "optional by the list's own note: 'buy these after the first flight, for the first crash'",
+  "exam": "S8.5 needs the Basic certificate",
+  "registration": "S8.5 needs the drone registered and marked",
+  "practice-board": "Stage 1 checklist: 'practise on one of the practice boards (the Eiechip set)'",
+  "extinguisher": "Stage 5 note: 'Before your first charge: buy a small home fire extinguisher rated for electrical fires. ... Keep it within reach of the charging spot'"
+ },
+ "approved_wording_pending": {},
+ "decided_wording_pending": [],
+ "pieces_per_line": {
+  "zip-ties": 100,
+  "standoffs": 4,
+  "m25-screws": 420,
+  "straps": 2,
+  "legs-25": 10,
+  "legs-28": 10,
+  "legs-feet": 8,
+  "legs-setscrews": 20,
+  "legs-footscrews": 8,
+  "props": 4,
+  "motors": 1,
+  "heat-shrink": 1,
+  "batteries": 1
+ },
+ "pieces_src": {
+  "legs-setscrews": "list item: 'includes 20 x M3 x 10 mm'",
+  "standoffs": "list item: '4 per pack'",
+  "props": "list item: 'set of 4'",
+  "m25-screws": "list item: '420 pieces' (screws, nuts and standoffs together)"
+ },
+ "safety_rules": [
+  "props stay off until S8.4 and are off again for the heat test S8.7",
+  "the first battery plug-in (S8.2) goes through the smoke stopper",
+  "the video antenna is on (S4.4) before the VTX is ever powered",
+  "the battery is out while the props go on (S8.4)",
+  "the payload goes on only after the bare quad has hovered (S8.5 before S7.3)"
+ ]
+}
