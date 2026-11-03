@@ -1,60 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 128 128" role="img" aria-label="Fire-detecting drone logo">
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 512 512" role="img" aria-label="Fire-detecting drone logo">
   <title>Fire-detecting drone logo</title>
-  <defs>
-    <linearGradient id="badgeG" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#123a2e"/>
-      <stop offset="1" stop-color="#1b5e4f"/>
-    </linearGradient>
-    <linearGradient id="flameG" x1="0" y1="1" x2="0" y2="0">
-      <stop offset="0" stop-color="#c2571b"/>
-      <stop offset=".55" stop-color="#e8863a"/>
-      <stop offset="1" stop-color="#ffd9a8"/>
-    </linearGradient>
-    <linearGradient id="flameCore" x1="0" y1="1" x2="0" y2="0">
-      <stop offset="0" stop-color="#ffd9a8"/>
-      <stop offset="1" stop-color="#fff4e0"/>
-    </linearGradient>
-  </defs>
-
-  <rect x="3" y="3" width="122" height="122" rx="30" fill="url(#badgeG)"/>
-  <rect x="3" y="3" width="122" height="122" rx="30" fill="none" stroke="#2a7a63" stroke-width="2.5"/>
-
-  <g stroke="#d9ebe3" stroke-width="1" opacity=".13">
-    <line x1="30" y1="48" x2="98" y2="48"/>
-    <line x1="30" y1="70" x2="98" y2="70"/>
-    <line x1="30" y1="92" x2="98" y2="92"/>
-    <line x1="48" y1="30" x2="48" y2="98"/>
-    <line x1="70" y1="30" x2="70" y2="98"/>
-    <line x1="92" y1="30" x2="92" y2="98"/>
+  <!-- R3-a: viewfinder corners (rounded, inside the strict safe circle) around a big three-band heat flame -->
+  <rect width="512" height="512" rx="116" fill="#123a2e"/>
+  <g fill="none" stroke="#f7f2e8" stroke-width="28" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M110 182 V150 A40 40 0 0 1 150 110 H182"/>
+    <path d="M330 110 H362 A40 40 0 0 1 402 150 V182"/>
+    <path d="M402 330 V362 A40 40 0 0 1 362 402 H330"/>
+    <path d="M182 402 H150 A40 40 0 0 1 110 362 V330"/>
   </g>
-
-  <g stroke="#3f8f74" stroke-width="5" stroke-linecap="round">
-    <line x1="64" y1="72" x2="40" y2="41"/>
-    <line x1="64" y1="72" x2="88" y2="41"/>
-    <line x1="64" y1="72" x2="40" y2="101"/>
-    <line x1="64" y1="72" x2="88" y2="101"/>
-  </g>
-
-  <g fill="#eaf4ef">
-    <circle cx="37" cy="37" r="8.5"/>
-    <circle cx="91" cy="37" r="8.5"/>
-    <circle cx="37" cy="105" r="8.5"/>
-    <circle cx="91" cy="105" r="8.5"/>
-  </g>
-  <g fill="#123a2e">
-    <circle cx="37" cy="37" r="3.4"/>
-    <circle cx="91" cy="37" r="3.4"/>
-    <circle cx="37" cy="105" r="3.4"/>
-    <circle cx="91" cy="105" r="3.4"/>
-  </g>
-
-  <g stroke="#bcd3c9" stroke-width="2.2" fill="none" opacity=".9">
-    <ellipse cx="37" cy="37" rx="13.5" ry="3.4" transform="rotate(45 37 37)"/>
-    <ellipse cx="91" cy="37" rx="13.5" ry="3.4" transform="rotate(-45 91 37)"/>
-    <ellipse cx="37" cy="105" rx="13.5" ry="3.4" transform="rotate(-45 37 105)"/>
-    <ellipse cx="91" cy="105" rx="13.5" ry="3.4" transform="rotate(45 91 105)"/>
-  </g>
-
-  <path d="M64 40 C71 50 76 58 76 70 C76 80 70 86 64 86 C58 86 52 80 52 70 C52 58 57 50 64 40 Z" fill="url(#flameG)"/>
-  <path d="M64 55 C68 61 71 66 71 71 C71 77 68 81 64 81 C60 81 57 77 57 71 C57 66 60 61 64 55 Z" fill="url(#flameCore)"/>
+  <path transform="translate(256 262) scale(1.15) translate(-256 -256)" fill="#c2571b" d="M256 140 C280 192 340 222 340 292 C340 340 302 372 256 372 C210 372 172 340 172 292 C172 252 194 226 210 196 C218 226 230 242 244 250 C240 214 242 176 256 140 Z"/>
+  <path transform="translate(256 284.6) scale(.84) translate(-256 -256)" fill="#e8863a" d="M256 140 C280 192 340 222 340 292 C340 340 302 372 256 372 C210 372 172 340 172 292 C172 252 194 226 210 196 C218 226 230 242 244 250 C240 214 242 176 256 140 Z"/>
+  <path transform="translate(256 310) scale(.5) translate(-256 -256)" fill="#ffd9a8" d="M256 140 C280 192 340 222 340 292 C340 340 302 372 256 372 C210 372 172 340 172 292 C172 252 194 226 210 196 C218 226 230 242 244 250 C240 214 242 176 256 140 Z"/>
 </svg>

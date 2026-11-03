@@ -6,6 +6,8 @@
 
 A single-page, interactive order and build guide for a 5-inch analog FPV quadcopter with a Raspberry Pi thermal/GPS payload.
 
+This is a learning and portfolio project: the wildfire part is a simulation plus tests on safe heat targets, because the law keeps drones out of real wildfire airspace (CAR 601.15).
+
 ## Preview
 
 ### Main page and 46-hour build-time calculator
@@ -14,10 +16,15 @@ A single-page, interactive order and build guide for a 5-inch analog FPV quadcop
 
 ### Parts and interactive budget
 
-Open **3 Parts & Budget** for the interactive order plan — every row links to its live retailer
-listing — plus the **pay-as-you-go staging plan**: nine affordable purchase stages (CA$0–400
-each) that each deliver something to build, test or learn the day they arrive, ending at the
-same CA$1,714.94 complete plan without one big bill.
+The guide has five places: **Home**, **Build**, **Buy**, **Fly safely** and **Learn** (a left sidebar on a
+laptop, a bar along the bottom on a phone). **Home** shows where you are, the hours and "money I can spend
+this week" sliders, and three doors: Buy today, When a parcel arrives, Before you fly. **Buy** shows
+**Your bill** (the required parts with GST, bought so far, still to buy, a progress bar, and the optional
+extras on their own line), the **Buy today** list and every
+part by stage. Every line has a shop link, a dated stock badge and a backup place to buy it (or an honest "none
+found"). The required parts are CA$1,531.69 before GST and freight (CA$1,607.26 with GST), bought in seven small stages that each
+give you something working the day they arrive. All the money on the page comes from one list (the
+`buy-data` block in `index.html`).
 
 [![Parts and budget](docs/images/order-plan.png)](docs/images/order-plan.png)
 
@@ -87,7 +94,37 @@ esbuild docs/js/viewer3d.js --bundle --format=iife --minify --target=es2020 \
 node scripts/standalone/make-standalone.js bundle.js "Shad's Build Guide.html"
 ```
 
-The build steps tab is deep-linkable: `#p-steps` opens it directly.
+Every place and page is deep-linkable: `#p-steps` (or `#steps`) opens Build, `#parts` opens Buy, `#fly`
+opens Fly safely and `#plan` opens Learn > Plan. With no link, a first visit opens on Home; after that the
+guide reopens the place you were last on.
+
+### Keeping prices honest, and checking links
+
+The public page cannot check shops live, so every price and stock note is a dated snapshot and turns red
+after 3 days. Refresh it before you buy (Node only, no installs):
+
+```
+node scripts/standalone/refresh-stock.js            # check only: print what each shop says
+node scripts/standalone/refresh-stock.js --write    # write status, stock note and date into index.html
+node scripts/standalone/check-links.js              # does every link on the page open?
+```
+
+Walmart, Amazon, Canadian Tire and GetFPV block scripts: open those by hand (the date on the badge says when a
+person last did). A price that differs from the file is printed as a MISMATCH; the script never changes a price itself.
+
+### Install it as an app, and use it offline
+
+Run `Start Guide Assistant.cmd` (or `node server/assistant-server.js`), open http://localhost:8790/ once in
+Chrome or Edge, and press **Install app** in the page header. The guide, the 3D models and the pictures then open with
+no network. The page text itself is fetched fresh whenever you are online. Shop prices are never cached on their own:
+an old offline copy shows its "checked N days ago" warning. (`sw.js` is the service worker; change `CACHE` in it to
+force every device to refresh.)
+
+```
+python scripts/standalone/make-icons.py [logo.svg]   # rebuild docs/icons/ (192, 512, maskable, .ico) from a logo
+powershell -ExecutionPolicy Bypass -File scripts\standalone\make-shortcut.ps1   # Desktop shortcut with the icon
+node scripts/standalone/check-offline-list.js        # every file the page needs is in the offline list
+```
 
 ### Guide Assistant (an AI that answers from this guide)
 
@@ -103,8 +140,8 @@ backed by an exact quote from the guide.
 `http://localhost:8790/` is the whole guide, served from your own computer by a small Node server
 (`server/assistant-server.js`), with the AI switched on:
 
-- **The guide itself:** all seven tabs (What & Why, How It Works, Parts & Budget, Build Steps,
-  Career & Pay, Quizzes, Limits), the build-time calculator, the eight-step assembly manual and its
+- **The guide itself:** the five places (Home, Build, Buy, Fly safely, and Learn with its pages What & Why,
+  How it works, Plan, Career & pay, Quizzes, Limits & sources), the build-time calculator, the eight-step assembly manual and its
   interactive 3D models. Progress and quiz scores are kept in your browser.
 - **Ask the guide** (bottom right) opens the assistant. Its header buttons are **⌘** for past
   conversations (kept on this computer and restored on reload), **⚙** for Settings, **Clear** for a
@@ -239,7 +276,7 @@ on spend, falling back to the offline engine rather than billing past it.
 Run the tests:
 
 ```powershell
-# Everything at once: 28 suites, 1499 named checks, one exit code.
+# Everything at once: 28 suites, 1507 named checks, one exit code.
 node scripts/dev/gate.js
 node scripts/dev/gate.js --quick    # skip the browser suite (needs Chrome)
 node scripts/dev/gate.js --json     # machine-readable
@@ -251,7 +288,7 @@ node scripts/dev/check-kb-prices.js          # every KB price must also appear i
 node scripts/dev/check-cost-engine.js        # cache, router, meter, compression (26 checks)
 node scripts/dev/check-cost-path.js          # zero-cost repeat, cap, escalation (30 checks)
 node scripts/dev/build-domain.js --check     # domain pack is current and every claim is sourced
-node scripts/dev/check-settings.js           # key never returned, budget clamped (31 checks)
+node scripts/dev/check-settings.js           # key never returned, budget clamped, secrets never served (39 checks)
 node scripts/dev/check-browser.js            # real Chrome: drawer clicks, quiz pass survival (28)
 node scripts/dev/check-quiz-op.js            # the quiz-add operation: 29 checks, incl. refusals
 node scripts/dev/check-prose-op.js           # the prose-rewrite operation: 38 checks, incl. refusals
@@ -274,7 +311,7 @@ Open `index.html` in a browser. Tabs, build checkboxes, progress, quizzes, flash
 - `shad-drone-icon.svg` — current favicon/header artwork.
 - `docs/js/assistant.js` + `docs/assistant/` — the offline Guide Assistant, plus the optional Cloudflare Worker that lets a model draft answers from retrieved passages.
 
-The unavailable stack, thermal camera, Pi and goggles were replaced with live alternatives, then re-checked on **31 October 2026**. Every link loads, but **a working link is not stock** — the frame and the GEPRC 50A stack were out of stock on that re-check, so confirm availability and freight at checkout. The complete selected plan costs **CA$1,714.94**, or **CA$1,799.69 after 5% GST**, before remaining retailer freight — roughly **CA$1,840–1,870 landed**.
+The unavailable stack, thermal camera, Pi and goggles were replaced with live alternatives, then re-checked on **31 October 2026**. Every link loads, but **a working link is not stock** — the frame and the GEPRC 50A stack were out of stock on that re-check, so confirm availability and freight at checkout. The required parts cost **CA$1,531.69** (no laptop: it assumes you use your own), or **CA$1,607.26 after 5% GST**, before remaining retailer freight — roughly **CA$1,647–1,677 landed** (the same CA$40–70 freight allowance as before). Optional extras: CA$85.51 + GST.
 
 ## Payload setup
 
@@ -299,7 +336,7 @@ The viewer defaults to `http://127.0.0.1:8000` and the append-only log is `fligh
   before the model call, and an empty-passage request was rejected with `422`.
 - 4/4 Guide Assistant price checks passed (`scripts/dev/check-kb-prices.js`): every figure in the
   assistant's knowledge base also appears in the guide, the budget arithmetic closes
-  (CA$1,694.94 × 5% = CA$84.75; CA$1,714.94 + CA$84.75 = CA$1,799.69), and the superseded
+  (CA$1,511.35 × 5% = CA$75.57; CA$1,531.69 + CA$75.57 = CA$1,607.26), and the superseded
   CA$1,678.00 total is absent. Verified non-vacuous by re-running it against a deliberately
   reverted copy, where it failed as intended.
 - 26/26 cost-engine unit checks passed (`scripts/dev/check-cost-engine.js`), and 30/30 cost-path
@@ -311,7 +348,7 @@ The viewer defaults to `http://127.0.0.1:8000` and the append-only log is `fligh
   answered with no model call and an unanswerable one is not.
 - `node --check` clean on `docs/js/assistant.js`, `server/assistant-server.js` and the mock provider;
   UTF-8 integrity verified for every shipped file.
-- 19/19 payload unit tests passed.
+- 31/31 payload unit tests passed.
 - Demo, map health/API and viewer responses passed.
 - Every order-document link resolves, but a working link is not stock: the frame and the GEPRC 50A
   stack were out of stock on the 31 Oct 2026 re-check.

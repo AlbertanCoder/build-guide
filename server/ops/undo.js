@@ -48,9 +48,9 @@ function undo(target, opts) {
   const o = opts || {};
   const log = o.log || function () {};
 
-  if (!isClean()) { return fail("the working tree is not clean — commit or stash first"); }
+  if (!isClean()) { return fail("Not undone: this folder has changes that are not saved in git yet (the working tree is not clean). Save or set them aside first."); }
   if (currentBranch() !== "main") {
-    return fail("switch to main before undoing (you are on " + currentBranch() + ")");
+    return fail("Not undone: this folder is on the branch " + currentBranch() + ", not main. Undo only works from main.");
   }
 
   let sha = target;

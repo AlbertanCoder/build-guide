@@ -11,10 +11,11 @@ failure this project has actually shipped.
 hotspots.py groups connected warm pixels — 4-connectivity, minimum size, and a
 threshold inclusion rule — rather than running a learned model. The standard
 library suite covers no/single/multiple hotspots, connectivity, minimum size,
-edge cases and the end-to-end synthetic pipeline (19 synthetic tests).
+edge cases, the end-to-end synthetic pipeline and the bench mode (31 synthetic tests
+in the whole package).
 
 source:: payload README tests section; Guide CHAIN step 2
-verified:: 2026-11-01
+verified:: 2026-11-03
 
 ## The resolution floor comes before the algorithm
 

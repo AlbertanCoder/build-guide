@@ -226,9 +226,9 @@ function accept(slug, opts) {
 
   if (!slug) { return fail("no proposal named"); }
   if (!branchExists(slug)) { return fail('there is no branch called "' + slug + '"'); }
-  if (!isClean()) { return fail("the working tree is not clean — commit or stash first"); }
+  if (!isClean()) { return fail("Not accepted: this folder has changes that are not saved in git yet (the working tree is not clean). Save or set them aside first."); }
   if (currentBranch() !== "main") {
-    return fail("switch to main before accepting (you are on " + currentBranch() + ")");
+    return fail("Not accepted: this folder is on the branch " + currentBranch() + ", not main. Accepting only works from main.");
   }
   if (o.pick) { return acceptPicked(slug, String(o.pick), o); }
 

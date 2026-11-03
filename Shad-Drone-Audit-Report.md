@@ -118,3 +118,7 @@ Reusable checks: `C:\Users\SHADHUNTER\Desktop\.claude\check_drone_guide.py` and 
 
 **ORDER PLAN — buy the exact listed items after confirming stock and freight at checkout, then follow the documented assembly, bench and flight acceptance tests.**
 
+## Revision note, 2026-11-03 (earlier text above is left as written)
+
+- The Acer Aspire 1 laptop (CA$269.00 + CA$35.99 delivery, Walmart) was removed from the plan: Shad uses his own laptop. Figures in the sections above that include it (CA$1,714.94 merchandise, CA$84.75 GST, CA$1,799.69 total) are superseded. New figures: merchandise + CA$20 allowance CA$1,409.95; GST 5% on CA$1,389.95 = CA$69.50; total CA$1,479.45 before freight.
+- Added a 24 V 3 A DC adapter for the kit's iron (Abra Electronics, CA$16.43, in stock 2026-11-03; connector 5.5 x 2.5 mm, source: the product page; iron rated DC 12-24 V, 5.5 x 2.5 mm, source: the Rotor Village listing). Plug polarity is not stated on either page, so the guide says to check it with the multimeter before first use. Updated figures: merchandise + CA$20 allowance CA$1,426.38; GST 5% on CA$1,406.38 = CA$70.32; total CA$1,496.70 before freight.

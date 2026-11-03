@@ -1,5 +1,7 @@
 # Shad's Fire-Detecting Drone — Source-Verified Order Plan
 
+> **2026-11-03: the guide page is now the source of truth for what to buy** (the "Buy today" list and the "What to Buy" tab). It carries every part, the missing small parts added on 3 Nov (wire strippers, thin silicone wire, electrical tape, M2.5 screws and nuts, foam tape, USB-C data cable, spare propellers), dated stock, and a backup shop for each. This file keeps the 31 Oct line-by-line sourcing notes; its totals do not include those additions.
+
 **Checked:** 2026-10-31 (evening) · **stock re-checked 2026-10-31**  
 **Build:** 5-inch analog FPV quad + Raspberry Pi thermal/GPS payload  
 **Scope:** exact parts, quantities, live sources, tested payload code, and landed-cost assumptions.
@@ -13,8 +15,7 @@ Every category needed for the build is covered below. Prices and stock are point
 > 2. **GEPRC TAKER F405 BLS 50A stack — OUT OF STOCK**, and so is the 65A V2. In-stock 30.5×30.5
 >    alternates: **DakeFPV F405 + 65A, CA$95.99**; **GEPRC TAKER F405 BL32 70A, CA$159.99**; Aocoda
 >    F480 V3.2 F405+80A, CA$159.99. Your Stage 1–3 purchases are unaffected — the stack is not needed until Stage 5.
-> 3. **Acer laptop — OUT OF STOCK** at Walmart (price still CA$269.00). Substitute any recertified
->    Windows laptop, or skip it if you own a computer.
+> 3. **Laptop removed from the list (2026-11-03):** Shad uses his own laptop, so the Acer laptop and its CA$35.99 delivery are no longer bought.
 > 4. **Zip ties — only 1 left**; the Flywoo tool kit (3), Skyzone M5F (1) and TBS Triumph (3) are low stock.
 >
 > **Corrected in this revision:** the TBS Diamond antenna is an **850–950 MHz Crossfire link antenna**,
@@ -87,13 +88,21 @@ Bank of Canada daily rate checked for 2026-10-30: **CA$1.3960 per US$1**. Use th
 
 | Qty | Exact item | Extended CAD | Live listing / availability |
 |---:|---|---:|---|
-| 1 | Acer Aspire 1, 15.6-inch, Celeron N4500/4GB/64GB, Windows 11 S, recertified with 1-year Acer warranty | $269.00 | [Out of stock at 2026-11-01 re-check, price still $269.00; was add-to-cart via BuySmart](https://www.walmart.ca/en/ip/Acer-Aspire-1-FHD-15-6-Laptop-Intel-Celeron-N4500-4GB-DDR4-64GB-eMMC-UHD-Graphics-W11-S-mode-Excellent-Recertified-Year-Manufacturer-Warranty/7ICF4XI4BCLN) |
-| 1 | BuySmart delivery to Edmonton shown on listing | $35.99 | Same laptop listing; actual address changes quote |
 | 1 | Permatex Blue Medium Strength 242 threadlocker | $10.28 | [Sold by Walmart](https://www.walmart.ca/en/ip/Permatex-Blue-Medium-Strength-242-Threadlocker/10045329) |
 | 1 | Energizer MAX AAA batteries, 8-pack (multimeter uses two) | $9.47 | [Sold by Walmart](https://www.walmart.ca/en/ip/Energizer-MAX-AAA-Batteries-8-Pack-Triple-A-Alkaline-Batteries/4MNIVQS3GCTW) |
 | 1 | 3M SecureFit 200 clear anti-fog safety glasses | $12.98 | [Sold by Walmart](https://www.walmart.ca/en/ip/3M-SecureFit-200-Eyewear-SF200P1-DC-Clear-Clear-Lens-Anti-Fog/6000207407268) |
 
-**Walmart/laptop subtotal including shown laptop freight: CA$337.72.** Switch Windows 11 out of S mode before installing Betaflight Configurator and Raspberry Pi Imager. The three small Walmart items total CA$32.73; if their free-pickup/delivery threshold is not met, any separate charge belongs in the freight section below.
+**Walmart subtotal: CA$32.73** (threadlocker CA$10.28 + AAA cells CA$9.47 + safety glasses CA$12.98). If their free-pickup/delivery threshold is not met, any separate charge belongs in the freight section below.
+
+## Order 5 — Abra Electronics (CAD)
+
+Checked 2026-11-03 on the product page itself: price CA$ 16.43, "Availability: In stock", code DC-24V3A, output 24 V DC, 3 A max, connector 5.5 x 2.5 mm, comes with its AC cable. The Flywoo kit's iron (Rotor Village listing) is rated "Working voltage: DC12--24V", "Power Interface: 5.5*2.5", 65 W, so a 24 V 3 A (72 W) supply fits on voltage, plug size and power. The web address says "24v5a ... clone" but the listing says 3 A: check the label on the box.
+
+| Qty | Exact item | Extended CAD | Live listing / observed availability |
+|---:|---|---:|---|
+| 1 | 24 V DC 3 A power supply wall adapter, 5.5 x 2.5 mm plug (Abra code DC-24V3A) | $16.43 | [In stock 3 Nov 2026](https://abra-electronics.com/power-supplies-transformers-adapters/wall-transformers-adapters/ac-dc-tabletop-power-adapters-24v/dc-24v5a-24vdc-5a-power-supply-wall-adapter-clone.html) |
+
+**Abra merchandise subtotal: CA$16.43.** Freight is calculated at checkout and is not included. **Before first use, check the plug polarity with the kit's multimeter** (DC volts, red probe on the centre pin, black on the barrel; about +24 V means centre-positive). The iron's own polarity is not confirmed on its listing: if the iron or its cable is marked differently, do not plug it in.
 
 ## Compliance allowance
 
@@ -124,6 +133,7 @@ Every budget row in the guide also carries a second ↗ link. Big-ticket parts h
 | COB LED strip | [Amazon search](https://www.amazon.ca/s?k=4S+COB+LED+strip) |
 | Battery grip pad | [Amazon search](https://www.amazon.ca/s?k=fpv+battery+grip+pad) |
 | Flywoo tool kit | [GetFPV](https://www.getfpv.com/flywoo-fpv-quad-tool-kit-w-multimeter-and-soldering-iron.html) |
+| 24 V 3 A iron adapter | [Amazon search](https://www.amazon.ca/s?k=24V+3A+power+adapter+5.5x2.5mm) |
 | Smoke stopper | [Pyrodrone](https://pyrodrone.com/products/iflight-smart-smoke-stopper-xt60-xt30) |
 | LiPo safe bag | [Amazon search](https://www.amazon.ca/s?k=lipo+battery+safe+bag) |
 | Heat shrink (6 mm / 38 mm) | [Amazon search](https://www.amazon.ca/s?k=heat+shrink+tubing+assortment) |
@@ -135,7 +145,6 @@ Every budget row in the guide also carries a second ↗ link. Big-ticket parts h
 | PA1010D GPS | [Adafruit Mini GPS PA1010D](https://www.adafruit.com/product/4415) (same module, STEMMA QT) |
 | SparkFun Qwiic HAT | [Amazon search](https://www.amazon.ca/s?k=SparkFun+Qwiic+HAT) |
 | Qwiic jumper cables | [Amazon search](https://www.amazon.ca/s?k=SparkFun+Qwiic+jumper+cable) |
-| Windows laptop (optional) | [Amazon search](https://www.amazon.ca/s?k=recertified+windows+laptop) |
 | Permatex 242 threadlock | [Amazon search](https://www.amazon.ca/s?k=Permatex+242) |
 | Energizer AAA | [Amazon search](https://www.amazon.ca/s?k=Energizer+MAX+AAA) |
 | Safety glasses | [Amazon search](https://www.amazon.ca/s?k=3M+SecureFit+200) |
@@ -148,17 +157,18 @@ Every budget row in the guide also carries a second ↗ link. Big-ticket parts h
 | Rotor Village merchandise | CA$1,083.42 |
 | PiShop merchandise | CA$258.65 |
 | SparkFun merchandise, converted at 1.3960 | CA$15.15 |
-| Walmart/laptop, including shown laptop freight | CA$337.72 |
+| Walmart merchandise (threadlocker, AAA cells, safety glasses) | CA$32.73 |
+| Abra merchandise | CA$16.43 |
 | Compliance allowance (exam $10 + registration $10) | CA$20.00 |
-| **Merchandise + known laptop freight + allowance** | **CA$1,714.94** |
-| Alberta GST at 5% on the CA$1,694.94 taxable subtotal (TC fees are not taxable) | CA$84.75 |
-| **Total before Rotor Village/PiShop/SparkFun/other freight** | **CA$1,799.69** |
-| Estimated remaining retailer freight | CA$40–70 |
-| **Estimated landed total** | **CA$1,840–1,870** |
+| **Merchandise + allowance** | **CA$1,426.38** |
+| Alberta GST at 5% on the CA$1,406.38 taxable subtotal (TC fees are not taxable) | CA$70.32 |
+| **Total before Rotor Village/PiShop/SparkFun/other freight** | **CA$1,496.70** |
+| Estimated remaining retailer freight (older estimate; does not yet cover Abra or SparkFun) | CA$40–70 |
+| **Estimated landed total** | **CA$1,537–1,567** |
 
 If you take the DakeFPV stack alternate instead of waiting for the GEPRC restock, add CA$10.00.
 
-Freight from Rotor Village and PiShop is weight-based; SparkFun international freight/import charges and any small-Walmart-item charge require checkout quotes. No duty is expected on the Canadian-stocked Rotor Village/PiShop orders, but taxes and carrier charges still apply. The original CA$750 goal is not realistic for this complete new-parts/tools/laptop build; this is the full selected system rather than a reduced-feature list.
+Freight from Rotor Village and PiShop is weight-based; SparkFun international freight/import charges and any small-Walmart-item charge require checkout quotes. No duty is expected on the Canadian-stocked Rotor Village/PiShop orders, but taxes and carrier charges still apply. The original CA$750 goal is not realistic for this complete new-parts/tools build; this is the full selected system rather than a reduced-feature list.
 
 ## Compatibility and assembly verification
 
@@ -172,7 +182,7 @@ Freight from Rotor Village and PiShop is weight-based; SparkFun international fr
 | Pi power | GEPRC regulated 5V/3A to micro-USB power-only pigtail; separate bench PSU | Meter polarity/voltage and check undervoltage under load before flight |
 | Analog FPV | Phoenix 2 (5–36V), Unify Pro HV (2–6S), **TBS Triumph PRO 5.8 GHz SMA antenna**, Skyzone M5F analog monitor (needs its own 18650 and microSD) | Match channel/band and legal RF settings; use 25 mW / default legal channels unless properly licensed. A 900 MHz Crossfire antenna (e.g. TBS Diamond) will not work here |
 | Charging | M4AC supports 1–4S LiPo/LiHV and AC input | Select LiHV 4S, attended balance charging in LiPo bag |
-| Software | Included local package with GPS/camera drivers, logging and offline viewer | **19/19 synthetic tests passed**, then perform Pi hardware and surveyed-target tests |
+| Software | Included local package with GPS/camera drivers, logging and offline viewer | **31/31 synthetic tests passed**, then perform Pi hardware and surveyed-target tests |
 
 Payload package: `C:\Users\SHADHUNTER\Desktop\build-guide-repo\Shad-Drone-Payload`  
 Instructions: `C:\Users\SHADHUNTER\Desktop\build-guide-repo\Shad-Drone-Payload\README.md`

@@ -23,7 +23,7 @@ function check(name, ok, detail) {
 
 const quizzes = quizAdd.readQuizzes(fs.readFileSync(INDEX, "utf8")).quizzes;
 const corpus = fs.readFileSync(path.join(ROOT, "docs", "domain", "01-thermal-detection-limits.md"), "utf8");
-const CTX = { quizzes: quizzes, corpus: corpus, correctValues: ["0.98 m per pixel", "CA$1,714.94"] };
+const CTX = { quizzes: quizzes, corpus: corpus, correctValues: ["0.98 m per pixel", "CA$1,607.26"] };
 const JOB = { op: "quiz-add", target: "detect", count: 2, minLevel: 3 };
 
 /* ---- the prompt has to carry the rules and the evidence ------------------ */
@@ -59,7 +59,7 @@ const UNCITED = Object.assign({}, GOOD, {
 });
 const SECRETLY_RIGHT = Object.assign({}, GOOD, {
   q: "What does the whole order plan cost? (" + nonce + ")",
-  a: ["About CA$900", "About CA$1,200", "CA$1,714.94", "About CA$2,500"],
+  a: ["About CA$900", "About CA$1,200", "CA$1,607.26", "About CA$2,500"],
   c: 0
 });
 
