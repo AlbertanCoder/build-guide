@@ -49,6 +49,10 @@ log.push(`models inlined: ${modelFiles.length}`);
 // ---- 2. favicon ------------------------------------------------------------
 const icon = fs.readFileSync(path.join(REPO, 'shad-drone-icon.svg')).toString('base64');
 html = html.replace('href="shad-drone-icon.svg"', `href="data:image/svg+xml;base64,${icon}"`);
+// The web-app links (manifest, extra icons, theme colour) only matter when the page is served; the single file has none.
+html = html.replace(/<link rel="(?:manifest|apple-touch-icon)"[^>]*>\r?\n?/g, '')
+  .replace(/<link rel="icon" href="docs\/icons\/favicon\.ico"[^>]*>\r?\n?/g, '')
+  .replace(/<meta name="theme-color"[^>]*>\r?\n?/g, '');
 
 // ---- 3. step SVGs -> inline <img> (data: navigation is blocked; imgs work) --
 let svgCount = 0;

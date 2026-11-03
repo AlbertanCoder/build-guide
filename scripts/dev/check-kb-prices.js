@@ -36,8 +36,45 @@ function check(name, ok, detail) {
   console.log((ok ? "PASS " : "FAIL ") + name + (detail ? "  [" + detail + "]" : ""));
 }
 
+// The guide's money now comes from ONE list (the buy-data block in index.html), and the page works out
+// its totals from it. So an amount is "in the guide" if it is written in the page text OR it is a line
+// price, a line total, the whole-build total or the taxable total computed from that list.
+function dataAmounts() {
+  const out = new Set();
+  const m = guide.match(/<script type="application\/json" id="buy-data">([\s\S]*?)<\/script>/);
+  if (!m) return out;
+  const data = JSON.parse(m[1]); // "<\/" is a valid JSON escape for "</"
+  let total = 0;
+  let taxable = 0;
+  for (const l of data.lines || []) {
+    const cents = Math.round(l.unit * 100) * l.qty;
+    total += cents;
+    if (!l.noGst) taxable += cents;
+    out.add((Math.round(l.unit * 100) / 100).toFixed(2).replace(/\.00$/, ""));
+    out.add((cents / 100).toFixed(2).replace(/\.00$/, ""));
+    out.add((cents / 100).toFixed(2));
+  }
+  const gst = Math.round(taxable * 0.05);
+  for (const c of [total, taxable, gst, total + gst]) out.add((c / 100).toFixed(2));
+  // The page's headline (Shad, 3 Nov) is the REQUIRED stages with GST, and the optional stages on their own
+  // line, computed the same way by billTotals() in index.html.
+  const optional = new Set(data.optionalStages || []);
+  let reqTotal = 0;
+  let reqTaxable = 0;
+  let optTotal = 0;
+  for (const l of data.lines || []) {
+    const cents = Math.round(l.unit * 100) * l.qty;
+    if (optional.has(l.stage)) { optTotal += cents; continue; }
+    reqTotal += cents;
+    if (!l.noGst) reqTaxable += cents;
+  }
+  const reqGst = Math.round(reqTaxable * 0.05);
+  for (const c of [reqTotal, reqTaxable, reqGst, reqTotal + reqGst, optTotal]) out.add((c / 100).toFixed(2));
+  return out;
+}
+
 // 1. every distinct amount in the KB must also appear somewhere in the guide
-const guideAmounts = new Set(amountsIn(guide));
+const guideAmounts = new Set([...amountsIn(guide), ...dataAmounts()]);
 const kbAmounts = [...new Set(amountsIn(assistant))];
 const drifted = kbAmounts.filter(
   (a) => !guideAmounts.has(a) && !EXTERNAL.has(a)

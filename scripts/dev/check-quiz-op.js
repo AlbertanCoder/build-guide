@@ -64,7 +64,7 @@ const OP = {
   level: 3
 };
 
-const CTX = { quizzes: parsed.quizzes, corpus: corpus, correctValues: ["0.98 m per pixel", "CA$1,714.94"] };
+const CTX = { quizzes: parsed.quizzes, corpus: corpus, correctValues: ["0.98 m per pixel", "CA$1,607.26"] };
 
 /* ---- the numbers the proposal must declare, computed not claimed ---------- */
 const d = op.describe(OP, CTX);

@@ -82,6 +82,29 @@ function writeGate(req) {
   }
   return { ok: true };
 }
+/* Which Host header this server answers to. A web page on another site can make
+   the browser point its own name at 127.0.0.1 ("DNS rebinding"); its requests then
+   arrive with that site's name in the Host header. Refusing every Host that is not
+   this machine stops it reading files or calling the API that way. A remote bind
+   adds its own address; ALLOWED_HOSTS (comma-separated) adds names such as a
+   tailnet DNS name. */
+const ALLOWED_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]
+  .concat(/^(0\.0\.0\.0|::)$/.test(BIND) ? [] : [BIND.toLowerCase()])
+  .concat(String(ENV.ALLOWED_HOSTS || "").split(",").map(function (h) { return h.trim().toLowerCase(); }).filter(Boolean)));
+function hostAllowed(req) {
+  const h = String(req.headers.host || "");
+  if (!h) { return true; } /* only non-browser HTTP/1.0 clients omit Host; browsers always send it */
+  const name = h.replace(/:\d+$/, "").replace(/^\[|\]$/g, "").toLowerCase();
+  return ALLOWED_HOSTS.has(name);
+}
+/* A write from another site: browsers send Origin on every cross-site POST, and
+   Sec-Fetch-Site says where a request came from. */
+function crossSite(req) {
+  const origin = String(req.headers.origin || "");
+  const host = String(req.headers.host || "");
+  if (String(req.headers["sec-fetch-site"] || "") === "cross-site") { return true; }
+  return !!(origin && host && origin.replace(/^https?:\/\//, "") !== host);
+}
 let PROVIDER = String(ENV.PROVIDER || "openai").toLowerCase();
 
 /* ---------- settings the page may change (git-ignored) ----------
@@ -460,6 +483,8 @@ const MIME = {
   ".json": "application/json; charset=utf-8",
   ".svg": "image/svg+xml",
   ".png": "image/png",
+  ".ico": "image/x-icon",
+  ".webmanifest": "application/manifest+json; charset=utf-8",
   ".glb": "model/gltf-binary",
   ".md": "text/markdown; charset=utf-8",
   ".txt": "text/plain; charset=utf-8"
@@ -1048,6 +1073,14 @@ function serveStatic(req, res) {
   if (!file.startsWith(REPO + path.sep) && file !== REPO) {
     res.writeHead(403); res.end("forbidden"); return;
   }
+  /* never serve secrets or tooling inside it either: the saved API key
+     (server/.settings.json), server/.env, .git, .claude, conversations, caches.
+     Any part of the path that starts with a dot is refused, and so is all of
+     server/ and node_modules/. The page needs none of them. */
+  const parts = path.relative(REPO, file).split(path.sep);
+  if (parts.some(function (p) { return p.charAt(0) === "."; }) || parts[0] === "server" || parts[0] === "node_modules") {
+    res.writeHead(403); res.end("forbidden"); return;
+  }
   fs.stat(file, (err, stat) => {
     if (err || !stat.isFile()) { res.writeHead(404); res.end("not found"); return; }
     res.writeHead(200, {
@@ -1060,6 +1093,11 @@ function serveStatic(req, res) {
 }
 
 async function handleAsk(req, res) {
+  /* A question costs money, so another website must not be able to send one:
+     JSON only (a cross-site form or text/plain post cannot set it without a
+     preflight this server never approves) and no cross-site Origin. */
+  if (!hasJsonMediaType(req)) { sendJson(res, 415, { error: "Send application/json." }); return; }
+  if (crossSite(req)) { sendJson(res, 403, { error: "Cross-origin question refused." }); return; }
   const ip = req.socket.remoteAddress || "local";
   if (rateLimited(ip)) {
     sendJson(res, 429, { error: "Too many questions. Wait a minute." });
@@ -1284,7 +1322,9 @@ async function handleAsk(req, res) {
    Threads live in server/.conversations/ (git-ignored): one JSON file per
    thread, mirrored from the page so the phone and the desktop share the same
    conversations. Writes ride through the same three write gates as settings and
-   proposals; reads are open, because reading is not writing. A corrupt or
+   proposals. Reads are open on a loopback bind (the machine itself is the gate);
+   on a reachable bind they need the write token too, because a thread is private
+   chat history (M6, chat audit). A corrupt or
    missing file is never fatal — the page's localStorage copy keeps it. */
 const CONVERSATIONS_DIR = ENV.CONVERSATIONS_DIR || path.join(__dirname, ".conversations");
 const THREAD_ID = /^[a-z0-9-]{1,64}$/i;
@@ -1322,10 +1362,26 @@ function listThreads() {
   return out;
 }
 
+/* M6: on a reachable bind, reading conversation history needs the write token. */
+function readGate(req) {
+  if (!REMOTE) { return { ok: true }; }
+  if (!WRITE_TOKEN) {
+    return { ok: false, status: 403, error: "conversation history is private on a reachable server; set GA_WRITE_TOKEN in server/.env" };
+  }
+  const auth = String(req.headers.authorization || "");
+  const got = auth.indexOf("Bearer ") === 0 ? auth.slice(7) : String(req.headers["x-write-token"] || "");
+  if (got !== WRITE_TOKEN) { return { ok: false, status: 401, error: "token missing or wrong" }; }
+  return { ok: true };
+}
+
 async function handleConversations(req, res, u) {
   const m = /^\/api\/conversations\/([^/]+)$/.exec(u);
+  if (req.method === "GET") {
+    const g = readGate(req);
+    if (!g.ok) { sendJson(res, g.status, { error: g.error }); return; }
+  }
 
-  /* GET the list — a read, so no gate. */
+  /* GET the list (read gate above). */
   if (!m && req.method === "GET") {
     sendJson(res, 200, { ok: true, threads: listThreads() });
     return;
@@ -1335,7 +1391,7 @@ async function handleConversations(req, res, u) {
   const id = m[1];
   if (!THREAD_ID.test(id)) { sendJson(res, 400, { error: "Bad thread id." }); return; }
 
-  /* GET one thread — also a read. */
+  /* GET one thread (read gate above). */
   if (req.method === "GET") {
     try {
       const t = JSON.parse(fs.readFileSync(convFile(id), "utf8"));
@@ -1404,6 +1460,7 @@ async function handleConversations(req, res, u) {
 
 const server = http.createServer((req, res) => {
   const u = (req.url || "/").split("?")[0];
+  if (!hostAllowed(req)) { sendJson(res, 403, { error: "This server only answers on this machine." }); return; }
 
   /* ---------- settings: the key and the daily cap, set from the page ----------
      Guarded three ways: the server binds loopback, the JSON content type forces a
@@ -1446,7 +1503,9 @@ const server = http.createServer((req, res) => {
       }
 
       const patch = {};
+      let keyCleared = false;
       if (typeof body.preset === "string" && body.preset) {
+        const oldBase = BASE_URL;
         const applied = applyPreset(body.preset);
         if (!applied) {
           sendJson(res, 400, { error: 'unknown provider preset "' + body.preset + '"' });
@@ -1456,6 +1515,14 @@ const server = http.createServer((req, res) => {
         patch.baseUrl = applied.baseUrl;
         patch.cheapModel = applied.cheap;
         patch.strongModel = applied.strong;
+        /* M4 (chat audit): a key only works with the provider that issued it. Keeping it after a switch would
+           send, say, an OpenAI key to Groq on the next question, silently. A new provider starts with no key,
+           and the reply says so, unless a key comes in the same request. */
+        if (applied.baseUrl.replace(/\/$/, "") !== oldBase.replace(/\/$/, "") && typeof body.apiKey !== "string" && API_KEY) {
+          API_KEY = "";
+          patch.apiKey = "";
+          keyCleared = true;
+        }
       }
       if (typeof body.model === "string" && body.model.trim()) {
         /* A free-text model field, because a preset's hardcoded model name is the
@@ -1511,7 +1578,7 @@ const server = http.createServer((req, res) => {
         return;
       }
 
-      sendJson(res, 200, settingsPayload());
+      sendJson(res, 200, Object.assign(settingsPayload(), keyCleared ? { keyCleared: true } : {}));
     });
     return;
   }
@@ -1519,6 +1586,7 @@ const server = http.createServer((req, res) => {
   /* Optional: prove the key works before trusting it. Only runs when asked, so a
      normal save costs nothing. */
   if (u === "/api/settings/verify" && req.method === "POST") {
+    if (crossSite(req)) { sendJson(res, 403, { error: "Cross-origin request refused." }); return; }
     verifyKey().then((result) => sendJson(res, 200, result));
     return;
   }
@@ -1526,6 +1594,8 @@ const server = http.createServer((req, res) => {
   if (u === "/api/health") {
     sendJson(res, 200, {
       ok: true,
+      /* which copy of the guide this server serves: the launcher refuses to open a server from another folder */
+      folder: REPO,
       provider: PROVIDER,
       model: MODEL,
       cheapModel: CHEAP_MODEL,
@@ -1604,7 +1674,7 @@ const server = http.createServer((req, res) => {
   }
 
   /* Conversation memory: threads mirrored from every device (Item B).
-     Writes are gated like settings and proposals; reads are open. */
+     Writes are gated like settings and proposals; reads are open on loopback only. */
   if (u === "/api/conversations" || /^\/api\/conversations\/[^/]+$/.test(u)) {
     handleConversations(req, res, u);
     return;

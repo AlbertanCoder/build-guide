@@ -1,0 +1,17 @@
+{
+  "name": "Shad's Build Guide",
+  "short_name": "Build Guide",
+  "description": "Parts list, build steps and 3D models for the fire-detecting drone.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f2e8",
+  "theme_color": "#123a2e",
+  "lang": "en-CA",
+  "icons": [
+    { "src": "docs/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "docs/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "docs/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

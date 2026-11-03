@@ -81,7 +81,7 @@ const SUITES = [
   {
     name: "settings api",
     cmd: ["node", ["scripts/dev/check-settings.js"]],
-    expect: 31
+    expect: 39
   },
   {
     name: "review api",

@@ -128,7 +128,7 @@ that chain fails, the answer comes from the offline engine with a one-line note 
 
 ## The gate
 
-24 suites, 625 named checks, one exit code:
+24 suites, 633 named checks, one exit code:
 
 ```powershell
 node scripts/dev/gate.js            # everything
@@ -285,13 +285,13 @@ from storage.
 | `scripts/build/build_from_plan.py` | the only Blender script a 3D view ever runs; reads a JSON plan, refuses anything off its allow-list |
 | `scripts/dev/check-render.js` | 21 checks: allow-lists match, bad plans refused, a real Blender build, the routes and settings |
 | `scripts/dev/check-cost-path.js` | 30 end-to-end checks: cache, compression, stats, budget, escalation |
-| `scripts/dev/check-settings.js` | 29 checks on the key, budget and provider endpoints |
+| `scripts/dev/check-settings.js` | 39 checks on the key, budget and provider endpoints, and that secret files and cross-site requests are refused |
 | `server/ops/undo.js` | reverts an accepted proposal, then rebuilds and re-mirrors |
 | `server/ops/job-spec.js` | turns "add 3 harder detect questions" into a fixed job; refuses destructive sentences |
 | `server/ops/draft.js` | asks a model for candidates, then keeps only the ones the checks accept |
 | `scripts/dev/check-job-spec.js` | 8 checks on that parser |
 | `scripts/dev/check-draft.js` | 15 checks on the drafter — prompt shape, JSON extraction, screening |
-| `scripts/dev/check-browser.js` | 28 checks in a real browser: the settings drawer, the quiz pass-survival rule, all 7 tabs render, zero page errors |
+| `scripts/dev/check-browser.js` | 28 checks in a real browser: the settings drawer, the quiz pass-survival rule, all 10 pages render, zero page errors |
 | `server/ops/quiz-add.js` | the first named operation: validate before applying, then apply as a pure function |
 | `scripts/dev/check-quiz-op.js` | 29 checks on that operation — every refusal, plus proof it cannot write to disk |
 | `server/ops/propose.js` | turns a validated op into a `proposal/` branch; cannot touch `main` |
@@ -333,13 +333,13 @@ unsourced number cannot reach the page:
 ```powershell
 node scripts/dev/build-domain.js           # regenerate docs/js/domain.js
 node scripts/dev/build-domain.js --check   # fail if it is stale or any claim is unsourced
-node scripts/dev/check-settings.js         # 23 checks: key never returned, budget clamped, CSRF refused
+node scripts/dev/check-settings.js         # 39 checks: key never returned, budget clamped, CSRF refused, secrets never served
 node scripts/dev/check-browser.js          # 18 checks in headless Chrome: drawer clicks, tabs, no errors
 ```
 
 `check-browser.js` is the one that proves the *clicking*, not just the API: it
 types a key into the drawer, clicks Save, drags the slider, and then confirms
-against the server that both actually landed. It also asserts all seven tabs
+against the server that both actually landed. It also asserts all ten pages
 render and that no uncaught error occurred — which is the same smoke test any
 future JavaScript edit has to pass.
 

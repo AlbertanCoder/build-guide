@@ -1,6 +1,6 @@
 # Wildfire crew workflow — what the mission actually delivers
 
-tags:: wildfire, crew, workflow, mission, hotspot map, reporting, FPInnovations, operations, safe targets, fire pit, hot plate, VLOS
+tags:: wildfire, crew, workflow, mission, hotspot map, reporting, FPInnovations, operations, safe targets, mug of hot water, VLOS
 
 Every block below carries a `source::` and a `verified::` line. The build script
 refuses to publish a block without both, because an unsourced number is the one
@@ -27,12 +27,12 @@ verified:: 2026-11-01
 
 ## Training happens on safe heat targets
 
-You train on safe heat targets — fire pits, burn barrels, hot plates — on
-private land, with permission. The acceptance run is a VLOS grid over a safe hot
-plate among cold controls, then replaying the logged map.
+You train on a safe heat target: a mug of hot water, never a fire. The
+acceptance run is the Step 8 heat test over the mug among cold objects, then
+replaying the logged map.
 
-source:: Guide tab 1; step 8 acceptance tests
-verified:: 2026-11-01
+source:: Guide Step 8 heat test; DECISIONS (heat target = a mug of hot water)
+verified:: 2026-11-03
 
 ## Reports keep measured values and limitations
 

@@ -122,9 +122,9 @@ check("meter blocks at the daily cap", meter.blocked() === true, "usd=" + meter.
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), "ga-cost-"));
 const file = path.join(dir, "answers.json");
 const cache = new eng.AnswerCache({ file: file, persist: false });
-cache.set("what does this cost", { answer: "CA$1,714.94", model: "gpt-6-luna", sources: ["guide"] });
+cache.set("what does this cost", { answer: "CA$1,607.26", model: "gpt-6-luna", sources: ["guide"] });
 const hit = cache.get("What does this cost?");
-check("cache hit returns the same answer", !!hit && hit.answer === "CA$1,714.94");
+check("cache hit returns the same answer", !!hit && hit.answer === "CA$1,607.26");
 check("cache hit is marked exact", !!hit && hit.exact === true);
 check("cache misses a different question", cache.get("how do i bind the receiver") === null);
 

@@ -11,6 +11,7 @@ const { spawn } = require("child_process");
 const path = require("path");
 const os = require("os");
 const fs = require("fs");
+const http = require("http");
 
 const ROOT = path.resolve(__dirname, "..", "..");
 const MOCK_PORT = 8797;
@@ -57,6 +58,24 @@ const appEnv = (extra) => Object.assign({
 
 async function getSettings() {
   const r = await fetch("http://127.0.0.1:" + APP_PORT + "/api/settings");
+  return { status: r.status, body: await r.text() };
+}
+/* A raw request, so a test can send any Host header (fetch will not). */
+function rawGet(urlPath, headers) {
+  return new Promise((resolve) => {
+    const req = http.request({ host: "127.0.0.1", port: APP_PORT, path: urlPath, method: "GET", headers: headers || {} }, (res) => {
+      let body = "";
+      res.on("data", (c) => { body += c; });
+      res.on("end", () => resolve({ status: res.statusCode, body: body }));
+    });
+    req.on("error", (e) => resolve({ status: 0, body: String(e) }));
+    req.end();
+  });
+}
+async function postTo(urlPath, body, headers) {
+  const r = await fetch("http://127.0.0.1:" + APP_PORT + urlPath, {
+    method: "POST", headers: headers || {}, body: body
+  });
   return { status: r.status, body: await r.text() };
 }
 async function postSettings(payload, headers) {
@@ -117,6 +136,28 @@ async function postSettings(payload, headers) {
     const shortKey = await postSettings({ apiKey: "abc" });
     check("an implausibly short key is refused", shortKey.status === 400, "status=" + shortKey.status);
 
+    /* ---- secrets are never served as files, whatever the page asks ----- */
+    const keyFile = await rawGet("/server/.settings.json");
+    check("the saved-key file server/.settings.json is never served", keyFile.status === 403 && keyFile.body.indexOf(KEY) === -1,
+      "status=" + keyFile.status);
+    const envFile = await rawGet("/server/.env");
+    check("server/.env is never served", envFile.status === 403, "status=" + envFile.status);
+    const gitFile = await rawGet("/.git/config");
+    check("dot-folders such as .git are never served", gitFile.status === 403, "status=" + gitFile.status);
+    const page = await rawGet("/");
+    check("the page itself still loads", page.status === 200 && /<!DOCTYPE html>/i.test(page.body), "status=" + page.status);
+    const rebound = await rawGet("/api/settings", { host: "attacker.example:" + APP_PORT });
+    check("a request naming another site in its Host header is refused", rebound.status === 403, "status=" + rebound.status);
+
+    /* ---- another website cannot spend the AI budget or test the key ----- */
+    const crossAsk = await postTo("/api/ask", JSON.stringify({ question: "hi" }),
+      { "content-type": "application/json", origin: "https://evil.example" });
+    check("a cross-site question is refused", crossAsk.status === 403, "status=" + crossAsk.status);
+    const plainAsk = await postTo("/api/ask", JSON.stringify({ question: "hi" }), { "content-type": "text/plain" });
+    check("a text/plain question is refused", plainAsk.status === 415, "status=" + plainAsk.status);
+    const crossVerify = await postTo("/api/settings/verify", "", { origin: "https://evil.example" });
+    check("a cross-site key check is refused", crossVerify.status === 403, "status=" + crossVerify.status);
+
     /* ---- it survives a restart ------------------------------------------ */
     stopAll();
     procs.length = 0;
@@ -147,7 +188,9 @@ async function postSettings(payload, headers) {
     check("choosing a preset moves the base URL", /groq\.com/.test(groq.baseUrl), groq.baseUrl);
     check("choosing a preset changes the models",
       groq.cheapModel === "llama-3.3-70b-versatile", groq.cheapModel);
-    check("the key is kept when the provider changes", groq.keyConfigured === true);
+    /* M4 (chat audit, approved): the old provider's key must not be sent to the new one, silently */
+    check("the old key is removed, and the reply says so, when the provider changes",
+      groq.keyConfigured === false && groq.keyCleared === true, "keyConfigured=" + groq.keyConfigured + " keyCleared=" + groq.keyCleared);
 
     const anth = JSON.parse((await postSettings({ preset: "anthropic" })).body);
     check("anthropic switches the adapter, not just the address",

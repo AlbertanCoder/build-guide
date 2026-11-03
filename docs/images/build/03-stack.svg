@@ -4,7 +4,7 @@
 <rect width="960" height="540" fill="#f7f2e8"/>
 <style>.t{font:700 23px 'Segoe UI',sans-serif;fill:#123a2e}.s{font:18px 'Segoe UI',sans-serif;fill:#21332b}.b{fill:#fff;stroke:#1b5e4f;stroke-width:3;rx:12}.a{fill:#e4f0ea;stroke:#1b5e4f;stroke-width:3;rx:12}.w{fill:#fbe9dc;stroke:#c2571b;stroke-width:3;rx:12}.r{stroke:#c2571b;stroke-width:5}.k{stroke:#21332b;stroke-width:5}.g{stroke:#1b5e4f;stroke-width:4}</style>
 <text x="32" y="42" class="t">3 · Solder, inspect, then use a smoke stopper</text>
-<rect x="350" y="85" width="260" height="100" class="a"/><text x="480" y="123" text-anchor="middle" class="t">F405 FLIGHT CONTROLLER</text><text x="480" y="154" text-anchor="middle" class="s">Type-C to Acer laptop</text>
+<rect x="350" y="85" width="260" height="100" class="a"/><text x="480" y="123" text-anchor="middle" class="t">F405 FLIGHT CONTROLLER</text><text x="480" y="154" text-anchor="middle" class="s">Type-C to your laptop</text>
 <rect x="350" y="220" width="260" height="130" class="b"/><text x="480" y="260" text-anchor="middle" class="t">50A 4-IN-1 ESC</text><text x="480" y="292" text-anchor="middle" class="s">Motor order per manual</text><text x="480" y="322" text-anchor="middle" class="s">Capacitor + battery pads</text>
 <path d="M350 130 H180 V240 H350 M350 155 H205 V270 H350 M610 130 H780 V240 H610 M610 155 H755 V270 H610" class="g" fill="none"/>
 <text x="62" y="120" class="t">M1–M4</text><text x="62" y="148" class="s">motor wires</text><text x="778" y="120" class="t">M1–M4</text><text x="778" y="148" class="s">motor wires</text>

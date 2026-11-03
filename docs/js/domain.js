@@ -158,8 +158,7 @@ window.GUIDE_DOMAIN = {
         "fpinnovations",
         "operations",
         "safe targets",
-        "fire pit",
-        "hot plate",
+        "mug of hot water",
         "vlos"
       ],
       "text": "The mission product is a map, not an autopilot. FPInnovations describes the deliverable as a map of GPS-referenced hotspots handed to the firefighter — not an aircraft that finds fires by itself. The prototype should be measured against that framing.",
@@ -182,8 +181,7 @@ window.GUIDE_DOMAIN = {
         "fpinnovations",
         "operations",
         "safe targets",
-        "fire pit",
-        "hot plate",
+        "mug of hot water",
         "vlos"
       ],
       "text": "A real fire is agency airspace. Unauthorised drones near a wildfire ground air tankers and endanger crews, which is why the guide says plainly that no drone may fly over or within 5 nautical miles (9.3 km) of a wildfire below 3,000 ft (CAR 601.15). Real fires are not practice.",
@@ -206,13 +204,12 @@ window.GUIDE_DOMAIN = {
         "fpinnovations",
         "operations",
         "safe targets",
-        "fire pit",
-        "hot plate",
+        "mug of hot water",
         "vlos"
       ],
-      "text": "Training happens on safe heat targets. You train on safe heat targets — fire pits, burn barrels, hot plates — on private land, with permission. The acceptance run is a VLOS grid over a safe hot plate among cold controls, then replaying the logged map.",
-      "source": "Guide tab 1; step 8 acceptance tests",
-      "verified": "2026-11-01",
+      "text": "Training happens on safe heat targets. You train on a safe heat target: a mug of hot water, never a fire. The acceptance run is the Step 8 heat test over the mug among cold objects, then replaying the logged map.",
+      "source": "Guide Step 8 heat test; DECISIONS (heat target = a mug of hot water)",
+      "verified": "2026-11-03",
       "correction": false,
       "unverified": false
     },
@@ -230,8 +227,7 @@ window.GUIDE_DOMAIN = {
         "fpinnovations",
         "operations",
         "safe targets",
-        "fire pit",
-        "hot plate",
+        "mug of hot water",
         "vlos"
       ],
       "text": "Reports keep measured values and limitations. The pipeline's report step logs what was actually measured and the limitations that came with it; no unsupported briefing is claimed. The acceptance step is repeated controlled tests with logged error and honest limitations.",
@@ -254,8 +250,7 @@ window.GUIDE_DOMAIN = {
         "fpinnovations",
         "operations",
         "safe targets",
-        "fire pit",
-        "hot plate",
+        "mug of hot water",
         "vlos"
       ],
       "text": "Why it matters for your build. The build is judged on delivering a credible hotspot map a crew could act on, with the caveats attached — not on \"finding fires\". Every design choice that looks conservative follows from that.",
@@ -308,9 +303,9 @@ window.GUIDE_DOMAIN = {
         "legal",
         "vlos"
       ],
-      "text": "Register, mark, and carry the certificate. Register and mark the drone (250 g to 25 kg) and carry proof plus a Pilot Certificate — Basic Operations. The Small Basic exam and registration have fees (exam CA$10 plus registration CA$10, per TC's 1 Apr 2025 fee schedule, checked 2026-10-31); age 14+ applies to Basic. The certificate does not expire, but skills must stay current.",
-      "source": "Guide tab 4; Transport Canada fee schedule 1 Apr 2025, via the order list",
-      "verified": "2026-11-01",
+      "text": "Register, mark, and carry the certificate. Register and mark the drone (250 g to 25 kg) and carry proof plus a Pilot Certificate — Basic Operations. The Small Basic exam and registration have fees (exam CA$10.17 plus registration CA$10.17, per TC's fee schedule, checked 2026-11-03); age 14+ applies to Basic. The certificate does not expire, but skills must stay current.",
+      "source": "Guide: Buy, Stage 7 (fees checked 2026-11-03); Transport Canada fee schedule, via the order list",
+      "verified": "2026-11-03",
       "correction": false,
       "unverified": false
     },
@@ -407,9 +402,9 @@ window.GUIDE_DOMAIN = {
         "hotspots.py",
         "geo.py"
       ],
-      "text": "Hotspot detection here is grouping, not learning. hotspots.py groups connected warm pixels — 4-connectivity, minimum size, and a threshold inclusion rule — rather than running a learned model. The standard library suite covers no/single/multiple hotspots, connectivity, minimum size, edge cases and the end-to-end synthetic pipeline (19 synthetic tests).",
+      "text": "Hotspot detection here is grouping, not learning. hotspots.py groups connected warm pixels — 4-connectivity, minimum size, and a threshold inclusion rule — rather than running a learned model. The standard library suite covers no/single/multiple hotspots, connectivity, minimum size, edge cases, the end-to-end synthetic pipeline and the bench mode (31 synthetic tests in the whole package).",
       "source": "payload README tests section; Guide CHAIN step 2",
-      "verified": "2026-11-01",
+      "verified": "2026-11-03",
       "correction": false,
       "unverified": false
     },
@@ -572,9 +567,9 @@ window.GUIDE_DOMAIN = {
         "build",
         "battery"
       ],
-      "text": "Power is split on purpose. The GEPRC TAKER F405 BLS 50A combo stack (CA$85.99, checked 2026-10-31) feeds the Pi through a regulated 5V/3A output; the analog video transmitter runs separately from the 4S battery. Sensor boards take 3.3 V from the Qwiic HAT and nothing in that chain takes 5 V.",
-      "source": "Order list; payload README wiring and power",
-      "verified": "2026-11-01",
+      "text": "Power is split on purpose. The GEPRC TAKER F405 BLS 50A combo stack (CA$85.99, checked 2026-11-03, out of stock at Rotor Village that day) feeds the Pi through a regulated 5V/3A output; the analog video transmitter runs from the flight controller's 9V pad (Step 4). Sensor boards take 3.3 V from the Qwiic HAT and nothing in that chain takes 5 V.",
+      "source": "Order list; payload README wiring and power; Guide Step 4",
+      "verified": "2026-11-03",
       "correction": false,
       "unverified": false
     },

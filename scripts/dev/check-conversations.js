@@ -9,8 +9,9 @@
 // id replaces the first (upsert). The write gates are the same three that guard
 // /api/settings and /api/propose: a reachable server with no flag is read-only,
 // a flag with no token refuses everything, and the wrong token never gets
-// through. Reads are not writes - GET works with no token even on a reachable
-// server. A bad id, bad JSON, or oversized body never reaches the disk.
+// through. Reads are open on loopback; on a reachable server a thread is private
+// chat history, so a GET needs the token too (M6, chat audit). A bad id, bad JSON,
+// or oversized body never reaches the disk.
 "use strict";
 
 const { spawn } = require("child_process");
@@ -194,8 +195,8 @@ const TOKEN = "test-write-token-" + Date.now().toString(36);
       r.status === 403 && /write is disabled/.test(String((r.json && r.json.error) || "")),
       why(r));
     r = await get(8792, "/api/conversations");
-    check("GET works with no token on a reachable read-only server",
-      r.status === 200 && r.json && r.json.ok === true && Array.isArray(r.json.threads), why(r));
+    check("a reachable server with no token keeps conversation history private (GET refused)",
+      r.status === 403 && /private/.test(String((r.json && r.json.error) || "")), why(r));
 
     /* --- the flag without a token refuses everything ---------------------- */
     const noTok = start(8793, { BIND: "0.0.0.0", ALLOW_WRITE: "1" });
@@ -223,11 +224,14 @@ const TOKEN = "test-write-token-" + Date.now().toString(36);
 
     const bareList = await get(8794, "/api/conversations");
     const bareThread = await get(8794, "/api/conversations/gate-thread");
-    check("GETs work with no token on a token-gated server (reads are not writes)",
-      bareList.status === 200 && bareList.json && bareList.json.ok === true &&
-      bareThread.status === 200 && bareThread.json && bareThread.json.ok === true &&
-      same((bareThread.json.thread || {}).messages, GATE_THREAD.messages),
-      "list " + bareList.status + ", thread " + bareThread.status);
+    const tokList = await get(8794, "/api/conversations", { "x-write-token": TOKEN });
+    const tokThread = await get(8794, "/api/conversations/gate-thread", { "x-write-token": TOKEN });
+    check("reads need the token on a reachable server: refused without it, served with it",
+      bareList.status === 401 && bareThread.status === 401 &&
+      tokList.status === 200 && tokList.json && tokList.json.ok === true &&
+      tokThread.status === 200 && tokThread.json && tokThread.json.ok === true &&
+      same((tokThread.json.thread || {}).messages, GATE_THREAD.messages),
+      "no token: list " + bareList.status + ", thread " + bareThread.status + "; token: list " + tokList.status + ", thread " + tokThread.status);
 
     /* --- loopback keeps working with none of it (regression) -------------- */
     r = await put(8791, "/api/conversations/gate-matrix", THREAD_B);

@@ -26,13 +26,13 @@ verified:: 2026-11-01
 
 ## Power is split on purpose
 
-The GEPRC TAKER F405 BLS 50A combo stack (CA$85.99, checked 2026-10-31) feeds
-the Pi through a regulated 5V/3A output; the analog video transmitter runs
-separately from the 4S battery. Sensor boards take 3.3 V from the Qwiic HAT and
-nothing in that chain takes 5 V.
+The GEPRC TAKER F405 BLS 50A combo stack (CA$85.99, checked 2026-11-03, out of
+stock at Rotor Village that day) feeds the Pi through a regulated 5V/3A output;
+the analog video transmitter runs from the flight controller's 9V pad (Step 4).
+Sensor boards take 3.3 V from the Qwiic HAT and nothing in that chain takes 5 V.
 
-source:: Order list; payload README wiring and power
-verified:: 2026-11-01
+source:: Order list; payload README wiring and power; Guide Step 4
+verified:: 2026-11-03
 
 ## Stock is a design constraint
 

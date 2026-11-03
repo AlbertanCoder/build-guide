@@ -140,11 +140,11 @@ function propose(opPath, opts) {
   const log = o.log || function () {};
 
   if (!isClean()) {
-    return fail("the working tree is not clean — commit or stash first, so a proposal never mixes with your own edits");
+    return fail("Edit not made: this folder has changes that are not saved in git yet (the working tree is not clean), so a chat edit could mix with your own work. Save or set those changes aside first.");
   }
   const branch = currentBranch();
   if (branch !== "main") {
-    return fail("you are on " + (branch || "a detached HEAD") + "; switch to main first, so the proposal starts from what you have");
+    return fail("Edit not made: this folder is on " + (branch ? "the branch " + branch : "no branch (a detached HEAD)") + ", not main. The chat only makes edits from main, so they start from what you have.");
   }
 
   let op;
@@ -279,10 +279,10 @@ function proposeMany(ops, opts) {
 
   if (!list.length) { return fail("no changes were supplied"); }
   if (!isClean()) {
-    return fail("the working tree is not clean — commit or stash first, so a proposal never mixes with your own edits");
+    return fail("Edit not made: this folder has changes that are not saved in git yet (the working tree is not clean), so a chat edit could mix with your own work. Save or set those changes aside first.");
   }
   if (currentBranch() !== "main") {
-    return fail("you are on " + (currentBranch() || "a detached HEAD") + "; switch to main first");
+    return fail("Edit not made: this folder is on " + (currentBranch() ? "the branch " + currentBranch() : "no branch (a detached HEAD)") + ", not main. The chat only makes edits from main.");
   }
 
   const indexPath = path.join(ROOT, "index.html");

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- R3-a: viewfinder corners (rounded, inside the strict safe circle) around a big three-band heat flame -->
+  <rect width="512" height="512" rx="116" fill="#123a2e"/>
+  <g fill="none" stroke="#f7f2e8" stroke-width="28" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M110 182 V150 A40 40 0 0 1 150 110 H182"/>
+    <path d="M330 110 H362 A40 40 0 0 1 402 150 V182"/>
+    <path d="M402 330 V362 A40 40 0 0 1 362 402 H330"/>
+    <path d="M182 402 H150 A40 40 0 0 1 110 362 V330"/>
+  </g>
+  <path transform="translate(256 262) scale(1.15) translate(-256 -256)" fill="#c2571b" d="M256 140 C280 192 340 222 340 292 C340 340 302 372 256 372 C210 372 172 340 172 292 C172 252 194 226 210 196 C218 226 230 242 244 250 C240 214 242 176 256 140 Z"/>
+  <path transform="translate(256 284.6) scale(.84) translate(-256 -256)" fill="#e8863a" d="M256 140 C280 192 340 222 340 292 C340 340 302 372 256 372 C210 372 172 340 172 292 C172 252 194 226 210 196 C218 226 230 242 244 250 C240 214 242 176 256 140 Z"/>
+  <path transform="translate(256 310) scale(.5) translate(-256 -256)" fill="#ffd9a8" d="M256 140 C280 192 340 222 340 292 C340 340 302 372 256 372 C210 372 172 340 172 292 C172 252 194 226 210 196 C218 226 230 242 244 250 C240 214 242 176 256 140 Z"/>
+</svg>
