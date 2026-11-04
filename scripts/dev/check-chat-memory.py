@@ -260,6 +260,25 @@ try:
         lp.wait_for_function("[...document.querySelectorAll('#ga-log .ga-card')].pop().innerText.includes(\"This month's AI budget is spent\")", timeout=15000)
         check("monthly cap: at the cap the chat says plainly that this month's AI budget is spent, and the AI is not called",
               FakeAI.calls == before)
+        # the public copy (GitHub Pages, 4 Nov 2026): no Guide Assistant server there, so no /api/ request at all.
+        # Served by the assistant server (the laptop above, or the phone paired at 127.0.0.2, a LAN-style address) as before.
+        rule = lp.evaluate("['albertancoder.github.io', 'x.github.io', '127.0.0.1', '127.0.0.2', '192.168.1.20', 'shad-laptop.local', 'localhost', ''].map(h => window.guidePublicHost(h))")
+        check("public site: the switch knows the public host (*.github.io) from the laptop, a LAN address and the rest",
+              rule == [True, True, False, False, False, False, False, False], rule)
+        check("laptop and the paired phone (127.0.0.2): served by the assistant server, so not the public site; /api/ works as before",
+              lp.evaluate("window.GUIDE_PUBLIC_SITE") is False and pp.evaluate("window.GUIDE_PUBLIC_SITE") is False)
+        uc = b.new_context(viewport={"width": 1280, "height": 900})
+        uc.add_init_script("window.GUIDE_FORCE_PUBLIC = true;")
+        upg = uc.new_page(); apis, cons = [], []
+        upg.on("request", lambda r: apis.append(r.url) if "/api/" in r.url else None)
+        upg.on("console", lambda m: cons.append(m.text) if m.type == "error" else None)
+        upg.on("pageerror", lambda e: errs.append("public: " + e.message))
+        upg.goto(LAPTOP_URL); upg.wait_for_function("window.GuideAssistant", timeout=15000); upg.wait_for_timeout(2500)
+        upg.evaluate("GuideAssistant.ask('How do I fit the stack?'); true"); upg.wait_for_timeout(2000)
+        cards = upg.evaluate("document.querySelectorAll('#ga-log .ga-card').length")
+        check("public site: the page makes no /api/ request and logs no console error; the chat still answers from the guide",
+              not apis and not cons and upg.evaluate("window.GUIDE_PUBLIC_SITE") is True and cards > 0, [apis[:3], cons[:3], cards])
+        uc.close()
         check("no page errors on the laptop or the phone", not errs, errs[:3])
         b.close()
 except Exception as e:

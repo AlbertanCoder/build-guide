@@ -128,7 +128,7 @@ that chain fails, the answer comes from the offline engine with a one-line note 
 
 ## The gate
 
-31 suites, 1635 named checks, one exit code:
+31 suites, 1638 named checks, one exit code:
 
 ```powershell
 node scripts/dev/gate.js            # everything
@@ -373,7 +373,7 @@ source is shown, and an empty-passage request is rejected with `422`.
 
 ## Evaluate a model before you trust it
 
-The quiz bank is a ready-made gold set: 28 questions whose `why` fields hold the canonical, sourced
+The quiz bank is a ready-made gold set: 54 questions whose `why` fields hold the canonical, sourced
 answers, and the calculators define the correct numbers.
 
 1. Ask each quiz question through the panel; compare against the `why` text.

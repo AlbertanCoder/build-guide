@@ -21,7 +21,7 @@
 /* v3 (4 Nov 2026): scripts are now network first too. Under v2 an old cached assistant.js ran next to a newer page,
    and Shad's bought ticks did not show. Change CACHE for every release, and index.html asks for assistant.js with
    this same name (?v=...), so a page and its script always come together (check-chat-memory.py checks the two match). */
-const CACHE = "build-guide-v3";
+const CACHE = "build-guide-v4";
 
 const PRECACHE = [
   "./",

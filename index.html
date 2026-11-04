@@ -2,6 +2,27 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>
+  /* The public copy (GitHub Pages) has no Guide Assistant server, so its /api/ calls could only fail (404s in the
+     console). There they are answered here, without a request, exactly as a missing server answers (404). Served by
+     the assistant server (the laptop, or a phone paired over home Wi-Fi on the laptop's address) nothing changes. */
+  (function () {
+    window.guidePublicHost = function (h) { return /(^|\.)github\.io$/i.test(String(h || "")); };
+    var pub = window.GUIDE_FORCE_PUBLIC === true || window.guidePublicHost(location.hostname);
+    window.GUIDE_PUBLIC_SITE = pub;
+    if (!pub || !window.fetch || typeof Response !== "function") return;
+    var real = window.fetch.bind(window);
+    window.fetch = function (input, init) {
+      var url = typeof input === "string" ? input : (input && input.url) || "", path = "";
+      try { path = new URL(url, location.href).pathname; } catch (e) { path = ""; }
+      if (path.indexOf("/api/") === 0) {
+        return Promise.resolve(new Response("No Guide Assistant server on the public site.",
+          { status: 404, statusText: "Not Found", headers: { "content-type": "text/plain" } }));
+      }
+      return real(input, init);
+    };
+  })();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Shad's Fire-Detecting Drone &mdash; Step-by-Step Build Guide</title>
 <link rel="icon" type="image/svg+xml" href="shad-drone-icon.svg">
@@ -5454,6 +5475,6 @@ while True:
      drone/AI/wildfire material the assistant can cite beyond this build guide. -->
 <script src="docs/js/domain.js"></script>
 <!-- Guide Assistant: offline-first Q&A. Remove these two lines to drop it. -->
-<script src="docs/js/assistant.js?v=build-guide-v3"></script>
+<script src="docs/js/assistant.js?v=build-guide-v4"></script>
 </body>
 </html>
