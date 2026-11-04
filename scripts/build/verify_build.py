@@ -335,6 +335,10 @@ def weight_items():
     if WITEMS is None:
         P = SIM.place(L515)
         items = SIM.items_for_cg(L515, P, V("LAYOUT")["battery_x"])
+        # VIFLY Finder 2 (Shad approved 2026-11-04): parts.json FINDER, at FINDER_AT (front bay, S4.9)
+        fa = V("FINDER_AT")
+        items = items + [("Lost-drone beeper, VIFLY Finder 2 (Rotor Village 'Weight: 5 g')", float(PARTS["FINDER"]["mass_g"]),
+                          fa["x"], fa["y"], "")]
         est = [("legs: 8 aluminium standoffs (ESTIMATED 1.0 g each)", 8.0, None, None, "ESTIMATED"),
                ("legs: 4 rubber feet (ESTIMATED 1.0 g each; the listing's weight line is a typo)", 4.0, None, None, "ESTIMATED"),
                ("Pi pad, 6 nylon standoffs, screws, zip ties (ESTIMATED 6 g)", 6.0, POS["pi_xy"][0], 0.0, "ESTIMATED"),
@@ -999,6 +1003,8 @@ def cross_checks():
         "order_list": "not bought: the guide's own order list", "mug_": "not bought: a mug from your kitchen (heat test)",
         "hand_": "not bought: your hand (heat test)", "clearance_": "guide mark, not a part", "cg_": "guide mark, not a part",
         "cone_pilot": "guide mark, not a part", "cone_thermal": "guide mark, not a part", "arrow_": "guide mark, not a part",
+        "cutaway_": "guide drawing, not a part (S2.4 screw length cut-away)",
+        "finder_": ["finder"], "finder_tape": ["foam-tape"], "finder_wire_": ["finder"], "spare_sd": ["spare-sd"],
     }
     # parts the page itself says to check in the box when it arrives
     BOX_CHECK = {"charger_mains_cable": "page Stage 5: 'M7AC charger and a mains cable (the listing names only the charger: check the box)'",

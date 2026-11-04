@@ -41,7 +41,7 @@ SPEC = {
                       "absent": ["prop_", "cam_", "vtx_", "rx_"],
                       # S3.5 (first power-up) puts a charged pack on the BENCH; none may sit on the drone in Step 3
                       "bench_only": ["battery_pack"]},
-    "step-04-receiver-fpv": {"labels": ["RP1 V2", "UART2", "PHOENIX 2", "UNIFY", "TRIUMPH", "9V", "MONITOR", "USB",
+    "step-04-receiver-fpv": {"labels": ["RP1 V2", "UART2", "PHOENIX 2", "UNIFY", "TRIUMPH", "9V", "MONITOR", "USB", "FINDER",
                                        "TX -> R2  /  RX -> T2 (Crossed on purpose)"],
                              "absent": ["prop_", "battery_pack"]},
     "step-05-power": {"labels": ["RADIO", "18650", "USB-C", "4S", "M7AC", "BALANCE", "LIPO BAG", "LIHV, 1.0 A", "LION, 2.5 A",

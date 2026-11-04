@@ -103,6 +103,14 @@ def palette():
         "plastic_grey": material("PlasticGrey", (0.30, 0.31, 0.33, 1), 0.0, 0.46),
         "gold": material("GoldPad", (0.85, 0.66, 0.30, 1), 1.0, 0.24),
         "copper": material("Copper", (0.72, 0.36, 0.20, 1), 1.0, 0.30),
+        # colour shown for visibility (the real standoffs' colour is not used): blue = 30 mm, yellow = 22 mm
+        "standoff_30": material("Standoff30Blue", (0.090, 0.300, 0.720, 1), 0.3, 0.40),
+        "standoff_22": material("Standoff22Yellow", (0.880, 0.680, 0.100, 1), 0.3, 0.40),
+        # the S2.4 cut-away's layers, matte so they read apart (metal renders dark without reflections): drawn colours
+        "cut_carbon": material("CutCarbon", (0.10, 0.10, 0.11, 1), 0.0, 0.70),
+        "cut_alu": material("CutAluminium", (0.80, 0.82, 0.85, 1), 0.0, 0.45),
+        "cut_copper": material("CutCopper", (0.86, 0.45, 0.18, 1), 0.0, 0.40),
+        "bag_clear": material("BagClearFilm", (0.86, 0.89, 0.93, 1), 0.0, 0.25, alpha=0.40),
         "motor_bell": material("MotorBell", (0.095, 0.100, 0.112, 1), 0.55, 0.42),
         "magnet": material("Magnet", (0.16, 0.08, 0.06, 1), 0.45, 0.55),
         # silicone wire - guide colours: red 3.3V, black GND, blue SDA, yellow SCL
@@ -170,6 +178,8 @@ def tag_parts():
             ob["part"], ob["acc"] = info[0], info[1]
             if info[2]:
                 ob["vis_colour"] = True
+        if ob.name.startswith(S.KEEP_COLOUR):
+            ob["keep_colour"] = True
 
 
 def mark_planned(objs, why):

@@ -37,6 +37,7 @@ SOURCES = {
     "R11": ("https://www.toolkitrc.com/m4ac/", "Product size 75*54*30mm"),
     "R-M7AC": ("https://www.amainhobbies.com/toolkitrc-m7-ac-dc-battery-charger-6s-20a-300w-tlk-m7ac/p1445726", "Size: 112x73x38mm; Weight: 245g"),
     "R12": ("https://rotorvillage.ca/gnb-1500mah-4s-120c-hv-lipo-xt60/", "Dimensions: 79mm x 38mm x 26mm (LxWxH)"),
+    "R-FINDER2": ("https://rotorvillage.ca/vifly-finder-2-buzzer-lost-drone-finder/", "Dimensions: 24x13x16 mm; Weight: 5 g; Input Voltage:4.5-8.5V; 1 x 3 Pin Wire"),
     "R-MV5000": ("https://rotorvillage.ca/more-volts-4s-5000mah-li-ion-battery/", "Weight: 307.9g (±5 g); Dimensions (L×W×H): ~79.15 x 44.25 x 44.25 mm; Amass XT60H + 4S JST-XH balance lead"),
     "R13": ("https://rotorvillage.ca/radiomaster-pocket-transmitter-elrs-charcoal-edition/", "156.6*65.1*125.3mm (Folded size)"),
     "R14": ("https://rotorvillage.ca/iflight-smart-smoke-stopper-xt30-xt60/", "Size(L x W x H): 42 x 32 x 11 mm"),

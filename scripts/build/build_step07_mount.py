@@ -55,6 +55,7 @@ def build():
     # the same grip pad and strap; its name starts with battery_pack so it hides, shows and slides with the LiPo
     Q.battery_liion(P, ghost=True, label=False)
     Q.strap(P, Q.BAT[0])
+    Q.finder(P)                     # VIFLY Finder 2 in the front bay (S4.9)
 
     for name, (mx, my) in Q.MOTORS.items():
         Q.clearance_ring(P, f"clearance_{name}", (mx, my))

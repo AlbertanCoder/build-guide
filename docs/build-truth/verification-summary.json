@@ -2,15 +2,15 @@
  "date": "2026-11-04",
  "command": "python -I scripts/build/verify_build.py",
  "totals": {
-  "checks": 238,
-  "passed": 200,
+  "checks": 243,
+  "passed": 205,
   "failed": 0,
   "need_real_parts": 38,
   "page_fixes": 0
  },
  "per_category": {
   "dependencies": {
-   "PASS": 56,
+   "PASS": 57,
    "FAIL": 0,
    "NEEDS REAL PARTS": 0,
    "PAGE FIX": 0
@@ -46,7 +46,7 @@
    "PAGE FIX": 0
   },
   "cross-checks": {
-   "PASS": 85,
+   "PASS": 89,
    "FAIL": 0,
    "NEEDS REAL PARTS": 5,
    "PAGE FIX": 0
@@ -73,9 +73,9 @@
  "weakest_margins": [
   "speed controller, flight controller and frame stack holes line up (30.5 mm, with the soft grommets): 0.5 mm as designed, 0.3 mm in the worst of 10,000 runs",
   "M3 x 10 set screw: at least 3 mm of thread on each side of the plate: 1.0 mm as designed, 0.5 mm in the worst of 10,000 runs",
-  "Battery slid forward to about 2 mm from the GPS leaves the balance point within 5 mm of centre: 2.48 mm as designed, 0.59 mm in the worst of 10,000 runs",
-  "With the Li-ion pack slid forward to about 2 mm from the GPS, the balance point stays within 5 mm of centre: 3.59 mm as designed, 0.8 mm in the worst of 10,000 runs",
-  "Stack screw tip stays below the top plate: 2.0 mm as designed, 1.03 mm in the worst of 10,000 runs"
+  "Battery slid forward to about 2 mm from the GPS leaves the balance point within 5 mm of centre: 2.81 mm as designed, 0.92 mm in the worst of 10,000 runs",
+  "Stack screw tip stays below the top plate: 2.0 mm as designed, 1.03 mm in the worst of 10,000 runs",
+  "With the Li-ion pack slid forward to about 2 mm from the GPS, the balance point stays within 5 mm of centre: 3.83 mm as designed, 1.07 mm in the worst of 10,000 runs"
  ],
  "failures": [],
  "page_fixes": [],
@@ -1117,12 +1117,28 @@
    "name_plain": "step 4 video transmitter at 25 mW: everything it needs is there"
   },
   {
+   "id": "DEP-S4.9",
+   "category": "dependencies",
+   "action": "S4.9",
+   "name": "S4.9 Finder beeper in the front bay: everything it needs is there",
+   "status": "PASS",
+   "detail": "needs fc_on",
+   "margin": null,
+   "unit": "",
+   "arrival": null,
+   "pass_rate": null,
+   "runs": 0,
+   "driver": "",
+   "worst": null,
+   "name_plain": "step 4 Finder beeper in the front bay: everything it needs is there"
+  },
+  {
    "id": "DEP-S4.8",
    "category": "dependencies",
    "action": "S4.8",
    "name": "S4.8 Fit the top plate: everything it needs is there",
    "status": "PASS",
-   "detail": "needs standoffs_on, vtx_antenna, bf_setup",
+   "detail": "needs standoffs_on, vtx_antenna, bf_setup, finder_on",
    "margin": null,
    "unit": "",
    "arrival": null,
@@ -2583,14 +2599,14 @@
    "name": "Battery slid forward to about 2 mm from the GPS (change request 43) leaves the balance point within 5 mm of centre",
    "status": "PASS",
    "detail": "",
-   "margin": 2.48,
+   "margin": 2.81,
    "unit": "mm",
    "arrival": null,
    "pass_rate": 100.0,
    "runs": 10000,
    "driver": "gps_x (r=+0.88), pi_x (r=+0.15)",
-   "worst": 0.59,
-   "detail_extra": "Includes about 46 g of parts the page does not weigh yet (legs, HAT, pad, pigtail, wires, GPS cable extension: my estimates). The exact balance point is about 12 mm ahead of centre, past the GPS, so the drone stays a little tail-heavy.",
+   "worst": 0.92,
+   "detail_extra": "Includes about 46 g of parts the page does not weigh yet (legs, HAT, pad, pigtail, wires, GPS cable extension: my estimates). The exact balance point is about 10 mm ahead of centre, past the GPS, so the drone stays a little tail-heavy.",
    "name_plain": "Battery slid forward to about 2 mm from the GPS leaves the balance point within 5 mm of centre"
   },
   {
@@ -2600,13 +2616,13 @@
    "name": "Centre of gravity sits inside the four feet",
    "status": "PASS",
    "detail": "",
-   "margin": 10.94,
+   "margin": 10.92,
    "unit": "mm",
    "arrival": null,
    "pass_rate": 100.0,
    "runs": 10000,
-   "driver": "pi_y (r=-0.86), gps_w (r=-0.02)",
-   "worst": 10.79,
+   "driver": "pi_y (r=-0.94), motor_lead (r=+0.02)",
+   "worst": 10.78,
    "name_plain": "Centre of gravity sits inside the four feet"
   },
   {
@@ -2616,13 +2632,13 @@
    "name": "With the Li-ion pack slid forward to about 2 mm from the GPS, the balance point stays within 5 mm of centre",
    "status": "PASS",
    "detail": "",
-   "margin": 3.59,
+   "margin": 3.83,
    "unit": "mm",
    "arrival": null,
    "pass_rate": 100.0,
    "runs": 10000,
    "driver": "gps_x (r=+0.89), gps_w (r=-0.10)",
-   "worst": 0.8,
+   "worst": 1.07,
    "name_plain": "With the Li-ion pack slid forward to about 2 mm from the GPS, the balance point stays within 5 mm of centre"
   },
   {
@@ -2632,13 +2648,13 @@
    "name": "With the Li-ion pack, the centre of gravity sits inside the four feet",
    "status": "PASS",
    "detail": "",
-   "margin": 10.95,
+   "margin": 10.94,
    "unit": "mm",
    "arrival": null,
    "pass_rate": 100.0,
    "runs": 10000,
-   "driver": "pi_y (r=-0.86), gps_w (r=-0.02)",
-   "worst": 10.84,
+   "driver": "pi_y (r=-0.94), motor_lead (r=+0.02)",
+   "worst": 10.83,
    "name_plain": "With the Li-ion pack, the centre of gravity sits inside the four feet"
   },
   {
@@ -3221,7 +3237,7 @@
    "id": "WEIGHT-total",
    "category": "weight",
    "action": "S8.6",
-   "name": "All-up weight: 505 g from the page's sourced weights + 46 g estimated = about 551 g",
+   "name": "All-up weight: 510 g from the page's sourced weights + 46 g estimated = about 556 g",
    "status": "PASS",
    "detail": "estimates: legs: 8 aluminium standoffs (ESTIMATED 1.0 g each); legs: 4 rubber feet (ESTIMATED 1.0 g each; the listing's weight line is a typo); Pi pad, 6 nylon standoffs, screws, zip ties (ESTIMATED 6 g); Qwiic HAT + 2 cables (ESTIMATED 6 g; not weighed on the page); micro-USB pigtail (ESTIMATED 5 g); wires, XT60, solder, capacitor (ESTIMATED 15 g); GPS cable extension: 4 x 120 mm 26 AWG, 8 joints, heat shrink (ESTIMATED 2 g)",
    "margin": null,
@@ -3231,7 +3247,7 @@
    "runs": 0,
    "driver": "",
    "worst": null,
-   "name_plain": "All-up weight: 505 g from the page's sourced weights + 46 g estimated = about 551 g"
+   "name_plain": "All-up weight: 510 g from the page's sourced weights + 46 g estimated = about 556 g"
   },
   {
    "id": "X-ids-truth",
@@ -3239,7 +3255,7 @@
    "action": "",
    "name": "Every replayed action id is in STEP-TRUTH.md",
    "status": "PASS",
-   "detail": "50 ids",
+   "detail": "51 ids",
    "margin": null,
    "unit": "",
    "arrival": null,
@@ -3255,7 +3271,7 @@
    "action": "",
    "name": "Every replayed action has a button in the 3D models",
    "status": "PASS",
-   "detail": "54 model actions",
+   "detail": "55 model actions",
    "margin": null,
    "unit": "",
    "arrival": null,
@@ -3287,7 +3303,7 @@
    "action": "",
    "name": "Every 3D action id is tagged on the page",
    "status": "PASS",
-   "detail": "54 page ids",
+   "detail": "55 page ids",
    "margin": null,
    "unit": "",
    "arrival": null,
@@ -3463,7 +3479,7 @@
    "action": "",
    "name": "Buy list 'Flywoo tool kit with iron and multimeter' is used by a step",
    "status": "PASS",
-   "detail": "used in S2.1, S2.2, S2.3, S3.0, S3.1, S3.2, S3.3, S3.4, S4.1, S4.3, S4.3b, S4.8, S6.1, S6.2b, S7.4b",
+   "detail": "used in S2.1, S2.2, S2.3, S3.0, S3.1, S3.2, S3.3, S3.4, S4.1, S4.3, S4.3b, S4.8, S4.9, S6.1, S6.2b, S7.4b",
    "margin": null,
    "unit": "",
    "arrival": null,
@@ -3591,7 +3607,7 @@
    "action": "",
    "name": "Buy list 'SHNITPWR 24 V DC 5 A 120 W power supply for the iron (5.5 x ' is used by a step",
    "status": "PASS",
-   "detail": "used in S3.2, S3.3, S6.1, S6.2b, S7.4b",
+   "detail": "used in S3.2, S3.3, S4.9, S6.1, S6.2b, S7.4b",
    "margin": null,
    "unit": "",
    "arrival": null,
@@ -3632,6 +3648,22 @@
    "driver": "",
    "worst": null,
    "name_plain": "Buy list 'Raspberry Pi Zero 2 WH kit (Pi, 32 GB card, reader, power su' is used by a step"
+  },
+  {
+   "id": "BUY-used-spare-sd",
+   "category": "cross-checks",
+   "action": "",
+   "name": "Buy list 'Spare microSD card for the Pi (SanDisk Ultra 32 GB, set up l' is used by a step",
+   "status": "PASS",
+   "detail": "used in S6.0",
+   "margin": null,
+   "unit": "",
+   "arrival": null,
+   "pass_rate": null,
+   "runs": 0,
+   "driver": "",
+   "worst": null,
+   "name_plain": "Buy list 'Spare microSD card for the Pi (SanDisk Ultra 32 GB, set up l' is used by a step"
   },
   {
    "id": "BUY-used-thermal",
@@ -3760,6 +3792,22 @@
    "driver": "",
    "worst": null,
    "name_plain": "Buy list 'Flywoo Ultra Grip battery pad' is used by a step"
+  },
+  {
+   "id": "BUY-used-finder",
+   "category": "cross-checks",
+   "action": "",
+   "name": "Buy list 'VIFLY Finder 2 lost-drone beeper (its own battery)' is used by a step",
+   "status": "PASS",
+   "detail": "used in S4.9",
+   "margin": null,
+   "unit": "",
+   "arrival": null,
+   "pass_rate": null,
+   "runs": 0,
+   "driver": "",
+   "worst": null,
+   "name_plain": "Buy list 'VIFLY Finder 2 lost-drone beeper (its own battery)' is used by a step"
   },
   {
    "id": "BUY-used-lights",
@@ -4055,7 +4103,7 @@
    "action": "",
    "name": "Buy list 'Scotch heavy-duty foam mounting tape, 1.2 cm x 1.9 m' is used by a step",
    "status": "PASS",
-   "detail": "used in S7.3",
+   "detail": "used in S4.9, S7.3",
    "margin": null,
    "unit": "",
    "arrival": null,
@@ -4199,7 +4247,7 @@
    "action": "",
    "name": "Every buy line in a required stage is used by a step or a stage checklist (optional stages 8 exempt)",
    "status": "PASS",
-   "detail": "48 lines checked, from index.html #buy-data",
+   "detail": "50 lines checked, from index.html #buy-data",
    "margin": null,
    "unit": "",
    "arrival": null,
@@ -4208,6 +4256,22 @@
    "driver": "",
    "worst": null,
    "name_plain": "Every buy line in a required stage is used by a step or a stage checklist (optional stages 8 exempt)"
+  },
+  {
+   "id": "BUY-qty-foam-tape",
+   "category": "cross-checks",
+   "action": "",
+   "name": "Enough foam-tape: steps use 1, the list gives 1",
+   "status": "PASS",
+   "detail": "",
+   "margin": 0.0,
+   "unit": "pieces",
+   "arrival": null,
+   "pass_rate": null,
+   "runs": 0,
+   "driver": "",
+   "worst": null,
+   "name_plain": "Enough foam-tape: steps use 1, the list gives 1"
   },
   {
    "id": "BUY-qty-heat-shrink",
@@ -4386,6 +4450,22 @@
    "name_plain": "Enough props: steps use 4, the list gives 8"
   },
   {
+   "id": "BUY-qty-spare-sd",
+   "category": "cross-checks",
+   "action": "",
+   "name": "Enough spare-sd: steps use 1, the list gives 1",
+   "status": "PASS",
+   "detail": "",
+   "margin": 0.0,
+   "unit": "pieces",
+   "arrival": null,
+   "pass_rate": null,
+   "runs": 0,
+   "driver": "",
+   "worst": null,
+   "name_plain": "Enough spare-sd: steps use 1, the list gives 1"
+  },
+  {
    "id": "BUY-qty-standoffs",
    "category": "cross-checks",
    "action": "",
@@ -4439,7 +4519,7 @@
    "action": "",
    "name": "Every part drawn in the 3D models comes from a buy line (or is named as not bought: your laptop, the mug, guide marks)",
    "status": "PASS",
-   "detail": "524 drawn parts in 9 models from 37 buy lines; Step 1 counts: batteries 1 of 1, liion-5000 1 of 1, charger 1 of 1, radio 1 of 1, monitor 1 of 1; not bought: arrow_, cg_, clearance_, cone_pilot, cone_thermal, fireproof_surface, glasses_, hand_, laptop_tag, mug_, order_list; stack box contents: page Stage 5: 'The stack box also holds: the four long (M3 x 30) stack screws, the soft grommets, the 8-wire cable, the XT60 lead and the capacitor'",
+   "detail": "559 drawn parts in 9 models from 39 buy lines; Step 1 counts: batteries 1 of 1, liion-5000 1 of 1, charger 1 of 1, radio 1 of 1, monitor 1 of 1; not bought: arrow_, cg_, clearance_, cone_pilot, cone_thermal, cutaway_, fireproof_surface, glasses_, hand_, laptop_tag, mug_, order_list; stack box contents: page Stage 5: 'The stack box also holds: the four long (M3 x 30) stack screws, the soft grommets, the 8-wire cable, the XT60 lead and the capacitor'",
    "margin": null,
    "unit": "",
    "arrival": null,

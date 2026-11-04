@@ -4,8 +4,8 @@ Written by `python -I scripts/build/verify_build.py` on 2026-11-04. Run it again
 
 ## In plain words
 
-- **238 checks** on the guide, the 3D models and the parts list.
-- **200 passed.**
+- **243 checks** on the guide, the 3D models and the parts list.
+- **205 passed.**
 - **0 failed.**
 - **38 need the real parts.** Listings leave out a size or a detail, so you check these in your hands before you build. That is the arrival checklist at the end: 30 short tests.
 - **0 are page fixes.** The page's own lists disagree with each other, for example a part on the buy list that no step uses. They do not stop anything fitting.
@@ -16,22 +16,22 @@ Written by `python -I scripts/build/verify_build.py` on 2026-11-04. Run it again
 
 | What | Passed | Failed | Needs the real parts | Page fixes |
 |---|---|---|---|---|
-| Build order and safety order | 56 | 0 | 0 | 0 |
+| Build order and safety order | 57 | 0 | 0 | 0 |
 | Wiring (every connection, every wire long enough) | 14 | 0 | 3 | 0 |
 | Parts fit (holes, screws, pads) | 6 | 0 | 14 | 0 |
 | Nothing hits anything (props, ground, views) | 14 | 0 | 4 | 0 |
 | Tools can reach (iron, driver, fingers) | 7 | 0 | 4 | 0 |
 | Power (voltages and currents) | 13 | 0 | 8 | 0 |
-| Lists, ids and directions agree | 85 | 0 | 5 | 0 |
+| Lists, ids and directions agree | 89 | 0 | 5 | 0 |
 | Weight and balance | 5 | 0 | 0 | 0 |
 
 ## The smallest safety margins that still pass
 
 - speed controller, flight controller and frame stack holes line up (30.5 mm, with the soft grommets): 0.5 mm as designed, 0.3 mm in the worst of 10,000 runs
 - M3 x 10 set screw: at least 3 mm of thread on each side of the plate: 1.0 mm as designed, 0.5 mm in the worst of 10,000 runs
-- Battery slid forward to about 2 mm from the GPS leaves the balance point within 5 mm of centre: 2.48 mm as designed, 0.59 mm in the worst of 10,000 runs
-- With the Li-ion pack slid forward to about 2 mm from the GPS, the balance point stays within 5 mm of centre: 3.59 mm as designed, 0.8 mm in the worst of 10,000 runs
+- Battery slid forward to about 2 mm from the GPS leaves the balance point within 5 mm of centre: 2.81 mm as designed, 0.92 mm in the worst of 10,000 runs
 - Stack screw tip stays below the top plate: 2.0 mm as designed, 1.03 mm in the worst of 10,000 runs
+- With the Li-ion pack slid forward to about 2 mm from the GPS, the balance point stays within 5 mm of centre: 3.83 mm as designed, 1.07 mm in the worst of 10,000 runs
 
 ## How the sizes were varied
 
@@ -120,7 +120,8 @@ Margin = how much room is left at the design sizes. Runs = the share of the tole
 | PASS | S4.5 Bind on ISM 2400: everything it needs is there | S4.5 |  |  |  | needs rx_antenna, radio_ready |
 | PASS | S4.6 Betaflight on USB only: everything it needs is there | S4.6 |  |  |  | needs bound |
 | PASS | S4.7 VTX at 25 mW: everything it needs is there | S4.7 |  |  |  | needs vtx_antenna |
-| PASS | S4.8 Fit the top plate: everything it needs is there | S4.8 |  |  |  | needs standoffs_on, vtx_antenna, bf_setup |
+| PASS | S4.9 Finder beeper in the front bay: everything it needs is there | S4.9 |  |  |  | needs fc_on |
+| PASS | S4.8 Fit the top plate: everything it needs is there | S4.8 |  |  |  | needs standoffs_on, vtx_antenna, bf_setup, finder_on |
 | PASS | S6.0 Card flashed, I2C on: everything it needs is there | S6.0 |  |  |  | needs only bought parts |
 | PASS | S6.1 Straight male headers: everything it needs is there | S6.1 |  |  |  | needs only bought parts |
 | PASS | S6.2 HAT onto the Pi: everything it needs is there | S6.2 |  |  |  | needs pi_ready |
@@ -211,10 +212,10 @@ Margin = how much room is left at the design sizes. Runs = the share of the tole
 | PASS | Rear legs clear the Pi pad by at least 2 mm | S7.8 | 4.75 mm | 100.0% (1.75) |  |  |
 | NEEDS REAL PARTS | Quad's XT60 lead reaches the pack's 85 mm lead | S8.2 |  |  |  | The stack box's XT60 lead length is not published. Pack lead 85 mm (R12). |
 | NEEDS REAL PARTS | Camera cable reaches the FC's CAM socket | S4.3 |  |  |  | The stack box's camera cable length is not published. |
-| PASS | Battery slid forward to about 2 mm from the GPS (change request 43) leaves the balance point within 5 mm of centre | S7.7 | 2.48 mm | 100.0% (0.59) |  | Includes about 46 g of parts the page does not weigh yet (legs, HAT, pad, pigtail, wires, GPS cable extension: my estimates). The exact balance point is about 12 mm ahead of centre, past the GPS, so the drone stays a little tail-heavy. |
-| PASS | Centre of gravity sits inside the four feet | S7.8 | 10.94 mm | 100.0% (10.79) |  |  |
-| PASS | With the Li-ion pack slid forward to about 2 mm from the GPS, the balance point stays within 5 mm of centre | S7.7 | 3.59 mm | 100.0% (0.8) |  |  |
-| PASS | With the Li-ion pack, the centre of gravity sits inside the four feet | S7.8 | 10.95 mm | 100.0% (10.84) |  |  |
+| PASS | Battery slid forward to about 2 mm from the GPS (change request 43) leaves the balance point within 5 mm of centre | S7.7 | 2.81 mm | 100.0% (0.92) |  | Includes about 46 g of parts the page does not weigh yet (legs, HAT, pad, pigtail, wires, GPS cable extension: my estimates). The exact balance point is about 10 mm ahead of centre, past the GPS, so the drone stays a little tail-heavy. |
+| PASS | Centre of gravity sits inside the four feet | S7.8 | 10.92 mm | 100.0% (10.78) |  |  |
+| PASS | With the Li-ion pack slid forward to about 2 mm from the GPS, the balance point stays within 5 mm of centre | S7.7 | 3.83 mm | 100.0% (1.07) |  |  |
+| PASS | With the Li-ion pack, the centre of gravity sits inside the four feet | S7.8 | 10.94 mm | 100.0% (10.83) |  |  |
 | PASS | The 245 mm strap goes round the LiPo pack and the top plate, with 40 mm to fasten | S7.7 | 73.0 mm |  |  | 2 x (38 + 26 + 2 plate) + 40 overlap (ASSUMPTION) = 172.0 mm; strap 245 mm (R18) |
 | PASS | The 245 mm strap goes round the Li-ion pack and the top plate, with 40 mm to fasten | S7.7 | 24.0 mm |  |  | 2 x (44.25 + 44.25 + 2 plate) + 40 overlap (ASSUMPTION) = 221.0 mm; strap 245 mm (R18) |
 | PASS | No pad or pin belongs to two different nets | S3.3 |  |  |  | 58 ends in 28 nets |
@@ -251,11 +252,11 @@ Margin = how much room is left at the design sizes. Runs = the share of the tole
 | NEEDS REAL PARTS | 5 V rail (3 A) carries the Pi, receiver, camera and sensors | S8.6 |  |  |  | no published current for: Pi Zero 2 W, receiver, camera, MLX90640 + PA1010D |
 | PASS | Iron (65 W) on the 24 V 5 A adapter | S3.2 | 2.29 A |  |  | 65 W / 24 V = 2.71 A of 5 A (buy list (live page, iron-psu): 'SHNITPWR 24 V DC 5 A 120 W power supply for the iron (5.5 x 2.5 mm plug)') |
 | PASS | Charge current 1.0 A is within 1C for the 1500 mAh packs | S5.3b | 0.5 A |  |  | 1C = 1.5 A (R12 1500 mAh); charger: ToolkitRC M7 manual V1.0 (the M7AC's own manual not read) 'set the charging rate of 1-2C', 'step by 0.1A' (2026-11-04: the M7AC replaced the M4AC) |
-| PASS | All-up weight: 505 g from the page's sourced weights + 46 g estimated = about 551 g | S8.6 |  |  |  | estimates: legs: 8 aluminium standoffs (ESTIMATED 1.0 g each); legs: 4 rubber feet (ESTIMATED 1.0 g each; the listing's weight line is a typo); Pi pad, 6 nylon standoffs, screws, zip ties (ESTIMATED 6 g); Qwiic HAT + 2 cables (ESTIMATED 6 g; not weighed on the page); micro-USB pigtail (ESTIMATED 5 g); wires, XT60, solder, capacitor (ESTIMATED 15 g); GPS cable extension: 4 x 120 mm 26 AWG, 8 joints, heat shrink (ESTIMATED 2 g) |
-| PASS | Every replayed action id is in STEP-TRUTH.md |  |  |  |  | 50 ids |
-| PASS | Every replayed action has a button in the 3D models |  |  |  |  | 54 model actions |
+| PASS | All-up weight: 510 g from the page's sourced weights + 46 g estimated = about 556 g | S8.6 |  |  |  | estimates: legs: 8 aluminium standoffs (ESTIMATED 1.0 g each); legs: 4 rubber feet (ESTIMATED 1.0 g each; the listing's weight line is a typo); Pi pad, 6 nylon standoffs, screws, zip ties (ESTIMATED 6 g); Qwiic HAT + 2 cables (ESTIMATED 6 g; not weighed on the page); micro-USB pigtail (ESTIMATED 5 g); wires, XT60, solder, capacitor (ESTIMATED 15 g); GPS cable extension: 4 x 120 mm 26 AWG, 8 joints, heat shrink (ESTIMATED 2 g) |
+| PASS | Every replayed action id is in STEP-TRUTH.md |  |  |  |  | 51 ids |
+| PASS | Every replayed action has a button in the 3D models |  |  |  |  | 55 model actions |
 | PASS | Every 3D action id is in STEP-TRUTH.md |  |  |  |  | all found |
-| PASS | Every 3D action id is tagged on the page |  |  |  |  | 54 page ids |
+| PASS | Every 3D action id is tagged on the page |  |  |  |  | 55 page ids |
 | PASS | Approved wording changes are on the page |  |  |  |  | all applied |
 | PASS | Every number in a 3D chip also appears in its page line |  |  |  |  | no chip adds a number |
 | PASS | Every direction word in a 3D chip (CW, front, up...) is in its page line |  |  |  |  | none added |
@@ -266,7 +267,7 @@ Margin = how much room is left at the design sizes. Runs = the share of the tole
 | PASS | The page and the 3D chip put CW props on the motors the design spins CW (and CCW on the rest), and name each motor's corner as the design does | S8.4 |  |  |  | M1 rear right CW; M2 front right CCW; M3 rear left CCW; M4 front left CW |
 | PASS | Buy list 'RadioMaster Pocket ELRS radio, charcoal' is used by a step |  |  |  |  | used in S4.5, S5.1 |
 | PASS | Buy list 'RadioMaster Pocket 18650 battery pair' is used by a step |  |  |  |  | used in S5.1; also Stage 3 checklist (charge the cells in the radio) and S5.1 |
-| PASS | Buy list 'Flywoo tool kit with iron and multimeter' is used by a step |  |  |  |  | used in S2.1, S2.2, S2.3, S3.0, S3.1, S3.2, S3.3, S3.4, S4.1, S4.3, S4.3b, S4.8, S6.1, S6.2b, S7.4b |
+| PASS | Buy list 'Flywoo tool kit with iron and multimeter' is used by a step |  |  |  |  | used in S2.1, S2.2, S2.3, S3.0, S3.1, S3.2, S3.3, S3.4, S4.1, S4.3, S4.3b, S4.8, S4.9, S6.1, S6.2b, S7.4b |
 | PASS | Buy list 'iFlight smoke stopper, XT30/XT60' is used by a step |  |  |  |  | used in S3.5, S8.2 |
 | PASS | Buy list 'RVS LiPo storage bag' is used by a step |  |  |  |  | used in S5.3c |
 | PASS | Buy list 'Heat shrink 6 mm x 150 mm, black' is used by a step |  |  |  |  | used in S3.3, S7.4b; also Stage 2 checklist (insulate the pigtail), S3.3, S7.4b |
@@ -274,9 +275,10 @@ Margin = how much room is left at the design sizes. Runs = the share of the tole
 | PASS | Buy list 'Zip ties 3 mm x 100 mm, 100 pack' is used by a step |  |  |  |  | used in S7.4, S7.6 |
 | PASS | Buy list 'Nylon M2.5 x 12 mm standoff set (4 per pack)' is used by a step |  |  |  |  | used in S7.3 |
 | PASS | Buy list 'Micro-USB cable, right angle, 24 AWG' is used by a step |  |  |  |  | used in S7.4b; also Stage 2 checklist (build the pigtail) and S7.4b |
-| PASS | Buy list 'SHNITPWR 24 V DC 5 A 120 W power supply for the iron (5.5 x ' is used by a step |  |  |  |  | used in S3.2, S3.3, S6.1, S6.2b, S7.4b |
+| PASS | Buy list 'SHNITPWR 24 V DC 5 A 120 W power supply for the iron (5.5 x ' is used by a step |  |  |  |  | used in S3.2, S3.3, S4.9, S6.1, S6.2b, S7.4b |
 | PASS | Buy list 'Permatex Blue 242 threadlocker' is used by a step |  |  |  |  | Step 2 parts line: 'Threadlock (only if the manual says so)' |
 | PASS | Buy list 'Raspberry Pi Zero 2 WH kit (Pi, 32 GB card, reader, power su' is used by a step |  |  |  |  | used in S6.0 |
+| PASS | Buy list 'Spare microSD card for the Pi (SanDisk Ultra 32 GB, set up l' is used by a step |  |  |  |  | used in S6.0 |
 | PASS | Buy list 'Pimoroni MLX90640 thermal camera, 55 degree' is used by a step |  |  |  |  | used in S6.1 |
 | PASS | Buy list 'Pimoroni PA1010D GPS board' is used by a step |  |  |  |  | used in S6.1 |
 | PASS | Buy list 'SparkFun Qwiic HAT + 2 jumper cables (US shop)' is used by a step |  |  |  |  | used in S6.2, S6.2b |
@@ -285,6 +287,7 @@ Margin = how much room is left at the design sizes. Runs = the share of the tole
 | PASS | Buy list 'Gemfan 51499 propellers (set of 4)' is used by a step |  |  |  |  | used in S8.4 |
 | PASS | Buy list 'Kevlar battery straps, 2 pack' is used by a step |  |  |  |  | used in S7.4, S7.7 |
 | PASS | Buy list 'Flywoo Ultra Grip battery pad' is used by a step |  |  |  |  | used in S7.7 |
+| PASS | Buy list 'VIFLY Finder 2 lost-drone beeper (its own battery)' is used by a step |  |  |  |  | used in S4.9 |
 | PASS | Buy list 'LED COB strip, 4S, 1 m' is used by a step |  |  |  |  | not used by a step; exempt: stage 8 is optional (Optional extras) |
 | PASS | Buy list 'GEPRC TAKER F405 BLS 50A flight stack' is used by a step |  |  |  |  | used in S3.0, S4.1 |
 | PASS | Buy list 'RadioMaster RP1 V2 receiver' is used by a step |  |  |  |  | used in S4.1 |
@@ -303,7 +306,7 @@ Margin = how much room is left at the design sizes. Runs = the share of the tole
 | PASS | Buy list 'Eiechip 12-piece prototype boards for soldering practice (5 ' is used by a step |  |  |  |  | Stage 1 checklist: 'practise on one of the practice boards (the Eiechip set)' |
 | PASS | Buy list '26 AWG silicone wire, 1 foot lengths (5 feet to start)' is used by a step |  |  |  |  | used in S6.2b |
 | PASS | Buy list 'M2.5 nylon screw, nut and standoff set (420 pieces)' is used by a step |  |  |  |  | used in S7.4 |
-| PASS | Buy list 'Scotch heavy-duty foam mounting tape, 1.2 cm x 1.9 m' is used by a step |  |  |  |  | used in S7.3 |
+| PASS | Buy list 'Scotch heavy-duty foam mounting tape, 1.2 cm x 1.9 m' is used by a step |  |  |  |  | used in S4.9, S7.3 |
 | PASS | Buy list 'USB-C data cable (flight controller to your laptop)' is used by a step |  |  |  |  | used in S4.5, S4.6, S8.3 |
 | PASS | Buy list 'Gemfan 51499 spare propeller sets (4 per set)' is used by a step |  |  |  |  | optional by the list's own note: 'buy these after the first flight, for the first crash' |
 | PASS | Buy list 'Flywoo X30 waterproof invisible coating spray, 56.7 g (optio' is used by a step |  |  |  |  | not used by a step; exempt: stage 8 is optional (Optional extras) |
@@ -312,7 +315,8 @@ Margin = how much room is left at the design sizes. Runs = the share of the tole
 | PASS | Buy list 'Lumenier M3 rubber landing feet, 8 pack (US shop)' is used by a step |  |  |  |  | used in S7.8 |
 | PASS | Buy list 'M3 set screw assortment, 200 pieces (includes 20 x M3 x 10 m' is used by a step |  |  |  |  | used in S7.8 |
 | PASS | Buy list 'M3 x 10 mm black steel button-head screws, 10 pack (for the ' is used by a step |  |  |  |  | used in S7.8 |
-| PASS | Every buy line in a required stage is used by a step or a stage checklist (optional stages 8 exempt) |  |  |  |  | 48 lines checked, from index.html #buy-data |
+| PASS | Every buy line in a required stage is used by a step or a stage checklist (optional stages 8 exempt) |  |  |  |  | 50 lines checked, from index.html #buy-data |
+| PASS | Enough foam-tape: steps use 1, the list gives 1 |  | 0.0 pieces |  |  |  |
 | PASS | Enough heat-shrink: steps use 4, the list gives 10 |  | 6.0 pieces |  |  |  |
 | PASS | Enough heat-shrink-3mm: steps use 1, the list gives 2 |  | 1.0 pieces |  |  |  |
 | PASS | Enough legs-25: steps use 4, the list gives 10 |  | 6.0 pieces |  |  |  |
@@ -324,10 +328,11 @@ Margin = how much room is left at the design sizes. Runs = the share of the tole
 | PASS | Enough m25-screws: steps use 6, the list gives 420 |  | 414.0 pieces |  |  | list item: '420 pieces' (screws, nuts and standoffs together) |
 | PASS | Enough motors: steps use 4, the list gives 4 |  | 0.0 pieces |  |  |  |
 | PASS | Enough props: steps use 4, the list gives 8 |  | 4.0 pieces |  |  | list item: 'set of 4' |
+| PASS | Enough spare-sd: steps use 1, the list gives 1 |  | 0.0 pieces |  |  |  |
 | PASS | Enough standoffs: steps use 6, the list gives 8 |  | 2.0 pieces |  |  | list item: '4 per pack' |
 | PASS | Enough straps: steps use 2, the list gives 2 |  | 0.0 pieces |  |  |  |
 | PASS | Enough zip-ties: steps use 8, the list gives 100 |  | 92.0 pieces |  |  |  |
-| PASS | Every part drawn in the 3D models comes from a buy line (or is named as not bought: your laptop, the mug, guide marks) |  |  |  |  | 524 drawn parts in 9 models from 37 buy lines; Step 1 counts: batteries 1 of 1, liion-5000 1 of 1, charger 1 of 1, radio 1 of 1, monitor 1 of 1; not bought: arrow_, cg_, clearance_, cone_pilot, cone_thermal, fireproof_surface, glasses_, hand_, laptop_tag, mug_, order_list; stack box contents: page Stage 5: 'The stack box also holds: the four long (M3 x 30) stack screws, the soft grommets, the 8-wire cable, the XT60 lead and the capacitor' |
+| PASS | Every part drawn in the 3D models comes from a buy line (or is named as not bought: your laptop, the mug, guide marks) |  |  |  |  | 559 drawn parts in 9 models from 39 buy lines; Step 1 counts: batteries 1 of 1, liion-5000 1 of 1, charger 1 of 1, radio 1 of 1, monitor 1 of 1; not bought: arrow_, cg_, clearance_, cone_pilot, cone_thermal, cutaway_, fireproof_surface, glasses_, hand_, laptop_tag, mug_, order_list; stack box contents: page Stage 5: 'The stack box also holds: the four long (M3 x 30) stack screws, the soft grommets, the 8-wire cable, the XT60 lead and the capacitor' |
 | NEEDS REAL PARTS | Parts the models draw that the page says to check in the box | S5.2 |  |  |  | charge_lead: the M7AC listing names only the charger; its output lead to the pack's XT60 is not listed: check the box; charger_mains_cable: page Stage 5: 'M7AC charger and a mains cable (the listing names only the charger: check the box)' |
 
 ## Inputs (plain files, for anyone who wants to write their own checker)

@@ -90,6 +90,15 @@ PACK = P("R12", l=79.0, w=38.0, h=26.0, xt60_lead=85.0, balance_lead=40.0)
 # Shad's second flight pack (mixed Stage 5, 2026-11-04): More Volts 4S 5000mAh Li-ion (TenPower 50XG cells), read 2026-11-04.
 # R-MV5000 "Weight: 307.9g (±5 g)"; "Dimensions (L×W×H): ~79.15 x 44.25 x 44.25 mm"; XT60H; "30-50A (typical UAV/FPV use)".
 PACK_LIION = P("R-MV5000", l=79.15, w=44.25, h=44.25, mass_g=307.9)
+# VIFLY Finder 2 lost-drone beeper (Shad approved 2026-11-04). R-FINDER2 Rotor Village listing (read 2026-11-04):
+# "Dimensions: 24x13x16 mm", "Weight: 5 g", "Input Voltage:4.5-8.5V", "1 x 3 Pin Wire". Pads not named on the listing.
+FINDER = P("R-FINDER2", l=24.0, w=13.0, h=16.0, mass_g=5.0)
+# Where it sits (Opus geometry check 2026-11-04, against every part of the finished model): on the middle plate in the
+# front bay, between the four 22 mm standoffs, its back 2 mm ahead of the stack's front edge (ESC 39.7 mm deep -> 19.85),
+# long side forward, 2 mm left of the centre line (nearest parts 3.5-3.8 mm: M4 arm, GPS-cable joint, a 22 mm standoff).
+FINDER_AT = P("Opus geometry check 2026-11-04 (S4.9 page wording)", x=19.85 + 2.0 + 12.0, y=2.0, tape=1.6)
+# microSD card: SD Association microSD form factor 15 x 11 x 1.0 mm
+SPARE_SD = P("SD Association microSD form factor", l=15.0, w=11.0, h=1.0)
 STRAP = P("R18", len=245.0, w=20.0)
 CELL_18650 = P("rv sam30q", dia=18.33, len=64.85)        # "Approximate Dimensions: 18.33mm x 64.85mm"
 # Shad replaced the M4AC with the ToolkitRC M7AC (mixed Stage 5, 2026-11-04; it has a Li-ion mode). R-M7AC: Amain Hobbies
@@ -137,8 +146,8 @@ THERMAL_CAM = P("R19", hfov=55.0, vfov=35.0)
 # CAD = maker drawing; DATASHEET = maker/listing numbers; ESTIMATED = drawn, check with the real part.
 PART_INFO = {
     "frame_": ("Source One V6 frame part", "CAD", False),
-    "frame_standoff_30mm": ("Frame standoff, 30 mm (bottom to top plate)", "CAD", False),
-    "frame_standoff_22mm": ("Frame standoff, 22 mm (middle to top plate)", "CAD", False),
+    "frame_standoff_30mm": ("Frame standoff, 30 mm (bottom to top plate); blue = colour shown for visibility", "CAD", True),
+    "frame_standoff_22mm": ("Frame standoff, 22 mm (middle to top plate); yellow = colour shown for visibility", "CAD", True),
     "loose_": ("Source One V6 frame part (loose)", "CAD", False),
     "M1_": ("Motor M1, rear right, spins clockwise", "DATASHEET", False),
     "M2_": ("Motor M2, front right, spins anticlockwise", "DATASHEET", False),
@@ -240,7 +249,17 @@ PART_INFO = {
     "mug_": ("Mug of water just poured from the kettle (heat test target)", "ESTIMATED", False),
     "hand_": ("Your open hand, beside the mug (it must NOT be reported as hot)", "ESTIMATED", False),
     "arrow_": ("Direction arrow", "ESTIMATED", False),
+    "finder_": ("VIFLY Finder 2 lost-drone beeper, 24 x 13 x 16 mm, 5 g (placement per arrival test)", "DATASHEET", False),
+    "finder_tape": ("Foam tape under the Finder (colour shown for visibility; thickness drawn)", "ESTIMATED", True),
+    "finder_wire_": ("Finder's 3-pin cable to the FC buzzer pads (pads not confirmed; wire colours drawn)", "ESTIMATED", True),
+    "spare_sd": ("Spare microSD card for the Pi (SanDisk Ultra 32 GB), labelled SPARE", "DATASHEET", False),
+    "cutaway_": ("Cut-away drawing: a motor screw's length against the motor's copper windings (sizes drawn)", "ESTIMATED", False),
 }
+
+
+# parts whose colour IS the message (blue 30 mm / yellow 22 mm standoffs; the cut-away's carbon, aluminium and
+# copper): the viewer keeps their own colour when it highlights them, instead of tinting them orange
+KEEP_COLOUR = ("frame_standoff_", "cutaway_")
 
 
 def part_info(node_name):

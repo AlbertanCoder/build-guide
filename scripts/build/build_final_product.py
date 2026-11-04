@@ -35,6 +35,7 @@ def build():
     Q.battery_pad(P)
     Q.battery(P)
     Q.strap(P, Q.BAT[0])
+    Q.finder(P)                     # VIFLY Finder 2 in the front bay (S4.9)
 
     C.label("5.1\" TRI-BLADE PROPS", (Q.MOTORS["M4"][0], Q.MOTORS["M4"][1], Q.Z_PROP + 0.014),
             detail="CW on M1 and M4, CCW on M2 and M3")

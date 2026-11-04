@@ -64,10 +64,10 @@ def frame(P, with_top=True, carbon=None, standoffs=None):
         r = mm(F["standoff_od"]) / 2.0
         for i, (x, y) in enumerate(asm["standoffs_30mm_bottom_to_top_xy"]):
             objs.append(C.cyl(f"frame_standoff_30mm_{i}", r, mm(F["standoff_long"]),
-                              (mm(x), mm(y), PLATE_T + mm(F["standoff_long"]) / 2.0), mat=P["silicone_black"], seg=10))
+                              (mm(x), mm(y), PLATE_T + mm(F["standoff_long"]) / 2.0), mat=P["standoff_30"], seg=10))
         for i, (x, y) in enumerate(asm["standoffs_22mm_middle_to_top_xy"]):
             objs.append(C.cyl(f"frame_standoff_22mm_{i}", r, mm(F["standoff_short"]),
-                              (mm(x), mm(y), Z_MID_TOP + mm(F["standoff_short"]) / 2.0), mat=P["silicone_black"], seg=10))
+                              (mm(x), mm(y), Z_MID_TOP + mm(F["standoff_short"]) / 2.0), mat=P["standoff_22"], seg=10))
     return objs
 
 
@@ -544,6 +544,35 @@ def battery(P, loc=None, crosswise=False, label=True):
                    mat=P["plastic_white"], bevel=0.0004)]
     if label:
         C.label("4S 1500 LIHV PACK", (x0, y0, z0 + h + 0.010))
+    return objs
+
+
+def finder(P, loc=None, label=False):
+    """VIFLY Finder 2 (24 x 13 x 16 mm, R-FINDER2) on foam tape in the front bay (FINDER_AT), long side forward, its
+    3-pin cable from the back end to the flight controller's front edge. Drawn as PLANNED: the TAKER F405's buzzer pads
+    are not confirmed (arrival test). loc=(x, y, z) puts a loose one on the bench instead (Step 1)."""
+    l, w, h = mm(S.FINDER["l"]), mm(S.FINDER["w"]), mm(S.FINDER["h"])
+    objs = []
+    if loc is None:
+        x, y = mm(S.FINDER_AT["x"]), mm(S.FINDER_AT["y"])
+        tape = mm(S.FINDER_AT["tape"])
+        z0 = Z_MID_TOP + tape
+        objs.append(C.box("finder_tape", (l - 0.002, w - 0.002, tape), (x, y, Z_MID_TOP + tape / 2.0), mat=P["vis_magenta"]))   # same visibility colour as the other foam tape
+    else:
+        x, y, z0 = loc
+    objs += [C.box("finder_body", (l, w, h), (x, y, z0 + h / 2.0), mat=P["plastic_black"], bevel=0.0015),
+             C.cyl("finder_speaker", 0.0045, 0.0006, (x + 0.004, y, z0 + h + 0.0003), mat=P["plastic_grey"], seg=16),
+             C.cyl("finder_led", 0.0010, 0.0008, (x - 0.007, y + 0.003, z0 + h + 0.0004), mat=P["pcb_red"], seg=8)]
+    if loc is None:
+        fc_top = Z_MID_TOP + mm(S.STACK_GAP["esc_above_plate"]) + 2 * mm(S.PCB_T["t"]) + mm(S.STACK_GAP["fc_above_esc"])
+        back = x - l / 2.0
+        for k, (col, dy) in enumerate((("wire_black", -0.0022), ("wire_red", 0.0), ("wire_yellow", 0.0022))):
+            objs.append(C.tube(f"finder_wire_{k}", [(back, y + dy, z0 + 0.004), (back - 0.0025, y + dy, (z0 + fc_top) / 2.0 + 0.003),
+                                                    (mm(S.FC["d"]) / 2.0 - 0.002, y + dy, fc_top + 0.0006)], 0.0005, P[col], res=5,
+                               solder="b"))
+        C.mark_planned(objs, "placement per arrival test: the FC's buzzer pads are not confirmed")
+    if label:
+        C.label("FINDER BEEPER: FRONT BAY, AHEAD OF THE STACK", (x, y, z0 + h + 0.010), detail="placement per arrival test; buzzer pads not confirmed")
     return objs
 
 

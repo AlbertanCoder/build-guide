@@ -51,6 +51,31 @@ def build():
     C.label("ARMS ON THE BOTTOM PLATE", (0.030, 0.030, Q.Z_ARM + 0.004), detail="6 mm arms; stack holes clamp them")
     C.label("STANDOFFS", (0.050, 0.0, Q.Z_TOP - 0.006), detail="22 mm front, 30 mm rear")
     C.label("MOTOR SCREWS", (m2x, m2y, Q.Z_MOTOR - 0.012), detail="none may touch the copper windings")
+    # length tags on one standoff of each length (the colours are for visibility)
+    s30 = next(o for o in fr if o.name.startswith("frame_standoff_30mm"))
+    s22 = next(o for o in fr if o.name.startswith("frame_standoff_22mm"))
+    C.label("30 MM STANDOFFS (BLUE): BOTTOM TO TOP PLATE", (s30.location.x, s30.location.y, Q.Z_TOP + 0.004))
+    C.label("22 MM STANDOFFS (YELLOW): MIDDLE TO TOP PLATE", (s22.location.x, s22.location.y, Q.Z_TOP + 0.012))
+
+    # S2.4 cut-away (drawn sizes): two sections through an arm and a motor's base, side by side beside M2.
+    # OK: the screw ends inside the motor base. TOO LONG: it pokes past the base into the copper windings.
+    arm_t, base_t, wind_h = Q.ARM_T, 0.0025, 0.006          # the arm is the frame's own; base and windings drawn
+    cut = []
+    # The sections stand side by side as S2.4's camera sees them (from the right, -Y); each is cut through the screw,
+    # so its layers sit behind the cut face (+Y) and the screw shows on that face.
+    depth = 0.012
+    cy = m2y - 0.034
+    top = arm_t + base_t + 0.0004 + wind_h
+    for tag, cx, screw_len in (("ok", m2x + 0.020, arm_t + base_t * 0.6), ("bad", m2x + 0.066, arm_t + base_t + 0.003)):
+        by = cy + depth / 2.0
+        cut += [C.box(f"cutaway_{tag}_arm", (0.018, depth, arm_t), (cx, by, arm_t / 2.0), mat=P["cut_carbon"]),
+                C.box(f"cutaway_{tag}_base", (0.018, depth, base_t), (cx, by, arm_t + base_t / 2.0), mat=P["cut_alu"]),
+                C.box(f"cutaway_{tag}_windings", (0.016, depth * 0.85, wind_h), (cx, by, arm_t + base_t + 0.0004 + wind_h / 2.0), mat=P["cut_copper"])]
+        sc = C.screw(f"cutaway_{tag}_screw", 0.0015, screw_len, (cx, cy, screw_len / 2.0), head="bottom", mat=P["steel"])   # on the cut face: half of it shows
+        cut.append(sc)
+        cut += [c for c in sc.children]
+    C.label("OK: STOPS IN THE BASE", (m2x + 0.020, cy, top + 0.018))
+    C.label("TOO LONG: TOUCHES THE COPPER", (m2x + 0.066, cy, top + 0.003))
 
     # ---- clip ----
     A.appear(by_prefix(fr, "frame_bottom_plate"), 0.0, 0.8)
@@ -74,6 +99,7 @@ def build():
         A._key(ob, "scale", 5.95, (A.TINY,) * 3)
         A._key(ob, "scale", 6.0, full)
     A.slide(screws, (0, 0, -0.012), 9.0, 9.8)
+    A.appear([o for o in cut if o.parent is None or o.parent not in cut], 8.4, 9.0)
 
     actions = [
         {"id": "S2.1", "hold": 2.9, "shows": ["frame_bottom_plate", "frame_arm_M1", "frame_arm_M4"], "hides": ["M1_bell"], "time": 0.0, "short": "Arms on the bottom plate", "text": "Lay the four arms on the bottom plate, root ends in the middle, with the small arm spacer in the centre. Put the middle plate on top, so each arm is sandwiched between the two plates. Fit two screws through each arm's two root holes. Tighten snug, not forced."},
@@ -88,10 +114,11 @@ def build():
     # behind as its text says. The arrow is highlighted with the frame; each action lists the labels it shows.
     framing = {
         "S2.1": dict(shows=["frame_bottom_plate", "frame_arm_M1", "frame_arm_M4", "arrow_front_"], labels=["ARMS ON THE BOTTOM PLATE", "FRONT"]),
-        "S2.2": dict(shows=["frame_standoff_", "arrow_front_"], labels=["STANDOFFS", "FRONT"]),
+        "S2.2": dict(shows=["frame_standoff_", "arrow_front_"], labels=["30 MM STANDOFFS", "22 MM STANDOFFS", "FRONT"]),
         "S2.3": dict(shows=["M1_bell", "M4_bell", "arrow_front_"], labels=["M1", "M2", "M3", "M4"],   # FRONT tag left out here: it hid behind the M2/M4 tags; the arrow shows it
                      focus=[0.0, 0.0, Q.Z_MOTOR], dist=0.50, view=[-0.75, 0.0, 1.0]),
-        "S2.4": dict(labels=["MOTOR SCREWS"]),
+        "S2.4": dict(shows=["motor_screw_M2_", "cutaway_"], labels=["MOTOR SCREWS", "OK:", "TOO LONG:"],
+                     focus=[m2x + 0.036, m2y - 0.026, 0.006], dist=0.13, view=[0.0, -1.0, 0.30]),
     }
     for a in actions:
         a.update(framing.get(a["id"], {}))

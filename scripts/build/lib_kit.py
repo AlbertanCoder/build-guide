@@ -160,11 +160,23 @@ def monitor_skyzone(P, loc=(0, 0, 0), rot_z=0.0):
 
 
 def laptop(P, loc=(0, 0, 0), rot_z=0.0, lid_angle=100.0):
-    """Your own laptop is not part of the kit, so the models show a flat tag instead of a laptop."""
+    """Your own laptop (not part of the kit): a simple open-laptop shape so it reads as a laptop (fresh-eyes review
+    2026-11-04: the flat tag meant nothing). Drawn, not to any model's size. rot_z is not used (every caller passes 0)."""
+    import math
     x0, y0, z0 = loc
-    return [C.box("laptop_tag", (0.120, 0.070, 0.002), (x0, y0, z0 + 0.001), rot=(0, 0, rot_z), mat=P["paper"], bevel=0.003),
-            C.box("laptop_tag_stripe", (0.110, 0.008, 0.0006), (x0, y0 + 0.024, z0 + 0.0023), rot=(0, 0, rot_z),
-                  mat=P["pine"])]
+    bw, bd, bt = 0.120, 0.080, 0.006
+    lid_h, lid_t = 0.075, 0.004
+    a = -math.radians(lid_angle - 90.0)                 # tilt from upright: 105 degrees open leans the lid back 15
+    hinge = (x0, y0 + bd / 2.0 - lid_t / 2.0, z0 + bt)
+    up = (0.0, -math.sin(a), math.cos(a))               # along the lid, from the hinge to its top edge
+    face = (0.0, -math.cos(a), -math.sin(a))            # the screen side, toward you
+    c = tuple(hinge[k] + up[k] * lid_h / 2.0 for k in range(3))
+    return [C.box("laptop_tag", (bw, bd, bt), (x0, y0, z0 + bt / 2.0), mat=P["plastic_grey"], bevel=0.002),
+            C.box("laptop_tag_keys", (bw * 0.82, bd * 0.48, 0.0008), (x0, y0 + 0.004, z0 + bt + 0.0003), mat=P["plastic_black"]),
+            C.box("laptop_tag_pad", (0.030, 0.018, 0.0006), (x0, y0 - 0.027, z0 + bt + 0.0002), mat=P["plastic_black"]),
+            C.box("laptop_tag_screen", (bw, lid_t, lid_h), c, rot=(a, 0, 0), mat=P["plastic_grey"], bevel=0.0015),
+            C.box("laptop_tag_screen_face", (bw * 0.88, 0.0006, lid_h * 0.82),
+                  tuple(c[k] + face[k] * (lid_t / 2.0 + 0.0003) for k in range(3)), rot=(a, 0, 0), mat=P["screen"])]
 
 
 def _old_laptop_drawing(P, loc=(0, 0, 0), rot_z=0.0, lid_angle=100.0):

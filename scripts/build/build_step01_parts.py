@@ -46,7 +46,14 @@ def build():
         C.shift(m, dx=ax + 0.040 + (i % 2) * 0.034, dy=ay - 0.040 - (i // 2) * 0.034, dz=-Q.Z_MOTOR)
     _, stk = C.collect(Q.flight_stack, P, z_base=0.0, with_cable=False)
     C.shift(stk, dx=ax + 0.120, dy=ay - 0.040)
-    C.box("prop_bag_closed", (0.090, 0.060, 0.012), (ax + 0.130, ay - 0.110, 0.006), mat=P["plastic_grey"], bevel=0.003)
+    # the props packet: a clear bag with a card header and the four props lying in it (drawn as a simple icon;
+    # fresh-eyes review 2026-11-04: the grey slab did not read as props)
+    pbx, pby = ax + 0.130, ay - 0.110
+    C.box("prop_bag_closed", (0.090, 0.060, 0.008), (pbx, pby, 0.004), mat=P["bag_clear"], bevel=0.003)
+    C.box("prop_bag_header", (0.090, 0.014, 0.0012), (pbx, pby + 0.034, 0.0006), mat=P["plastic_white"])
+    for i, (dx, dy, rz) in enumerate(((-0.022, 0.011, 0.5), (0.022, 0.011, -0.4), (-0.022, -0.013, -0.6), (0.022, -0.013, 0.3))):
+        C.box(f"prop_bag_prop_{i}", (0.036, 0.0065, 0.0012), (pbx + dx, pby + dy, 0.0086), rot=(0, 0, rz), mat=P["plastic_black"])
+        C.cyl(f"prop_bag_prop_{i}_hub", 0.0035, 0.0018, (pbx + dx, pby + dy, 0.0089), mat=P["plastic_black"], seg=10)
 
     # --- radio & power ---
     bx, by = PILE["radio_power"]
@@ -67,10 +74,13 @@ def build():
     _, vtx = C.collect(Q.vtx_and_antenna, P, antenna_x=-0.085, planned=False, mounted=False)
     C.shift(vtx, dx=vx + 0.060, dy=vy + 0.060, dz=-Q.PLATE_T)
     K.monitor_skyzone(P, (vx, vy - 0.040, 0.0))
+    Q.finder(P, loc=(ax + 0.150, ay + 0.040, 0.0))                    # Stage 4: the lost-drone beeper
 
     # --- thermal payload ---
     tx, ty = PILE["thermal"]
     Q.pi_bench(P, (tx, ty + 0.030, 0.0))
+    C.box("spare_sd_card", (S.mm(S.SPARE_SD["l"]), S.mm(S.SPARE_SD["w"]), S.mm(S.SPARE_SD["h"])), (tx + 0.075, ty + 0.060, 0.0005),
+          mat=P["pcb_red"], bevel=0.0003)                                # Stage 2: the spare card, labelled SPARE
     Q.sensor_board(P, "mlx", (tx - 0.060, ty - 0.040, 0.008))
     Q.sensor_board(P, "gps", (tx + 0.010, ty - 0.040, 0.008))
     for i in range(2):
@@ -99,7 +109,7 @@ def build():
     C.label("AIRFRAME", (ax, ay + 0.120, 0.040), detail="frame plates and arms, 4 motors, the stack")
     C.label("PROPS STAY IN THE BAG", (ax + 0.130, ay - 0.110, 0.030), detail="they go on in step 8")
     C.label("RADIO & POWER", (bx, by + 0.120, 0.080), detail="radio, cells, receiver, 2 packs, charger, smoke stopper, LiPo bag")
-    C.label("VIDEO", (vx, vy + 0.120, 0.050), detail="camera, VTX, antenna, monitor (runs from a 4S pack on its cable)")
+    C.label("VIDEO", (vx, vy + 0.120, 0.050), detail="camera, VTX, antenna, monitor (runs from your USB-C power bank)")
     C.label("THERMAL PAYLOAD", (tx, ty + 0.100, 0.040), detail="Pi Zero 2 WH, Qwiic HAT, MLX90640, PA1010D, 2 cables, pigtail")
     C.label("TOOLS", (ex, ey + 0.100, 0.060), detail="iron, multimeter, glasses, hex drivers")
     C.label("ORDER LIST: TICK EVERY PILE", (-0.480, -0.170, 0.020))
@@ -134,7 +144,7 @@ def build():
         "S1.1": dict(hold=6.8, shows=["loose_bottom_plate", "radio_body", "monitor_body", "pi_pcb", "iron_"],
                      focus=[0.0, 0.0, 0.0], dist=0.85, labels=["AIRFRAME", "RADIO & POWER", "VIDEO", "THERMAL PAYLOAD", "TOOLS"]),
         "S1.2": dict(focus=[-0.480, -0.170, 0.0], dist=0.62, labels=["ORDER LIST"]),
-        "S1.3": dict(focus=[0.420, -0.200, 0.0], dist=0.45, labels=["YOUR LAPTOP"]),
+        "S1.3": dict(focus=[0.420, -0.200, 0.02], dist=0.42, view=[0.0, -1.0, 0.9], labels=["YOUR LAPTOP"]),   # from the screen side
         "S1.S": dict(focus=[ax + 0.130, ay - 0.110, 0.006], dist=0.40, labels=["PROPS STAY IN THE BAG"]),
     }
     for a in actions:

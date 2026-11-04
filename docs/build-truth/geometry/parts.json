@@ -399,6 +399,60 @@
    ],
    "mass_g": 307.9
   },
+  "FINDER": {
+   "values_mm": {
+    "l": 24.0,
+    "w": 13.0,
+    "h": 16.0
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "R2",
+     "url": "https://rotorvillage.ca/geprc-taker-f405-bls-50a-combo-stack/",
+     "quote": "Size: 42.9×39.7mm, hole30.5×30.5mm ... Size: 36.8×36.8mm"
+    },
+    {
+     "id": "R-FINDER2",
+     "url": "https://rotorvillage.ca/vifly-finder-2-buzzer-lost-drone-finder/",
+     "quote": "Dimensions: 24x13x16 mm; Weight: 5 g; Input Voltage:4.5-8.5V; 1 x 3 Pin Wire"
+    }
+   ],
+   "mass_g": 5.0
+  },
+  "FINDER_AT": {
+   "values_mm": {
+    "x": 33.85,
+    "y": 2.0,
+    "tape": 1.6
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "Opus geometry check 2026-11-04 (S4.9 page wording)",
+     "url": "",
+     "quote": ""
+    }
+   ]
+  },
+  "SPARE_SD": {
+   "values_mm": {
+    "l": 15.0,
+    "w": 11.0,
+    "h": 1.0
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "SD Association microSD form factor",
+     "url": "",
+     "quote": ""
+    }
+   ]
+  },
   "STRAP": {
    "values_mm": {
     "len": 245.0,

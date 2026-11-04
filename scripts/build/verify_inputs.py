@@ -76,9 +76,13 @@ act("S4.5", 4, "Bind on ISM 2400", needs=["rx_antenna", "buy:radio", "radio_read
     notes="needs the radio powered: the radio cells and charge come in S5.1/S5.1b; replay checks the order")
 act("S4.6", 4, "Betaflight on USB only", needs=["bound"], produces=["bf_setup"], tools=["your laptop", "buy:usbc-cable"])
 act("S4.7", 4, "VTX at 25 mW", needs=["vtx_antenna"], produces=["vtx_set"])
-act("S4.8", 4, "Fit the top plate", needs=["standoffs_on", "vtx_antenna", "bf_setup"], produces=["top_plate"],
+act("S4.9", 4, "Finder beeper in the front bay", needs=["fc_on", "buy:finder"], produces=["finder_on"],
+    tools=["buy:tools", "buy:iron-psu"], uses={"buy:foam-tape": 1},
+    notes="before the top plate (page order since 2026-11-04): its cable is soldered to the FC; buzzer pads per arrival test")
+act("S4.8", 4, "Fit the top plate", needs=["standoffs_on", "vtx_antenna", "bf_setup", "finder_on"], produces=["top_plate"],
     tools=["buy:tools"])
-act("S6.0", 6, "Card flashed, I2C on", needs=["buy:pi"], produces=["pi_ready"], tools=["your laptop"])
+act("S6.0", 6, "Card flashed, I2C on", needs=["buy:pi"], produces=["pi_ready"], tools=["your laptop"],
+    uses={"buy:spare-sd": 1}, notes="its last line sets up the spare card the same way (Stage 2 buy line, 2026-11-04)")
 act("S6.1", 6, "Straight male headers", needs=["buy:thermal", "buy:gps"], produces=["headers"], tools=["buy:tools", "buy:iron-psu"])
 act("S6.2", 6, "HAT onto the Pi", needs=["pi_ready", "buy:qwiic"], produces=["hat_on"])
 act("S6.2b", 6, "Lengthen the GPS cable", needs=["buy:qwiic", "buy:silicone-wire", "buy:heat-shrink-3mm"], produces=["gps_cable_long"],

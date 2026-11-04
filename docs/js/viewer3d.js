@@ -633,7 +633,11 @@ class ModelViewer {
     let m = this.matCache.get(key);
     if (!m) {
       m = orig.clone();
-      if (kind === 'dim') {
+      if (kind === 'keep') {
+        // a highlighted part whose colour is the message (standoff lengths, the cut-away): own colour, light ember glow
+        m.emissive = new THREE.Color(EMBER); m.emissiveIntensity = 0.06;
+        if (m.transparent) { m.opacity = 1; m.transparent = false; m.depthWrite = true; }
+      } else if (kind === 'dim') {
         // the other parts: darker slate and mostly solid, so shapes still read on the cream bench (fresh-eyes review
         // 2026-11-04: at 16 % they turned pale see-through grey and merged with the background)
         if (m.color) m.color = m.color.clone().lerp(new THREE.Color(0x4a535c), 0.55);
@@ -677,7 +681,7 @@ class ModelViewer {
       this.model.traverse((o) => {
         if (!o.isMesh || o.userData.kind === 'cone') return;
         if (!o.userData._orig) o.userData._orig = o.material;
-        o.material = this.material(inv.has(o) ? 'glow' : 'dim', o.userData._orig);
+        o.material = this.material(inv.has(o) ? (o.userData.keep_colour ? 'keep' : 'glow') : 'dim', o.userData._orig);
         this.dimmed.push(o);
       });
       this.arrow = new THREE.ArrowHelper(new THREE.Vector3(0, -1, 0), new THREE.Vector3(), 0.03, EMBER, 0.012, 0.008);
