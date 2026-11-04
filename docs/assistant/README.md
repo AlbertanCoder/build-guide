@@ -128,7 +128,7 @@ that chain fails, the answer comes from the offline engine with a one-line note 
 
 ## The gate
 
-30 suites, 1577 named checks, one exit code:
+31 suites, 1590 named checks, one exit code:
 
 ```powershell
 node scripts/dev/gate.js            # everything
@@ -157,6 +157,7 @@ node scripts/dev/gate.js --json     # machine-readable, for the agent to consume
 | conversation memory | 29 |
 | memory and phone (job 8) | 51 |
 | chat memory, browser (job 8; Python Playwright) | 18 |
+| stages and parcels, browser (fresh-eyes; Python Playwright) | 13 |
 | build sync | 23 |
 | suggest an edit | 128 |
 | browser (Chrome) | 29 |

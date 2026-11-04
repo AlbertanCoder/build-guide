@@ -276,7 +276,7 @@ on spend, falling back to the offline engine rather than billing past it.
 Run the tests:
 
 ```powershell
-# Everything at once: 30 suites, 1577 named checks, one exit code.
+# Everything at once: 31 suites, 1590 named checks, one exit code.
 node scripts/dev/gate.js
 node scripts/dev/gate.js --quick    # skip the browser suite (needs Chrome)
 node scripts/dev/gate.js --json     # machine-readable
@@ -349,6 +349,8 @@ suite. Checks per suite:
 - The chat's memory and phone access (job 8): memory and phone 51/51 (`scripts/dev/check-memory.js`: what it remembers,
   step awareness, pairing a phone and its security, the monthly cap) and chat memory in a real browser 18/18
   (`scripts/dev/check-chat-memory.py`).
+- The fresh-eyes fixes (4 Nov 2026): stages and parcels in a real browser 13/13 (`scripts/dev/check-fresh-eyes.py`: the Home card
+  follows the stages before the steps; the parcel tests follow what was ticked bought; the threadlocker test).
 - The edit and memory suites: conversation memory 29/29, write gates 13/13, the five bans 37/37, corrections memory
   22/22, propose loop 41/41, review API 20/20, per-item acceptance 18/18, suggest an edit 128/128, quiz operation 29/29,
   prose operation 38/38, job spec 8/8, drafter 15/15, build sync 23/23, encoding 3/3, domain pack 1/1.

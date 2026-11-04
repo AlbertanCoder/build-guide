@@ -128,6 +128,14 @@ const SUITES = [
     optional: true
   },
   {
+    /* fresh-eyes fixes (approved 2026-11-04) in a real browser: the Home card follows the stages, the parcel tests
+       follow what was ticked bought, the threadlocker test (Python Playwright, Chromium) */
+    name: "stages and parcels (browser)",
+    cmd: ["python", ["scripts/dev/check-fresh-eyes.py"]],
+    expect: 13,
+    optional: true
+  },
+  {
     name: "build sync",
     cmd: ["node", ["scripts/dev/check-build-sync.js"]],
     expect: 23
