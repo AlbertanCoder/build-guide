@@ -71,14 +71,23 @@ def frame(P, with_top=True, carbon=None, standoffs=None):
     return objs
 
 
-def motor(P, name, loc, rot_z=0.0, ghost=False):
-    """2207 outrunner, 28.6 mm across, 32.8 mm tall with the shaft (split between parts is drawn)."""
+def motor(P, name, loc, rot_z=0.0, ghost=False, screws=True):
+    """2207 outrunner, 28.6 mm across, 32.8 mm tall with the shaft (split between parts is drawn).
+    screws=True adds its four M3 screws up through the arm on the 16 mm pattern (R4), heads under the arm; their
+    length is drawn (the motor's screw set is not published), as in Step 2."""
     x, y = loc
     r = mm(S.MOTOR["dia"]) / 2.0
     z0 = Z_MOTOR
     bh, base_h, sh = mm(_MS["bell_h"]), mm(_MS["base_h"]), mm(_MS["shaft_above"])
     bell = P["prop_ghost"] if ghost else P["motor_bell"]
-    return [
+    half = mm(S.MOTOR["mount"]) / 2.0
+    extra = []
+    if screws and not ghost:
+        for i, (sx, sy) in enumerate(((1, 0), (-1, 0), (0, 1), (0, -1))):
+            sc = C.screw(f"{name}_screw_{i}", 0.0015, 0.008, (x + sx * half, y + sy * half, z0 - 0.002), head="bottom", mat=P["steel"])
+            sc["approx"] = True
+            extra.append(sc)
+    return extra + [
         C.cyl(f"{name}_base", r * 0.92, base_h, (x, y, z0 + base_h / 2.0), mat=P["alu"], seg=20),
         C.cyl(f"{name}_bell", r, bh, (x, y, z0 + base_h + bh / 2.0), mat=bell, seg=24, smooth=False),
         C.cyl(f"{name}_shaft", mm(S.MOTOR["shaft_dia"]) / 2.0, sh,
@@ -146,7 +155,12 @@ def stack_screws(P, top_z):
     h = mm(S.ESC["holes"]) / 2.0
     objs = []
     for i, (sx, sy) in enumerate(((1, 1), (1, -1), (-1, 1), (-1, -1))):
-        objs.append(C.cyl(f"stack_screw_{i}", 0.0015, top_z, (sx * h, sy * h, top_z / 2.0), mat=P["steel"], seg=8))
+        sc = C.screw(f"stack_screw_{i}", 0.0015, top_z, (sx * h, sy * h, top_z / 2.0), head="bottom", mat=P["steel"])
+        # nylon lock nut on top (M3: 5.5 mm across the flats, drawn 4 mm tall: ASSUMPTION, not from the kit's list)
+        nut = C.cyl(f"stack_screw_{i}_nut", 0.00318, 0.004, (sx * h, sy * h, top_z - 0.002), mat=P["plastic_black"], seg=6, smooth=False)
+        nut.parent = sc
+        nut.matrix_parent_inverse = sc.matrix_basis.inverted()
+        objs.append(sc)
     return objs
 
 
@@ -210,7 +224,7 @@ def motor_wires(P):
             start = (mx * 0.82, my * 0.82 + 0.0015 * (k - 1), Z_MOTOR + 0.001)
             mid = (mx * 0.40, my * 0.40, Z_MID_TOP + 0.002)
             end = (sx * (0.0065 + k * 0.0055), sy * (mm(S.ESC["w"]) / 2.0 - 0.003), esc_z + 0.0008)
-            objs.append(C.tube(f"wire_motor_{name}_{k}", [start, mid, end], 0.00055, P[key], res=5))
+            objs.append(C.tube(f"wire_motor_{name}_{k}", [start, mid, end], 0.00055, P[key], res=5, solder="b"))
     return objs
 
 
@@ -223,7 +237,7 @@ def battery_lead(P, tip=None):
     for sign, key, tag in ((1, "wire_red", "red"), (-1, "wire_black", "black")):
         objs.append(C.tube(f"wire_batt_{tag}", [(px, sign * 0.006, esc_z + 0.0008),
                                                   (px - 0.030, sign * 0.006, esc_z + 0.010),
-                                                  (tip[0], tip[1] + sign * 0.003, tip[2])], 0.0012, P[key], res=7))
+                                                  (tip[0], tip[1] + sign * 0.003, tip[2])], 0.0012, P[key], res=7, solder="a"))
     objs.append(C.box("xt60_body", (0.016, 0.009, 0.008), (tip[0] - 0.008, tip[1], tip[2]),
                       mat=P["plastic_black"], bevel=0.0008))
     cr, ch = mm(S.CAPACITOR["dia"]) / 2.0, mm(S.CAPACITOR["h"])

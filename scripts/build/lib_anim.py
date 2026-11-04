@@ -32,6 +32,8 @@ def origin_to_centre(ob):
     ob.data.transform(Matrix.Translation(-c))
     ob.data.update()
     ob.location = ob.matrix_world @ c
+    for ch in ob.children:                   # attached details (solder, screw heads) keep their place in the world
+        ch.matrix_parent_inverse = Matrix.Translation(-c) @ ch.matrix_parent_inverse
 
 
 def _key(ob, path, t, value):
@@ -39,8 +41,15 @@ def _key(ob, path, t, value):
     ob.keyframe_insert(path, frame=f(t))
 
 
+def _roots(objs):
+    """Drop attached details (a solder fillet or screw head is a child of its wire or screw): they ride along with
+    their parent, and keying them as well would double a slide or square an appear."""
+    return [o for o in objs if not (o.parent is not None and o.parent.type == "MESH")]
+
+
 def appear(objs, t0, t1):
     """Hidden until t0, grown to full size by t1."""
+    objs = _roots(objs)
     for ob in objs:
         if ob.type == "MESH":
             origin_to_centre(ob)
@@ -52,6 +61,7 @@ def appear(objs, t0, t1):
 
 def slide(objs, offset, t0, t1, hidden_before=True):
     """Arrive from loc+offset between t0 and t1 (hidden before t0 if asked)."""
+    objs = _roots(objs)
     dx, dy, dz = offset
     for ob in objs:
         end = tuple(ob.location)
@@ -68,6 +78,7 @@ def slide(objs, offset, t0, t1, hidden_before=True):
 
 def spin(objs, direction, t0, t1, turns=3.0):
     """Turn about the object's own Z: direction 'CW' or 'CCW' seen from above (Z up)."""
+    objs = _roots(objs)
     import math
     sign = -1.0 if direction == "CW" else 1.0
     for ob in objs:

@@ -117,7 +117,9 @@ function injectStyle() {
     '.viewer3d-views button[aria-pressed=true]{background:#c2571b;color:#fff;border-color:#c2571b}',
     '.viewer3d-tag{position:absolute;z-index:3;display:none;max-width:240px;padding:5px 8px;border-radius:6px;background:rgba(20,30,26,.88);color:#fff;font-size:12px;line-height:1.35;pointer-events:none}',
     '.viewer3d-tag b{display:block;font-size:12.5px}.viewer3d-tag span{display:block;opacity:.85}',
-    '.viewer3d-inset{position:absolute;z-index:2;display:none;border:2px solid #ff6a1a;border-radius:4px;color:#ff6a1a;font:700 11px sans-serif;padding:2px 5px;box-sizing:border-box;pointer-events:none}',
+    '.viewer3d-actlabels{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}',
+    '.viewer3d-actlabel{position:absolute;transform:translate(-50%,-115%);white-space:nowrap;padding:3px 7px;border-radius:5px;background:rgba(20,30,26,.9);color:#fff;font:700 11.5px/1.25 sans-serif;box-shadow:0 1px 3px rgba(0,0,0,.35)}',
+    '.viewer3d-inset{position:absolute;z-index:2;display:none;border:4px solid #ff6a1a;box-shadow:0 0 0 3px #fff,0 2px 8px rgba(0,0,0,.35);border-radius:4px;color:#ff6a1a;font:700 11px sans-serif;padding:2px 5px;box-sizing:border-box;pointer-events:none}',
   ].join('\n');
   document.head.appendChild(s);
 }
@@ -631,7 +633,13 @@ class ModelViewer {
     let m = this.matCache.get(key);
     if (!m) {
       m = orig.clone();
-      if (kind === 'dim') { m.transparent = true; m.opacity = 0.16; m.depthWrite = false; }
+      if (kind === 'dim') {
+        // the other parts: darker slate and mostly solid, so shapes still read on the cream bench (fresh-eyes review
+        // 2026-11-04: at 16 % they turned pale see-through grey and merged with the background)
+        if (m.color) m.color = m.color.clone().lerp(new THREE.Color(0x4a535c), 0.55);
+        if (m.emissive) m.emissive = new THREE.Color(0x000000);
+        m.transparent = true; m.opacity = 0.62; m.depthWrite = false;
+      }
       else {
         // the parts this step uses: ember glow, tinted toward ember, and solid enough to see even when
         // the part is pale (paper) or see-through (props, 'planned' payload)
@@ -663,6 +671,7 @@ class ModelViewer {
     this.dimmed = [];
     if (this.arrow) { this.scene.remove(this.arrow); this.arrow.dispose?.(); this.arrow = null; }
     this.focusParts = this.focusOn && a ? this.involvedFor(a) : [];
+    this.actionLabelsFor(a);
     if (this.focusParts.length) {
       const inv = new Set(this.focusParts);
       this.model.traverse((o) => {
@@ -708,21 +717,35 @@ class ModelViewer {
       cam.lookAt(cam.position.clone().add(dir));
       return { cam, title: pose === 'pilot' ? 'Flying camera sees' : 'Thermal camera sees (heat finder)' };
     }
+    this.insetZoom = null; this.focusFill = null;
     if (!this.focusParts || !this.focusParts.length) return null;
     const box = this.focusBox();
     if (box.isEmpty()) return null;
     const c = box.getCenter(new THREE.Vector3());
     const size = box.getSize(new THREE.Vector3()).length();
-    const dir = this.camera.position.clone().sub(this.controls.target).normalize();
-    const cam = this.magCam || (this.magCam = new THREE.PerspectiveCamera(32, 4 / 3, 0.002, 20));
-    cam.aspect = 4 / 3; cam.updateProjectionMatrix();
-    cam.position.copy(c).addScaledVector(dir, Math.max(size * 2.0, 0.04));
-    cam.lookAt(c);
     if (this.arrow) {
       const len = Math.max(size * 0.9, 0.02);
       this.arrow.position.copy(c).add(new THREE.Vector3(0, len + size * 0.5, 0));
       this.arrow.setLength(len, Math.min(len * 0.4, 0.014), Math.min(len * 0.25, 0.009));
     }
+    // A close-up only when it is a TRUE zoom: the part at least 2x bigger than in the main view (fresh-eyes review
+    // 2026-11-04: for a big group like the four arms the old box showed the same view, only smaller). Otherwise none:
+    // the part is already large in the main view.
+    const H = this.canvasHost.clientHeight || 420;
+    const W = this.canvasHost.clientWidth || 640;
+    const insetH = Math.round(Math.min(W * 0.38, 300)) / (4 / 3);
+    const half = (deg) => Math.tan((deg * Math.PI) / 360);
+    const mainDist = Math.max(this.camera.position.distanceTo(c), 1e-4);
+    this.focusFill = size / (2 * mainDist * half(this.camera.fov));     // part's size / main view height
+    const insetDist = Math.max(size * 2.0, 0.04);
+    const zoom = (insetH / H) * (mainDist * half(this.camera.fov)) / (insetDist * half(32));
+    this.insetZoom = zoom;
+    if (zoom < 2) return null;
+    const dir = this.camera.position.clone().sub(this.controls.target).normalize();
+    const cam = this.magCam || (this.magCam = new THREE.PerspectiveCamera(32, 4 / 3, 0.002, 20));
+    cam.aspect = 4 / 3; cam.updateProjectionMatrix();
+    cam.position.copy(c).addScaledVector(dir, insetDist);
+    cam.lookAt(c);
     return { cam, title: 'Close-up' };
   }
 
@@ -751,6 +774,8 @@ class ModelViewer {
     this.matCache.clear();
     if (this.tag) { this.tag.remove(); this.tag = null; }
     if (this.insetBox) { this.insetBox.remove(); this.insetBox = null; }
+    if (this.actHost) { this.actHost.remove(); this.actHost = null; }
+    this.actLabels = []; this.actName = null;
     if (this.viewHolder) { this.viewHolder.remove(); this.viewHolder = null; }
     this.arrow = this.magCam = this.viewCam = null;
     if (this.sizeWatch) { this.sizeWatch.disconnect(); this.sizeWatch = null; }
@@ -893,7 +918,7 @@ class ModelViewer {
     if (!this.ready) return;
     const r = this.renderer;
     const inset = this.insetCamera();
-    if (this.arrow) this.arrow.visible = !!inset;
+    if (this.arrow) this.arrow.visible = !!(inset || (this.focusParts && this.focusParts.length));
     const W = this.canvasHost.clientWidth || 640;
     const H = this.canvasHost.clientHeight || 420;
     r.setScissorTest(false);
@@ -923,6 +948,61 @@ class ModelViewer {
       if (this.insetBox) this.insetBox.style.display = 'none';
     }
     if (this.labelsOn) this.labelRenderer.render(this.scene, this.camera);
+    this.drawActionLabels();
+  }
+
+  /* Labels start OFF (Shad's choice), but each action names what it is about (fresh-eyes review 2026-11-04: "nothing
+     is named in frame"): the labels the action lists (a.labels, matched by the start of their text), or, if it lists
+     none, the tap-to-name of the part it highlights. Drawn in their own layer; the full label set stays off. */
+  actionLabelsFor(a) {
+    this.actLabels = []; this.actName = null; this.actObj = null;
+    if (!a) return;
+    const want = (a.labels || []).map((t) => String(t).toUpperCase());
+    if (want.length) {
+      this.actLabels = this.labels.filter((l) => want.some((w) => l.element.textContent.toUpperCase().startsWith(w)));
+    } else if (this.focusParts && this.focusParts.length) {
+      const first = (a.shows || [])[0];
+      const o = this.focusParts.find((p) => first && p.name.startsWith(first)) || this.focusParts[0];
+      this.actName = this.partInfo(o).name;
+      this.actObj = o;
+    }
+  }
+
+  drawActionLabels() {
+    const items = [];
+    if (!this.labelsOn && this.camera) {
+      for (const l of this.actLabels || []) items.push({ text: l.element.textContent, pos: l.getWorldPosition(new THREE.Vector3()) });
+      if (this.actName && this.actObj && this.actObj.geometry) {
+        // on the part it names (not the middle of the whole group, which can be off screen), kept inside the frame
+        this.model.updateMatrixWorld(true);
+        this.actObj.geometry.computeBoundingBox();
+        const b = this.actObj.geometry.boundingBox.clone().applyMatrix4(this.actObj.matrixWorld);
+        if (!b.isEmpty()) { const c = b.getCenter(new THREE.Vector3()); c.y = b.max.y; items.push({ text: this.actName, pos: c, keep: true }); }
+      }
+    }
+    if (!items.length && !this.actHost) { this.actShown = []; return; }
+    if (!this.actHost) {
+      this.actHost = document.createElement('div');
+      this.actHost.className = 'viewer3d-actlabels';
+      this.canvasHost.appendChild(this.actHost);
+    }
+    const W = this.canvasHost.clientWidth || 640;
+    const H = this.canvasHost.clientHeight || 420;
+    this.actHost.replaceChildren();
+    this.actShown = [];
+    for (const it of items) {
+      const v = it.pos.clone().project(this.camera);
+      if (v.z < -1 || v.z > 1) continue;
+      if (it.keep) { v.x = Math.max(-0.85, Math.min(0.85, v.x)); v.y = Math.max(-0.8, Math.min(0.88, v.y)); }
+      else if (Math.abs(v.x) > 1.05 || Math.abs(v.y) > 1.05) continue;
+      const el = document.createElement('span');
+      el.className = 'viewer3d-actlabel';
+      el.textContent = it.text;
+      el.style.left = Math.round(((v.x + 1) / 2) * W) + 'px';
+      el.style.top = Math.round(((1 - v.y) / 2) * H) + 'px';
+      this.actHost.appendChild(el);
+      this.actShown.push({ text: it.text, x: ((v.x + 1) / 2) * W, y: ((1 - v.y) / 2) * H });
+    }
   }
 }
 

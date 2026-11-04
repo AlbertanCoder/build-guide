@@ -4,10 +4,10 @@ Written by `python -I scripts/build/verify_build.py` on 2026-11-04. Run it again
 
 ## In plain words
 
-- **236 checks** on the guide, the 3D models and the parts list.
-- **199 passed.**
+- **238 checks** on the guide, the 3D models and the parts list.
+- **200 passed.**
 - **0 failed.**
-- **37 need the real parts.** Listings leave out a size or a detail, so you check these in your hands before you build. That is the arrival checklist at the end: 30 short tests.
+- **38 need the real parts.** Listings leave out a size or a detail, so you check these in your hands before you build. That is the arrival checklist at the end: 30 short tests.
 - **0 are page fixes.** The page's own lists disagree with each other, for example a part on the buy list that no step uses. They do not stop anything fitting.
 - Every measured check was repeated **10,000 times**. Each run used slightly different sizes, so a part a little bigger or smaller than its listing is covered. The random seed is fixed (20261103), so every run of this page gives the same numbers.
 - This is not a promise that nothing can go wrong. It says exactly what was checked, how, and what can only be checked with the parts in hand. The list of things not checked at all is near the end.
@@ -22,7 +22,7 @@ Written by `python -I scripts/build/verify_build.py` on 2026-11-04. Run it again
 | Nothing hits anything (props, ground, views) | 14 | 0 | 4 | 0 |
 | Tools can reach (iron, driver, fingers) | 7 | 0 | 4 | 0 |
 | Power (voltages and currents) | 13 | 0 | 8 | 0 |
-| Lists, ids and directions agree | 84 | 0 | 4 | 0 |
+| Lists, ids and directions agree | 85 | 0 | 5 | 0 |
 | Weight and balance | 5 | 0 | 0 | 0 |
 
 ## The smallest safety margins that still pass
@@ -327,6 +327,8 @@ Margin = how much room is left at the design sizes. Runs = the share of the tole
 | PASS | Enough standoffs: steps use 6, the list gives 8 |  | 2.0 pieces |  |  | list item: '4 per pack' |
 | PASS | Enough straps: steps use 2, the list gives 2 |  | 0.0 pieces |  |  |  |
 | PASS | Enough zip-ties: steps use 8, the list gives 100 |  | 92.0 pieces |  |  |  |
+| PASS | Every part drawn in the 3D models comes from a buy line (or is named as not bought: your laptop, the mug, guide marks) |  |  |  |  | 524 drawn parts in 9 models from 37 buy lines; Step 1 counts: batteries 1 of 1, liion-5000 1 of 1, charger 1 of 1, radio 1 of 1, monitor 1 of 1; not bought: arrow_, cg_, clearance_, cone_pilot, cone_thermal, fireproof_surface, glasses_, hand_, laptop_tag, mug_, order_list; stack box contents: page Stage 5: 'The stack box also holds: the four long (M3 x 30) stack screws, the soft grommets, the 8-wire cable, the XT60 lead and the capacitor' |
+| NEEDS REAL PARTS | Parts the models draw that the page says to check in the box | S5.2 |  |  |  | charge_lead: the M7AC listing names only the charger; its output lead to the pack's XT60 is not listed: check the box; charger_mains_cable: page Stage 5: 'M7AC charger and a mains cable (the listing names only the charger: check the box)' |
 
 ## Inputs (plain files, for anyone who wants to write their own checker)
 

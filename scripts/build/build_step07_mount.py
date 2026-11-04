@@ -46,11 +46,14 @@ def build():
     px, py = Q.fc_pad("5V_pi")
     pp = Q.PI_POWER
     pig = [C.tube("pigtail_5v", [(px, py, fc_top), (px - 0.010, -0.0265, Q.Z_MID_TOP + 0.003), (pp[0], -0.0265, -0.004),
-                                 (pp[0], pp[1] - 0.004, pp[2])], 0.0011, P["wire_red"], res=6)]
+                                 (pp[0], pp[1] - 0.004, pp[2])], 0.0011, P["wire_red"], res=6, solder="a")]   # soldered on the FC 5V pad
 
     # battery on the grip pad, strapped with the second Kevlar strap
     Q.battery_pad(P)
     Q.battery(P, label=False)
+    # Shad's second pack (More Volts 4S 5000 Li-ion, 79 x 44 x 44 mm) as a see-through outline where the LiPo sits:
+    # the same grip pad and strap; its name starts with battery_pack so it hides, shows and slides with the LiPo
+    Q.battery_liion(P, ghost=True, label=False)
     Q.strap(P, Q.BAT[0])
 
     for name, (mx, my) in Q.MOTORS.items():
@@ -66,6 +69,8 @@ def build():
     C.label("MICRO-USB PIGTAIL FROM THE FC 5V PAD", (-0.010, -0.030, 0.006))
     C.label("BATTERY ON THE GRIP PAD + KEVLAR STRAP", (0.0, 0.0, Q.Z_TOP_TOP + 0.040))
     C.label("BALANCE ON THE CENTRE", (0.0, -0.030, Q.Z_TOP_TOP + 0.032))
+    C.label("LI-ION PACK: 44 MM TALL, SAME STRAP", (0.0, 0.030, Q.Z_TOP_TOP + 0.056),
+            detail="about 2 mm from the GPS: measure on arrival")
     C.label("KEEP CABLES OUT OF THE PROP CIRCLES", (Q.MOTORS["M4"][0], Q.MOTORS["M4"][1], Q.Z_PROP + 0.010))
     C.label("MLX90640 LENS DOWN, PA1010D ANTENNA UP", (0.010, 0.0, -0.024))
     C.label("LANDING LEGS (PLANNED): AT LEAST 40 MM", (0.053, 0.015, -0.050),

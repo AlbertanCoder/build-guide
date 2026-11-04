@@ -14,6 +14,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import lib_anim as A
 import lib_core as C
+import lib_kit as K
 import lib_quad as Q
 import parts as S
 
@@ -29,9 +30,9 @@ def build():
     _, fr = C.collect(Q.frame, P, with_top=False, standoffs=True)   # the text never fits the top plate here
     motors = {}
     for name, (mx, my) in Q.MOTORS.items():
-        _, motors[name] = C.collect(Q.motor, P, name, (mx, my))
+        _, motors[name] = C.collect(Q.motor, P, name, (mx, my), screws=(name != "M2"))   # M2's screws are the close-up below
         lay = S.MOTOR_LAYOUT[name]
-        C.label(name, (mx * 1.08, my * 1.08, Q.Z_PROP + 0.010),
+        C.label(f"{name} {lay['pos'].upper()}, {lay['spin']}", (mx * 1.08, my * 1.08, Q.Z_PROP + 0.010),
                 detail=f"{lay['pos']}, spins {lay['spin']} (Betaflight props-in)")
 
     # four motor screws up through the M2 arm (length drawn: the motor's screw set is not published)
@@ -39,10 +40,13 @@ def build():
     half = S.mm(S.MOTOR["mount"]) / 2.0
     screws = []
     for i, (sx, sy) in enumerate(((1, 0), (-1, 0), (0, 1), (0, -1))):
-        screws.append(C.cyl(f"motor_screw_M2_{i}", 0.0015, 0.008, (m2x + sx * half, m2y + sy * half, Q.Z_MOTOR - 0.002),
-                            mat=P["steel"], seg=8))
+        screws.append(C.screw(f"motor_screw_M2_{i}", 0.0015, 0.008, (m2x + sx * half, m2y + sy * half, Q.Z_MOTOR - 0.002),
+                              head="bottom", mat=P["steel"]))
         screws[-1]["approx"] = True
 
+    # the FRONT arrow the flat drawing (02-frame.svg) has: on the middle plate, pointing to the camera end (+X)
+    K.arrow(P, "arrow_front", (-0.020, 0.0, Q.Z_MID_TOP + 0.004), (0.078, 0.0, Q.Z_MID_TOP + 0.004), shaft_r=0.0025, head=0.016)
+    C.label("FRONT (CAMERA END)", (0.090, 0.0, Q.Z_MID_TOP + 0.014), detail="mark it with tape before the motors go on")
     C.label("SOURCE ONE V6 FRAME", (-0.060, 0.0, Q.Z_TOP + 0.010), detail="outlines from TBS's own drawing")
     C.label("ARMS ON THE BOTTOM PLATE", (0.030, 0.030, Q.Z_ARM + 0.004), detail="6 mm arms; stack holes clamp them")
     C.label("STANDOFFS", (0.050, 0.0, Q.Z_TOP - 0.006), detail="22 mm front, 30 mm rear")
@@ -80,6 +84,17 @@ def build():
          "text": "Before you fit each motor, do the arrival test \"Motor screw length\". After fitting, look again from underneath: no screw may poke up into the motor far enough to touch the windings (the thin copper coils). If one does, take it out and use a shorter screw with the same thread.",
          "focus": [m2x, m2y, Q.Z_MOTOR], "dist": 0.07},
     ]
+    # fresh-eyes review (2026-11-04): no FRONT arrow or motor numbers in 3D, nothing named in frame, S2.3 not seen from
+    # behind as its text says. The arrow is highlighted with the frame; each action lists the labels it shows.
+    framing = {
+        "S2.1": dict(shows=["frame_bottom_plate", "frame_arm_M1", "frame_arm_M4", "arrow_front_"], labels=["ARMS ON THE BOTTOM PLATE", "FRONT"]),
+        "S2.2": dict(shows=["frame_standoff_", "arrow_front_"], labels=["STANDOFFS", "FRONT"]),
+        "S2.3": dict(shows=["M1_bell", "M4_bell", "arrow_front_"], labels=["M1", "M2", "M3", "M4"],   # FRONT tag left out here: it hid behind the M2/M4 tags; the arrow shows it
+                     focus=[0.0, 0.0, Q.Z_MOTOR], dist=0.50, view=[-0.75, 0.0, 1.0]),
+        "S2.4": dict(labels=["MOTOR SCREWS"]),
+    }
+    for a in actions:
+        a.update(framing.get(a["id"], {}))
     A.finish("step-02-main", 12.0, actions)
 
     print("STEP 2 - frame and motors")

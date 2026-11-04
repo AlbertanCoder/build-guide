@@ -53,12 +53,10 @@ def build():
     K.radio_pocket(P, (bx, by + 0.030, 0.0))
     K.cells_18650(P, (bx + 0.100, by + 0.040, 0.0))
     Q.receiver(P, (bx + 0.130, by + 0.090, 0.0))
+    # Shad's mixed Stage 5 (2026-11-04): ONE GNB 1500 LiHV (the buy list's qty 1) and ONE More Volts Li-ion, side by side
     Q.battery(P, (bx - 0.040, by - 0.060, 0.0), label=False)
-    _, b2 = C.collect(Q.battery, P, (bx + 0.050, by - 0.060, 0.0), label=False)
-    for ob in b2:
-        ob.name = ob.name + "_2"
+    Q.battery_liion(P, (bx + 0.050, by - 0.060, 0.0), label=False)
     K.charger_m7ac(P, (bx + 0.150, by - 0.050, 0.0))
-    Q.battery_liion(P, (bx - 0.040, by - 0.115, 0.0), label=False)      # Shad's second flight pack (mixed Stage 5)
     K.smoke_stopper(P, (bx - 0.120, by - 0.050, 0.0055))
     K.lipo_bag(P, (bx - 0.020, by - 0.170, 0.0), open_top=False)
 
@@ -91,6 +89,12 @@ def build():
     # --- laptop and the order list ---
     K.laptop(P, (0.420, -0.200, 0.0), lid_angle=105.0)
     C.box("order_list_paper", (0.216, 0.279, 0.0008), (-0.480, -0.170, 0.0004), mat=P["paper"])
+    # printed lines with tick boxes (the first four ticked), so the sheet reads as a list, not a blank slab
+    for i in range(9):
+        ly = -0.170 + 0.105 - i * 0.026
+        C.box(f"order_list_line_{i}", (0.140, 0.0022, 0.0004), (-0.480 + 0.022, ly, 0.0010), mat=P["plastic_black"])
+        C.box(f"order_list_tick_{i}", (0.012, 0.012, 0.0005), (-0.480 - 0.072, ly, 0.0010),
+              mat=P["pine"] if i < 4 else P["plastic_grey"])
 
     C.label("AIRFRAME", (ax, ay + 0.120, 0.040), detail="frame plates and arms, 4 motors, the stack")
     C.label("PROPS STAY IN THE BAG", (ax + 0.130, ay - 0.110, 0.030), detail="they go on in step 8")
@@ -123,6 +127,18 @@ def build():
         {"id": "S1.S", "hold": 0.5, "shows": ["prop_bag_closed"], "hides": [], "time": 9.4, "short": "Props stay bagged",
          "text": "⚠ Safety: leave the propellers in the packet they came in. They go on at the very end, after everything works."},
     ]
+    # fresh-eyes review (2026-11-04): S1.1 showed one pile in an empty table, S1.2 one giant slab, S1.3 a tiny tag; and
+    # nothing was named (labels start OFF). Each action now lands when its parts are all there, frames its own item,
+    # and lists the labels the viewer shows during it.
+    framing = {
+        "S1.1": dict(hold=6.8, shows=["loose_bottom_plate", "radio_body", "monitor_body", "pi_pcb", "iron_"],
+                     focus=[0.0, 0.0, 0.0], dist=0.85, labels=["AIRFRAME", "RADIO & POWER", "VIDEO", "THERMAL PAYLOAD", "TOOLS"]),
+        "S1.2": dict(focus=[-0.480, -0.170, 0.0], dist=0.62, labels=["ORDER LIST"]),
+        "S1.3": dict(focus=[0.420, -0.200, 0.0], dist=0.45, labels=["YOUR LAPTOP"]),
+        "S1.S": dict(focus=[ax + 0.130, ay - 0.110, 0.006], dist=0.40, labels=["PROPS STAY IN THE BAG"]),
+    }
+    for a in actions:
+        a.update(framing.get(a["id"], {}))
     A.finish("step-01-main", 11.0, actions)
 
     print("STEP 1 - parts in five piles")

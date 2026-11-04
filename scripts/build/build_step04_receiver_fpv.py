@@ -19,9 +19,9 @@ import lib_kit as K
 import lib_quad as Q
 
 
-def wire(name, a, b, key, P, lift=0.008):
+def wire(name, a, b, key, P, lift=0.008, solder=""):
     mid = ((a[0] + b[0]) / 2.0, (a[1] + b[1]) / 2.0, max(a[2], b[2]) + lift)
-    return C.tube(name, [a, mid, b], 0.0006, P[key], res=5)
+    return C.tube(name, [a, mid, b], 0.0006, P[key], res=5, solder=solder)
 
 
 def build():
@@ -46,7 +46,7 @@ def build():
     C.box("rx_box_cable_plug", (0.0045, 0.0060, 0.0030), plug, mat=P["plastic_white"])
     for k, (pad, key) in enumerate((("R2", "wire_white"), ("T2", "wire_yellow"), ("5V_rx", "wire_red"), ("G_rx", "wire_black"))):
         wire(f"rx_box_cable_{pad}", (rx_loc[0] + 0.006, rx_loc[1] - 0.003 + k * 0.002, rx_loc[2] + 0.003),
-             (plug[0] - 0.0015 + k * 0.001, plug[1], plug[2]), key, P)
+             (plug[0] - 0.0015 + k * 0.001, plug[1], plug[2]), key, P, solder="a")   # soldered on the RP1, plugged at the FC
 
     # camera into the CAM socket
     cam = Q.front_camera(P)
@@ -60,7 +60,7 @@ def build():
     vtx_in = (-0.045 + 0.0155, 0.0, Q.PLATE_T + 0.007)
     for k, (pad, key) in enumerate((("9V", "wire_red"), ("G_vtx", "wire_black"), ("VTX", "wire_yellow"), ("T1", "wire_white"))):
         px, py = Q.fc_pad(pad)
-        wire(f"vtx_wire_{pad}", (vtx_in[0], vtx_in[1] - 0.003 + k * 0.002, vtx_in[2]), (px, py, fc_top), key, P)
+        wire(f"vtx_wire_{pad}", (vtx_in[0], vtx_in[1] - 0.003 + k * 0.002, vtx_in[2]), (px, py, fc_top), key, P, solder="b")   # harness at the VTX, soldered on the FC pad
     # the VTX's two unused wires (TBS manual: orange "5V out", green "Audio"), cut short and capped (approved D, S4.3)
     for k, (tag, key) in enumerate((("orange", "copper"), ("green", "pcb_green"))):
         a = (vtx_in[0], vtx_in[1] + 0.006 + k * 0.002, vtx_in[2])

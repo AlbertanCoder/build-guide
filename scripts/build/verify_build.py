@@ -957,6 +957,109 @@ def cross_checks():
         add("BUY-qty-" + bid, "cross-checks", "", f"Enough {bid}: steps use {q}, the list gives {have}", "PASS" if have >= q else "FAIL",
             ASM["pieces_src"].get(bid, ""), margin=have - q, unit="pieces")
 
+    # Shad (2026-11-04, via the architect): "no model may show a part not on the list". Every drawn part (each tap-to-name
+    # group in parts.py PART_INFO) comes from buy lines, or is named here as not bought. Which box a small part comes in is
+    # the page's own words, quoted. Parts the page says to check in the box are listed by the next check.
+    BOX_STACK = ("page Stage 5: 'The stack box also holds: the four long (M3 x 30) stack screws, the soft grommets, "
+                 "the 8-wire cable, the XT60 lead and the capacitor'")
+    MODEL_PART_SOURCE = {
+        "frame_": ["frame"], "frame_standoff_30mm": ["frame"], "frame_standoff_22mm": ["frame"], "loose_": ["frame"],
+        "M1_": ["motors"], "M2_": ["motors"], "M3_": ["motors"], "M4_": ["motors"], "loose_motor": ["motors"],
+        "motor_screw": ["motors", "frame"],          # the page counts "16 motor screws (4 per motor)" but does not say which box
+        "prop_M1": ["props"], "prop_M2": ["props"], "prop_M3": ["props"], "prop_M4": ["props"], "prop_bag": ["props"],
+        "stack_esc": ["stack"], "stack_esc_pad_": ["stack"], "stack_esc_batt_pad_pos": ["stack"], "stack_esc_batt_pad_neg": ["stack"],
+        "stack_esc_fc_cable": ["stack"], "stack_fc": ["stack"], "stack_fc_usb": ["stack"], "stack_grommet": ["stack"],
+        "stack_screw": ["stack"], "stack_capacitor": ["stack"], "wire_batt_red": ["stack"], "wire_batt_black": ["stack"], "xt60": ["stack"],
+        "solder_joint": ["tools"],                   # page: "From the tool kit: solder, flux pen, ..."
+        "wire_motor_": ["motors"],
+        "rx_rp1": ["receiver"], "rx_antenna": ["receiver"], "rx_wire_R2": ["stack"], "rx_wire_T2": ["stack"], "rx_wire_5V": ["stack"],
+        "rx_wire_G": ["stack"], "rx_box_cable_": ["stack"],
+        "cam_": ["fpv-camera"], "cam_cable": ["stack"],  # page: "The stack box's camera cable may plug straight in"
+        "vtx_board": ["vtx"], "vtx_sma": ["vtx"], "vtx_wire_9V": ["vtx"], "vtx_wire_G": ["vtx"], "vtx_wire_VTX": ["vtx"],
+        "vtx_wire_T1": ["vtx"], "vtx_wire_unused_": ["vtx"], "vtx_wire_cap_": ["heat-shrink"], "vtx_foam_tape": ["foam-tape"],
+        "antenna_triumph": ["vtx-antenna"], "antenna_zip_tie_": ["zip-ties"],
+        "usb_cable": ["usbc-cable"],
+        "battery_pack": ["batteries"], "battery_": ["batteries"], "battery_balance": ["batteries"],
+        "battery_pack_liion": ["liion-5000"], "battery_liion_": ["liion-5000"],
+        "battery_grip_pad": ["battery-pad"], "strap_": ["straps"], "pi_strap_second_lock": ["straps"],
+        "pi_pcb": ["pi"], "pi_header": ["pi"], "pi_usb_power": ["pi"], "pi_bench_supply": ["pi"], "pi_standoff": ["standoffs"],
+        "pi_pad_layer_": ["foam-tape"], "pi_standoff_tape_": ["foam-tape"], "thermal_tape": ["foam-tape"], "gps_foam_tape": ["foam-tape"],
+        "zip_tie_join_": ["zip-ties"], "zip_tie": ["zip-ties"],
+        "hat_": ["qwiic"], "hat_qwiic_port": ["qwiic"], "cab17261_": ["qwiic"],
+        "thermal_": ["thermal"], "thermal_pin_": ["thermal"], "gps_": ["gps"], "gps_pin_": ["gps"],
+        "gps_cable_": ["qwiic", "silicone-wire"], "gps_cable_joint_": ["heat-shrink-3mm"],
+        "pigtail": ["micro-usb"],
+        "leg_": ["legs-25", "legs-28", "legs-feet", "legs-setscrews", "legs-footscrews"],
+        "radio_": ["radio"], "cell_18650": ["radio-cells"],
+        "charger_": ["charger"], "charge_lead": ["charger"], "balance_lead": ["batteries"],
+        "bag_": ["lipo-bag"], "fire_extinguisher": ["extinguisher"], "smokestopper": ["smoke-stopper"], "monitor_": ["monitor"],
+        "meter_": ["tools"], "iron_": ["tools"], "toolkit_": ["tools"],
+        "laptop_tag": "not bought: your own laptop", "glasses_": "not bought: page 'Safety glasses: you already have a pair'",
+        "fireproof_surface": "not bought: page 'Use your ceramic tile or metal baking tray'",
+        "order_list": "not bought: the guide's own order list", "mug_": "not bought: a mug from your kitchen (heat test)",
+        "hand_": "not bought: your hand (heat test)", "clearance_": "guide mark, not a part", "cg_": "guide mark, not a part",
+        "cone_pilot": "guide mark, not a part", "cone_thermal": "guide mark, not a part", "arrow_": "guide mark, not a part",
+    }
+    # parts the page itself says to check in the box when it arrives
+    BOX_CHECK = {"charger_mains_cable": "page Stage 5: 'M7AC charger and a mains cable (the listing names only the charger: check the box)'",
+                 "charge_lead": "the M7AC listing names only the charger; its output lead to the pack's XT60 is not listed: check the box"}
+
+    def prefix_of(name):
+        best = None
+        for pre in PP.PART_INFO:
+            if name.startswith(pre) and (best is None or len(pre) > len(best)):
+                best = pre
+        return best
+    model_files = sorted(glob.glob(os.path.join(ROOT, "docs", "models", "*.glb")))
+    shown = {}
+    kit_names = []          # Step 1 lays out the whole kit, so it must not show more of a bought thing than the list buys
+    for f in model_files:
+        with open(f, "rb") as fh:
+            data = fh.read()
+        j = json.loads(data[20:20 + struct.unpack_from("<I", data, 12)[0]].decode("utf-8"))
+        for nd in j.get("nodes", []):
+            if "mesh" in nd:
+                shown.setdefault(nd.get("name", ""), set()).add(os.path.basename(f)[:-4])
+                if os.path.basename(f) == "step-01-parts.glb":
+                    kit_names.append(nd.get("name", ""))
+    problems, from_lines, not_bought = [], set(), set()
+    for name, models in sorted(shown.items()):
+        pre = prefix_of(name)
+        src = MODEL_PART_SOURCE.get(pre) if pre else None
+        if pre is None:
+            problems.append(f"{name} ({', '.join(sorted(models))}): no tap-to-name group in parts.py")
+        elif src is None:
+            problems.append(f"{name}: group '{pre}' has no buy line or not-bought reason in verify_build MODEL_PART_SOURCE")
+        elif isinstance(src, str):
+            not_bought.add(pre)
+        else:
+            missing = [b for b in src if b not in buy]
+            if missing:
+                problems.append(f"{name} ({', '.join(sorted(models))}): buy line {', '.join(missing)} is not on the list")
+            from_lines.update(src)
+    # how many: one body node per item (a copy gets a _2 suffix); the main things a beginner counts on the table
+    # (Blender names a second copy "<name>.001", and a build script may add "_2": both are allowed)
+    KIT_COUNT = {bid: base + r"(\.\d+)?(_\d+)?$" for bid, base in (("batteries", "battery_pack"), ("liion-5000", "battery_pack_liion"),
+                 ("charger", "charger_body"), ("radio", "radio_body"), ("monitor", "monitor_body"))}
+    counted = []
+    for bid, pat in KIT_COUNT.items():
+        n = sum(1 for x in kit_names if re.fullmatch(pat, x))
+        have = sum(l["qty"] for l in buy.get(bid, []))
+        counted.append(f"{bid} {n} of {have}")
+        if n > have:
+            problems.append(f"step-01-parts shows {n} x {bid} but the list buys {have}")
+    for pre in MODEL_PART_SOURCE:
+        if pre not in PP.PART_INFO:
+            problems.append(f"MODEL_PART_SOURCE '{pre}' is not a parts.py group")
+    add("X-models-buy-list", "cross-checks", "", "Every part drawn in the 3D models comes from a buy line (or is named as not bought: "
+        "your laptop, the mug, guide marks)", "FAIL" if problems else "PASS",
+        "; ".join(problems) if problems else (f"{len(shown)} drawn parts in {len(model_files)} models from {len(from_lines)} buy lines; "
+                                              f"Step 1 counts: {', '.join(counted)}; "
+                                              f"not bought: {', '.join(sorted(not_bought))}; stack box contents: {BOX_STACK}"), unit="")
+    drawn_box = sorted(k for k in BOX_CHECK if any(n.startswith(k) for n in shown))
+    add("X-models-box-check", "cross-checks", "S5.2", "Parts the models draw that the page says to check in the box", "NEEDS REAL PARTS",
+        "; ".join(f"{k}: {BOX_CHECK[k]}" for k in drawn_box) or "none drawn", unit="", arrival="Packs and charger")
+
 
 # =================================================================================================================
 # 4. Run: nominal, then the tolerance runs, then the report

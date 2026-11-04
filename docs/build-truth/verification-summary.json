@@ -2,10 +2,10 @@
  "date": "2026-11-04",
  "command": "python -I scripts/build/verify_build.py",
  "totals": {
-  "checks": 236,
-  "passed": 199,
+  "checks": 238,
+  "passed": 200,
   "failed": 0,
-  "need_real_parts": 37,
+  "need_real_parts": 38,
   "page_fixes": 0
  },
  "per_category": {
@@ -46,9 +46,9 @@
    "PAGE FIX": 0
   },
   "cross-checks": {
-   "PASS": 84,
+   "PASS": 85,
    "FAIL": 0,
-   "NEEDS REAL PARTS": 4,
+   "NEEDS REAL PARTS": 5,
    "PAGE FIX": 0
   },
   "weight": {
@@ -216,7 +216,8 @@
    "needed_by": [
     "POWER-liion-current",
     "POWER-pack-hv-storage",
-    "CONN-pack-charger"
+    "CONN-pack-charger",
+    "X-models-box-check"
    ]
   },
   {
@@ -4431,6 +4432,38 @@
    "driver": "",
    "worst": null,
    "name_plain": "Enough zip-ties: steps use 8, the list gives 100"
+  },
+  {
+   "id": "X-models-buy-list",
+   "category": "cross-checks",
+   "action": "",
+   "name": "Every part drawn in the 3D models comes from a buy line (or is named as not bought: your laptop, the mug, guide marks)",
+   "status": "PASS",
+   "detail": "524 drawn parts in 9 models from 37 buy lines; Step 1 counts: batteries 1 of 1, liion-5000 1 of 1, charger 1 of 1, radio 1 of 1, monitor 1 of 1; not bought: arrow_, cg_, clearance_, cone_pilot, cone_thermal, fireproof_surface, glasses_, hand_, laptop_tag, mug_, order_list; stack box contents: page Stage 5: 'The stack box also holds: the four long (M3 x 30) stack screws, the soft grommets, the 8-wire cable, the XT60 lead and the capacitor'",
+   "margin": null,
+   "unit": "",
+   "arrival": null,
+   "pass_rate": null,
+   "runs": 0,
+   "driver": "",
+   "worst": null,
+   "name_plain": "Every part drawn in the 3D models comes from a buy line (or is named as not bought: your laptop, the mug, guide marks)"
+  },
+  {
+   "id": "X-models-box-check",
+   "category": "cross-checks",
+   "action": "S5.2",
+   "name": "Parts the models draw that the page says to check in the box",
+   "status": "NEEDS REAL PARTS",
+   "detail": "charge_lead: the M7AC listing names only the charger; its output lead to the pack's XT60 is not listed: check the box; charger_mains_cable: page Stage 5: 'M7AC charger and a mains cable (the listing names only the charger: check the box)'",
+   "margin": null,
+   "unit": "",
+   "arrival": "Packs and charger",
+   "pass_rate": null,
+   "runs": 0,
+   "driver": "",
+   "worst": null,
+   "name_plain": "Parts the models draw that the page says to check in the box"
   }
  ]
 }

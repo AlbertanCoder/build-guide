@@ -303,9 +303,29 @@ def ring(name, radius, thickness, height, loc=(0, 0, 0), rot=(0, 0, 0),
     return _link(name, verts, faces, mat, loc, rot)
 
 
-def tube(name, points, radius, mat, res=8, smooth=True):
-    """Sweep a circle along a polyline - used for every wire and cable."""
+def _smooth_path(pts, per=2):
+    """Catmull-Rom through the given points (ends kept), so a wire bends in a curve instead of a sharp kink."""
+    if len(pts) < 3:
+        return pts
+    P = [pts[0] + (pts[0] - pts[1]) * 0.0] + pts + [pts[-1]]
+    out = []
+    for i in range(1, len(P) - 2):
+        p0, p1, p2, p3 = P[i - 1], P[i], P[i + 1], P[i + 2]
+        for k in range(per):
+            t = k / per
+            t2, t3 = t * t, t * t * t
+            out.append(0.5 * ((2 * p1) + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 + (-p0 + 3 * p1 - 3 * p2 + p3) * t3))
+    out.append(pts[-1])
+    return out
+
+
+def tube(name, points, radius, mat, res=8, smooth=True, curve=True, solder=""):
+    """Sweep a circle along a path - used for every wire and cable. curve=True bends it smoothly through the points.
+    solder="a" / "b" / "ab": a solder fillet (a small shiny cone on the pad) at the first / last / both ends, made a
+    child of the wire (named <wire>_solder_a / _b) so it moves with every animation of the wire."""
     pts = [Vector(p) for p in points]
+    if curve:
+        pts = _smooth_path(pts)
     seg = res
     verts, faces = [], []
     for i, p in enumerate(pts):
@@ -335,7 +355,42 @@ def tube(name, points, radius, mat, res=8, smooth=True):
     faces.append(tuple(range(seg - 1, -1, -1)))
     last = (len(pts) - 1) * seg
     faces.append(tuple(range(last, last + seg)))
-    return _link(name, verts, faces, mat, smooth=smooth)
+    ob = _link(name, verts, faces, mat, smooth=smooth)
+    for end in solder:
+        solder_joint(f"{name}_solder_{end}", tuple(pts[0] if end == "a" else pts[-1]), radius, parent=ob)
+    return ob
+
+
+def solder_joint(name, loc, wire_r, parent=None, seg=10):
+    """A solder fillet where a wire meets a pad: a low shiny cone around the wire end, its base on the pad.
+    Size is drawn (ASSUMPTION: base about 2.2 x the wire radius, 1 mm tall), not measured."""
+    base_r, top_r, h = max(2.2 * wire_r, 0.0011), 1.15 * wire_r, 0.0010
+    x, y, z = loc
+    ob = cyl(name, base_r, h, (x, y, z - 0.0002 + h / 2.0), mat=material("Solder", (0.78, 0.79, 0.80, 1), 0.9, 0.22),
+             seg=seg, radius_top=top_r)
+    if parent is not None:
+        ob.parent = parent
+        ob.matrix_parent_inverse = parent.matrix_basis.inverted()
+    return ob
+
+
+def screw(name, radius, length, loc, head="top", mat=None, rot=(0, 0, 0), seg=8, head_r=None, head_h=None):
+    """An M-size socket cap screw: the shaft (named name, as before) with a round head and a hex key recess, the head
+    a child of the shaft (<name>_screw_head, <name>_hex) so it moves with every animation of the screw.
+    M3 head 5.5 mm across and 3 mm tall (ISO 4762 nominal for M3, ASSUMPTION for these screws); hex 2.5 mm."""
+    head_r = head_r or radius * 1.83
+    head_h = head_h or radius * 2.0
+    shaft = cyl(name, radius, length, loc, rot=rot, mat=mat, seg=seg)
+    x, y, z = loc
+    sgn = 1 if head == "top" else -1
+    hz = z + sgn * (length / 2.0 + head_h / 2.0)
+    h = cyl(f"{name}_screw_head", head_r, head_h, (x, y, hz), mat=mat, seg=16, bevel=head_h * 0.12)
+    hx = cyl(f"{name}_hex", radius * 0.96, head_h * 0.55, (x, y, hz + sgn * head_h * 0.25), mat=material("HexRecess", (0.04, 0.04, 0.045, 1), 0.6, 0.6),
+             seg=6, smooth=False)
+    for ob in (h, hx):
+        ob.parent = shaft
+        ob.matrix_parent_inverse = shaft.matrix_basis.inverted()
+    return shaft
 
 
 def _bevel(ob, width, segments=1):
@@ -472,7 +527,9 @@ def export(name, preview=False, camera_at=(0.30, -0.32, 0.22),
             "export_current_frame": True, "export_frame_range": True,
             "export_force_sampling": True, "export_frame_step": 3} if animate else {}),
     )
-    print(f"EXPORTED {path} ({os.path.getsize(path) / 1024.0:.1f} KB)")
+    import glb_pack                                   # normals to 8 bits (KHR_mesh_quantization), compact JSON
+    before, after = glb_pack.pack(path)
+    print(f"EXPORTED {path} ({after / 1024.0:.1f} KB; {before / 1024.0:.1f} KB before packing)")
 
     if preview:
         _render_preview(name, camera_at, target, ortho_scale, res, samples)
