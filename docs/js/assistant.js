@@ -2341,7 +2341,7 @@
     if (!answer) { throw new Error("empty answer"); }
     return {
       role: "bot", title: "Answer", body: [answer], md: true,
-      src: data.sources && data.sources.length ? data.sources.join(" \u00b7 ") : "Retrieved from this guide",
+      src: data.sources && data.sources.length ? data.sources.join(" \u00b7 ") : "AI answer, grounded in this guide's passages",
       see: (data.see || []).map(function (s) {
         return { label: s.label, tab: s.tab, step: s.step || null };
       }),
@@ -2382,8 +2382,14 @@
     let passages = buildContext(question);
     /* job 8: the step he is on goes first, so the answer is about HIS build, not the FAQ */
     const sc = stepContext();
-    if (sc.passage && !passages.some(function (p) { return p.step === sc.step && /^Your step/.test(p.label || ""); })) {
+    if (sc.passage && !passages.some(function (p) { return p.label === sc.passage.label; })) {
       passages.unshift(sc.passage);
+    }
+    /* a buying question: the live Buy-today lines, each with its price, shop and checked date, so an answer can cite
+       the date with every price (the five bans block a price without one) */
+    if (BUY_Q.test(question)) {
+      const bt = buyTodayPassage();
+      if (bt) { passages.unshift(bt); }
     }
     /* Nothing retrieved ("can you help me?", a general how-to): send the guide's
        overview so the model can say what it covers or label a general answer. */
@@ -2471,7 +2477,7 @@
         const msg = {
           role: "bot", title: "Answer", body: [text], md: true,
           src: meta.sources && meta.sources.length
-            ? meta.sources.join(" \u00b7 ") : "Retrieved from this guide",
+            ? meta.sources.join(" \u00b7 ") : "AI answer, grounded in this guide's passages",
           see: Array.isArray(meta.see) ? meta.see : [],
           chips: Array.isArray(meta.chips) ? meta.chips : []
         };
@@ -2480,6 +2486,16 @@
         ctx.history.push({ role: "assistant", content: text });
         MESSAGES.push(msg);
         persist();
+        /* the server blocked the AI's answer (the five bans): follow it with the guide's own written answer, the live
+           Buy-today card for a buying question (4 Nov 2026, Shad's "what would you suggest I buy?") */
+        if (meta.reason === "blocked by the five bans") {
+          const alt = curatedAnswer(question) || (BUY_Q.test(question) ? answerLocal("what to buy today") : null);
+          if (alt) {
+            alt.note = (alt.note ? alt.note + " " : "") + "(The AI's answer broke one of the five bans, so this is the guide's written answer.)";
+            ctx.history.push({ role: "assistant", content: historyText(alt) });
+            push(alt);
+          }
+        }
         return msg;
       })
       .catch(function (err) {
@@ -2817,6 +2833,41 @@
     const hit = matchEntry(q);
     return hit && hit.confident ? answerLocal(text) : null;
   }
+  /* 4 Nov 2026 (Shad's chat): "Hi" gets one short line, not the welcome card or a paid answer; "what model are you
+     running?" is answered from the laptop's settings (never the key); a buying question gets the live Buy-today lines. */
+  const GREET_ONLY = /^(hi|hello|hey|hiya|yo|good (morning|afternoon|evening)|thanks|thank you)[\s!.,]*$/i;
+  const MODEL_Q = /\b(what|which)\b[^?]{0,40}\b(model|ai|llm|engine)\b|\bthinking effort\b|\bwho (are|made) you\b/i;
+  const BUY_Q = /\b(buy|order|purchase|shop|shopping)\b/i;
+  function buyTodayPassage() {
+    let data = null;
+    try { data = JSON.parse(document.getElementById("buy-data").textContent); } catch (e) { return null; }
+    const today = (data && data.lines || []).filter(function (l) { return l.today; });
+    if (!today.length) { return null; }
+    const owned = (typeof saved !== "undefined" && saved && saved.owned) ? saved.owned : {};
+    const rows = today.map(function (l) {
+      return l.item + (l.qty > 1 ? " x " + l.qty : "") + ": CA$" + (Math.round(l.unit * 100) * l.qty / 100).toFixed(2) + " at " + l.shop +
+        " (checked " + l.checkedOn + ")" + (owned[l.id] ? ", already bought" : "");
+    });
+    return { label: "Buy today, read live from the Buy page", tab: "parts", step: null, text: rows.join("; ") };
+  }
+  function quickAnswer(t) {
+    const where = stepContext().label;
+    if (GREET_ONLY.test(t)) {
+      return { role: "bot", title: "Hi", body: ["Hi. You are at " + (where || "the start of the build") + ". Ask me anything about it, or about any part of the build."],
+        steps: [], note: "", src: "This chat", see: [], chips: [] };
+    }
+    if (MODEL_Q.test(t)) {
+      const body = ENDPOINT && HEALTH
+        ? ["Answers come from " + (HEALTH.cheapModel || HEALTH.model) +
+           (HEALTH.strongModel && HEALTH.strongModel !== (HEALTH.cheapModel || HEALTH.model) ? " (harder questions: " + HEALTH.strongModel + ")" : "") +
+           ", through " + (HEALTH.local ? "a model on this laptop" : (HEALTH.sendsTo || HEALTH.provider)) + ". The model is chosen in \u2699 Settings on the laptop.",
+           "This guide does not set a thinking effort, so the provider's own default applies."]
+        : ["No AI is on right now: answers come from the written cards in this guide."];
+      return { role: "bot", title: "The model", body: body, steps: [], note: "", src: "The laptop's settings", see: [], chips: [] };
+    }
+    return null;
+  }
+
   function ask(text, opts) {
     const t = String(text == null ? "" : text).trim();
     if (!t || UI.busy) { return Promise.resolve(null); }
@@ -2824,6 +2875,13 @@
     push({ role: "user", text: t });
     ctx.history.push({ role: "user", content: t });
     UI.busy = true;
+
+    const quick = (opts && opts.forceModel) ? null : quickAnswer(t);
+    if (quick) {
+      ctx.history.push({ role: "assistant", content: historyText(quick) });
+      UI.busy = false;
+      return Promise.resolve(push(quick));
+    }
 
     if (!ENDPOINT) {
       const local = answerLocal(t);
@@ -3307,7 +3365,22 @@
 
   /* The step he is on: the assembly walker's current step, or else the first step not ticked. */
   function stepContext() {
-    const out = { step: null, context: null, passage: null };
+    const out = { step: null, context: null, passage: null, label: "" };
+    /* 4 Nov 2026: the same where-you-are as the Home card. Until Stages 1 to 4 are bought (Step 2 needs the frame and
+       motors), he is at a stage, not a step: say "Stage 1 practice", as Home does, and send that stage's card. */
+    try {
+      const sn = typeof stageNext === "function" ? stageNext() : null;
+      if (sn && sn.text) {
+        const txt = String(sn.text).replace(/^Next:\s*/, "");
+        out.label = txt;
+        out.context = { stageText: txt };
+        const head = document.querySelector('[data-stage-head="' + sn.stage + '"]');
+        const box = head ? (head.closest("details") || head.parentElement) : null;
+        const text = box ? clip(plain(box), 1300) : "";
+        if (text.length > 40) { out.passage = { label: "Where you are: " + txt, tab: "parts", step: null, text: text }; }
+        return out;
+      }
+    } catch (e) { /* no Home logic on this page: fall back to the step walker */ }
     try {
       const ticks = (typeof saved !== "undefined" && saved && saved.ticks) ? saved.ticks : {};
       const done = [];
@@ -3326,6 +3399,7 @@
       const next = sec ? Array.prototype.slice.call(sec.querySelectorAll("ol li")).slice(0, 2)
         .map(function (li) { return clip(plain(li), 160); }).filter(Boolean) : [];
       out.step = step;
+      out.label = "Step " + step;
       out.context = { step: step, stepTitle: title, done: done, next: done.indexOf(step) === -1 ? next : [] };
       const text = sec ? clip(plain(sec), 1300) : "";
       if (text.length > 40) { out.passage = { label: "Your step " + step + (title ? ": " + title : ""), tab: "steps", step: step, text: text }; }
@@ -3350,7 +3424,7 @@
       row.appendChild(b);
       card.foot.appendChild(row);
     });
-    if (!(opts && opts.detail)) {
+    if (!(opts && opts.detail) && !GREET_ONLY.test(String(question || "").trim()) && String(question || "").trim().split(/\s+/).length >= 3) {
       const more = el("button", "ga-link ga-more", "More detail");
       more.type = "button";
       more.addEventListener("click", function () {
@@ -3380,7 +3454,7 @@
     if (!s) { return; }
     if (!HEALTH || !ENDPOINT) { s.hidden = true; return; }
     const sc = stepContext(), m = HEALTH.month || {};
-    s.textContent = (sc.step ? "Step " + sc.step + " \u00b7 " : "") + "AI on (" + (HEALTH.cheapModel || HEALTH.model || "model") + ")" +
+    s.textContent = (sc.label ? sc.label + " \u00b7 " : "") + "AI on (" + (HEALTH.cheapModel || HEALTH.model || "model") + ")" +
       (m.cap ? " \u00b7 US$" + Number(m.usd || 0).toFixed(2) + " of US$" + Number(m.cap).toFixed(2) + " this month" : "");
     s.hidden = false;
   }

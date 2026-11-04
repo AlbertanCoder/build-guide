@@ -205,6 +205,23 @@ let API_KEY = SETTINGS.apiKey || ENV.API_KEY || ENV.OPENAI_API_KEY || ENV.ANTHRO
 const MAX_QUESTION = 500;
 const MAX_PASSAGES = 6;
 const MAX_TOKENS = 700;
+const EMPTY_RETRY_TOKENS = 2000;      /* the second try after an empty answer (4 Nov 2026) */
+
+/* The guide's fingerprint, part of every answer-cache key: when the page or the domain pack changes, answers saved
+   about the old text are never replayed (4 Nov 2026: Shad was served a 2 Nov answer with an old total). */
+let guideStampMemo = { key: "", stamp: "" };
+function guideStamp() {
+  try {
+    const files = ["index.html", "docs/js/domain.js"].map((f) => path.join(__dirname, "..", f));
+    const key = files.map((f) => fs.statSync(f).mtimeMs + ":" + fs.statSync(f).size).join("|");
+    if (key !== guideStampMemo.key) {
+      const h = require("crypto").createHash("sha256");
+      files.forEach((f) => h.update(fs.readFileSync(f)));
+      guideStampMemo = { key: key, stamp: h.digest("hex").slice(0, 12) };
+    }
+    return guideStampMemo.stamp;
+  } catch (e) { return "no-guide"; }
+}
 /* Passage budget after compression. The browser sends up to 6 x 1,400 chars;
    these caps are what actually decides how many tokens get paid for. */
 const PASSAGE_CHARS = Number(ENV.PASSAGE_CHARS || 600);
@@ -334,8 +351,8 @@ function systemPrompt() {
     "2. Never invent a part number, price, fee or regulation. If a passage states a number you",
     "   may repeat it and attribute it. If no passage states it, say what the guide does say.",
     "   Any price, cost or fee you state must carry the date the guide checked it, written",
-    "   like \"checked 2026-10-31\", in the same answer. If no passage gives that date, leave",
-    "   the number out and point to the Parts tab.",
+    "   like \"(checked <the date in that passage>)\", in the same answer. If no passage gives",
+    "   that date, leave the number out and point to the Parts tab.",
     "3. If the passages do not answer the question, first line exactly: That is not in this guide.",
     "   Then say in one sentence what the user could check instead. Never guess.",
     "   If the question is general (programming, electronics concepts, tools, learning, how-to),",
@@ -369,7 +386,9 @@ function systemPrompt() {
 function userPrompt(question, passages, history, extra) {
   extra = extra || {};
   const c = extra.context || {};
-  const where = c.step
+  const where = c.stageText
+    ? ["WHERE SHAD IS IN THE BUILD:", c.stageText + " (he is still buying and practising; the build steps come later)"].join("\n")
+    : c.step
     ? ["WHERE SHAD IS IN THE BUILD:",
       "Step " + c.step + (c.stepTitle ? ": " + c.stepTitle : "") + " (" + (c.done && c.done.length ? "steps done: " + c.done.join(", ") : "no steps ticked yet") + ")",
       c.next && c.next.length ? "Next on this step: " + c.next.join("; ") : ""].filter(Boolean).join("\n")
@@ -413,6 +432,8 @@ async function streamOpenAI(messages, onDelta, opts) {
     temperature: 0.2,
     max_tokens: o.maxTokens || MAX_TOKENS,
     stream_options: { include_usage: true },
+    /* a retry after an empty answer: on OpenRouter ask for low reasoning so the budget goes to the answer */
+    ...(o.lowReasoning && /openrouter\.ai/i.test(BASE_URL) ? { reasoning: { effort: "low" } } : {}),
     messages: messages
   };
 
@@ -473,6 +494,10 @@ async function streamOpenAI(messages, onDelta, opts) {
         const choice = json.choices && json.choices[0];
         const piece = choice && choice.delta ? choice.delta.content : "";
         if (piece) { onDelta(piece); }
+        if (choice && typeof o.onFinish === "function") {
+          const d = choice.delta || {};
+          o.onFinish(choice.finish_reason || "", String(d.reasoning || d.reasoning_content || "").length);
+        }
       } catch (e) { /* keep-alive or split line */ }
     }
   }
@@ -1260,7 +1285,9 @@ async function handleAsk(req, res) {
     step: Number.isInteger(stepN) && stepN >= 1 && stepN <= 8 ? stepN : null,
     stepTitle: String(c.stepTitle || "").replace(/\s+/g, " ").slice(0, 120),
     done: (Array.isArray(c.done) ? c.done : []).map(Number).filter((n) => Number.isInteger(n) && n >= 1 && n <= 8).slice(0, 8),
-    next: (Array.isArray(c.next) ? c.next : []).map((s) => String(s).replace(/\s+/g, " ").slice(0, 160)).filter(Boolean).slice(0, 3)
+    next: (Array.isArray(c.next) ? c.next : []).map((s) => String(s).replace(/\s+/g, " ").slice(0, 160)).filter(Boolean).slice(0, 3),
+    /* the Home card's where-you-are (stages before steps, 4 Nov 2026), e.g. "Stage 1 practice · Workshop and safety" */
+    stageText: String(c.stageText || "").replace(/\s+/g, " ").slice(0, 160)
   };
   const facts = MEM.facts.relevant(question, 10);
   const detail = body.detail === true;
@@ -1315,7 +1342,8 @@ async function handleAsk(req, res) {
     { role: "user", content: userPrompt(question, passages, history, { context: context, facts: facts, detail: detail }) }
   ];
   /* the same words at another step, or after he told it something new, are a different question */
-  const cacheKey = question + " §step" + (context.step || 0) + " §mem" + MEM.facts.version() + (detail ? " §detail" : "");
+  const cacheKey = question + " §where" + (context.stageText || "step" + (context.step || 0)) + " §mem" + MEM.facts.version() +
+    " §guide" + guideStamp() + (detail ? " §detail" : "");
 
   res.writeHead(200, {
     "content-type": "text/event-stream; charset=utf-8",
@@ -1337,7 +1365,7 @@ async function handleAsk(req, res) {
     send({ type: "delta", text: cachedBans.ok ? cached.answer : BANS.blockNotice(cachedBans.hits) });
     send({
       type: "meta",
-      sources: cachedBans.ok ? (cached.sources.length ? cached.sources : ["Retrieved from this guide"]) : [],
+      sources: cachedBans.ok ? ["Saved AI answer (" + (cached.model || "model") + "), grounded in this guide's passages"] : [],
       see: cachedBans.ok ? cached.see : null,
       model: cached.model || "cache",
       cached: true,
@@ -1361,9 +1389,10 @@ async function handleAsk(req, res) {
 
   /* One call to one model. `live` decides whether the user watches it arrive:
      a speculative escalation must not be shown until it wins. */
-  const callStream = async (msgs, name, live) => {
+  const callStream = async (msgs, name, live, extra) => {
     let text = "";
     let usage = null;
+    let finish = "", reasoningChars = 0;
     const onDelta = (piece) => {
       text += piece;
       if (live) { send({ type: "delta", text: piece }); }
@@ -1372,9 +1401,10 @@ async function handleAsk(req, res) {
     if (PROVIDER === "anthropic") {
       await streamAnthropic(msgs, onDelta, { model: name, onUsage: onUsage });
     } else {
-      await streamOpenAI(msgs, onDelta, { model: name, onUsage: onUsage });
+      await streamOpenAI(msgs, onDelta, Object.assign({ model: name, onUsage: onUsage,
+        onFinish: (f, r) => { if (f) { finish = f; } reasoningChars += r || 0; } }, extra || {}));
     }
-    return { text: text, usage: usage };
+    return { text: text, usage: usage, finish: finish, reasoningChars: reasoningChars };
   };
 
   const BARE_REFUSAL = /that is not in this guide/i;
@@ -1382,8 +1412,23 @@ async function handleAsk(req, res) {
   let spent = 0;
 
   try {
-    const first = await callStream(messages, model, true);
+    let first = await callStream(messages, model, true);
     spent += meter.record(model, first.usage || fallbackUsage(messages, first.text));
+    if (!String(first.text || "").trim()) {
+      /* 4 Nov 2026 (Shad's chat): some models spend the whole answer budget "thinking" and send back no text.
+         Log why (never the key), then ask once more with a bigger budget and, on OpenRouter, low reasoning. */
+      console.warn("[ask] empty answer from " + model + ": finish_reason=" + (first.finish || "?") +
+        ", reasoning chars=" + (first.reasoningChars || 0) + ", output tokens=" + ((first.usage || {}).outputTokens || "?") + "; asking once more");
+      meter.count("emptyRetry");
+      first = await callStream(messages, model, true, { maxTokens: EMPTY_RETRY_TOKENS, lowReasoning: true });
+      spent += meter.record(model, first.usage || fallbackUsage(messages, first.text));
+      if (!String(first.text || "").trim()) {
+        console.warn("[ask] still empty from " + model + ": finish_reason=" + (first.finish || "?") + ", reasoning chars=" + (first.reasoningChars || 0));
+        MEM.spend.record(spent);
+        send({ type: "error", error: "The AI sent back an empty answer twice (finish: " + (first.finish || "unknown") + "), so this is the guide's written answer." });
+        return;
+      }
+    }
     let full = first.text;
 
     /* Escalation, bounded to one retry and only when a second model is actually
@@ -1424,7 +1469,7 @@ async function handleAsk(req, res) {
 
     send({
       type: "meta",
-      sources: ["Retrieved from this guide"],
+      sources: ["AI answer (" + model + "), grounded in this guide's passages"],
       see: nav.see,
       model: model,
       cached: false,
@@ -1447,7 +1492,7 @@ async function handleAsk(req, res) {
       cache.set(cacheKey, {
         answer: nav.text,
         model: model,
-        sources: ["Retrieved from this guide"],
+        sources: ["AI answer (" + model + "), grounded in this guide's passages"],
         see: nav.see,
         usd: spent
       });

@@ -30,6 +30,8 @@ def check(name, ok, info=""):
 
 class FakeAI(BaseHTTPRequestHandler):
     calls = 0
+    empty_calls = 0
+    where = ""
 
     def log_message(self, *a):
         pass
@@ -39,17 +41,27 @@ class FakeAI(BaseHTTPRequestHandler):
         user = ([m for m in body.get("messages", []) if m.get("role") == "user"] or [{}])[-1].get("content", "")
         FakeAI.calls += 1
         q = (re.search(r"USER QUESTION: (.*)$", user, re.M) or [None, ""])[1]
+        FakeAI.where = (re.search(r"WHERE SHAD IS IN THE BUILD:\n(.*)", user) or [None, ""])[1]
         step = (re.search(r"WHERE SHAD IS IN THE BUILD:\nStep (\d)", user) or [None, "?"])[1]
         text = "At step %s, fit the part with the arrow facing forward." % step
+        chunks = None
         if re.search(r"arrived", q, re.I):
             text = "Good: charge them first at 1.0 A.\n[[REMEMBER The 4S flight packs arrived]]"
         if q.startswith("More detail"):
             text = "In more detail, for step %s: first check the order of the motors, then the arrow." % step
+        if "EMPTYCHECK" in q:      # a model that spends its whole budget thinking: no text the first time
+            FakeAI.empty_calls += 1
+            if FakeAI.empty_calls == 1:
+                chunks = [{"choices": [{"index": 0, "delta": {"reasoning": "thinking " * 200}}]},
+                          {"choices": [{"index": 0, "delta": {}, "finish_reason": "length"}]}]
+            text = "Answer after a second try: start with the practice board."
+        if re.search(r"suggest I buy", q):    # an answer with a price and no checked date: the five bans block it
+            text = "Buy the RadioMaster Pocket radio for CA$99.99 and the tool kit for CA$103.99."
         self.send_response(200)
         self.send_header("content-type", "text/event-stream")
         self.end_headers()
-        for o in [{"choices": [{"index": 0, "delta": {"content": text}}]},
-                  {"choices": [], "usage": {"prompt_tokens": 1500, "completion_tokens": 120}}]:
+        for o in (chunks or [{"choices": [{"index": 0, "delta": {"content": text}}]}]) + \
+                [{"choices": [], "usage": {"prompt_tokens": 1500, "completion_tokens": 120}}]:
             self.wfile.write(("data: " + json.dumps(o) + "\n\n").encode())
         self.wfile.write(b"data: [DONE]\n\n")
 
@@ -83,6 +95,43 @@ try:
         lp.on("pageerror", lambda e: errs.append("laptop: " + e.message))
         lp.goto(LAPTOP_URL)
         lp.wait_for_function("document.getElementById('ga-status') && !document.getElementById('ga-status').hidden", timeout=15000)
+
+        # 4 Nov 2026, Shad's chat. Nothing bought yet: the chat says where the Home card says (a stage, not Step 1).
+        st0 = lp.evaluate("document.getElementById('ga-status').textContent")
+        lp.evaluate("GuideAssistant.ask('How do I start the practice board?').then(()=>true)")
+        lp.wait_for_function("[...document.querySelectorAll('#ga-log .ga-card')].pop().innerText.includes('arrow')", timeout=15000)
+        check("stage: with nothing bought, the chat and the AI's context say Stage 1 practice, as the Home card does",
+              st0.startswith("Stage 1") and FakeAI.where.startswith("Stage 1"), st0 + " | " + FakeAI.where)
+        src = lp.evaluate("[...document.querySelectorAll('#ga-log .ga-card')].pop().innerText")
+        check("an AI answer says it is one: its source names the model, not 'Retrieved from this guide'",
+              "AI answer (mock-model)" in src and "Retrieved from this guide" not in src, src[-120:])
+        def last_card():
+            return lp.evaluate("[...document.querySelectorAll('#ga-log .ga-card')].pop().innerText")
+        n0 = FakeAI.calls
+        lp.evaluate("GuideAssistant.ask('Hi').then(()=>true)"); time.sleep(0.3)
+        hi = last_card()
+        check("greeting: 'Hi' gets one short reply with where you are, no welcome card and no AI call",
+              hi.strip().startswith("Hi") and "You are at Stage 1" in hi and "Ask me about this build" not in hi and FakeAI.calls == n0, hi[:140])
+        lp.evaluate("GuideAssistant.ask('What model are you running?').then(()=>true)"); time.sleep(0.3)
+        mo = last_card()
+        check("model: 'What model are you running?' is answered from the settings (the model, never a key)",
+              "mock-model" in mo and "Settings" in mo and FakeAI.calls == n0, mo[:160])
+        lp.evaluate("GuideAssistant.ask('EMPTYCHECK what goes first on the bench?').then(()=>true)")
+        lp.wait_for_function("[...document.querySelectorAll('#ga-log .ga-card')].pop().innerText.includes('second try')", timeout=15000)
+        check("empty: an answer that came back empty (all thinking) is asked once more, and that answer shows",
+              FakeAI.empty_calls == 2, "empty-test calls: %d" % FakeAI.empty_calls)
+        lp.evaluate("GuideAssistant.ask('If I had to buy stuff today, what would you suggest I buy?').then(()=>true)")
+        lp.wait_for_function("[...document.querySelectorAll('#ga-log .ga-card')].some(c => c.innerText.includes('broke one of the five bans'))", timeout=15000)
+        check("bans: an AI buying answer with an undated price is blocked, then the guide's own Buy-today answer follows",
+              "Buy" in last_card(), last_card()[:160])
+
+        # from here on he has bought Stages 1 to 4, so the chat is at a build step, as the Home card would be
+        lp.evaluate("""() => { const s = JSON.parse(localStorage.getItem('shad-drone-guide-v1') || '{}');
+          const lines = JSON.parse(document.getElementById('buy-data').textContent).lines;
+          s.owned = s.owned || {}; lines.filter(l => l.stage >= 1 && l.stage <= 4).forEach(l => { s.owned[l.id] = true; });
+          localStorage.setItem('shad-drone-guide-v1', JSON.stringify(s)); }""")
+        lp.reload()
+        lp.wait_for_function("document.getElementById('ga-status') && !document.getElementById('ga-status').hidden && /^Step/.test(document.getElementById('ga-status').textContent)", timeout=15000)
         st = lp.evaluate("document.getElementById('ga-status').textContent")
         check("laptop: the chat shows the step, the model and the month's spend against the cap",
               re.match(r"^Step \d · AI on \(mock-model\) · US\$0\.00 of US\$2\.00 this month$", st) is not None, st)

@@ -126,4 +126,24 @@ check(
   "it accompanied the old $15 fee allowance"
 );
 
+// 4. (4 Nov 2026, Shad's chat) no written answer, domain fact, known value or server prompt may state a superseded
+//    total, the old stage count, the old test count or the old price-check date. The page's own figures move; these
+//    texts must read them live or not state them. Add a figure here when it is superseded.
+const SUPERSEDED = /1,?714\.94|1,?607\.26|1,?531\.69|1,?511\.35|1,?630\.69|1,?711\.21|1,?610\.35|\b75\.57\b|\b80\.52\b|nine stages|\b19 (synthetic )?tests\b|checked 2026-10-31|0[-–]400/;
+const scanned = {
+  "docs/js/assistant.js": assistant,
+  "docs/js/domain.js": fs.readFileSync("docs/js/domain.js", "utf8"),
+  "server/ops/known-values.json": fs.readFileSync("server/ops/known-values.json", "utf8"),
+  "server/assistant-server.js": fs.readFileSync("server/assistant-server.js", "utf8")
+};
+const staleHits = Object.keys(scanned).map((f) => {
+  const m = SUPERSEDED.exec(scanned[f]);
+  return m ? f + ": " + m[0] : "";
+}).filter(Boolean);
+check(
+  "no written answer, domain fact, known value or server prompt states a superseded figure",
+  staleHits.length === 0,
+  staleHits.length ? staleHits.join("; ") : Object.keys(scanned).length + " files scanned"
+);
+
 process.exit(bad ? 1 : 0);

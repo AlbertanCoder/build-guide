@@ -36,7 +36,7 @@ const SUITES = [
   {
     name: "price guard",
     cmd: ["node", ["scripts/dev/check-kb-prices.js"]],
-    expect: 4
+    expect: 5   /* 4 -> 5 (2026-11-04): no written answer, domain fact, known value or server prompt states a superseded figure */
   },
   {
     name: "domain pack",
@@ -124,7 +124,7 @@ const SUITES = [
        ticks, More detail, where questions go, the monthly cap */
     name: "chat memory (browser)",
     cmd: ["python", ["scripts/dev/check-chat-memory.py"]],
-    expect: 22,   /* 18 -> 22 (2026-11-04): a part ticked bought on the laptop shows as bought on the phone (own:<id>); a returning browser with the old code's leftovers is repaired; page and script versions match */
+    expect: 28,   /* 22 -> 28 (2026-11-04, Shad's chat): stage-first where-you-are, AI answers say so, a greeting gets one line, the model question from the settings, an empty answer asked again, a banned buying answer followed by the written one. 18 -> 22 (2026-11-04): a part ticked bought on the laptop shows as bought on the phone (own:<id>); a returning browser with the old code's leftovers is repaired; page and script versions match */
     optional: true
   },
   {
