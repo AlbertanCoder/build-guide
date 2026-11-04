@@ -293,6 +293,10 @@ def items_for_cg(l, P, bat_x):
     add("Raspberry Pi Zero 2 W (board)", (pod[0][0] + pod[1][0]) / 2, (pod[0][1] + pod[1][1]) / 2)
     add("Thermal camera board, MLX90640", P["lens"][0], P["lens"][1])
     add("GPS board, PA1010D", P["gps"][0], P["gps"][1])
+    # VIFLY Finder 2 lost-drone beeper (Shad approved 2026-11-04): not in weights.json; parts.json FINDER (Rotor Village
+    # "Weight: 5 g") at FINDER_AT (S4.9: middle plate, front bay). One source, so every balance check counts it once.
+    fa = V("FINDER_AT")
+    items.append(("Lost-drone beeper, VIFLY Finder 2", float(PARTS["FINDER"]["mass_g"]), fa["x"], fa["y"], "Rotor Village 'Weight: 5 g'"))
     return items
 
 

@@ -335,10 +335,7 @@ def weight_items():
     if WITEMS is None:
         P = SIM.place(L515)
         items = SIM.items_for_cg(L515, P, V("LAYOUT")["battery_x"])
-        # VIFLY Finder 2 (Shad approved 2026-11-04): parts.json FINDER, at FINDER_AT (front bay, S4.9)
-        fa = V("FINDER_AT")
-        items = items + [("Lost-drone beeper, VIFLY Finder 2 (Rotor Village 'Weight: 5 g')", float(PARTS["FINDER"]["mass_g"]),
-                          fa["x"], fa["y"], "")]
+        # the VIFLY Finder 2 (5 g, front bay) comes in SIM.items_for_cg, so this and the layout simulation agree
         est = [("legs: 8 aluminium standoffs (ESTIMATED 1.0 g each)", 8.0, None, None, "ESTIMATED"),
                ("legs: 4 rubber feet (ESTIMATED 1.0 g each; the listing's weight line is a typo)", 4.0, None, None, "ESTIMATED"),
                ("Pi pad, 6 nylon standoffs, screws, zip ties (ESTIMATED 6 g)", 6.0, POS["pi_xy"][0], 0.0, "ESTIMATED"),
