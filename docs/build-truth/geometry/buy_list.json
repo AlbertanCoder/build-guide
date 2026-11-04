@@ -1010,13 +1010,11 @@
  },
  "stageNotes": {
   "4": [
-   "Check on arrival [REQUIRES REAL INPUT]: (a) the knurled standoffs are assumed to be threaded at both ends (female); (b) the foot screws are M3 x 10 mm (6.3 mm foot + about 3.7 mm of thread): check they hold the foot."
+   "When they arrive, check: (a) the knurled standoffs are threaded at both ends (female); (b) the M3 x 10 mm foot screws hold the feet (6.3 mm foot + about 3.7 mm of thread)."
   ]
  },
  "optionalStages": [
   8
  ],
- "shopNotes": {
-  "Rotor Village": "Order Rotor Village first: the tool kit has 3 left and the zip ties 1."
- }
+ "shopNotes": {}
 }

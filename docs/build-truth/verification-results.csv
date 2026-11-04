@@ -48,8 +48,8 @@ DEP-S7.3,dependencies,S7.3,PASS,"S7.3 Pi 36 mm behind the stack, on a pad: every
 DEP-S7.4,dependencies,S7.4,PASS,"S7.4 Zip ties through the windows, strap: everything it needs is there",,,,0,,,,needs payload_placed
 DEP-S7.4b,dependencies,S7.4b,PASS,S7.4b Pigtail from the FC 5V pad: everything it needs is there,,,,0,,,,needs payload_fixed
 DEP-S7.8,dependencies,S7.8,PASS,S7.8 Fit the landing legs: everything it needs is there,,,,0,,,,needs payload_fixed
-DEP-S8.6,dependencies,S8.6,PASS,"S8.6 Payload on, hover again: everything it needs is there",,,,0,,,,"needs payload_powered, legs_on, hovered"
-DEP-S8.7,dependencies,S8.7,PASS,"S8.7 Heat test, props off: everything it needs is there",,,,0,,,,needs hovered_payload
+DEP-S8.7,dependencies,S8.7,PASS,"S8.7 Payload on, heat test, props off: everything it needs is there",,,,0,,,,"needs payload_powered, legs_on"
+DEP-S8.6,dependencies,S8.6,PASS,S8.6 Hover again with the payload: everything it needs is there,,,,0,,,,"needs payload_heat_ok, hovered"
 SAFE-1,dependencies,S8.4,PASS,Props stay off until 'Fit the props' (S8.4),,,,0,,,,props first go on at S8.4
 SAFE-2,dependencies,S8.7,PASS,Props are off again for the heat test (S8.7),,,,0,,,,S8.7 sets props off
 SAFE-3,dependencies,S3.5,PASS,The first battery plug-in goes through the smoke stopper,,,,0,,,,first plug-in at S3.5

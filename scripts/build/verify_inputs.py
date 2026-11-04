@@ -23,7 +23,7 @@ import parts as S  # noqa: E402
 
 # ---------------------------------------------------------------------------------------------------------------
 # Build sequence. 'order' is the real build order: step 7's payload work is deferred until after the first hover
-# (S7.1 says so), so the replay runs S8.1-S8.5 before S7.3/S7.4/S7.4b/S7.8 and then S8.6/S8.7.
+# (S7.1 says so), so the replay runs S8.1-S8.5 before S7.3/S7.4/S7.4b/S7.8 and then S8.7/S8.6 (page order since audit card 8).
 # needs/produces are names; 'buy:<id>' means a line on the Builder's buy list (buy_list.json).
 # ---------------------------------------------------------------------------------------------------------------
 A = []
@@ -112,8 +112,11 @@ act("S7.4b", 7, "Pigtail from the FC 5V pad", needs=["payload_fixed", "buy:micro
 act("S7.8", 7, "Fit the landing legs", needs=["payload_fixed", "buy:legs-25", "buy:legs-28", "buy:legs-feet",
     "buy:legs-setscrews", "buy:legs-footscrews"], produces=["legs_on"],
     uses={"buy:legs-25": 4, "buy:legs-28": 4, "buy:legs-feet": 4, "buy:legs-setscrews": 8, "buy:legs-footscrews": 4})
-act("S8.6", 8, "Payload on, hover again", needs=["payload_powered", "legs_on", "hovered"], produces=["hovered_payload"])
-act("S8.7", 8, "Heat test, props off", needs=["hovered_payload"], set_={"props_on": False})
+# guide audit card 8 (Shad, 2026-11-04): the heat test (S8.7) comes before the hover with the payload (S8.6) on the page
+act("S8.7", 8, "Payload on, heat test, props off", needs=["payload_powered", "legs_on"], produces=["payload_heat_ok"],
+    set_={"props_on": False})
+act("S8.6", 8, "Hover again with the payload", needs=["payload_heat_ok", "hovered"], produces=["hovered_payload"],
+    notes="the page does not yet say to put the props back on after the heat test (S8.7 is props off): flagged to the Builder")
 
 ALWAYS_HAVE = ["licence", "registration_marked"]   # Transport Canada steps outside the build (buy:exam, buy:registration)
 # Done before the 8 build steps, in the page's stage checklists (quotes from the guide page, index.html)

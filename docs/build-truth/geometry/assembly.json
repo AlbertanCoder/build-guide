@@ -881,12 +881,29 @@
    "notes": ""
   },
   {
-   "id": "S8.6",
+   "id": "S8.7",
    "step": 8,
-   "short": "Payload on, hover again",
+   "short": "Payload on, heat test, props off",
    "needs": [
     "payload_powered",
-    "legs_on",
+    "legs_on"
+   ],
+   "produces": [
+    "payload_heat_ok"
+   ],
+   "set": {
+    "props_on": false
+   },
+   "uses": {},
+   "tools": [],
+   "notes": ""
+  },
+  {
+   "id": "S8.6",
+   "step": 8,
+   "short": "Hover again with the payload",
+   "needs": [
+    "payload_heat_ok",
     "hovered"
    ],
    "produces": [
@@ -895,22 +912,7 @@
    "set": {},
    "uses": {},
    "tools": [],
-   "notes": ""
-  },
-  {
-   "id": "S8.7",
-   "step": 8,
-   "short": "Heat test, props off",
-   "needs": [
-    "hovered_payload"
-   ],
-   "produces": [],
-   "set": {
-    "props_on": false
-   },
-   "uses": {},
-   "tools": [],
-   "notes": ""
+   "notes": "the page does not yet say to put the props back on after the heat test (S8.7 is props off): flagged to the Builder"
   }
  ],
  "always_have": [

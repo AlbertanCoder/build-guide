@@ -140,8 +140,8 @@ Margin = how much room is left at the design sizes. Runs = the share of the tole
 | PASS | S7.4 Zip ties through the windows, strap: everything it needs is there | S7.4 |  |  |  | needs payload_placed |
 | PASS | S7.4b Pigtail from the FC 5V pad: everything it needs is there | S7.4b |  |  |  | needs payload_fixed |
 | PASS | S7.8 Fit the landing legs: everything it needs is there | S7.8 |  |  |  | needs payload_fixed |
-| PASS | S8.6 Payload on, hover again: everything it needs is there | S8.6 |  |  |  | needs payload_powered, legs_on, hovered |
-| PASS | S8.7 Heat test, props off: everything it needs is there | S8.7 |  |  |  | needs hovered_payload |
+| PASS | S8.7 Payload on, heat test, props off: everything it needs is there | S8.7 |  |  |  | needs payload_powered, legs_on |
+| PASS | S8.6 Hover again with the payload: everything it needs is there | S8.6 |  |  |  | needs payload_heat_ok, hovered |
 | PASS | Props stay off until 'Fit the props' (S8.4) | S8.4 |  |  |  | props first go on at S8.4 |
 | PASS | Props are off again for the heat test (S8.7) | S8.7 |  |  |  | S8.7 sets props off |
 | PASS | The first battery plug-in goes through the smoke stopper | S3.5 |  |  |  | first plug-in at S3.5 |

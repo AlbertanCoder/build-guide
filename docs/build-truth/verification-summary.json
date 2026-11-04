@@ -1437,28 +1437,12 @@
    "name_plain": "step 7 Fit the landing legs: everything it needs is there"
   },
   {
-   "id": "DEP-S8.6",
-   "category": "dependencies",
-   "action": "S8.6",
-   "name": "S8.6 Payload on, hover again: everything it needs is there",
-   "status": "PASS",
-   "detail": "needs payload_powered, legs_on, hovered",
-   "margin": null,
-   "unit": "",
-   "arrival": null,
-   "pass_rate": null,
-   "runs": 0,
-   "driver": "",
-   "worst": null,
-   "name_plain": "step 8 Payload on, hover again: everything it needs is there"
-  },
-  {
    "id": "DEP-S8.7",
    "category": "dependencies",
    "action": "S8.7",
-   "name": "S8.7 Heat test, props off: everything it needs is there",
+   "name": "S8.7 Payload on, heat test, props off: everything it needs is there",
    "status": "PASS",
-   "detail": "needs hovered_payload",
+   "detail": "needs payload_powered, legs_on",
    "margin": null,
    "unit": "",
    "arrival": null,
@@ -1466,7 +1450,23 @@
    "runs": 0,
    "driver": "",
    "worst": null,
-   "name_plain": "step 8 Heat test, props off: everything it needs is there"
+   "name_plain": "step 8 Payload on, heat test, props off: everything it needs is there"
+  },
+  {
+   "id": "DEP-S8.6",
+   "category": "dependencies",
+   "action": "S8.6",
+   "name": "S8.6 Hover again with the payload: everything it needs is there",
+   "status": "PASS",
+   "detail": "needs payload_heat_ok, hovered",
+   "margin": null,
+   "unit": "",
+   "arrival": null,
+   "pass_rate": null,
+   "runs": 0,
+   "driver": "",
+   "worst": null,
+   "name_plain": "step 8 Hover again with the payload: everything it needs is there"
   },
   {
    "id": "SAFE-1",
