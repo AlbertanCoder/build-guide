@@ -397,7 +397,7 @@
 
   /* Worded from the page's own Buy-today lines; the total is read live from the page. */
   kb("buy-today", "What do I buy today, and how much is it?", "buy today,today's list,todays list,today list,shopping list,what to buy today,what do i buy,buy now",
-    ["Open Buy, then \"Shopping list for today, shop by shop\". Each line has its shop, a dated stock badge and a backup place to buy it.",
+    ["Open Buy: your next stage to buy is first and open. \"Show by shop\" inside it groups its lines by shop for an order. Each line has its shop, a dated stock badge and a backup place to buy it.",
      "Prices and stock were read from each shop's page on the date shown: a snapshot, not a reservation.",
      "Freight is calculated at checkout and is not included."],
     { src: "Guide: Buy today", see: [["Buy today", "parts"]],
@@ -3374,8 +3374,7 @@
         const txt = String(sn.text).replace(/^Next:\s*/, "");
         out.label = txt;
         out.context = { stageText: txt };
-        const head = document.querySelector('[data-stage-head="' + sn.stage + '"]');
-        const box = head ? (head.closest("details") || head.parentElement) : null;
+        const box = document.querySelector('.stage-fold[data-stage="' + sn.stage + '"]');
         const text = box ? clip(plain(box), 1300) : "";
         if (text.length > 40) { out.passage = { label: "Where you are: " + txt, tab: "parts", step: null, text: text }; }
         return out;

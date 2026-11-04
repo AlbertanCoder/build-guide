@@ -192,8 +192,6 @@
   .buy-line { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-top: 14px;
               padding-top: 12px; border-top: 1px solid var(--line); }
   .buy-line p { margin: 0; font-weight: 700; color: var(--pine-deep); }
-  .buy-fold { margin: 0; }
-  .buy-fold > .buy-card { border: 0; box-shadow: none; border-radius: 0; padding: 0 18px 16px; }
   .buy-card { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
               padding: 18px 20px; box-shadow: var(--shadow); }
   .buy-intro { color: var(--soft); font-size: 14.5px; margin: 0 0 6px; }
@@ -412,6 +410,28 @@
                  [role="tabpanel"][hidden] { display: block !important; }
                  details.acc > .acc-body { display: block !important; } }
 
+
+  /* the Buy page as one list by stage (Shad, 4 Nov 2026) */
+  .stage-fold { border: 1px solid var(--line); border-radius: 10px; margin: 10px 0; background: #fff; }
+  .stage-fold > summary { cursor: pointer; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline;
+    gap: 4px 12px; padding: 12px 14px; font-weight: 700; list-style: none; }
+  .stage-fold > summary::-webkit-details-marker { display: none; }
+  .stage-fold > summary .stage-name::before { content: "\25B8"; display: inline-block; width: 1.1em; }
+  .stage-fold[open] > summary .stage-name::before { content: "\25BE"; }
+  .stage-fold .stage-state { font-weight: 400; color: var(--soft); font-size: .95em; }
+  .stage-fold.done { background: #f3f7f4; }
+  .stage-fold.done .stage-state { color: var(--pine-deep); font-weight: 700; }
+  .stage-fold > .stage { border: 0; margin: 0; padding: 0 14px 12px; box-shadow: none; background: transparent; }
+  .stage-fold > .stage > h4 { display: none; }
+  .stage-by-shop { margin: 2px 0 8px; }
+  .stage-fold .asm-parts ul.stage-items { display: block; }
+  .stage-fold .asm-parts ul.stage-items li { background: none; border-radius: 0; color: inherit; font-size: 14px; font-weight: 400;
+    padding: 10px 0; border-top: 1px solid var(--line); }
+  .stage-fold .asm-parts ul.stage-items li:first-child { border-top: 0; }
+  .stage-fold .asm-parts ul.stage-items li.buy-shop-head { display: flex; justify-content: space-between; gap: 10px;
+    font-weight: 700; margin-top: 12px; border-top: 0; border-bottom: 1px solid var(--line); padding: 4px 0; }
+  .stage-fold .asm-parts ul.stage-items li.buy-shop-note { border-top: 0; padding: 2px 0 6px; color: var(--soft); font-size: 13px; }
+  .stage-done-head { margin: 22px 0 4px; color: var(--soft); font-weight: 700; }
 </style>
 <!-- Interactive 3D build models: three.js is vendored in docs/vendor/three, so
      this works offline with no CDN calls. Rendering is on-demand and lazy. -->
@@ -825,7 +845,7 @@
   <nav class="doors" aria-label="Where to go">
     <div class="buy-line door">
       <p id="buy-line"></p>
-      <button type="button" class="asm-btn primary" id="buy-open" aria-controls="buy-fold" aria-expanded="false">Open the shopping list</button>
+      <button type="button" class="asm-btn primary" id="buy-open" aria-controls="stage-list">Open the shopping list</button>
     </div>
     <a class="door" href="#arrival-card" data-open-arrival><strong>When a parcel arrives</strong><span data-door-sub="arr-first"></span></a>
     <a class="door" href="#fly-card" data-open="fly-card"><strong>Before you fly</strong><span data-door-sub="fly-card"></span></a>
@@ -1184,14 +1204,6 @@
     <ul id="stage-chips" class="stage-chips" aria-label="Buying stages"></ul>
   </section>
 </div>
-<div class="buy-wrap">
-  <details class="acc buy-fold" id="buy-fold">
-    <summary>Shopping list for today, shop by shop</summary>
-  <section class="buy-card" id="buy-today" aria-labelledby="buy-title">
-    <span class="here-label" id="buy-title">Buy today</span>
-    <p class="buy-intro">Stage 1 workshop, Stage 3 radio and the iron's power adapter. Prices and stock were read from each shop's page on the date shown: a snapshot, not a reservation.</p>
-    <div id="buy-groups"></div>
-    <div class="buy-sum" id="buy-sum" aria-live="polite"></div>
     <script type="application/json" id="buy-data">
 {
  "title": "Buy today",
@@ -2216,21 +2228,16 @@
  }
 }
     </script>
-  </section>
-  </details></div>
-
-  <div class="card">
-    <p id="parts-gst" class="muted"></p>
-    <p class="muted">Tick a line when you have bought it. The date on each badge is when the shop page was checked: a working link is not stock.</p>
-    <div id="parts-list"></div>
-  </div>
 
 
 
-  <details class="acc" open>
-    <summary>Buy it in stages</summary>
+
+  <details class="acc" open id="stage-list">
+    <summary>Your shopping list, stage by stage</summary>
     <div class="acc-body">
       <p>Each stage is a small purchase that gives you something working the day it arrives. Merge stages from the same shop into one order to save freight, at the cost of waiting longer.</p>
+      <p class="muted">Tick a line when you have bought it. The date on each badge is when the shop page was checked: a working link is not stock.</p>
+      <p id="parts-gst" class="muted"></p>
 
         <div class="stage">
           <h4>Stage 0 &middot; Start tonight</h4>
@@ -2389,7 +2396,7 @@
         </div>
 
         <div class="stage">
-          <h4>Optional stage &middot; First-crash kit (buy after the first flight)</h4>
+          <h4>Optional extras &middot; buy after the first flight</h4>
           <p class="stg-cost" data-stage-cost="8"></p>
           <div class="asm-parts">
             <span class="asm-label">What to buy</span>
@@ -4744,20 +4751,78 @@ while True:
   }
   function arith(lines) { return lines.map(function (l) { return plain(lineCents(l)); }).join(" + ") + " = " + plain(sumCents(lines)); }
 
-  /* "Buy today": the lines flagged today, grouped by shop */
-  function buildToday() {
-    const host = document.getElementById("buy-groups");
-    const lines = BUY_LINES.filter(function (l) { return l.today; });
-    if (!host || !lines.length) return;
-    groupBy(lines, function (l) { return l.shop; }).forEach(function (g) {
-      host.appendChild(mk("h3", "buy-shop", g.key));
-      const shopNote = (BUY.shopNotes || {})[g.key];
-      if (shopNote) { host.appendChild(mk("p", "buy-shop-note", shopNote)); }
-      const ul = mk("ul", "buy-list");
-      g.lines.forEach(function (l) { ul.appendChild(renderLine(l, { stage: true })); });
-      host.appendChild(ul);
-      host.appendChild(mk("p", "buy-sub", g.key + " subtotal in CA$: " + arith(g.lines)));
+  /* ---------- the Buy page as one list by stage (Shad, 4 Nov 2026) ----------
+     Each stage folds; its heading shows its total and "X of Y bought". The next stage to buy is first and open; a stage
+     fully bought gets a tick and folds away at the end under "Already bought". "Show by shop" inside a stage regroups
+     its lines by shop with a subtotal (and the shop's note), for placing an order. */
+  function stageState(n) {
+    const lines = linesOfStage(n), ids = uniqueIds(lines);
+    const got = ids.filter(function (id) { return saved.owned[id]; }).length;
+    return { total: ids.length, got: got, done: ids.length > 0 && got === ids.length, cents: sumCents(lines) };
+  }
+  function regroupStage(listEl, n, byShop) {
+    listEl.textContent = "";
+    const lines = linesOfStage(n);
+    if (!byShop) { lines.forEach(function (l) { listEl.appendChild(renderLine(l, false)); }); }
+    else {
+      groupBy(lines, function (l) { return l.shop; }).forEach(function (g) {
+        const h = mk("li", "buy-shop-head");
+        h.appendChild(mk("span", "", g.key)); h.appendChild(mk("span", "", cad(sumCents(g.lines))));
+        listEl.appendChild(h);
+        const shopNote = (BUY.shopNotes || {})[g.key];
+        if (shopNote) { listEl.appendChild(mk("li", "buy-shop-note", shopNote)); }
+        g.lines.forEach(function (l) { listEl.appendChild(renderLine(l, false)); });
+      });
+    }
+    updateMoney();
+  }
+  function refreshStageFolds() {
+    Array.prototype.forEach.call(document.querySelectorAll(".stage-fold"), function (fold) {
+      const n = Number(fold.getAttribute("data-stage"));
+      const st = fold.querySelector(".stage-state");
+      if (!n) { st.textContent = "nothing to buy"; return; }
+      const x = stageState(n);
+      fold.classList.toggle("done", x.done);
+      st.textContent = x.done ? "\u2713 bought \u00b7 " + cad(x.cents) : x.got + " of " + x.total + " bought \u00b7 " + cad(x.cents);
     });
+  }
+  function buyOneList() {
+    const plan = document.getElementById("stage-list");
+    if (!plan) return;
+    const body = plan.querySelector(".acc-body");
+    const folds = [];
+    Array.prototype.slice.call(body.querySelectorAll(":scope > .stage")).forEach(function (st) {
+      const h4 = st.querySelector("h4"), listEl = st.querySelector("[data-stage-list]");
+      const n = listEl ? Number(listEl.getAttribute("data-stage-list")) : 0;
+      const fold = mk("details", "stage-fold"); fold.setAttribute("data-stage", String(n));
+      const sum = mk("summary");
+      sum.appendChild(mk("span", "stage-name", h4 ? h4.textContent.trim() : "Stage " + n));
+      sum.appendChild(mk("span", "stage-state", ""));
+      fold.appendChild(sum);
+      body.insertBefore(fold, st); fold.appendChild(st);
+      if (listEl) {
+        const tg = mk("button", "ga-link stage-by-shop", "Show by shop"); tg.type = "button";
+        tg.addEventListener("click", function () {
+          const on = !listEl.classList.contains("by-shop"); listEl.classList.toggle("by-shop", on);
+          tg.textContent = on ? "Show as one list" : "Show by shop"; regroupStage(listEl, n, on);
+        });
+        listEl.parentNode.insertBefore(tg, listEl);
+      }
+      folds.push({ n: n, fold: fold });
+    });
+    refreshStageFolds();
+    const anyBought = folds.some(function (f) { return f.n && stageState(f.n).got > 0; });
+    const done = folds.filter(function (f) { return f.n ? stageState(f.n).done : anyBought; });
+    const todo = folds.filter(function (f) { return done.indexOf(f) === -1; });
+    todo.forEach(function (f) { body.appendChild(f.fold); });
+    if (done.length) {
+      body.appendChild(mk("p", "stage-done-head", "Already bought"));
+      done.forEach(function (f) { body.appendChild(f.fold); });
+    }
+    const next = todo.filter(function (f) { return f.n && OPTIONAL_STAGES.indexOf(f.n) === -1; })[0];
+    if (next) { next.fold.open = true; next.fold.classList.add("next"); }
+    const um = updateMoney;
+    updateMoney = function () { um(); refreshStageFolds(); };
   }
   /* Every stage page: its parts list and cost line come from the same data */
   function stageNoteBlock(n) {
@@ -4773,23 +4838,6 @@ while True:
       linesOfStage(n).forEach(function (l) { ul.appendChild(renderLine(l, false)); });
       const note = stageNoteBlock(n);
       if (note) { ul.parentNode.appendChild(note); }
-    });
-  }
-  /* Parts tab: the whole shopping list, by stage */
-  function buildPartsList() {
-    const host = document.getElementById("parts-list");
-    if (!host) return;
-    STAGE_IDS.forEach(function (n) {
-      const lines = linesOfStage(n);
-      if (!lines.length) return;
-      const h = mk("h3", "buy-shop");
-      h.setAttribute("data-stage-head", String(n));
-      host.appendChild(h);
-      const ul = mk("ul", "buy-list");
-      lines.forEach(function (l) { ul.appendChild(renderLine(l, false)); });
-      host.appendChild(ul);
-      const note = stageNoteBlock(n);
-      if (note) { host.appendChild(note); }
     });
   }
 
@@ -4862,8 +4910,6 @@ while True:
         const done = ids.filter(function (id) { return saved.owned[id]; }).length;
         cnt.textContent = done + " of " + ids.length + " bought";
       }
-      const head = document.querySelector('[data-stage-head="' + n + '"]');
-      if (head) head.textContent = stageLabel(n) + " · " + cad(st.total);
     });
 
     /* the one-line summary on the front page */
@@ -4959,24 +5005,21 @@ while True:
       slider.value = String(Number(saved.moneyWeek) >= 0 && saved.moneyWeek !== undefined && saved.moneyWeek !== "" ? saved.moneyWeek : def);
       slider.addEventListener("input", function () { saved.moneyWeek = Number(slider.value); save(); updateMoney(); });
     }
-    buildToday();
     buildStageLists();
-    buildPartsList();
     updateMoney();
+    buyOneList();
 
-    /* the shopping list is folded by default; the button and the "1 Buy" link open it */
-    const fold = document.getElementById("buy-fold");
+    /* the Home button and the "Buy today" links open Buy at the next stage to buy (one list by stage, 4 Nov 2026) */
+    const stageList = document.getElementById("stage-list");
     const openBtn = document.getElementById("buy-open");
-    function setFold(on, scroll) {
-      if (!fold) { return; }
-      fold.open = !!on;
-      if (openBtn) { openBtn.setAttribute("aria-expanded", fold.open ? "true" : "false"); }
-      if (on && scroll) { fold.scrollIntoView({ behavior: "smooth", block: "start" }); }
-    }
-    if (fold) {
-      fold.addEventListener("toggle", function () { setFold(fold.open, false); });
-      /* the list lives in Buy: the Home button and the "Buy today" links go there and open it */
-      const goBuy = function () { if (typeof openTab === "function") { openTab("parts"); } setFold(true, true); };
+    if (stageList) {
+      const goBuy = function () {
+        if (typeof openTab === "function") { openTab("parts"); }
+        stageList.open = true;
+        const next = stageList.querySelector(".stage-fold.next");
+        if (next) { next.open = true; }
+        (next || stageList).scrollIntoView({ behavior: "smooth", block: "start" });
+      };
       if (openBtn) { openBtn.addEventListener("click", goBuy); }
       Array.prototype.forEach.call(document.querySelectorAll('a[href="#buy-today"]'), function (a) {
         a.addEventListener("click", function (ev) { ev.preventDefault(); goBuy(); });
