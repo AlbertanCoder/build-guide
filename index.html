@@ -680,6 +680,11 @@
   .ga-settings .ga-sub { margin: 2px 0 0; }
   .ga-settings .ga-note.ok { background: var(--pine-pale); }
   .stg-done { display: flex; gap: 8px; align-items: center; margin-top: 10px; font-weight: 600; }
+  /* page 2 of the guide audit (4 Nov 2026): Stages 0-3's practice in Build, Before Step 1 */
+  .practice-wrap { margin: 0 0 18px; } .practice-wrap > summary { font-size: 1.05em; }
+  .practice-stage { border: 1px solid var(--line); border-radius: 10px; margin: 10px 0; background: #fff; padding: 4px 14px 10px; }
+  .practice-stage > h4 { margin: 10px 0 6px; }
+  .stage-uses { margin: 4px 0 10px; color: var(--soft); }
   .ga-offline-note { margin: 0; padding: 9px 12px; background: var(--ember-pale); color: #5a2a08;
     font-size: 12.5px; line-height: 1.45; border-bottom: 1px solid var(--line); }
   /* job 8: the status line, memory, pairing, phone access */
@@ -2233,162 +2238,74 @@
       <p class="muted">Tick a line when you have bought it. The date on each badge is when the shop page was checked: a working link is not stock.</p>
       <p id="parts-gst" class="muted"></p>
 
-        <div class="stage">
-          <h4>Stage 0 &middot; Start tonight</h4>
-          <p class="stg-cost"><b>CA$0</b> &middot; running total <b>CA$0</b> &middot; nothing to buy</p>
-          <div class="asm-do">
-            <span class="asm-label">What you can do with it</span>
-            <ol class="asm-actions">
-              <li>Run the payload software on any computer: the 31 tests, the demo and the local map viewer.</li>
-              <li>Read the manuals for the stack, receiver, VTX and Pi sensors &mdash; download them now.</li>
-              <li>Watch a soldering tutorial and read the LiPo safety notes in this guide.</li>
-            </ol>
-          </div>
-          <div class="asm-check"><span class="asm-label">&#10003; Stage done when</span>
-            <ul><li>You can explain how a thermal frame becomes GPS-referenced hotspots on a map.</li></ul></div>
-        </div>
 
         <div class="stage">
           <h4>Stage 1 &middot; Workshop &amp; safety</h4>
           <p class="stg-cost" data-stage-cost="1"></p>
+          <p class="stage-uses">Its practice is in <a href="#practice" data-open="practice">Build &gt; Before Step 1</a>.</p>
           <div class="asm-parts">
             <span class="asm-label">What to buy</span>
             <ul class="stage-items" data-stage-list="1"></ul>
             <div class="s1-box"><span class="asm-label">What is in the tool kit</span><p class="s1-bullet">&bull; Soldering iron (65 W) and its stand holder</p><p class="s1-bullet">&bull; Solder: the "quad solder pocket pack" and tin wire</p><p class="s1-bullet">&bull; Soldering flux pen and soldering tweezers</p><p class="s1-bullet">&bull; 4-in-1 hexagon socket screwdriver set</p><p class="s1-bullet">&bull; Metal ruler (centimetres)</p><p class="s1-bullet">&bull; Cutting pliers and a cutting knife</p><p class="s1-bullet">&bull; Prop tool</p><p class="s1-bullet">&bull; ZOYI pocket digital multimeter (the batteries are not included)</p><p class="s1-bullet">&bull; XT60 plug power cable and an XT60 to DC cable</p><p class="s1-bullet">&bull; Carrying case and a lanyard strap</p><p class="muted">From the shop listing (Rotor Village).</p></div>
           </div>
-          <p class="asm-warn"><strong>&#9888; Safety:</strong> Wear your safety glasses whenever the iron is hot. Never leave a hot iron alone. Wash your hands after soldering and keep food away from the bench: the kit's solder may contain lead.</p>
-          <p>Safety glasses: you already have a pair. Check the frame says Z87 or CSA.</p>
-<div class="asm-do">
-            <span class="asm-label">What you can do with it</span>
-            <ol class="asm-actions">
-              <li class="s1-rich"><p>Open the battery cover on the multimeter. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Multimeter basics">When the meter arrives, check:</a></strong> where the battery cover is, and whether it needs a screwdriver. (The kit has a hexagon screwdriver set.)</span></p><p>Put in two 1.5 V batteries (AA or AAA, whichever fits). Match the + and - marks inside. The kit does not include them. You already have these.</p><p>Turn the dial. The screen should light up.</p></li><li class="s1-rich"><p>Learn three things the multimeter does. Try each once, and write down what you see.</p><ol><li>Volts: turn the dial to DC volts. Touch the red probe to the + end of one of your batteries and the black probe to the - end. A 1.5 V battery should read close to 1.5.</li><li>Continuity (the beep): turn the dial to the beep symbol. Touch the two probes together: it should beep. Then touch the two ends of a piece of the thin wire: it should beep. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Multimeter basics">When the meter arrives, check:</a></strong> what the beep symbol looks like on it.</span></li><li>Resistance (ohms): you will use it for the pigtail below, and in Step 6 if the meter has no beep setting. </li></ol></li>
-              <li class="s1-rich"><p>Before the iron is ever plugged in, test the power adapter. The adapter is the box that plugs into the wall.</p><ol><li>Turn the multimeter dial to DC volts (the V with a straight line). <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Multimeter basics">When the meter arrives, check:</a></strong> which dial position is DC volts for about 24 V. The meter's manual shows it.</span></li><li>Put the red lead and the black lead into the right sockets. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Multimeter basics">When the meter arrives, check:</a></strong> which sockets the red and black leads go into for volts.</span></li><li>Touch the red probe to the metal post in the middle of the adapter's round plug. Touch the black probe to the metal ring on the outside of the plug. Keep the two probes apart from each other.</li><li>Plug the adapter into the wall. Read the screen.</li><li>About 24 with no minus sign: the middle post is plus (+). A minus sign (about -24): the middle post is minus (-). <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Iron adapter">When the adapter arrives, check:</a></strong> how close to 24 counts as normal. Its label may say.</span></li><li>If the screen shows 0, 1 or OL, or a number far from 24: unplug the adapter and stop.</li><li>Unplug the adapter from the wall.</li></ol>
-            <div class="s1-box"><span class="asm-label">What each part is for</span><p class="s1-bullet">&bull; Smoke stopper: the first power-up in Step 3 and the bench power test in Step 8.</p><p class="s1-bullet">&bull; LiPo storage bag: charging the flight batteries in Step 5.</p><p class="s1-bullet">&bull; Threadlocker (Permatex Blue 242): a small drop on each of the 16 motor screws (4 per motor, Step 2) and on the eight M3 x 10 set screws that join the leg pieces.</p><p class="s1-bullet">&bull; Zip ties: holding the Raspberry Pi in Step 7.</p><p class="s1-bullet">&bull; Nylon M2.5 standoffs: mounting the Pi in Step 7.</p><p class="s1-bullet">&bull; Hakko wire stripper and the thin silicone wire: the receiver and video wires in Step 4 and the GPS cable in Step 6.</p><p class="s1-bullet">&bull; Micro-USB cable: becomes the pigtail (the action below).</p><p class="s1-bullet">&bull; Heat shrink: covers bare joints. </p></div></li>
-              <li class="s1-rich"><p><strong>Check the iron's polarity before you plug it in.</strong> Now look at the iron and its cable for a small drawing that shows which part is plus (+) and which is minus (-). The middle must be plus, the same as your adapter.</p><p>If you cannot find the drawing, or it shows the opposite: do not plug the iron in. Message the shop with a photo of the marking (Rotor Village for the iron kit, Amazon.ca for the adapter). Wait for the shop's answer before you solder. If it cannot confirm the polarity, ask for a replacement or a refund; the soldering practice waits until then. Later, once you have charged flight packs (Stage 5), the kit's XT60 cable is a second way to power the iron (see the next paragraph).</p><p>What plugs into what: the adapter's round plug goes straight into the iron's power socket. Both are 5.5 x 2.5 mm. The kit's short "XT60 to DC" cable is a second way to power the iron away from a wall socket: its XT60 end goes into a charged 4S flight pack and its round end goes into the iron. The iron runs on 12 to 24 V, and a 4S pack gives about 13 to 17 V, so it heats a little more slowly on a pack. The first time you switch it on, time how long it takes to melt solder, so you know how long to wait.</p><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Iron and its cables">When the kit arrives, check:</a></strong> which end of the XT60 to DC cable is which, where the iron's polarity drawing is, and how long the iron takes to heat. Write the time down.</span></p></li>
-              <li class="s1-rich"><p>Set up the iron and practise on one of the practice boards (the Eiechip set).</p><ol><li>Put on your safety glasses.</li><li>Open a window and switch a fan on. Put the iron in its stand on a heat-proof surface. Use your ceramic tile or metal baking tray. A damp kitchen sponge wipes the tip.</li><li>Plug the iron in and wait for it to heat. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Iron and its cables">When the iron arrives, check:</a></strong> how long it takes to heat and how to set its temperature. (The listing says 220 to 400 C.) Write it down.</span></li><li>Touch a little solder to the tip. It should melt at once.</li><li>Tinning means melting a small bead of solder onto a bare copper pad. Tin a few pads on the practice board. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Practice boards">When the boards arrive, check:</a></strong> that the pads take solder on the side you use (the listing says double-sided; pad size and hole spacing are not stated).</span></li><li>Strip 3 mm off the end of short pieces of the thin silicone wire with the Hakko stripper, then solder them to the pads. Tug each one gently.</li><li>Repeat until the joints look smooth and shiny, like small hills.</li><li>When you stop, put the iron in its stand. Unplug it before you leave the room.</li></ol></li>
-              <li class="s1-rich"><p>Build the micro-USB power pigtail: a short cable with a plug on one end and bare wires on the other. You will use it in Step 7 to power the Pi from the flight controller.</p><ol><li>Keep the small right-angle micro-USB plug (it goes into the Pi). Cut off the big flat USB-A plug, leaving about 20 cm of cable on the micro-USB side.</li><li>Strip 3 cm of the outer jacket. Inside are four wires: two thicker ones carry power, two thinner ones carry data.</li><li>Find which thick wire is + and which is -. Set the multimeter to its lowest resistance (ohms) setting. Touch one probe to a thick wire and the other to the outermost pin at each end of the micro-USB plug. Close to 0 ohms means connected. Write down which wire is + and what the meter read. Pin 1 (the + pin) is at one end of the row of five pins, and pin 5 (the - pin) is at the other. Wrap a small piece of tape round the + wire.</li><li>Cut the two thin data wires short and cover each end with a piece of 3 mm heat shrink.</li><li>Strip 3 mm off each power wire with the Hakko stripper and tin it. Leave them loose until Step 7.</li></ol><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Micro-USB cable for the pigtail">When the cable arrives, check:</a></strong> the wire colours inside, and which pin is pin 1 and pin 5 inside the plug.</span></p></li>
-              
-            </ol>
-          </div>
-          <div class="asm-check"><span class="asm-label">&#10003; Stage done when</span>
-            <ul class="s1-rich"><li>You made three practice joints that look smooth and shiny.</li><li>Each wire stays put when you tug it gently.</li><li>You wrote down what the meter reads for each pigtail power wire.</li><li>You tried volts, continuity and resistance once each.</li><li>The adapter reads +24 V and the iron's drawing shows the middle is plus, the same as the adapter.</li></ul><label class="stg-done"><input type="checkbox" data-key="stg-1-done"> Stage 1 practice done (the Home page then moves on)</label></div>
         </div>
         <div class="stage">
           <h4>Stage 2 &middot; The payload laboratory</h4>
           <p class="stg-cost" data-stage-cost="2"></p>
+          <p class="stage-uses">Its practice is in <a href="#practice" data-open="practice">Build &gt; Before Step 1</a>.</p>
           <div class="asm-parts">
             <span class="asm-label">What to buy</span>
             <ul class="stage-items" data-stage-list="2"></ul>
           </div>
-          <div class="asm-do">
-            <span class="asm-label">What you can do with it</span>
-            <ol class="asm-actions">
-              <li>Flash the Pi, enable I2C, fit the Qwiic HAT &mdash; the bench PSU is in the kit.</li>
-              <li>Solder the 1&times;5 sensor headers &mdash; your Stage 1 practice pays off here.</li>
-              <li>Wire each sensor to the HAT; confirm camera 0x33 and GPS 0x10 answer.</li>
-              <li>Point the thermal camera at hot and cold things: on the Pi, run python payload.py --bench and watch the hot spots it prints. (The hotspot demo and the map viewer run on any computer, without the camera.)</li>
-            </ol>
-          </div>
-          <div class="asm-check"><span class="asm-label">&#10003; Stage done when</span>
-            <ul><li>You own a working thermal-camera gadget on your desk &mdash; the drone's brain, fully tested before the drone exists. Any old computer is enough.</li></ul><label class="stg-done"><input type="checkbox" data-key="stg-2-done"> Stage 2 practice done (the Home page then moves on)</label></div>
         </div>
 
         <div class="stage">
           <h4>Stage 3 &middot; Radio &amp; reflexes</h4>
           <p class="stg-cost" data-stage-cost="3"></p>
+          <p class="stage-uses">Its practice is in <a href="#practice" data-open="practice">Build &gt; Before Step 1</a>.</p>
           <div class="asm-parts">
             <span class="asm-label">What to buy</span>
             <ul class="stage-items" data-stage-list="3"></ul>
           </div>
-          <div class="asm-do">
-            <span class="asm-label">What you can do with it</span>
-            <ol class="asm-actions">
-              <li class="s1-rich"><p>First do the arrival test "Radio on USB power alone" (cells out). Then put the two cells in the radio and charge them with the radio's own USB-C cord.</p><p>Then set up EdgeTX (manual.edgetx.org, black-and-white radios): press MDL to open Model Select, scroll to an empty slot, press Enter and choose Create Model. On its Setup page, set Name (up to 10 letters) to the drone's name.</p><p>Then open the Mixes page. A new model sends no switch channels, so add two mixes: on CH5, flick a 2-position switch to make it the source: that is your arm switch (down = disarmed). On CH6, flick the switch you will use for Angle mode. (Step 4 adds CH7, the pack switch.)</p><p>Back on the Setup page, set Timer 1's Start to 3:00 and the option next to it to Remain, so it counts down; set its Mode to THs and its Switch to your arm switch, so it runs once you arm and raise the throttle.</p><p>You tell Betaflight which switch arms in Step 4.</p><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival>When the radio arrives, check:</a></strong> the switch names and the button names (MDL, Enter) on the Pocket (its manual).</span></p></li>
-              <li class="s1-rich"><p>Practise in FPV SkyDive, a free simulator on Steam (store.steampowered.com/app/1278060; Windows 64-bit).</p><p>With the radio's cells in, plug the radio into the laptop by USB and choose USB Joystick (HID) on the radio's screen. Then pick it as the controller in the simulator. Crash as much as you like: it costs nothing.</p><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival>When you start the simulator, check:</a></strong> that your laptop meets its stated needs (a GTX 650 with 2 GB or better), or that the low graphics settings work, the exact words of the EdgeTX prompt on the Pocket, and which of the simulator's modes levels itself (Angle).</span></p></li>
-            </ol>
-          </div>
-          <div class="asm-check"><span class="asm-label">&#10003; Stage done when</span>
-            <ul><li class="s1-rich"><p>Our target for beginners, in the simulator's self-levelling (Angle) mode, the mode of your first real hover in Step 8: hold the pretend drone in a hover for 30 seconds inside a box about 3 m wide, three times in a row. Then arm and disarm with the switch without looking at the radio.</p><p>Hover means staying still in the air. Arm means switching the motors on.</p></li></ul><label class="stg-done"><input type="checkbox" data-key="stg-3-done"> Stage 3 practice done (the Home page then moves on)</label></div>
         </div>
 
         <div class="stage">
           <h4>Stage 4 &middot; The airframe</h4>
           <p class="stg-cost" data-stage-cost="4"></p>
+          <p class="stage-uses">Used in Step 2 (frame, motors), Step 4 (the beeper), Step 7 (legs, strap, battery pad) and Step 8 (props).</p>
           <div class="asm-parts">
             <span class="asm-label">What to buy</span>
             <ul class="stage-items" data-stage-list="4"></ul>
           </div>
-          <div class="asm-do">
-            <span class="asm-label">What you can do with it</span>
-            <ol class="asm-actions">
-              <li>Bolt the arms and standoffs together; screw the four motors on (M1&ndash;M4 order, picture in Build, Step 2).</li>
-              <li>Check every motor screw underneath &mdash; none may touch the windings. A small drop of threadlock on each motor screw and each leg set screw.</li>
-              <li>Fit the straps and the grip pad. (The LED strip is an optional extra now. If you buy it, insulate it from bare carbon: exposed carbon shorts the LEDs.) Balance the prop sets &mdash; and keep them OFF the motors.</li>
-            </ol>
-          </div>
-          <p class="asm-warn"><strong>&#9888; Safety:</strong> propellers stay off until Stage 7. No exceptions.</p>
-          <div class="asm-check"><span class="asm-label">&#10003; Stage done when</span>
-            <ul><li>A rigid quad airframe sits on the table with motors spinning freely. Take a photo for the build log.</li></ul></div>
         </div>
         <div class="stage">
           <h4>Stage 5 &middot; Power &amp; control</h4>
           <p class="stg-cost" data-stage-cost="5"></p>
+          <p class="stage-uses">Used in Step 3 (the stack), Step 4 (receiver, USB-C cable) and Step 5 (packs, charger).</p>
           <div class="asm-parts">
             <span class="asm-label">What to buy</span>
             <ul class="stage-items" data-stage-list="5"></ul>
           </div>
-          <div class="asm-do">
-            <span class="asm-label">What you can do with it</span>
-            <ol class="asm-actions">
-              <li>Solder the stack into the airframe: motor wires, XT60 lead, capacitor. First power goes through the Stage 1 smoke stopper.</li>
-              <li>Wire the receiver: 5V + GND, TX &rarr; R2, RX &rarr; T2. Bind it to the Stage 3 radio.</li>
-              <li>Betaflight with PROPS OFF: channels, failsafe, motor order and direction.</li>
-              <li>Charge and balance the packs in the LiPo bag; learn storage charge for packs you are not using. Two kinds of pack: the GNB is <strong>LiHV (4.35 V/cell)</strong>, for learning: choose LiHv on the charger. The More Volts is <strong>Li-ion</strong>, for long, gentle searches: choose Lion. The M7AC charges Lion to 4.10 V per cell, a little under the pack's 4.2 V maximum: slightly less flight, never over. Betaflight's maximum cell voltage stays 4.40 V for both (the GNB charges to 4.35 V per cell; at 4.35, Betaflight would count a full pack as 5 cells). The Li-ion pack is 44 mm tall and wide against the LiPo's 38 x 26 mm, so its strap goes about 177 mm round instead of 128 mm.</li>
-            </ol>
-          </div>
-          <div class="asm-check"><span class="asm-label">&#10003; Stage done when</span>
-            <ul><li>The radio talks to the quad and all four motors spin on the bench &mdash; props still off.</li></ul></div>
         </div>
 
         <div class="stage">
           <h4>Stage 6 &middot; Eyes in the sky</h4>
           <p class="stg-cost" data-stage-cost="6"></p>
+          <p class="stage-uses">Used in Step 4 (camera, video transmitter, antenna) and Step 8 (the monitor).</p>
           <div class="asm-parts">
             <span class="asm-label">What to buy</span>
             <ul class="stage-items" data-stage-list="6"></ul>
           </div>
-          <div class="asm-do">
-            <span class="asm-label">What you can do with it</span>
-            <ol class="asm-actions">
-              <li>Wire the camera and the VTX to the flight controller, as in Step 4. Mount both. Screw the antenna on BEFORE any power &mdash; every time.</li>
-              <li>Pick a legal channel and power setting; find the picture on the M5F monitor. The monitor runs from your USB-C power bank, so both flight packs stay free for flying (its listing: &ldquo;Power Supply: 2-6S DC IN, 1x 18650 Li-ion, USB Type-C&rdquo;).</li>
-              <li>In Canada the 5.8 GHz video link sits in the amateur radio band. The lawful way to run the VTX is an ISED Amateur Radio Operator Certificate (Basic): an exam you write with an accredited examiner (see Licences and courses in Learn). This guide cannot tell you to fly it without one.</li>
-              <li>Low-power range test in the yard, once you hold the amateur radio certificate (Basic): the video transmitter transmits from the moment it is powered. If you bought the optional memory card, record it on the monitor's DVR.</li>
-            </ol>
-          </div>
-          <div class="asm-check"><span class="asm-label">&#10003; Stage done when</span>
-            <ul><li>You see what the drone sees.</li></ul></div>
         </div>
 
         <div class="stage">
           <h4>Stage 7 &middot; Papers &amp; first flight</h4>
           <p class="stg-cost" data-stage-cost="7"></p>
+          <p class="stage-uses">Used in Step 8: the first hover needs the Basic certificate and the registration, and the video transmitter needs the amateur radio certificate first (see <a href="#licences-card" data-open="licences-card">Licences and courses</a> in Learn).</p>
           <div class="asm-parts">
             <span class="asm-label">What to buy</span>
             <ul class="stage-items" data-stage-list="7"></ul>
           </div>
-          <div class="asm-do">
-            <span class="asm-label">What you can do with it</span>
-            <ol class="asm-actions">
-              <li>Study the knowledge requirements; pass the Small Basic exam in the Drone Management Portal.</li>
-              <li>Pass the amateur radio Basic exam with an accredited examiner (start studying now: see Licences and courses in Learn).</li>
-              <li>Register the drone and mark it with the number.</li>
-              <li>First hover of the bare quad (no payload yet): one metre up, land, feel the motors for heat. Stay below 122 m (400 ft) AGL all flight.</li>
-              <li>Then mount the Stage 2 payload on the Stage 4 frame: standoffs + zip ties + the Kevlar strap, thermal lens down, GPS up. Then run the detection missions from the 19-step checklist on the Plan page in Learn.</li>
-            </ol>
-          </div>
-          <div class="asm-check"><span class="asm-label">&#10003; Stage done when</span>
-            <ul><li>The complete system flies and logs hotspots on a map &mdash; that is the goal, reached in affordable chunks.</li></ul></div>
         </div>
 
         <div class="stage">
@@ -2471,15 +2388,13 @@
         <li><strong>No rain or snow.</strong> This build is not weatherproof. Dry, calm, mild days only until it has been tested.</li>
         <li><strong>Wind:</strong> there is no tested wind limit for this build, so this guide gives no number. Until one is tested, fly only in calm air.</li>
         <li>Keep the flight pack warm until you fly. Never charge a frozen pack.</li>
-        <li><strong>Keep the drone in sight.</strong> If you fly by a screen, you need a visual observer; until then, fly looking at the drone.</li>
-        <li><strong>Stay away from wildfires and fire zones.</strong> Do not fly over a forest-fire area or within 5 nautical miles (9.3 km) of one below 3,000 ft AGL (CAR 601.15), and do not enter airspace restricted by a NOTAM under 601.16. Real fires are agency airspace: drones ground air tankers and endanger crews. Check NOTAMs and Alberta fire bans before you fly. Practise only on controlled heat targets, such as a mug of hot water, on private land with permission.</li>
-        <li>Check your site on NAV Drone first: basic flying needs uncontrolled airspace, more than 5.6 km from an airport and 1.9 km from a heliport.</li>
-        <li><strong>In Edmonton, City parks are for microdrones only.</strong> The City allows drones under 250 grams (counting everything attached) to take off and land on cut grass in most named parks. This drone weighs about 550 g with the LiPo and more with the Li-ion, so it may not fly from, within or over a City park or other public space (Bylaw 20700, s. 55; the fine is $250). Take off and land from private property instead: your own, or someone else's with the owner's permission. All flights still follow the Transport Canada rules. (City of Edmonton, <a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use" target="_blank" rel="noopener">Public Spaces Bylaw 20700, Section 55</a>.)</li>
-        <li><strong>Papers first:</strong> you hold the Basic certificate, and the drone is registered and marked (a drone of 250 g or more must be registered; this build is over that).</li>
+        <li><strong>Where you may fly</strong> (airports, controlled airspace, parks, wildfires, people): see <a href="#where-card" data-open="where-card">Where and when you can fly</a> below, and check the take-off spot on a map every time.</li>
+        <li>Keep the drone in sight. If you fly by a screen, you need a visual observer; until then, fly looking at the drone.</li>
+        <li><strong>Papers first:</strong> you hold the Basic certificate, and the drone is registered and marked (a drone of 250 g or more must be registered; this build is over that). The certificate does not expire, but keep your skills current.</li>
         <li><strong>Video licence:</strong> in Canada the 5.8 GHz video link sits in the amateur radio band. The lawful way to run the VTX is an ISED Amateur Radio Operator Certificate (Basic): an exam you write with an accredited examiner (see Licences and courses in Learn). This guide cannot tell you to fly it without one.</li>
-        <li>Keep nobody within 30 m (100 ft) sideways.</li>
+        <li>Keep nobody within 30 m (100 ft) sideways. That is the Basic-operations boundary, not a safe distance in itself.</li>
         <li><strong>Privacy:</strong> Transport Canada says &ldquo;You must respect the privacy rights of others when you fly&rdquo; and &ldquo;You must respect trespassing laws.&rdquo; Point the thermal camera only at your own land, or land whose owner said yes. Do not record or log neighbours, their yards or their windows, and delete anything that catches other people.</li>
-        <li>Stay below 122 m (400 ft) above the ground.</li>
+        <li>Stay below 122 m (400 ft) above the ground, and no more than 30 m above any building or structure within 61 m of it (CAR 901.25); going higher needs a special flight operations certificate. This is the limit beginners break first.</li>
         <li><strong>Take off and land on a flat board or hard flat ground, not grass.</strong>: the Pi hangs only about 2.5 cm above the ground. Land straight down and slowly, then disarm as soon as the feet touch. The feet are close together side to side, so if the drone lands leaning or sliding sideways it falls on its side and a prop and an arm hit the ground.</li>
         <li><strong>Batteries:</strong> charge them attended, in the LiPo bag, on a fireproof surface. Never charge a swollen or damaged pack. Let a pack cool before charging it. Keep a fire extinguisher or a bucket of sand within reach: the bag slows a fire but does not stop it.</li>
       </ol>
@@ -2721,42 +2636,10 @@
       </script>
     </div>
   </details>
-    <details class="acc">
-    <summary><span class="emoji">&#9201;</span> Where &amp; when you may fly (verified TC rules)</summary>
-    <div class="acc-body">
-      <p><strong>Basic operations</strong> &mdash; what this build flies under
-      <span class="muted">(TC page updated 19 Mar 2026)</span>:</p>
-      <ul>
-        <li>Operating weight no more than <strong>25 kg</strong>; measure the completed aircraft
-        rather than relying on the removed 1 kg/3.7 kg estimates. Maintain VLOS.</li>
-        <li><strong>Below 400 ft (122 m) AGL</strong> &mdash; and no more than 30 m above any building or
-        structure while flying within 61 m of it horizontally. That is <strong>CAR 901.25</strong>; exceeding
-        it needs a special flight operations certificate. This is the limit beginners break first.</li>
-        <li>More than <strong>30 m horizontally from any person</strong>. This is an operations-category
-        boundary, not a universal safe distance.</li>
-        <li><strong>Uncontrolled airspace</strong>, more than 5.6 km from the centre of a certified airport,
-        more than 1.9 km from the centre of a heliport; military-aerodrome permission is separate.</li>
-        <li><strong>Register and mark the drone</strong> (250 g to 25 kg) and carry proof plus a
-        <strong>Pilot Certificate &mdash; Basic Operations</strong>. The Small Basic exam and registration
-        have fees; age 14+ applies to Basic. The certificate does not expire, but skills must stay current.</li>
-      </ul>
-      <div class="note"><strong>Night lighting is necessary, not sufficient (CAR 901.39):</strong>
-      the lights must be on and sufficient for the pilot or a visual observer to see the aircraft.
-      A generic LED kit does not by itself make a flight legal; VLOS, airspace, bystander, aerodrome,
-      NOTAM, site and all other applicable rules still apply.</div>
-      <div class="note warn"><strong>Forest-fire restriction (CAR 601.15):</strong>
-      do not operate over a forest-fire area or within <strong>5 nautical miles (9.3 km)</strong> of one
-      below 3,000 ft AGL, and do not enter airspace restricted by a NOTAM under 601.16. Check current
-      NOTAMs, Alberta fire bans and local/site rules before flight. Use a mug of hot water for heat tests. Never light a fire to test the drone.</div>
-      <div class="note"><strong>Edmonton reality check:</strong> the 5.6 km airport, 1.9 km heliport and
-      uncontrolled-airspace conditions rule out a lot of the city. Check your intended field with the NRC's
-      drone site-selection tool (see Where you can fly) before you drive out &mdash; an empty park is not a legal site.</div>
-    </div>
-  </details>
   <details class="acc" id="where-card">
-    <summary>Where you can fly near Edmonton (this drone, over 250 g)</summary>
+    <summary>Where and when you can fly (this drone)</summary>
     <div class="acc-body">
-      <p>Every spot must also pass the airspace check: look up the exact take-off point on one of the free maps at the bottom, every time.</p>
+      <p>This drone flies under Transport Canada's Basic operations (TC page updated 19 Mar 2026). Every spot must also pass the airspace check: look up the exact take-off point on one of the free maps at the bottom, every time. The 5.6 km airport, 1.9 km heliport and uncontrolled-airspace rules rule out a lot of Edmonton: an empty park is not a legal site.</p>
       <p><strong>You can fly:</strong></p>
       <ul>
         <li>On private land, with the owner's permission: your own, or someone else's. The City of Edmonton says a drone of any size may take off and land from private property with the owner's permission. The federal rules still apply.</li>
@@ -2764,17 +2647,18 @@
       </ul>
       <p><strong>You can't fly:</strong></p>
       <ul>
-        <li>In City of Edmonton parks or on other City property: only drones under 250 g (see Before you fly).</li>
+        <li><strong>In Edmonton, City parks are for microdrones only.</strong> The City allows drones under 250 grams (counting everything attached) to take off and land on cut grass in most named parks. This drone weighs about 550 g with the LiPo and more with the Li-ion, so it may not fly from, within or over a City park or other public space (Bylaw 20700, s. 55; the fine is $250). Take off and land from private property instead: your own, or someone else's with the owner's permission. All flights still follow the Transport Canada rules. (City of Edmonton, <a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use" target="_blank" rel="noopener">Public Spaces Bylaw 20700, Section 55</a>.)</li>
         <li>In Strathcona County parks: the parks bylaw bans remote-controlled flying objects.</li>
         <li>In Parkland County parks: no drones, except under 250 g in a marked area, or with a County permit.</li>
         <li>In any Alberta provincial park: recreational drones of any size are banned.</li>
         <li>In Elk Island National Park, or any national park.</li>
-        <li>Near airports and heliports: within 5.6 km of a certified airport's centre, or 1.9 km of a heliport's.</li>
+        <li>Near airports and heliports: within 5.6 km of a certified airport's centre, or 1.9 km of a heliport's. Near a military airfield you need its permission.</li>
         <li>In controlled airspace. Much of the Edmonton region sits under Edmonton International's.</li>
-        <li>Near wildfires: within 9.3 km (5 nautical miles), or in any area closed by a NOTAM.</li>
+        <li>Near wildfires: Do not fly over a forest-fire area or within 5 nautical miles (9.3 km) of one below 3,000 ft AGL (CAR 601.15), and do not enter airspace restricted by a NOTAM under 601.16. Real fires are agency airspace: drones ground air tankers and endanger crews. Check NOTAMs and Alberta fire bans before you fly. Practise only on controlled heat targets, such as a mug of hot water, on private land with permission. Never light a fire to test the drone.</li>
         <li>Over people: keep 30 m sideways from bystanders, and never fly over a crowd, an event, a concert or a game.</li>
         <li>Inside a police, fire or crash scene. Edmonton Fire Rescue's perimeter is 30 m sideways and 400 ft up around an active emergency.</li>
       </ul>
+      <p><strong>When:</strong> by day. At night only with lights on the drone that the pilot or a visual observer can see, turned on (CAR 901.39). Lighting is necessary, not sufficient: line of sight, airspace, people, airports, NOTAMs and the site's own rules still apply. No step in this build fits lights.</p>
       <p><strong>Not checked:</strong> Leduc County. No drone rule was found on the county's website, so ask the county before you fly there.</p>
       <p><strong>Free maps:</strong> the <a href="https://nrc.canada.ca/en/drone-tool/">NRC Drone Site Selection Tool</a> (red: no; orange: needs permission; yellow: take care; the NRC says it is a convenience only) and NAV CANADA's <a href="https://map.navdrone.ca">NAV Drone Viewer</a> (no account needed).</p>
       <p class="muted">Read on 4 Nov 2026: Transport Canada, <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/where-fly-your-drone">Where you can fly</a> and <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations">Basic operations</a>; <a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use">City of Edmonton, recreational microdrone use</a>; <a href="https://www.strathcona.ca/emergencies-enforcement/policing-and-enforcement/drones/">Strathcona County, drones</a>; <a href="https://www.parklandcounty.com/media/swwb4tgx/bylaw-2023-16-parks.pdf">Parkland County Parks Bylaw 2023-16</a>; <a href="https://albertaparks.ca/albertaparksca/science-and-research/conducting-research/use-of-unmanned-aerial-vehicles">Alberta Parks</a>; <a href="https://parks.canada.ca/pn-np/ab/elkisland/securite-safety/drones">Parks Canada, Elk Island</a>; <a href="https://www.maac.ca/clubs/view/928">MAAC, club 928</a>.</p>
@@ -2788,6 +2672,62 @@
     <h2>Build it &mdash; step by step</h2>
     <button class="expand-btn" data-panel="p-steps">Expand all</button>
   </div>
+
+  <details class="acc practice-wrap" open id="practice">
+    <summary>Before Step 1: practice (Stages 0 to 3)</summary>
+    <div class="acc-body">
+      <p>Practise with the parts from Stages 1 to 3 while the rest ships. Tick each stage when its practice is done: the Home page then moves on.</p>
+        <div class="practice-stage" id="practice-stage-0">
+          <h4>Stage 0 &middot; Start tonight</h4>
+          <div class="asm-do">
+            <span class="asm-label">What you can do with it</span>
+            <ol class="asm-actions">
+              <li>Run the payload software on any computer: the 31 tests, the demo and the local map viewer.</li>
+              <li>Read the manuals for the stack, receiver, VTX and Pi sensors &mdash; download them now.</li>
+              <li>Watch a soldering tutorial and read the LiPo safety notes in this guide.</li>
+            </ol>
+          </div>
+          <div class="asm-check"><span class="asm-label">&#10003; Stage done when</span>
+            <ul><li>You can explain how a thermal frame becomes GPS-referenced hotspots on a map.</li></ul></div>
+        </div>
+        <div class="practice-stage" id="practice-stage-1">
+          <h4>Stage 1 &middot; Workshop &amp; safety</h4>
+          <p class="asm-warn"><strong>&#9888; Safety:</strong> Wear your safety glasses whenever the iron is hot. Never leave a hot iron alone. Wash your hands after soldering and keep food away from the bench: the kit's solder may contain lead.</p>
+          <p>Safety glasses: you already have a pair. Check the frame says Z87 or CSA.</p>
+          <div class="asm-do">
+            <span class="asm-label">What you can do with it</span>
+            <ol class="asm-actions">
+              <li class="s1-rich"><p>Open the battery cover on the multimeter. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Multimeter basics">When the meter arrives, check:</a></strong> where the battery cover is, and whether it needs a screwdriver. (The kit has a hexagon screwdriver set.)</span></p><p>Put in two 1.5 V batteries (AA or AAA, whichever fits). Match the + and - marks inside. The kit does not include them. You already have these.</p><p>Turn the dial. The screen should light up.</p></li><li class="s1-rich"><p>Learn three things the multimeter does. Try each once, and write down what you see.</p><ol><li>Volts: turn the dial to DC volts. Touch the red probe to the + end of one of your batteries and the black probe to the - end. A 1.5 V battery should read close to 1.5.</li><li>Continuity (the beep): turn the dial to the beep symbol. Touch the two probes together: it should beep. Then touch the two ends of a piece of the thin wire: it should beep. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Multimeter basics">When the meter arrives, check:</a></strong> what the beep symbol looks like on it.</span></li><li>Resistance (ohms): you will use it for the pigtail below, and in Step 6 if the meter has no beep setting. </li></ol></li>
+              <li class="s1-rich"><p>Before the iron is ever plugged in, test the power adapter. The adapter is the box that plugs into the wall.</p><ol><li>Turn the multimeter dial to DC volts (the V with a straight line). <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Multimeter basics">When the meter arrives, check:</a></strong> which dial position is DC volts for about 24 V. The meter's manual shows it.</span></li><li>Put the red lead and the black lead into the right sockets. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Multimeter basics">When the meter arrives, check:</a></strong> which sockets the red and black leads go into for volts.</span></li><li>Touch the red probe to the metal post in the middle of the adapter's round plug. Touch the black probe to the metal ring on the outside of the plug. Keep the two probes apart from each other.</li><li>Plug the adapter into the wall. Read the screen.</li><li>About 24 with no minus sign: the middle post is plus (+). A minus sign (about -24): the middle post is minus (-). <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Iron adapter">When the adapter arrives, check:</a></strong> how close to 24 counts as normal. Its label may say.</span></li><li>If the screen shows 0, 1 or OL, or a number far from 24: unplug the adapter and stop.</li><li>Unplug the adapter from the wall.</li></ol>
+            <div class="s1-box"><span class="asm-label">What each part is for</span><p class="s1-bullet">&bull; Smoke stopper: the first power-up in Step 3 and the bench power test in Step 8.</p><p class="s1-bullet">&bull; LiPo storage bag: charging the flight batteries in Step 5.</p><p class="s1-bullet">&bull; Threadlocker (Permatex Blue 242): a small drop on each of the 16 motor screws (4 per motor, Step 2) and on the eight M3 x 10 set screws that join the leg pieces.</p><p class="s1-bullet">&bull; Zip ties: holding the Raspberry Pi in Step 7.</p><p class="s1-bullet">&bull; Nylon M2.5 standoffs: mounting the Pi in Step 7.</p><p class="s1-bullet">&bull; Hakko wire stripper and the thin silicone wire: the receiver and video wires in Step 4 and the GPS cable in Step 6.</p><p class="s1-bullet">&bull; Micro-USB cable: becomes the pigtail (the action below).</p><p class="s1-bullet">&bull; Heat shrink: covers bare joints. </p></div></li>
+              <li class="s1-rich"><p><strong>Check the iron's polarity before you plug it in.</strong> Now look at the iron and its cable for a small drawing that shows which part is plus (+) and which is minus (-). The middle must be plus, the same as your adapter.</p><p>If you cannot find the drawing, or it shows the opposite: do not plug the iron in. Message the shop with a photo of the marking (Rotor Village for the iron kit, Amazon.ca for the adapter). Wait for the shop's answer before you solder. If it cannot confirm the polarity, ask for a replacement or a refund; the soldering practice waits until then. Later, once you have charged flight packs (Stage 5), the kit's XT60 cable is a second way to power the iron (see the next paragraph).</p><p>What plugs into what: the adapter's round plug goes straight into the iron's power socket. Both are 5.5 x 2.5 mm. The kit's short "XT60 to DC" cable is a second way to power the iron away from a wall socket: its XT60 end goes into a charged 4S flight pack and its round end goes into the iron. The iron runs on 12 to 24 V, and a 4S pack gives about 13 to 17 V, so it heats a little more slowly on a pack. The first time you switch it on, time how long it takes to melt solder, so you know how long to wait.</p><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Iron and its cables">When the kit arrives, check:</a></strong> which end of the XT60 to DC cable is which, where the iron's polarity drawing is, and how long the iron takes to heat. Write the time down.</span></p></li>
+              <li class="s1-rich"><p>Set up the iron and practise on one of the practice boards (the Eiechip set).</p><ol><li>Put on your safety glasses.</li><li>Open a window and switch a fan on. Put the iron in its stand on a heat-proof surface. Use your ceramic tile or metal baking tray. A damp kitchen sponge wipes the tip.</li><li>Plug the iron in and wait for it to heat. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Iron and its cables">When the iron arrives, check:</a></strong> how long it takes to heat and how to set its temperature. (The listing says 220 to 400 C.) Write it down.</span></li><li>Touch a little solder to the tip. It should melt at once.</li><li>Tinning means melting a small bead of solder onto a bare copper pad. Tin a few pads on the practice board. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Practice boards">When the boards arrive, check:</a></strong> that the pads take solder on the side you use (the listing says double-sided; pad size and hole spacing are not stated).</span></li><li>Strip 3 mm off the end of short pieces of the thin silicone wire with the Hakko stripper, then solder them to the pads. Tug each one gently.</li><li>Repeat until the joints look smooth and shiny, like small hills.</li><li>When you stop, put the iron in its stand. Unplug it before you leave the room.</li></ol></li>
+              <li class="s1-rich"><p>Build the micro-USB power pigtail: a short cable with a plug on one end and bare wires on the other. You will use it in Step 7 to power the Pi from the flight controller.</p><ol><li>Keep the small right-angle micro-USB plug (it goes into the Pi). Cut off the big flat USB-A plug, leaving about 20 cm of cable on the micro-USB side.</li><li>Strip 3 cm of the outer jacket. Inside are four wires: two thicker ones carry power, two thinner ones carry data.</li><li>Find which thick wire is + and which is -. Set the multimeter to its lowest resistance (ohms) setting. Touch one probe to a thick wire and the other to the outermost pin at each end of the micro-USB plug. Close to 0 ohms means connected. Write down which wire is + and what the meter read. Pin 1 (the + pin) is at one end of the row of five pins, and pin 5 (the - pin) is at the other. Wrap a small piece of tape round the + wire.</li><li>Cut the two thin data wires short and cover each end with a piece of 3 mm heat shrink.</li><li>Strip 3 mm off each power wire with the Hakko stripper and tin it. Leave them loose until Step 7.</li></ol><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Micro-USB cable for the pigtail">When the cable arrives, check:</a></strong> the wire colours inside, and which pin is pin 1 and pin 5 inside the plug.</span></p></li>
+              
+            </ol>
+          </div>
+          <div class="asm-check"><span class="asm-label">&#10003; Stage done when</span>
+            <ul class="s1-rich"><li>You made three practice joints that look smooth and shiny.</li><li>Each wire stays put when you tug it gently.</li><li>You wrote down what the meter reads for each pigtail power wire.</li><li>You tried volts, continuity and resistance once each.</li><li>The adapter reads +24 V and the iron's drawing shows the middle is plus, the same as the adapter.</li></ul><label class="stg-done"><input type="checkbox" data-key="stg-1-done"> Stage 1 practice done (the Home page then moves on)</label></div>
+        </div>
+        <div class="practice-stage" id="practice-stage-2">
+          <h4>Stage 2 &middot; The payload laboratory</h4>
+          <p>Stage 2 practice = <a href="#p-steps" data-go-step="6">Step 6</a>: do it as soon as the parts arrive.</p>
+          <label class="stg-done"><input type="checkbox" data-key="stg-2-done"> Stage 2 practice done (the Home page then moves on)</label>
+        </div>
+        <div class="practice-stage" id="practice-stage-3">
+          <h4>Stage 3 &middot; Radio &amp; reflexes</h4>
+          <div class="asm-do">
+            <span class="asm-label">What you can do with it</span>
+            <ol class="asm-actions">
+              <li class="s1-rich"><p>First do the arrival test "Radio on USB power alone" (cells out). Then put the two cells in the radio and charge them with the radio's own USB-C cord.</p><p>Then set up EdgeTX (manual.edgetx.org, black-and-white radios): press MDL to open Model Select, scroll to an empty slot, press Enter and choose Create Model. On its Setup page, set Name (up to 10 letters) to the drone's name.</p><p>Then open the Mixes page. A new model sends no switch channels, so add two mixes: on CH5, flick a 2-position switch to make it the source: that is your arm switch (down = disarmed). On CH6, flick the switch you will use for Angle mode. (Step 4 adds CH7, the pack switch.)</p><p>Back on the Setup page, set Timer 1's Start to 3:00 and the option next to it to Remain, so it counts down; set its Mode to THs and its Switch to your arm switch, so it runs once you arm and raise the throttle.</p><p>You tell Betaflight which switch arms in Step 4.</p><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival>When the radio arrives, check:</a></strong> the switch names and the button names (MDL, Enter) on the Pocket (its manual).</span></p></li>
+              <li class="s1-rich"><p>Practise in FPV SkyDive, a free simulator on Steam (store.steampowered.com/app/1278060; Windows 64-bit).</p><p>With the radio's cells in, plug the radio into the laptop by USB and choose USB Joystick (HID) on the radio's screen. Then pick it as the controller in the simulator. Crash as much as you like: it costs nothing.</p><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival>When you start the simulator, check:</a></strong> that your laptop meets its stated needs (a GTX 650 with 2 GB or better), or that the low graphics settings work, the exact words of the EdgeTX prompt on the Pocket, and which of the simulator's modes levels itself (Angle).</span></p></li>
+            </ol>
+          </div>
+          <div class="asm-check"><span class="asm-label">&#10003; Stage done when</span>
+            <ul><li class="s1-rich"><p>Our target for beginners, in the simulator's self-levelling (Angle) mode, the mode of your first real hover in Step 8: hold the pretend drone in a hover for 30 seconds inside a box about 3 m wide, three times in a row. Then arm and disarm with the switch without looking at the radio.</p><p>Hover means staying still in the air. Arm means switching the motors on.</p></li></ul><label class="stg-done"><input type="checkbox" data-key="stg-3-done"> Stage 3 practice done (the Home page then moves on)</label></div>
+        </div>
+    </div>
+  </details>
 
 
   <details class="acc" id="words-card">
@@ -2963,6 +2903,7 @@
                   <li>Hold the frame and twist it gently: nothing moves or clicks.</li><li>Turn each motor with one finger: it turns freely. A slight magnetic bump-bump is normal; scraping or grinding is not.</li><li>No screw touches a winding.</li>
                 </ul>
               </div>
+              <p>Take a photo for the build log.</p>
               <label class="asm-done"><input type="checkbox" data-asm="2"> This step is done</label>
             </div>
           </div>
@@ -3130,7 +3071,7 @@
                   <li data-action-id="S5.1">Put the two 18650 cells in the radio.</li>
                   <li class="s1-rich" data-action-id="S5.1b"><p>Charge the radio with the USB-C cord from the radio's box (not the flight controller's cable), from a phone charger or a laptop USB port.</p><p>If you already did this in Stage 3, you can skip it.</p><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival>When the radio arrives, check:</a></strong> how long it takes to charge and what shows when it is full. The quick-start manual gives neither. Watch it the first time and note it here.</span></p></li>
                   <li class="s1-rich" data-action-id="S5.2">Put the charger on a fireproof surface (a ceramic tile, a concrete floor or a metal tray). Plug the charger into the wall with a mains cable and switch it on with the AC switch on its back. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Packs and charger">When the charger arrives, check:</a></strong> is a mains cable in the box? Rotor Village lists only the charger.</span></li>
-                  <li class="s1-rich" data-action-id="S5.3"><p>Set everything before you connect the pack. On the main screen, short-press OK to open the charge settings. Turn the scroll wheel to move, press OK to change a line, then press OK and Exit to keep it:</p><ol><li>Battery Type: <strong>LiHv</strong> for the GNB pack, <strong>Lion</strong> for the More Volts pack. Nothing else: the manual warns a wrong type can damage the pack and become a fire hazard.</li><li>Cells: Auto. It counts the cells from the balance plug, so the balance plug must be in.</li><li>Mode: Charge.</li><li>Charge Current: <strong>1.0 A</strong> for the GNB 1500 (this guide's cautious setting, just under the manual's 1 to 2C). <strong>2.5 A</strong> for the More Volts 5000 (half its capacity: its listing gives no charge current, so the guide stays well under 1C).</li></ol><p>Leave End Voltage as it is: the manual says not to change it unless you know the battery, and it cannot be changed for Lion. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Packs and charger">When the packs arrive, check:</a></strong> the GNB label says HV or LiHV, and the More Volts label says Li-ion, 4S.</span></p></li>
+                  <li class="s1-rich" data-action-id="S5.3"><p>Set everything before you connect the pack. On the main screen, short-press OK to open the charge settings. Turn the scroll wheel to move, press OK to change a line, then press OK and Exit to keep it:</p><ol><li>Battery Type: <strong>LiHv</strong> for the GNB pack, <strong>Lion</strong> for the More Volts pack. The M7AC charges Lion to 4.10 V per cell, a little under the pack's 4.2 V maximum: slightly less flight, never over. Nothing else: the manual warns a wrong type can damage the pack and become a fire hazard.</li><li>Cells: Auto. It counts the cells from the balance plug, so the balance plug must be in.</li><li>Mode: Charge.</li><li>Charge Current: <strong>1.0 A</strong> for the GNB 1500 (this guide's cautious setting, just under the manual's 1 to 2C). <strong>2.5 A</strong> for the More Volts 5000 (half its capacity: its listing gives no charge current, so the guide stays well under 1C).</li></ol><p>Leave End Voltage as it is: the manual says not to change it unless you know the battery, and it cannot be changed for Lion. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Packs and charger">When the packs arrive, check:</a></strong> the GNB label says HV or LiHV, and the More Volts label says Li-ion, 4S.</span></p></li>
                   <li class="s1-rich" data-action-id="S5.3c">Put the pack in the LiPo bag with its leads out through the opening.</li>
                   <li class="s1-rich" data-action-id="S5.4a">Plug the thick yellow plug (the main plug) into the charger's output port and the small white plug with five thin wires (the balance lead) into its balance port. Then scroll to Start and press OK.</li>
                   <li class="s1-rich" data-action-id="S5.4">Stay next to it the whole time. When it is full, the charger shows a message and sounds a tone. From empty that is roughly 1.5 hours for the GNB at 1.0 A and 2 hours for the More Volts at 2.5 A (an ESTIMATE: capacity divided by current; the last part of a charge is slower).</li>
@@ -3266,7 +3207,7 @@
                   <li class="s1-rich" data-action-id="S7.4b"><span class="ph-tag ph-after">AFTER THE FIRST HOVER</span><p>Battery unplugged.</p><ol><li>Use the pigtail you made and checked in Stage 1.</li><li>On the flight controller, find the three pads marked GND, 5V and LED. (They are for an LED strip, which this build does not use.)</li><li>Slide a piece of 6 mm heat shrink onto each pigtail wire.</li><li>Solder the + wire to 5V and the - wire to GND. Then shrink the heat shrink over the joints.</li><li>Plug the micro-USB end into the Pi's socket marked PWR IN (not the one marked USB).</li></ol><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Stack">When the flight controller arrives, check:</a></strong> the LED group's 5V pad gives 5 V. (The "5 V rail" test covers the load.)</span></p></li>
                   <li data-action-id="S7.5"><span class="ph-tag ph-now">NOW</span> Nothing hanging below the bottom plate may be the lowest point of the drone: a landing on the lens or the Pi will break it. Plan for it now; you fit them later (S7.8, after the first hover): before the first flight WITH the payload, landing legs must stand lower than it. The legs must stand at least 40 mm below the bottom plate. The payload's lowest part sits about 29 mm below it (from the design check; see &ldquo;How this was checked&rdquo;).</li>
                   <li data-action-id="S7.6"><span class="ph-tag ph-now">NOW</span> Route every cable out of the prop circles. Tie the loose ends down.</li>
-                  <li data-action-id="S7.7"><span class="ph-tag ph-now">NOW</span> For the first hover (no payload yet): slide the battery on the grip pad until the drone balances on two fingers under the arms, about 7 mm ahead of the frame centre, then strap it down with the first Kevlar strap. <span class="ph-tag ph-after">AFTER THE FIRST HOVER</span> After the payload is on: loosen the strap and slide the battery forward on the grip pad until it is about 2 mm from the GPS board, then strap it down again with the first Kevlar strap. The GPS stops it from reaching the exact balance point, so the drone sits about 3 mm tail-heavy. That is inside the 5 mm the design allows. Check by lifting it on two fingers under the arms: it should tip back only gently.</li>
+                  <li data-action-id="S7.7"><span class="ph-tag ph-now">NOW</span> For the first hover (no payload yet): slide the battery on the grip pad until the drone balances on two fingers under the arms, about 7 mm ahead of the frame centre, then strap it down with the first Kevlar strap. The Li-ion pack is 44 mm tall and wide against the LiPo's 38 x 26 mm, so its strap goes about 177 mm round instead of 128 mm. <span class="ph-tag ph-after">AFTER THE FIRST HOVER</span> After the payload is on: loosen the strap and slide the battery forward on the grip pad until it is about 2 mm from the GPS board, then strap it down again with the first Kevlar strap. The GPS stops it from reaching the exact balance point, so the drone sits about 3 mm tail-heavy. That is inside the 5 mm the design allows. Check by lifting it on two fingers under the arms: it should tip back only gently.</li>
                   <li data-action-id="S7.8"><span class="ph-tag ph-after">AFTER THE FIRST HOVER</span> <p>Fit the landing legs, one at a time. Each leg goes on in place of the bottom screw of one of the frame's standoffs: the two at the very back of the bottom plate, and the two at the front of the middle plate, ahead of the stack.</p><ol><li>Take out that one screw.</li><li>Screw an M3 x 10 set screw halfway into the standoff through the plate, so half sticks out below.</li><li>Screw a leg standoff onto it. Then a second set screw, the second leg standoff, and a rubber foot with its short screw.</li></ol><p>Use 25 mm standoffs at the back and 28 mm at the front. The back legs reach about 56 mm below the bottom plate (25 + 25 + the 6.3 mm foot). The front legs start 8 mm higher, on the middle plate, so they end about 54 mm below it.</p><p>The legs, not the payload, must touch the ground. The payload's lowest part is about 29 mm below the plate. The stance is narrow, so land on flat ground. </p><span class="muted"><strong><a href="#arrival-card" data-open-arrival>When the parts arrive, check:</a></strong><ol><li>Each knurled standoff has a screw thread inside at BOTH ends. (A thread on the inside is called a female thread.) Screw two together with a set screw: they should hold with no wobble.</li><li>The short screws for the rubber feet. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Foam tape and boards">When the feet arrive, check:</a></strong> the foot screw length. The list now has 10 mm screws (the 6.3 mm foot leaves about 3.7 mm of thread in the standoff): check that they hold the foot.</span></li></ol>The standoffs, set screws, feet and screws are on the Stage 4 list.</span></li>
                 </ol>
               </div>
@@ -3325,15 +3266,15 @@
                   <ol><li>Unplug the battery whenever your hands are on the props or the motors.</li><li>Radio on and arm switch off before the battery goes in.</li></ol></div>
                 <ol class="asm-actions">
                   <li class="s1-rich" data-action-id="S8.1"><p>Run the software tests and the demo on the laptop.</p><ol><li>Open a terminal in the Shad-Drone-Payload folder.</li><li>Run: python -m unittest -v test_drone_logic.py. It should end with OK.</li><li>Run: python payload.py --demo. Then run: python payload.py --demo --serve and open http://127.0.0.1:8000 in a browser. You see a plot of fake hotspots, not a map.</li></ol><p>On Windows: download Python from python.org and install it. Then open a new terminal in the Shad-Drone-Payload folder and type python --version. If that is not recognised, use py instead of python in the commands above. Nothing else needs installing on the laptop: the sensor drivers in requirements.txt are only for the Pi.</p></li>
-                  <li class="s1-rich" data-action-id="S8.2"><p>Bench power test. Props OFF.</p><p><strong>Before this:</strong> you hold the ISED Amateur Radio Operator Certificate (Basic). This is the first time the video transmitter transmits.</p><ol><li>Radio on. Arm switch off.</li><li>Plug a charged pack into the smoke stopper. Plug the smoke stopper into the drone. (The smoke stopper is a safety plug that cuts the power at 1.2 A.)</li><li>Watch the light on the smoke stopper. It must stay green. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Receiver, video transmitter and smoke stopper">At the first power-up, check:</a></strong> where the smoke stopper's light is.</span> If it is not green, or you see or smell smoke, unplug at once.</li><li>The antenna must be screwed on. Watch the video transmitter's light: at start-up it flashes three groups (channel, band, power). The last group, 3 red then 1 blue, means 25 mW, its lowest power. A steady blue light afterwards means it is locked to the legal channels. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Receiver, video transmitter and smoke stopper">At the first power-up, check:</a></strong> the VTX light pattern, as in Step 4.</span></li><li>Move every stick and switch on the radio. Every channel must respond. Watch Betaflight's Receiver tab: every bar should move as you move each stick and switch. The picture must appear on the monitor. To start it: screw both of the monitor's own antennas on, plug your USB-C power bank into the monitor's USB-C port, short-press the power button and then hold it for 3 seconds, and use auto search to find the video channel.</li><li>Unplug the pack. Take the smoke stopper off. Spinning motors can draw more than 1.2 A, which would hide the result.</li><li>Put your safety glasses on. Hold the drone down or put it where it cannot move.</li><li>Radio on, arm switch off. Plug the pack in directly.</li><li>Arm. Raise the throttle a little. The motors spin.</li><li>Switch the radio off. The motors must stop. If they do not, unplug the battery.</li></ol></li>
+                  <li class="s1-rich" data-action-id="S8.2"><p>Bench power test. Props OFF.</p><p><strong>Before this:</strong> you hold the ISED Amateur Radio Operator Certificate (Basic). This is the first time the video transmitter transmits.</p><ol><li>Radio on. Arm switch off.</li><li>Plug a charged pack into the smoke stopper. Plug the smoke stopper into the drone. (The smoke stopper is a safety plug that cuts the power at 1.2 A.)</li><li>Watch the light on the smoke stopper. It must stay green. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Receiver, video transmitter and smoke stopper">At the first power-up, check:</a></strong> where the smoke stopper's light is.</span> If it is not green, or you see or smell smoke, unplug at once.</li><li>The antenna must be screwed on. Watch the video transmitter's light: at start-up it flashes three groups (channel, band, power). The last group, 3 red then 1 blue, means 25 mW, its lowest power. A steady blue light afterwards means it is locked to the legal channels. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Receiver, video transmitter and smoke stopper">At the first power-up, check:</a></strong> the VTX light pattern, as in Step 4.</span></li><li>Move every stick and switch on the radio. Every channel must respond. Watch Betaflight's Receiver tab: every bar should move as you move each stick and switch. The picture must appear on the monitor. To start it: screw both of the monitor's own antennas on, plug your USB-C power bank into the monitor's USB-C port, short-press the power button and then hold it for 3 seconds, and use auto search to find the video channel.</li><li>Unplug the pack. Take the smoke stopper off. Spinning motors can draw more than 1.2 A, which would hide the result.</li><li>Put your safety glasses on. Hold the drone down or put it where it cannot move.</li><li>Radio on, arm switch off. Plug the pack in directly.</li><li>Arm. Raise the throttle a little. The motors spin.</li><li>Switch the radio off. The motors must stop. If they do not, unplug the battery.</li></ol><p>Low-power range test in the yard, once you hold the amateur radio certificate (Basic): the video transmitter transmits from the moment it is powered. If you bought the optional memory card, record it on the monitor's DVR.</p></li>
                   <li class="s1-rich" data-action-id="S8.3"><p>Still props OFF and without the smoke stopper.</p><ol><li>Open Betaflight Configurator. Download it from github.com/betaflight/betaflight-configurator/releases/latest, or use app.betaflight.com in Chrome. Plug in the USB cable and press Connect.</li><li>Plug in the battery.</li><li>In the Motors tab, tick the confirmation box. Then raise one motor's slider a little at a time.</li><li>Check that the motor that spins is the right one: M1 rear right, M2 front right, M3 rear left, M4 front left, seen from above with the camera at the front.</li><li>Check it spins the way the diagram shows. If a motor spins the wrong way, reverse it with the Motor direction button in the same tab (props off).</li><li>Lower the sliders. Unplug the battery when you are done.</li></ol><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Software and props">On the laptop, check:</a></strong> does Configurator show a slider for each motor, or only the Master slider?</span></p></li>
                   <li class="s1-rich"><p>Set up Angle mode first. In Betaflight's Modes tab, click Add Range next to ANGLE and put it on a switch on your radio. (ANGLE is the self-levelling mode.)</p><p>Then, props off: arm, switch to Angle mode, and raise the throttle about a third of the way.</p><p>Keep your hands clear of the motors. Tilt the drone so one side points down, for example the nose down. The motors on the low side (here the two front motors) must speed up.</p><p>Also check the 3D model in Betaflight tilts the same way as the drone.</p><p>If any check fails, disarm, unplug the battery and do not fly. Ask for help before trying again.</p></li>
-                  <li class="s1-rich" data-action-id="S8.4"><p>Unplug the battery.</p><p>Fit the props. Each prop has a CW or CCW marking.</p><p>CW props go on M1 and M4. CCW props go on M2 and M3. M1 is rear right, M2 is front right, M3 is rear left, M4 is front left.</p><p>Tighten each nut with the prop tool from the tool kit. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Software and props">When the prop tool arrives, check:</a></strong> it fits the Gemfan prop nut.</span></p><p>Spin each prop with a finger. It should spin freely and straight.</p><p><span class="muted"><strong><a href="#arrival-card" data-open-arrival>When the props arrive, check:</a></strong> how Gemfan marks CW and CCW on a prop, and which face goes up. Look for the letters on the prop. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Software and props">When the props arrive, check:</a></strong> what to do if a prop has no letters. Look at the manufacturer's page.</span></span></p></li>
+                  <li class="s1-rich" data-action-id="S8.4"><p>Unplug the battery.</p><p>Balance the prop sets before you fit them.</p><p>Fit the props. Each prop has a CW or CCW marking.</p><p>CW props go on M1 and M4. CCW props go on M2 and M3. M1 is rear right, M2 is front right, M3 is rear left, M4 is front left.</p><p>Tighten each nut with the prop tool from the tool kit. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Software and props">When the prop tool arrives, check:</a></strong> it fits the Gemfan prop nut.</span></p><p>Spin each prop with a finger. It should spin freely and straight.</p><p><span class="muted"><strong><a href="#arrival-card" data-open-arrival>When the props arrive, check:</a></strong> how Gemfan marks CW and CCW on a prop, and which face goes up. Look for the letters on the prop. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Software and props">When the props arrive, check:</a></strong> what to do if a prop has no letters. Look at the manufacturer's page.</span></span></p></li>
                   <li class="s1-rich"><p>Weigh the drone with its battery fitted. The payload is not on yet. Use your kitchen scale.</p><p>Write the number here: ____ g.</p><p>Compare it with the weight card in Fly safely. Your scale reading is the one that counts. 250 g or more must be registered.</p></li>
                   <li class="s1-rich"><p>Check the site on NAV Drone first. NAV Drone is NAV CANADA's free map: portal.navdrone.ca, or the NAV Drone app for iPhone or Android.</p><p>Basic flying needs uncontrolled airspace, more than 5.6 km from an airport and 1.9 km from a heliport. See the Before you fly card.</p><p>Edmonton city parks are not allowed for this drone (it is over 250 g): use private land with the owner&rsquo;s permission. <a href="#fly-card" data-open="fly-card">See the Before you fly card.</a></p></li>
                   <li class="s1-rich" data-action-id="S8.5"><p>First hover of the bare quad (no payload yet). Fly only when all six are true: you hold the Basic drone pilot certificate; you hold the ISED amateur radio certificate (Basic), for the video transmitter; the drone is registered; its registration number is marked on it; the site is in uncontrolled airspace; nobody is within 30 m (100 ft) sideways.</p><p>Never above 122 m (400 ft) above the ground. If you fly by a screen, you need a visual observer; until then, fly looking at the drone.</p><ol><li>Put the drone on flat open ground, camera pointing away from you. Radio on, arm switch OFF.</li><li>Plug in the battery and step back at least 5 m.</li><li>Arm. Slowly raise the throttle until the drone lifts off, and hold it about 1 metre up for up to 30 seconds.</li><li>Lower the throttle gently to land. Disarm. Unplug the battery.</li><li>Touch each motor: they should all feel about the same. If one is much hotter or colder than the others, do not fly again until you have found out why.</li></ol><p><strong>Landing:</strong> Take off and land on a flat board or hard flat ground, not grass: the Pi hangs only about 2.5 cm above the ground. Land straight down and slowly, then disarm as soon as the feet touch. The feet are close together side to side, so if the drone lands leaning or sliding sideways it falls on its side and a prop and an arm hit the ground. After a hard landing, use the <a href="#crash-card" data-open-crash>&ldquo;After a hard landing&rdquo; checklist</a>.</p></li>
                   <li class="s1-rich" data-action-id="S8.7"><p>Now mount the payload (Step 7).</p><p>Heat test, props OFF. This test needs no GPS fix: in the SSH window, cd Shad-Drone-Payload, then source .venv/bin/activate, then start the payload in bench mode with python payload.py --bench. It takes the camera as 50 cm above the table and prints every hot spot it finds.</p><ol><li>Fill a mug with water just poured from the kettle and set it on the table.</li><li>Hold the drone steady with the thermal camera about 50 cm above the mug. Then put your open hand next to the mug.</li><li>The payload should report the mug as a hot spot, but not your hand. (A hand is far cooler than the 60 C the detector looks for.)</li><li>Write down what it prints. If the mug is not found, refill it with fresh hot water and try again at 50 cm.</li></ol></li>
-                  <li class="s1-rich" data-action-id="S8.6"><p>Outdoors, with the drone on the ground: turn on your iPhone&rsquo;s Personal Hotspot (Maximize Compatibility on), power the drone, join the hotspot with the laptop and open the SSH window (ssh username@raspberrypi.local). Start the payload so it keeps running if the Wi-Fi drops: cd Shad-Drone-Payload, then source .venv/bin/activate, then <code>nohup python -u payload.py --serve --heading 0 &gt; run.txt 2&gt;&amp;1 &amp;</code>, then <code>tail -f run.txt</code> to watch what it prints. Wait until it prints: "Ground height set to ... from the first GPS fix. Fly only after this line appears." (The first line, "nohup: ignoring input", is normal. Ctrl+C stops only the watching; the payload carries on.) If the SSH window drops, log in again, then cd Shad-Drone-Payload and tail -f run.txt. Once, on the bench with props off, test it: start it this way, turn the hotspot off for 30 seconds, turn it on, log in again and type <code>pgrep -f payload.py</code>. A number means it is still running.</p><p>Three things the payload assumes, so its map is only right when they are true. Before you take the reading you want to report, turn the drone&rsquo;s nose to north. Facing any other way, the map puts the hot spot in the wrong place, and the further from north, the bigger the error. To read a hot spot&rsquo;s position, stop and hover level for a second or two first. In forward flight the positions are metres out. Take off from ground at about the same level as the area you search. (These come from a simulation that runs the payload&rsquo;s own code, not from the real drone.)</p><p>Then hover 1 metre again: it should stay level without drifting to one side. After you land: disarm, type <code>sudo poweroff</code> in the SSH window, and wait until the Pi&rsquo;s light stays off. Only then unplug the pack. Pulling the pack while the Pi runs is a sudden power cut, and that can spoil the card. (How long the Pi takes to stop was not checked: time it the first time.)</p><p>The line appears in the SSH window on your laptop where you started the payload. Outdoors with a clear sky, the first fix takes about half a minute the first time. The GPS board's light flashes once it has a fix.</p><p>(The half-minute figure comes from a distributor&rsquo;s listing, &ldquo;TTFF 1s/35s&rdquo;. The maker&rsquo;s datasheet was not opened.)</p></li>
+                  <li class="s1-rich" data-action-id="S8.6"><p>Battery out. Fit the props again, as in item 5.</p><p>Outdoors, with the drone on the ground: turn on your iPhone&rsquo;s Personal Hotspot (Maximize Compatibility on), power the drone, join the hotspot with the laptop and open the SSH window (ssh username@raspberrypi.local). Start the payload so it keeps running if the Wi-Fi drops: cd Shad-Drone-Payload, then source .venv/bin/activate, then <code>nohup python -u payload.py --serve --heading 0 &gt; run.txt 2&gt;&amp;1 &amp;</code>, then <code>tail -f run.txt</code> to watch what it prints. Wait until it prints: "Ground height set to ... from the first GPS fix. Fly only after this line appears." (The first line, "nohup: ignoring input", is normal. Ctrl+C stops only the watching; the payload carries on.) If the SSH window drops, log in again, then cd Shad-Drone-Payload and tail -f run.txt. Once, on the bench with props off, test it: start it this way, turn the hotspot off for 30 seconds, turn it on, log in again and type <code>pgrep -f payload.py</code>. A number means it is still running.</p><p>Three things the payload assumes, so its map is only right when they are true. Before you take the reading you want to report, turn the drone&rsquo;s nose to north. Facing any other way, the map puts the hot spot in the wrong place, and the further from north, the bigger the error. To read a hot spot&rsquo;s position, stop and hover level for a second or two first. In forward flight the positions are metres out. Take off from ground at about the same level as the area you search. (These come from a simulation that runs the payload&rsquo;s own code, not from the real drone.)</p><p>Then hover 1 metre again: it should stay level without drifting to one side. After you land: disarm, type <code>sudo poweroff</code> in the SSH window, and wait until the Pi&rsquo;s light stays off. Only then unplug the pack. Pulling the pack while the Pi runs is a sudden power cut, and that can spoil the card. (How long the Pi takes to stop was not checked: time it the first time.)</p><p>The line appears in the SSH window on your laptop where you started the payload. Outdoors with a clear sky, the first fix takes about half a minute the first time. The GPS board's light flashes once it has a fix.</p><p>(The half-minute figure comes from a distributor&rsquo;s listing, &ldquo;TTFF 1s/35s&rdquo;. The maker&rsquo;s datasheet was not opened.)</p></li>
                 </ol>
                 <p class="muted opt-coat"><strong>Optional, after the payload works</strong> (only if you bought the spray (Optional extras)): spray the flight controller, speed controller, receiver, VTX, Pi and HAT 2 to 3 times, with everything plugged in first. Do not spray the thermal camera&rsquo;s window, the FPV camera lens, the USB sockets, the microSD slot, the buttons, the barometer or the GPS board&rsquo;s antenna. Weigh the drone before and after. If it gained more than 9 g, ask before flying: the balance may change.</p>
               </div>
@@ -3941,6 +3882,13 @@ while True:
   let hereTarget = null;
   hereGo.addEventListener("click", function () {
     if (!hereTarget) { return; }
+    if (typeof hereTarget.stage === "number" && hereTarget.practice) {   /* a stage's practice: Build, Before Step 1 */
+      openTab("steps");
+      const pr = document.getElementById("practice"), box = document.getElementById("practice-stage-" + hereTarget.stage);
+      if (pr) { pr.open = true; }
+      if (box || pr) { (box || pr).scrollIntoView({ block: "start" }); }
+      return;
+    }
     if (typeof hereTarget.stage === "number") {                       /* fresh-eyes A1: a stage on the Buy page */
       openTab("parts");
       const list = document.querySelector('[data-stage-list="' + hereTarget.stage + '"]');
@@ -3973,7 +3921,7 @@ while True:
     const any = function (n) { return ids(n).some(function (id) { return !!saved.owned[id]; }); };
     if ([1, 2, 3, 4].every(all)) { return null; }
     for (const n of [1, 2, 3]) {
-      if (any(n) && !saved.ticks["stg-" + n + "-done"]) { return { stage: n, text: "Next: Stage " + n + " practice \u00b7 " + names[n] }; }
+      if (any(n) && !saved.ticks["stg-" + n + "-done"]) { return { stage: n, practice: true, text: "Next: Stage " + n + " practice \u00b7 " + names[n] }; }
     }
     const missing = [1, 2, 3, 4].filter(function (n) { return !all(n); });
     return { stage: missing[0], text: [1, 2, 3, 4].some(any)
@@ -3981,10 +3929,19 @@ while True:
       : "Next: Stage 1 \u00b7 " + names[1] + ": buy it, then practise" };
   }
   document.addEventListener("change", function (e) { if (e.target && e.target.type === "checkbox") { setTimeout(paintHere, 0); } });
+  document.addEventListener("click", function (e) {
+    const a = e.target && e.target.closest ? e.target.closest("a[data-go-step]") : null;
+    if (!a || !window.BuildGuideSteps) { return; }
+    e.preventDefault();
+    openTab("steps");
+    window.BuildGuideSteps.goTo(Number(a.getAttribute("data-go-step")) - 1);
+    const asmEl = document.querySelector("[data-assembly]");
+    if (asmEl) { asmEl.scrollIntoView({ block: "start" }); }
+  });
   function paintHere() {
     const sn = stageNext();
     if (sn) {
-      hereTarget = { stage: sn.stage };
+      hereTarget = { stage: sn.stage, practice: !!sn.practice };
       hereStep.textContent = sn.text;
       hereGo.textContent = "Go to Stage " + sn.stage;
       hereGo.hidden = false;

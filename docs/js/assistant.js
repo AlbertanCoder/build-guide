@@ -3374,9 +3374,10 @@
         const txt = String(sn.text).replace(/^Next:\s*/, "");
         out.label = txt;
         out.context = { stageText: txt };
-        const box = document.querySelector('.stage-fold[data-stage="' + sn.stage + '"]');
+        /* a stage's practice is in Build, Before Step 1 (guide audit page 2); buying is on the Buy card */
+        const box = sn.practice ? document.getElementById("practice-stage-" + sn.stage) : document.querySelector('.stage-fold[data-stage="' + sn.stage + '"]');
         const text = box ? clip(plain(box), 1300) : "";
-        if (text.length > 40) { out.passage = { label: "Where you are: " + txt, tab: "parts", step: null, text: text }; }
+        if (text.length > 40) { out.passage = { label: "Where you are: " + txt, tab: sn.practice ? "steps" : "parts", step: null, text: text }; }
         return out;
       }
     } catch (e) { /* no Home logic on this page: fall back to the step walker */ }
