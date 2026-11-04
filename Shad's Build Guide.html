@@ -2,6 +2,27 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>
+  /* The public copy (GitHub Pages) has no Guide Assistant server, so its /api/ calls could only fail (404s in the
+     console). There they are answered here, without a request, exactly as a missing server answers (404). Served by
+     the assistant server (the laptop, or a phone paired over home Wi-Fi on the laptop's address) nothing changes. */
+  (function () {
+    window.guidePublicHost = function (h) { return /(^|\.)github\.io$/i.test(String(h || "")); };
+    var pub = window.GUIDE_FORCE_PUBLIC === true || window.guidePublicHost(location.hostname);
+    window.GUIDE_PUBLIC_SITE = pub;
+    if (!pub || !window.fetch || typeof Response !== "function") return;
+    var real = window.fetch.bind(window);
+    window.fetch = function (input, init) {
+      var url = typeof input === "string" ? input : (input && input.url) || "", path = "";
+      try { path = new URL(url, location.href).pathname; } catch (e) { path = ""; }
+      if (path.indexOf("/api/") === 0) {
+        return Promise.resolve(new Response("No Guide Assistant server on the public site.",
+          { status: 404, statusText: "Not Found", headers: { "content-type": "text/plain" } }));
+      }
+      return real(input, init);
+    };
+  })();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Shad's Fire-Detecting Drone &mdash; Step-by-Step Build Guide</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTYiIGhlaWdodD0iMjU2IiB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJGaXJlLWRldGVjdGluZyBkcm9uZSBsb2dvIj4NCiAgPHRpdGxlPkZpcmUtZGV0ZWN0aW5nIGRyb25lIGxvZ288L3RpdGxlPg0KICA8IS0tIFIzLWE6IHZpZXdmaW5kZXIgY29ybmVycyAocm91bmRlZCwgaW5zaWRlIHRoZSBzdHJpY3Qgc2FmZSBjaXJjbGUpIGFyb3VuZCBhIGJpZyB0aHJlZS1iYW5kIGhlYXQgZmxhbWUgLS0+DQogIDxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTE2IiBmaWxsPSIjMTIzYTJlIi8+DQogIDxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2Y3ZjJlOCIgc3Ryb2tlLXdpZHRoPSIyOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4NCiAgICA8cGF0aCBkPSJNMTEwIDE4MiBWMTUwIEE0MCA0MCAwIDAgMSAxNTAgMTEwIEgxODIiLz4NCiAgICA8cGF0aCBkPSJNMzMwIDExMCBIMzYyIEE0MCA0MCAwIDAgMSA0MDIgMTUwIFYxODIiLz4NCiAgICA8cGF0aCBkPSJNNDAyIDMzMCBWMzYyIEE0MCA0MCAwIDAgMSAzNjIgNDAyIEgzMzAiLz4NCiAgICA8cGF0aCBkPSJNMTgyIDQwMiBIMTUwIEE0MCA0MCAwIDAgMSAxMTAgMzYyIFYzMzAiLz4NCiAgPC9nPg0KICA8cGF0aCB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyNTYgMjYyKSBzY2FsZSgxLjE1KSB0cmFuc2xhdGUoLTI1NiAtMjU2KSIgZmlsbD0iI2MyNTcxYiIgZD0iTTI1NiAxNDAgQzI4MCAxOTIgMzQwIDIyMiAzNDAgMjkyIEMzNDAgMzQwIDMwMiAzNzIgMjU2IDM3MiBDMjEwIDM3MiAxNzIgMzQwIDE3MiAyOTIgQzE3MiAyNTIgMTk0IDIyNiAyMTAgMTk2IEMyMTggMjI2IDIzMCAyNDIgMjQ0IDI1MCBDMjQwIDIxNCAyNDIgMTc2IDI1NiAxNDAgWiIvPg0KICA8cGF0aCB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyNTYgMjg0LjYpIHNjYWxlKC44NCkgdHJhbnNsYXRlKC0yNTYgLTI1NikiIGZpbGw9IiNlODg2M2EiIGQ9Ik0yNTYgMTQwIEMyODAgMTkyIDM0MCAyMjIgMzQwIDI5MiBDMzQwIDM0MCAzMDIgMzcyIDI1NiAzNzIgQzIxMCAzNzIgMTcyIDM0MCAxNzIgMjkyIEMxNzIgMjUyIDE5NCAyMjYgMjEwIDE5NiBDMjE4IDIyNiAyMzAgMjQyIDI0NCAyNTAgQzI0MCAyMTQgMjQyIDE3NiAyNTYgMTQwIFoiLz4NCiAgPHBhdGggdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjU2IDMxMCkgc2NhbGUoLjUpIHRyYW5zbGF0ZSgtMjU2IC0yNTYpIiBmaWxsPSIjZmZkOWE4IiBkPSJNMjU2IDE0MCBDMjgwIDE5MiAzNDAgMjIyIDM0MCAyOTIgQzM0MCAzNDAgMzAyIDM3MiAyNTYgMzcyIEMyMTAgMzcyIDE3MiAzNDAgMTcyIDI5MiBDMTcyIDI1MiAxOTQgMjI2IDIxMCAxOTYgQzIxOCAyMjYgMjMwIDI0MiAyNDQgMjUwIEMyNDAgMjE0IDI0MiAxNzYgMjU2IDE0MCBaIi8+DQo8L3N2Zz4NCg==">
