@@ -21,7 +21,7 @@ Every category needed for the build is covered below. Prices and stock are point
 > **Corrected in this revision:** the TBS Diamond antenna is an **850–950 MHz Crossfire link antenna**,
 > not 5.8 GHz video — replaced by the **TBS Triumph PRO SMA RHCP ($29.99)**. The Qwiic cable is now the
 > **CAB-17261 female-jumper** (the PRT-17912's pin order cannot be made to match the Pimoroni header).
-> The monitor **ships with no 18650 and no SD card**, so both are now separate lines. Transport Canada
+> The monitor **ships with no SD card**, so the card is a separate line; it runs from a USB-C power bank you already own. Transport Canada
 > registration is **CA$10** (raised 1 Apr 2025), so the fee allowance is CA$20. Walmart blocked automated
 > re-checks of the AAA cells and safety glasses; their 31 Oct observations stand.
 >
@@ -50,6 +50,7 @@ Every category needed for the build is covered below. Prices and stock are point
 | 1 | **Samsung 30Q 18650 cell, 2-pack** — the M5F ships with NO battery | $15.99 | [179 in stock](https://rotorvillage.ca/samsung-30q-18650-3000mah-15a-li-ion-2pc/); flat-top, unprotected — add a spacer if the holder misses contact |
 | 1 | Rotor Village Kevlar battery straps, 2-pack | $8.99 | [Add to cart](https://rotorvillage.ca/rvs-kevlar-battery-strap-2pk/) |
 | 1 | LED COB strip, 4S/1m | $11.99 | [Choose options](https://rotorvillage.ca/led-cob-strip-4s-1m/) |
+| 1 | **VIFLY Finder 2 lost-drone beeper** (own 80 mAh battery, 5 g) | $21.99 | [10 in stock 4 Nov 2026](https://rotorvillage.ca/vifly-finder-2-buzzer-lost-drone-finder/) |
 | 1 | Flywoo Ultra Grip battery pad | $3.99 | [Add to cart](https://rotorvillage.ca/flywoo-ultra-grip-super-sticky-battery-pad/) |
 | 1 | Flywoo FPV Quad Tool Kit with 65W iron and multimeter | $103.99 | [Only 3 shown; contents listed](https://rotorvillage.ca/flywoo-fpv-quad-tool-kit-w-multimeter-and-soldering-iron/) |
 | 1 | iFlight Smart Smoke Stopper, XT30/XT60 | $11.99 | [Add to cart](https://rotorvillage.ca/iflight-smart-smoke-stopper-xt30-xt60/) |
@@ -69,6 +70,7 @@ Every category needed for the build is covered below. Prices and stock are point
 | 1 | Pimoroni PA1010D GPS Breakout, SKU 476-1, I2C 0x10, with 1×5 headers | $41.95 | [In stock](https://www.pishop.ca/product/pa1010d-gps-breakout/) |
 | 1 | Micro-USB M/M right-angle cable, 24AWG | $4.95 | [In stock; modify only as documented for aircraft power](https://www.pishop.ca/product/micro-usb-cable-mm-right-angle-micro-usb-24-awg-2-m-6-ft/) |
 | 2 | Nylon M2.5 × 12mm standoff sets, 4 per pack | $1.90 | [In stock](https://www.pishop.ca/product/nylon-11mm-m2-5-standoff-set-pack-of-4/) |
+| 1 | **Spare 32GB microSD card for the Pi** (SanDisk Ultra, Class 10, blank), set up like the first | $27.95 | [In stock 4 Nov 2026](https://www.pishop.ca/product/sandisk-ultra-microsdhc-32gb-class-10-blank/) |
 | 1 | **32GB microSD card for the monitor's DVR** (SanDisk Ultra, Class 10, blank) | $27.95 | [In stock](https://www.pishop.ca/search.php?search_query=32gb+microsd) — any spare card works, but the DVR cannot record without one |
 
 **PiShop merchandise subtotal: CA$258.65.** Freight is weight-based and calculated after entering the shipping address. PiShop ships only within Canada. The Pi-hole kit is used as a hardware bundle; flash its included blank card with Raspberry Pi OS — that card is **not** spare for the DVR.
@@ -180,7 +182,7 @@ Freight from Rotor Village and PiShop is weight-based; SparkFun international fr
 | Pi ↔ thermal/GPS | Pre-soldered Zero 2 WH + four-port Qwiic HAT; 0x33 camera and 0x10 GPS on 3.3V I2C | Solder 1×5 headers, wire **3V3/SDA/SCL/GND in Pimoroni order (pin 4 skipped)** with CAB-17261 cables, ignore the HAT silkscreen, run address/API tests |
 | Payload mounting | Pi under the bottom plate (or over a measured cutout); MLX90640 below it, lens down; PA1010D above, patch antenna up | **Measure before drilling** — the lens needs a clear vertical line to the ground, and no board may touch bare carbon |
 | Pi power | GEPRC regulated 5V/3A to micro-USB power-only pigtail; separate bench PSU | Meter polarity/voltage and check undervoltage under load before flight |
-| Analog FPV | Phoenix 2 (5–36V), Unify Pro HV (2–6S), **TBS Triumph PRO 5.8 GHz SMA antenna**, Skyzone M5F analog monitor (needs its own 18650 and microSD) | Match channel/band and legal RF settings; use 25 mW / default legal channels unless properly licensed. A 900 MHz Crossfire antenna (e.g. TBS Diamond) will not work here |
+| Analog FPV | Phoenix 2 (5–36V), Unify Pro HV (2–6S), **TBS Triumph PRO 5.8 GHz SMA antenna**, Skyzone M5F analog monitor (runs from a USB-C power bank; needs its own microSD) | Match channel/band and legal RF settings; use 25 mW / default legal channels unless properly licensed. A 900 MHz Crossfire antenna (e.g. TBS Diamond) will not work here |
 | Charging | M7AC supports LiPo, LiHV and Li-ion (Lion), 1-6S, and AC input | LiHv for the GNB pack, Lion for the More Volts pack; attended balance charging in the LiPo bag |
 | Software | Included local package with GPS/camera drivers, logging and offline viewer | **31/31 synthetic tests passed**, then perform Pi hardware and surveyed-target tests |
 

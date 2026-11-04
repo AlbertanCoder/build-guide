@@ -18,7 +18,10 @@
  */
 "use strict";
 
-const CACHE = "build-guide-v2"; /* v2: five-places layout; the page and assistant.js must change together */
+/* v3 (4 Nov 2026): scripts are now network first too. Under v2 an old cached assistant.js ran next to a newer page,
+   and Shad's bought ticks did not show. Change CACHE for every release, and index.html asks for assistant.js with
+   this same name (?v=...), so a page and its script always come together (check-chat-memory.py checks the two match). */
+const CACHE = "build-guide-v3";
 
 const PRECACHE = [
   "./",
@@ -100,7 +103,18 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  /* everything else: cache first, refreshed in the background */
+  /* scripts: network first like the page (a script must match the page it came with), the last copy when offline */
+  if (request.destination === "script" || /\.js$/.test(new URL(request.url).pathname)) {
+    event.respondWith(
+      fetch(request).then((response) => {
+        if (response && response.ok) { const copy = response.clone(); caches.open(CACHE).then((cache) => cache.put(request, copy)); }
+        return response;
+      }).catch(() => caches.match(request, { ignoreSearch: true }).then((hit) => hit || Response.error()))
+    );
+    return;
+  }
+
+  /* everything else (models, pictures): cache first, refreshed in the background */
   event.respondWith(
     caches.open(CACHE).then((cache) =>
       cache.match(request).then((hit) => {

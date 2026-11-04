@@ -124,7 +124,7 @@ const SUITES = [
        ticks, More detail, where questions go, the monthly cap */
     name: "chat memory (browser)",
     cmd: ["python", ["scripts/dev/check-chat-memory.py"]],
-    expect: 18,
+    expect: 22,   /* 18 -> 22 (2026-11-04): a part ticked bought on the laptop shows as bought on the phone (own:<id>); a returning browser with the old code's leftovers is repaired; page and script versions match */
     optional: true
   },
   {
@@ -176,14 +176,14 @@ const SUITES = [
        every action id in STEP-TRUTH.md and in its own step section, every part an action or pin names exists. */
     name: "step models",
     cmd: ["python", ["-I", "scripts/build/check_models.py"]],
-    expect: 503   /* 494 -> 503 (2026-11-04 Phase G): Step 2 names the FRONT and Step 7 the Li-ion ghost pack (+2); S1.1 now highlights one part per pile and S2.1-S2.3 the FRONT arrow, so their 'part an action names exists' checks grew (+7). Before: 493 -> 494 (2026-11-04, Shad's mixed Stage 5): Step 5 also needs a label naming the Li-ion pack's charge setting ('LION, 2.5 A'); the M4AC label check became M7AC, same count. Before: 488 -> 493 (2026-11-03 re-sync): the new S3.5 first power-up action adds its clip, order, step, part-name and on-the-page checks; the Step 3 "no battery_pack" rule became "battery_pack only on the bench" (S3.5 puts a pack there), same count. Before: 435 -> 488 (2026-11-03): check_models now reads the LIVE page (build-guide-ui/index.html, or --page); it had read the repo's old 05:06 copy, which has no data-action-ids, so 53 "action is on the page" checks were silently skipped and now really run */
+    expect: 510   /* 503 -> 510 (2026-11-04, practical cards, Opus): the Step 4 FINDER label, S4.9's own checks and the longer S2.2/S2.4 shows. Before: 494 -> 503 (2026-11-04 Phase G): Step 2 names the FRONT and Step 7 the Li-ion ghost pack (+2); S1.1 now highlights one part per pile and S2.1-S2.3 the FRONT arrow, so their 'part an action names exists' checks grew (+7). Before: 493 -> 494 (2026-11-04, Shad's mixed Stage 5): Step 5 also needs a label naming the Li-ion pack's charge setting ('LION, 2.5 A'); the M4AC label check became M7AC, same count. Before: 488 -> 493 (2026-11-03 re-sync): the new S3.5 first power-up action adds its clip, order, step, part-name and on-the-page checks; the Step 3 "no battery_pack" rule became "battery_pack only on the bench" (S3.5 puts a pack there), same count. Before: 435 -> 488 (2026-11-03): check_models now reads the LIVE page (build-guide-ui/index.html, or --page); it had read the repo's old 05:06 copy, which has no data-action-ids, so 53 "action is on the page" checks were silently skipped and now really run */
   },
   {
     /* Phase D: the viewer in headless Chrome - at most 2 WebGL contexts, release / re-init, play / pause / scrub,
        chips, reduced motion, and every action's pose shows what its text names. */
     name: "3d viewer",
     cmd: ["node", ["scripts/build/check_viewer.js"]],
-    expect: 178   /* 177 -> 178 (2026-11-03): the new S3.5 action's pose shows what its text names */
+    expect: 179   /* 178 -> 179 (2026-11-04, practical cards, Opus): S4.9's pose. Before: 177 -> 178 (2026-11-03): the new S3.5 action's pose shows what its text names */
   },
   {
     /* Phase E: payload layout sweeps on the real frame outlines (thermal view, fit, balance, legs, wires) */
@@ -195,7 +195,7 @@ const SUITES = [
     /* Phase F: build verification (replay, fit, access, clearance, wiring, power, weight, cross-checks; 10,000 tolerance runs) */
     name: "build verification",
     cmd: ["python", ["-I", "scripts/build/verify_build.py"]],
-    expect: 200   /* 199 -> 200 (2026-11-04 Phase G): X-models-buy-list, every part drawn in the 3D models comes from a buy line or is named as not bought, and Step 1 shows no more of a pack, charger, radio or monitor than the list buys (X-models-box-check, the M7AC's unlisted mains cable and lead, is NEEDS REAL PARTS). Before: 197 -> 199 (2026-11-04 joint commit with the Builder's battery cards): X-chip-numbers, X-chip-directions and BUY-required-all-used pass again now the model chips match the new page and S5.3c uses the More Volts line; one fewer page fix. 197 (2026-11-04, Shad's mixed Stage 5): +7 checks for the second flight pack, the More Volts 4S 5000 Li-ion (prop, GPS-gap design, forward-stop balance, feet, strap for both packs, M7AC Li-ion charge voltage; 2 more are NEEDS REAL PARTS: the Li-ion GPS-gap tolerance run and its current). Before: 190 (2026-11-03 re-sync): +1 replay check for the new S3.5 (DEP-S3.5); the first battery plug-in moved from S8.2 to S3.5 (SAFE-3 still passes); the iron adapter is now 24 V 5 A. Before: 179 -> 178 (AAA line left the buy list), then 181: zip-tie length and camera-tape checks added; 182: crash tip check (crash review C1); 184: prop-direction and battery-GPS design-overlap checks (Fable M5) ; 189: the buy list is now read from the live page's buy-data (it was a 10:10 copy): -1 glasses (now owned, not bought), +3 new lines checked (extinguisher, practice board, X30 spray), +2 LED strip and DVR card moved to optional stage 8 (exempt PASS, were PAGE FIX), +1 required-stage-lines-all-used check (Fable M5). One BUY-used check per buy line, so adding or removing a buy line moves this count by 1 */
+    expect: 205   /* 200 -> 205 (2026-11-04, practical cards, Opus): BUY-used-finder, BUY-used-spare-sd, BUY-qty-spare-sd, BUY-qty-foam-tape, DEP-S4.9. Before: 199 -> 200 (2026-11-04 Phase G): X-models-buy-list, every part drawn in the 3D models comes from a buy line or is named as not bought, and Step 1 shows no more of a pack, charger, radio or monitor than the list buys (X-models-box-check, the M7AC's unlisted mains cable and lead, is NEEDS REAL PARTS). Before: 197 -> 199 (2026-11-04 joint commit with the Builder's battery cards): X-chip-numbers, X-chip-directions and BUY-required-all-used pass again now the model chips match the new page and S5.3c uses the More Volts line; one fewer page fix. 197 (2026-11-04, Shad's mixed Stage 5): +7 checks for the second flight pack, the More Volts 4S 5000 Li-ion (prop, GPS-gap design, forward-stop balance, feet, strap for both packs, M7AC Li-ion charge voltage; 2 more are NEEDS REAL PARTS: the Li-ion GPS-gap tolerance run and its current). Before: 190 (2026-11-03 re-sync): +1 replay check for the new S3.5 (DEP-S3.5); the first battery plug-in moved from S8.2 to S3.5 (SAFE-3 still passes); the iron adapter is now 24 V 5 A. Before: 179 -> 178 (AAA line left the buy list), then 181: zip-tie length and camera-tape checks added; 182: crash tip check (crash review C1); 184: prop-direction and battery-GPS design-overlap checks (Fable M5) ; 189: the buy list is now read from the live page's buy-data (it was a 10:10 copy): -1 glasses (now owned, not bought), +3 new lines checked (extinguisher, practice board, X30 spray), +2 LED strip and DVR card moved to optional stage 8 (exempt PASS, were PAGE FIX), +1 required-stage-lines-all-used check (Fable M5). One BUY-used check per buy line, so adding or removing a buy line moves this count by 1 */
   }
 ];
 
@@ -223,6 +223,69 @@ function run(cmd, cwd) {
 
 function countLines(text, prefix) {
   return text.split(/\r?\n/).filter((l) => l.indexOf(prefix) === 0).length;
+}
+
+/* Ports (4 Nov 2026). Shad's own guide server listens on 8790 (the Desktop launcher, "Start Guide Assistant.cmd"),
+   so no suite may ever use it, and the gate refuses to start when a port a suite needs is already taken, instead of
+   failing oddly half-way. Every fixed port the suites use is listed here, in this one place; portPreflight() scans
+   the suite files and refuses if one uses a port this list does not name. The "served" suite and check-render pick
+   free or random ports of their own, so they are not listed. */
+const LIVE_GUIDE_PORT = 8790;
+const SUITE_PORTS = {
+  "check-write-gates.js": [8781, 8782, 8783, 8784],
+  "check-conversations.js": [8791, 8792, 8793, 8794],
+  "check-llm-path.ps1": [8791, 8792],
+  "mock-llm.js": [8791],
+  "check-cost-path.js": [8793, 8794, 8795, 8796],
+  "check-bans.js": [8794, 8795],
+  "check-review.js": [8796],
+  "check-settings.js": [8797, 8798],
+  "check-browser.js": [8799, 8800],
+  "check-build-sync.js": [8802],
+  "check-memory.js": [8806, 8807],
+  "check-chat-memory.py": [8808, 8809],
+  "check-fresh-eyes.py": [8813],
+  "check-assistant.ps1": [8899]   /* only in a usage comment: the gate serves this suite on a free port */
+};
+
+/* Taken = something already answers there, or the port cannot be bound. Both, because on Windows a server opened
+   with address reuse (Python's http.server does this) still lets a second program bind the same port. */
+function portAnswers(port) {
+  return new Promise((resolve) => {
+    const sock = net.connect({ port: port, host: "127.0.0.1" });
+    const done = (v) => { sock.destroy(); resolve(v); };
+    sock.setTimeout(400, () => done(false));
+    sock.once("connect", () => done(true));
+    sock.once("error", () => done(false));
+  });
+}
+
+function portTaken(port, host) {
+  return new Promise((resolve) => {
+    const srv = net.createServer();
+    srv.once("error", () => resolve(true));
+    srv.listen(port, host, () => srv.close(() => resolve(false)));
+  });
+}
+
+async function portPreflight() {
+  const problems = [];
+  const dir = path.join(ROOT, "scripts", "dev");
+  fs.readdirSync(dir).filter((f) => /\.(js|py|ps1)$/.test(f) && f !== "gate.js").forEach((f) => {
+    const found = new Set((fs.readFileSync(path.join(dir, f), "utf8").match(/\b8[78]\d\d\b/g) || []).map(Number));
+    found.forEach((p) => {
+      if (p === LIVE_GUIDE_PORT) { problems.push(f + " uses port " + p + ", the port of Shad's own guide server"); }
+      else if (!(SUITE_PORTS[f] || []).includes(p)) { problems.push(f + " uses port " + p + ", which gate.js SUITE_PORTS does not list"); }
+    });
+  });
+  const listed = [...new Set([].concat(...Object.values(SUITE_PORTS)))].filter((p) => p !== 8899).sort((a, b) => a - b);
+  for (const p of listed) {
+    if (p === LIVE_GUIDE_PORT) { problems.push("SUITE_PORTS lists " + p + ", the port of Shad's own guide server"); continue; }
+    if (await portAnswers(p) || await portTaken(p, "127.0.0.1") || await portTaken(p, "0.0.0.0")) {
+      problems.push("port " + p + " is already in use by another program; stop it, then run the gate again");
+    }
+  }
+  return { problems: problems, ports: listed };
 }
 
 function freePort() {
@@ -310,6 +373,16 @@ async function runSuite(suite) {
 }
 
 (async () => {
+  const pre = await portPreflight();
+  if (pre.problems.length) {
+    console.log("GATE REFUSED: a port the suites need cannot be used, so nothing was run.");
+    pre.problems.forEach((p) => console.log("  - " + p));
+    process.exit(2);
+  }
+  if (!JSON_OUT) {
+    console.log("  ports: the suites' " + pre.ports.length + " fixed ports are free; " + LIVE_GUIDE_PORT +
+      " (Shad's own guide) is never used by the gate");
+  }
   const results = [];
   for (const suite of SUITES) {
     process.stdout.write("  " + suite.name.padEnd(24) + " ");

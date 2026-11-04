@@ -409,11 +409,11 @@
         return line && line.textContent ? "On the page right now: " + line.textContent + (gst ? ". " + gst : "") : "";
       } });
 
-  kb("budget", "What does this cost, and is my total right?", "cost,price,total,budget,gst,money,how much,1603,1682,1678,1759,cheap,expensive,tax,freight,1630,1711",
-    ["The required parts come to CA$1,630.69 for merchandise and the CA$20.34 of Transport Canada fees. It does not include a laptop: you use your own.",
-     "Add 5 % GST on the CA$1,610.35 taxable subtotal — the Transport Canada fees are not taxable — for CA$80.52, a planning total of CA$1,711.21, still before remaining retailer freight on the small items. Optional extras (spare props, the coating spray, the LED strip and the monitor's memory card) are CA$85.51 + GST on top.",
+  kb("budget", "What does this cost, and is my total right?", "cost,price,total,budget,gst,money,how much,1603,1682,1678,1759,cheap,expensive,tax,freight,1630,1711,1680,1763",
+    ["The required parts come to CA$1,680.63 for merchandise and the CA$20.34 of Transport Canada fees. It does not include a laptop: you use your own.",
+     "Add 5 % GST on the CA$1,660.29 taxable subtotal — the Transport Canada fees are not taxable — for CA$83.01, a planning total of CA$1,763.64, still before remaining retailer freight on the small items. Optional extras (spare props, the coating spray, the LED strip and the monitor's memory card) are CA$85.51 + GST on top.",
      "The budget table in Buy is live: change any price and the total, the progress bar and the notes update. Tick an item you already own and it drops out of the total.",
-     "If you want to spread it out, the staged plan splits the required CA$1,630.69 into seven stages, plus the optional Stage 8 (CA$85.51), each of which gives you something to build or test the day it arrives.",
+     "If you want to spread it out, the staged plan splits the required CA$1,680.63 into seven stages, plus the optional Stage 8 (CA$85.51), each of which gives you something to build or test the day it arrives.",
      "Every price was checked on the shop's own page on 3 Nov 2026, with a backup shop where one was found. A working link is not stock: that day the Pi kit, the 55° thermal camera, the frame and the GEPRC stack were out of stock at their main shop (the frame was in stock at EpicFPV, the stack only at a US shop), so confirm availability and freight at checkout rather than trusting a live page."],
     { why: "The staging exists so the project survives real life: seven smaller payments that each end in progress beat one bill you keep postponing.", src: "Guide: Buy, and the order list", see: [["Parts & budget", "parts"], ["Staged buying plan", "parts"]] })
     .next = "stock";
@@ -3588,7 +3588,30 @@
     const AT_KEY = "ga-progress-at";
     let at = {};
     try { at = JSON.parse(localStorage.getItem(AT_KEY)) || {}; } catch (e) { at = {}; }
-    let last = JSON.stringify(saved.ticks);
+    /* The Buy page's "I bought" boxes (saved.owned) ride the same store as own:<line id>, so a part ticked
+       bought on the laptop shows as bought on the phone too (Shad, 4 Nov 2026). */
+    const OWN = "own:";
+    const flat = function () {
+      const f = Object.assign({}, saved.ticks);
+      Object.keys(saved.owned || {}).forEach(function (id) { f[OWN + id] = !!saved.owned[id]; });
+      return f;
+    };
+    /* Repair (4 Nov 2026, Shad's own browser): an older copy of this file, served from the offline cache next to a
+       newer page, filed the laptop's own:<id> bought ticks under saved.ticks and noted their times, so the newer code
+       then skipped them as already applied and the Buy page showed nothing bought. Move any such tick to saved.owned,
+       through its box so the Buy page redraws, and let an own: tick whose time equals the noted one be applied again. */
+    saved.owned = saved.owned || {};
+    Object.keys(saved.ticks).forEach(function (k) {
+      if (k.indexOf(OWN) !== 0) { return; }
+      const id = k.slice(OWN.length), v = !!saved.ticks[k];
+      delete saved.ticks[k];
+      if (saved.owned[id] !== undefined) { return; }
+      const ob = document.querySelector('input[type="checkbox"][data-own="' + id.replace(/["\\]/g, "") + '"]');
+      if (ob) { ob.checked = v; ob.dispatchEvent(new Event("change", { bubbles: true })); }
+      else { saved.owned[id] = v; }
+    });
+    if (typeof save === "function") { save(); }
+    let last = JSON.stringify(flat());
     const storeAt = function () { try { localStorage.setItem(AT_KEY, JSON.stringify(at)); } catch (e) { /* private mode */ } };
     const send = function (changes) {
       if (!Object.keys(changes).length) { return Promise.resolve(); }
@@ -3597,9 +3620,19 @@
     };
     function applyRemote(ticks) {
       Object.keys(ticks || {}).forEach(function (k) {
-        const r = ticks[k];
-        if (!r || (at[k] && at[k] >= r.at)) { return; }
+        const r = ticks[k], isOwn = k.indexOf(OWN) === 0;
+        if (!r || (at[k] && (isOwn ? at[k] > r.at : at[k] >= r.at))) { return; }
         at[k] = r.at;
+        if (isOwn) {
+          /* a bought tick: set its box and fire "change", so the Buy page saves it and redraws its money */
+          const id = k.slice(OWN.length);
+          saved.owned = saved.owned || {};
+          if (!!saved.owned[id] === r.v) { return; }
+          const ob = document.querySelector('input[type="checkbox"][data-own="' + id.replace(/["\\]/g, "") + '"]');
+          if (ob) { ob.checked = r.v; ob.dispatchEvent(new Event("change", { bubbles: true })); }
+          else { saved.owned[id] = r.v; if (typeof save === "function") { save(); } }
+          return;
+        }
         if (!!saved.ticks[k] === r.v) { return; }
         const box = document.querySelector('input[type="checkbox"][data-key="' + k.replace(/["\\]/g, "") + '"]') ||
           (/^asm-\d$/.test(k) ? document.querySelector('input[type="checkbox"][data-asm="' + k.slice(4) + '"]') : null);
@@ -3607,7 +3640,7 @@
         else { saved.ticks[k] = r.v; if (typeof save === "function") { save(); } }
       });
       storeAt();
-      last = JSON.stringify(saved.ticks);
+      last = JSON.stringify(flat());
     }
     function pull(first) {
       return fetch("/api/progress", { cache: "no-store", headers: writeTokenHeaders() })
@@ -3617,17 +3650,17 @@
           applyRemote(j.ticks);
           if (first) {
             /* ticks made before syncing existed: send the ones the laptop does not have, as old changes */
-            const seed = {};
-            Object.keys(saved.ticks).forEach(function (k) { if (saved.ticks[k] && !j.ticks[k]) { seed[k] = { v: true, at: 1 }; at[k] = 1; } });
+            const seed = {}, mine = flat();
+            Object.keys(mine).forEach(function (k) { if (mine[k] && !j.ticks[k]) { seed[k] = { v: true, at: 1 }; at[k] = 1; } });
             storeAt();
             send(seed);
           }
         });
     }
     function push() {
-      const now = JSON.stringify(saved.ticks);
+      const cur = flat(), now = JSON.stringify(cur);
       if (now === last) { return; }
-      const prev = JSON.parse(last), cur = saved.ticks, changes = {}, t = Date.now();
+      const prev = JSON.parse(last), changes = {}, t = Date.now();
       Object.keys(Object.assign({}, prev, cur)).forEach(function (k) {
         if (!!prev[k] !== !!cur[k]) { changes[k] = { v: !!cur[k], at: t }; at[k] = t; }
       });

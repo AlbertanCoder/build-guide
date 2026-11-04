@@ -101,7 +101,8 @@ if (html.includes(domainTag)) {
 // ---- 6. inline the Guide Assistant (classic script, no imports) -----------
 // It must live inside the single file: the assistant is offline-first, and a
 // relative <script src> would 404 once the HTML is copied anywhere else.
-const assistantTag = '<script src="docs/js/assistant.js"></script>';
+/* the page asks for assistant.js?v=<the service worker's cache name> (4 Nov 2026), so match the tag with any version */
+const assistantTag = (html.match(/<script src="docs\/js\/assistant\.js(?:\?v=[\w.-]+)?"><\/script>/) || [''])[0] || '<script src="docs/js/assistant.js"></script>';
 if (html.includes(assistantTag)) {
   const assistant = fs.readFileSync(path.join(REPO, 'docs/js/assistant.js'), 'utf8');
   if (assistant.includes('</script')) {

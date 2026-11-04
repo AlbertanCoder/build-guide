@@ -153,6 +153,38 @@ try:
         check("ticks: step 1 ticked on the laptop shows as ticked on the phone", True)
         stp = pp.evaluate("document.getElementById('ga-status').textContent")
         check("phone: the status line moves on to step 2 after step 1 is ticked", stp.startswith("Step 2"), stp)
+
+        # bought: laptop -> phone (the Buy page's "I bought" boxes ride the same store, as own:<line id>)
+        lp.evaluate("(()=>{const b=document.querySelector('input[type=checkbox][data-own=\"radio\"]'); b.checked=true; b.dispatchEvent(new Event('change',{bubbles:true}));})()")
+        lp.evaluate("GuideAssistant.syncProgress()")
+        time.sleep(0.5)
+        stored = json.load(open(os.path.join(mem_dir, "progress.json"), encoding="utf-8")).get("ticks", {})
+        check("bought: a part ticked bought on the laptop is kept in the laptop's store as own:radio",
+              (stored.get("own:radio") or {}).get("v") is True, json.dumps(stored.get("own:radio")))
+        pp.evaluate("GuideAssistant.syncProgress()")
+        pp.wait_for_function("document.querySelector('input[type=checkbox][data-own=\"radio\"]').checked === true", timeout=10000)
+        check("bought: the same part shows as bought on the phone", True)
+
+        # Shad's browser, 4 Nov 2026: an older assistant.js from the offline cache had filed own:<id> under the step ticks
+        # and noted their times, so the newer code skipped them and the Buy page showed nothing bought. A returning
+        # browser holding exactly those leftovers must show the part as bought after one ordinary reload.
+        own_at = stored["own:radio"]["at"]
+        rc = b.new_context(viewport={"width": 1280, "height": 900})
+        rp = rc.new_page(); rp.on("pageerror", lambda e: errs.append("returning: " + e.message))
+        rp.goto(LAPTOP_URL); rp.wait_for_function("window.GuideAssistant && GuideAssistant.syncProgress", timeout=15000)
+        rp.evaluate("""(at) => { const s = JSON.parse(localStorage.getItem('shad-drone-guide-v1') || '{}');
+          s.ticks = Object.assign({}, s.ticks, { 'own:radio': true }); s.owned = {};
+          localStorage.setItem('shad-drone-guide-v1', JSON.stringify(s));
+          localStorage.setItem('ga-progress-at', JSON.stringify({ 'own:radio': at })); }""", own_at)
+        rp.reload(); rp.wait_for_function("document.querySelector('input[type=checkbox][data-own=\"radio\"]') && document.querySelector('input[type=checkbox][data-own=\"radio\"]').checked === true", timeout=15000)
+        left = rp.evaluate("Object.keys(JSON.parse(localStorage.getItem('shad-drone-guide-v1')).ticks).filter(k => k.startsWith('own:')).length")
+        check("bought: a returning browser with the old code's leftovers shows the part as bought after one reload", left == 0, "own: keys left in ticks: %d" % left)
+        rc.close()
+        sw = open(os.path.join(ROOT, "sw.js"), encoding="utf-8").read()
+        page = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
+        cache = re.search(r'const CACHE = "([^"]+)"', sw).group(1)
+        check("the page asks for assistant.js with the service worker's cache name, so a page and its script always come together",
+              ('src="docs/js/assistant.js?v=%s"' % cache) in page, cache)
         pp.evaluate("GuideAssistant.ask('The batteries arrived').then(()=>true)")
         pp.wait_for_function("document.querySelectorAll('.ga-remembered').length > 0", timeout=15000)
         pp.screenshot(path=os.path.join(TMP, "phone-answer-390.png"))
