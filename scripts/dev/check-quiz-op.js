@@ -33,7 +33,9 @@ const START_DETECT = parsed.quizzes.detect.length;
 const NEED_BEFORE = Math.ceil(START_DETECT * 0.75);
 const NEED_AFTER = Math.ceil((START_DETECT + 1) * 0.75);
 
-check("reads the real quizzes out of index.html", Object.keys(parsed.quizzes).length === 5,
+/* 6 since 4 Nov 2026: the sixth quiz, "Power, batteries & safety", holds the new questions that would have pushed
+   Airframe and Rules past quiz-add's 12-question cap. A real structural change, not a looser check. */
+check("reads the real quizzes out of index.html", Object.keys(parsed.quizzes).length === 6,
   Object.keys(parsed.quizzes).join(", "));
 /* These used to assert "28 questions" and "5 detect", which meant a legitimate
    accepted question turned the whole gate red. Read the baseline instead. */

@@ -536,8 +536,8 @@
     { src: "Guide Step 4 and Stage 3", see: [STEP(4, "Step 4 — control and video")] });
 
   kb("quiz", "How do the quizzes and flashcards work?", "quiz,quizzes,test,score,flashcard,flashcards,practice,pass,75,questions,exam",
-    ["Four topic quizzes plus a final exam: airframe, payload, detection & mapping, flight rules, then the final exam (8 questions).",
-     "You pass a topic at 75 % or better; the overview counts how many of the five you have passed.",
+    ["Five topic quizzes plus a final exam: airframe, power, batteries & safety, payload, detection & mapping, flight rules, then the final exam (8 questions).",
+     "You pass a topic at 75 % or better; the overview counts how many of the six you have passed.",
      "Every answer explains why it is right, with the source — that explanation is worth more than the score.",
      "Flashcards are the fast recall layer: flip each card, and the progress counter tracks how many you have seen.",
      "Your best score per quiz and the flashcard state save in this browser, so you can walk away and come back."],
