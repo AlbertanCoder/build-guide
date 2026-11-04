@@ -184,8 +184,8 @@ Freight from Rotor Village and PiShop is weight-based; SparkFun international fr
 | Charging | M4AC supports 1–4S LiPo/LiHV and AC input | Select LiHV 4S, attended balance charging in LiPo bag |
 | Software | Included local package with GPS/camera drivers, logging and offline viewer | **31/31 synthetic tests passed**, then perform Pi hardware and surveyed-target tests |
 
-Payload package: `C:\Users\SHADHUNTER\Desktop\build-guide-repo\Shad-Drone-Payload`  
-Instructions: `C:\Users\SHADHUNTER\Desktop\build-guide-repo\Shad-Drone-Payload\README.md`
+Payload package: `Shad-Drone-Payload/` (in this repository)  
+Instructions: `Shad-Drone-Payload/README.md`
 
 The order is complete; assembly, binding, power, I2C, vibration, weight/CG, RF, detection accuracy and flight safety still need the documented acceptance tests. These are normal build steps, not missing purchases.
 

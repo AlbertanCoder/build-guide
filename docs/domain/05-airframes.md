@@ -10,10 +10,10 @@ failure this project has actually shipped.
 
 The airframe is a TBS Source One V6 5-inch frame with four Emax ECO III 2207
 1900KV motors, Gemfan 51499 tri-blade props, and two GNB 1500mAh 4S 120C HV
-packs (CA$48.99 frame, CA$87.96 motors, CA$67.98 batteries, checked 2026-10-31).
+packs (CA$48.99 frame, CA$87.96 motors, CA$67.98 batteries, checked 2026-11-03).
 
-source:: Order list, items checked 2026-10-31
-verified:: 2026-11-01
+source:: Guide, Buy (buy list checked 2026-11-03)
+verified:: 2026-11-03
 
 ## The motor wind is a known trade-off
 
@@ -37,11 +37,12 @@ verified:: 2026-11-03
 ## Stock is a design constraint
 
 The frame and the flight stack were both out of stock at Rotor Village on
-31 Oct 2026, with in-stock 30.5×30.5 alternates listed (checked 2026-10-31).
+3 Nov 2026 (checked 2026-11-03): the frame was in stock at EpicFPV, the stack only
+at a US shop.
 Confirm at checkout, and keep an alternate in the plan.
 
-source:: Order list banner (2026-10-31)
-verified:: 2026-11-01
+source:: Guide, Buy (stock badges and backups, checked 2026-11-03)
+verified:: 2026-11-03
 
 ## Why it matters for your build
 

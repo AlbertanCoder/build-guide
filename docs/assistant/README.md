@@ -128,7 +128,7 @@ that chain fails, the answer comes from the offline engine with a one-line note 
 
 ## The gate
 
-28 suites, 1507 named checks, one exit code:
+28 suites, 1508 named checks, one exit code:
 
 ```powershell
 node scripts/dev/gate.js            # everything
@@ -291,7 +291,7 @@ from storage.
 | `server/ops/draft.js` | asks a model for candidates, then keeps only the ones the checks accept |
 | `scripts/dev/check-job-spec.js` | 8 checks on that parser |
 | `scripts/dev/check-draft.js` | 15 checks on the drafter — prompt shape, JSON extraction, screening |
-| `scripts/dev/check-browser.js` | 28 checks in a real browser: the settings drawer, the quiz pass-survival rule, all 10 pages render, zero page errors |
+| `scripts/dev/check-browser.js` | 29 checks in a real browser: the settings drawer, the quiz pass-survival rule, all 10 pages render, the step prerequisite boxes are readable, zero page errors |
 | `server/ops/quiz-add.js` | the first named operation: validate before applying, then apply as a pure function |
 | `scripts/dev/check-quiz-op.js` | 29 checks on that operation — every refusal, plus proof it cannot write to disk |
 | `server/ops/propose.js` | turns a validated op into a `proposal/` branch; cannot touch `main` |

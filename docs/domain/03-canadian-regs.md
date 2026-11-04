@@ -12,8 +12,8 @@ Do not operate over a forest-fire area or within 5 nautical miles (9.3 km) of
 one below 3,000 ft AGL, and do not enter airspace restricted by a NOTAM under
 CAR 601.16. Unauthorised drones ground air tankers and endanger crews.
 
-source:: CAR 601.15 and CAR 601.16, as cited in Guide tab 1 and tab 4
-verified:: 2026-11-01
+source:: CAR 601.15 and CAR 601.16, as cited in Guide, Learn > What & Why, and Fly safely
+verified:: 2026-11-03
 
 ## Register, mark, and carry the certificate
 
@@ -33,8 +33,8 @@ within 61 m of it horizontally (CAR 901.25). Operating weight must be no more
 than 25 kg — measure the completed aircraft rather than trusting estimates.
 Maintain VLOS.
 
-source:: Guide tab 4
-verified:: 2026-11-01
+source:: Guide, Fly safely (Where & when you may fly)
+verified:: 2026-11-03
 
 ## Night lights are necessary, not sufficient
 
@@ -42,14 +42,14 @@ CAR 901.39 requires the aircraft to remain visible; a generic LED kit does not
 by itself make a flight legal. VLOS, airspace, bystander, aerodrome, NOTAM,
 Alberta fire bans and local rules all still apply at night.
 
-source:: Guide tab 1 stat and tab 4 night-lighting note
-verified:: 2026-11-01
+source:: Guide, Learn > What & Why (stat) and Fly safely (night-lighting note)
+verified:: 2026-11-03
 
 ## Why it matters for your build
 
-The budget carries a CA$20 compliance allowance (exam and registration, per TC's
-1 Apr 2025 fee schedule, checked 2026-10-31) so paperwork is never the reason
+The buy list carries the Transport Canada fees (exam CA$10.17 and registration
+CA$10.17, CA$20.34, checked 2026-11-03) so paperwork is never the reason
 the project stalls — the flying starts legal.
 
-source:: Order list compliance allowance; Guide tab 3
-verified:: 2026-11-01
+source:: Guide, Buy (Stage 7 fees, checked 2026-11-03)
+verified:: 2026-11-03

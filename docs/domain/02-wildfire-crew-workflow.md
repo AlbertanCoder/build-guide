@@ -12,8 +12,8 @@ FPInnovations describes the deliverable as a map of GPS-referenced hotspots
 handed to the firefighter — not an aircraft that finds fires by itself. The
 prototype should be measured against that framing.
 
-source:: FPInnovations TR-2020-N29 (2020), as cited in Guide tab 7 and domain 01
-verified:: 2026-11-01
+source:: FPInnovations TR-2020-N29 (2020), as cited in Guide, Learn > Limits & sources, and domain 01
+verified:: 2026-11-03
 
 ## A real fire is agency airspace
 
@@ -22,8 +22,8 @@ is why the guide says plainly that no drone may fly over or within 5 nautical
 miles (9.3 km) of a wildfire below 3,000 ft (CAR 601.15). Real fires are not
 practice.
 
-source:: Guide tab 1 and tab 4; CAR 601.15
-verified:: 2026-11-01
+source:: Guide, Learn > What & Why, and Fly safely; CAR 601.15
+verified:: 2026-11-03
 
 ## Training happens on safe heat targets
 
@@ -49,5 +49,5 @@ The build is judged on delivering a credible hotspot map a crew could act on,
 with the caveats attached — not on "finding fires". Every design choice that
 looks conservative follows from that.
 
-source:: Guide tab 1; FPInnovations TR-2020-N29 (2020)
-verified:: 2026-11-01
+source:: Guide, Learn > What & Why; FPInnovations TR-2020-N29 (2020)
+verified:: 2026-11-03

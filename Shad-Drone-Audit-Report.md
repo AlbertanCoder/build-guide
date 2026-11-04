@@ -1,9 +1,9 @@
 # Shad's Fire-Detecting Drone — Audit & Order Plan
 
 **Updated:** 2026-10-31  
-**Guide:** `C:\Users\SHADHUNTER\Desktop\build-guide-repo\index.html` (source) and the generated standalone  
-**Order document:** `C:\Users\SHADHUNTER\Desktop\build-guide-repo\Shad-Drone-Order-List.md`  
-**Payload:** `C:\Users\SHADHUNTER\Desktop\build-guide-repo\Shad-Drone-Payload`
+**Guide:** `index.html` (source) and the generated standalone  
+**Order document:** `Shad-Drone-Order-List.md`  
+**Payload:** `Shad-Drone-Payload/`
 
 ## Result
 
@@ -114,7 +114,7 @@ Included files:
 - All retailer/source links in the order document load. **Loading ≠ stock:** the frame and the GEPRC 50A stack were out of stock on the 31 Oct 2026 re-check.
 - All local guide links resolve to the order list, audit report and payload files.
 
-Reusable checks: `C:\Users\SHADHUNTER\Desktop\.claude\check_drone_guide.py` and `C:\Users\SHADHUNTER\Desktop\Shad-Drone-Payload\test_drone_logic.py`.
+Reusable checks: a local check script on the build laptop (not in this repository) and `Shad-Drone-Payload/test_drone_logic.py`.
 
 **ORDER PLAN — buy the exact listed items after confirming stock and freight at checkout, then follow the documented assembly, bench and flight acceptance tests.**
 

@@ -126,7 +126,7 @@ const SUITES = [
   {
     name: "browser",
     cmd: ["node", ["scripts/dev/check-browser.js"]],
-    expect: 28,
+    expect: 29,  /* 28 -> 29 (2026-11-03): the step prerequisite boxes' text contrast (Fable Part 2, S1) */
     optional: true /* needs Chrome; --quick skips it, and a skip is reported as skipped */
   },
   {

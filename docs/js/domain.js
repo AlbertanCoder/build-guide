@@ -47,8 +47,8 @@ window.GUIDE_DOMAIN = {
         "resolution limit"
       ],
       "text": "The sensor is a 32 by 24 array. The MLX90640 gives 768 temperature readings per frame, at roughly ±2 °C over a 0–100 °C range. That is the specification, not a measured detection result.",
-      "source": "MLX90640 datasheet; Guide tab 1 (the honesty box)",
-      "verified": "2026-11-01",
+      "source": "MLX90640 datasheet; Guide, Learn > What & Why (the honesty box)",
+      "verified": "2026-11-03",
       "correction": false,
       "unverified": false
     },
@@ -70,8 +70,8 @@ window.GUIDE_DOMAIN = {
         "resolution limit"
       ],
       "text": "The ground footprint decides your pixel size. Ground width for a downward camera is 2 × altitude × tan(FOV ÷ 2). With the 55° lens at 30 m that is about 31.2 m across, which over 32 pixels is roughly 0.98 m per pixel.",
-      "source": "Guide tab 2 altitude and coverage calculator",
-      "verified": "2026-11-01",
+      "source": "Guide, Learn > How it works (altitude and coverage calculator)",
+      "verified": "2026-11-03",
       "correction": false,
       "unverified": false
     },
@@ -93,8 +93,8 @@ window.GUIDE_DOMAIN = {
         "resolution limit"
       ],
       "text": "A one metre heat source at 30 m is about one pixel. At 30 m with the 55° lens a 1 m target covers about one pixel, so detection is a sampling question before it is an algorithm question. This is why the guide refuses to promise \"finds a 1 m heat source from 30 m\" as a capability.",
-      "source": "Guide tab 1 and tab 2; audit pass 2 finding 12",
-      "verified": "2026-11-01",
+      "source": "Guide, Learn > What & Why and How it works; audit pass 2 finding 12",
+      "verified": "2026-11-03",
       "correction": false,
       "unverified": false
     },
@@ -162,8 +162,8 @@ window.GUIDE_DOMAIN = {
         "vlos"
       ],
       "text": "The mission product is a map, not an autopilot. FPInnovations describes the deliverable as a map of GPS-referenced hotspots handed to the firefighter — not an aircraft that finds fires by itself. The prototype should be measured against that framing.",
-      "source": "FPInnovations TR-2020-N29 (2020), as cited in Guide tab 7 and domain 01",
-      "verified": "2026-11-01",
+      "source": "FPInnovations TR-2020-N29 (2020), as cited in Guide, Learn > Limits & sources, and domain 01",
+      "verified": "2026-11-03",
       "correction": false,
       "unverified": false
     },
@@ -185,8 +185,8 @@ window.GUIDE_DOMAIN = {
         "vlos"
       ],
       "text": "A real fire is agency airspace. Unauthorised drones near a wildfire ground air tankers and endanger crews, which is why the guide says plainly that no drone may fly over or within 5 nautical miles (9.3 km) of a wildfire below 3,000 ft (CAR 601.15). Real fires are not practice.",
-      "source": "Guide tab 1 and tab 4; CAR 601.15",
-      "verified": "2026-11-01",
+      "source": "Guide, Learn > What & Why, and Fly safely; CAR 601.15",
+      "verified": "2026-11-03",
       "correction": false,
       "unverified": false
     },
@@ -254,8 +254,8 @@ window.GUIDE_DOMAIN = {
         "vlos"
       ],
       "text": "Why it matters for your build. The build is judged on delivering a credible hotspot map a crew could act on, with the caveats attached — not on \"finding fires\". Every design choice that looks conservative follows from that.",
-      "source": "Guide tab 1; FPInnovations TR-2020-N29 (2020)",
-      "verified": "2026-11-01",
+      "source": "Guide, Learn > What & Why; FPInnovations TR-2020-N29 (2020)",
+      "verified": "2026-11-03",
       "correction": false,
       "unverified": false
     },
@@ -279,8 +279,8 @@ window.GUIDE_DOMAIN = {
         "vlos"
       ],
       "text": "The forest-fire line that never bends. Do not operate over a forest-fire area or within 5 nautical miles (9.3 km) of one below 3,000 ft AGL, and do not enter airspace restricted by a NOTAM under CAR 601.16. Unauthorised drones ground air tankers and endanger crews.",
-      "source": "CAR 601.15 and CAR 601.16, as cited in Guide tab 1 and tab 4",
-      "verified": "2026-11-01",
+      "source": "CAR 601.15 and CAR 601.16, as cited in Guide, Learn > What & Why, and Fly safely",
+      "verified": "2026-11-03",
       "correction": false,
       "unverified": false
     },
@@ -329,8 +329,8 @@ window.GUIDE_DOMAIN = {
         "vlos"
       ],
       "text": "Altitude, proximity and weight. Fly below 400 ft (122 m) AGL, and no more than 30 m above a building while within 61 m of it horizontally (CAR 901.25). Operating weight must be no more than 25 kg — measure the completed aircraft rather than trusting estimates. Maintain VLOS.",
-      "source": "Guide tab 4",
-      "verified": "2026-11-01",
+      "source": "Guide, Fly safely (Where & when you may fly)",
+      "verified": "2026-11-03",
       "correction": false,
       "unverified": false
     },
@@ -354,8 +354,8 @@ window.GUIDE_DOMAIN = {
         "vlos"
       ],
       "text": "Night lights are necessary, not sufficient. CAR 901.39 requires the aircraft to remain visible; a generic LED kit does not by itself make a flight legal. VLOS, airspace, bystander, aerodrome, NOTAM, Alberta fire bans and local rules all still apply at night.",
-      "source": "Guide tab 1 stat and tab 4 night-lighting note",
-      "verified": "2026-11-01",
+      "source": "Guide, Learn > What & Why (stat) and Fly safely (night-lighting note)",
+      "verified": "2026-11-03",
       "correction": false,
       "unverified": false
     },
@@ -378,9 +378,9 @@ window.GUIDE_DOMAIN = {
         "legal",
         "vlos"
       ],
-      "text": "Why it matters for your build. The budget carries a CA$20 compliance allowance (exam and registration, per TC's 1 Apr 2025 fee schedule, checked 2026-10-31) so paperwork is never the reason the project stalls — the flying starts legal.",
-      "source": "Order list compliance allowance; Guide tab 3",
-      "verified": "2026-11-01",
+      "text": "Why it matters for your build. The buy list carries the Transport Canada fees (exam CA$10.17 and registration CA$10.17, CA$20.34, checked 2026-11-03) so paperwork is never the reason the project stalls — the flying starts legal.",
+      "source": "Guide, Buy (Stage 7 fees, checked 2026-11-03)",
+      "verified": "2026-11-03",
       "correction": false,
       "unverified": false
     },
@@ -427,8 +427,8 @@ window.GUIDE_DOMAIN = {
         "geo.py"
       ],
       "text": "The resolution floor comes before the algorithm. At 30 m with the 55° lens a 1 m heat source covers about one pixel, so detection is a sampling question before it is an algorithm question. Ideal-nadir geometry also omits tilt, terrain, lens distortion and GPS/altitude/heading errors.",
-      "source": "domain 01; payload README limitations; Guide tab 2 calculator",
-      "verified": "2026-11-01",
+      "source": "domain 01; payload README limitations; Guide, Learn > How it works (calculator)",
+      "verified": "2026-11-03",
       "correction": false,
       "unverified": false
     },
@@ -499,8 +499,8 @@ window.GUIDE_DOMAIN = {
         "geo.py"
       ],
       "text": "Why it matters for your build. The career asset is the honest pipeline — group, locate, map, report, prove — not a model claim. Each stage is testable on the bench before anything flies.",
-      "source": "Guide tab 5 (\"the pipeline is the career asset\"); payload README",
-      "verified": "2026-11-01",
+      "source": "Guide, Learn > Career & pay (\"the pipeline is the career asset\"); payload README",
+      "verified": "2026-11-03",
       "correction": false,
       "unverified": false
     },
@@ -521,9 +521,9 @@ window.GUIDE_DOMAIN = {
         "build",
         "battery"
       ],
-      "text": "The parts are a chosen set, not a mood board. The airframe is a TBS Source One V6 5-inch frame with four Emax ECO III 2207 1900KV motors, Gemfan 51499 tri-blade props, and two GNB 1500mAh 4S 120C HV packs (CA$48.99 frame, CA$87.96 motors, CA$67.98 batteries, checked 2026-10-31).",
-      "source": "Order list, items checked 2026-10-31",
-      "verified": "2026-11-01",
+      "text": "The parts are a chosen set, not a mood board. The airframe is a TBS Source One V6 5-inch frame with four Emax ECO III 2207 1900KV motors, Gemfan 51499 tri-blade props, and two GNB 1500mAh 4S 120C HV packs (CA$48.99 frame, CA$87.96 motors, CA$67.98 batteries, checked 2026-11-03).",
+      "source": "Guide, Buy (buy list checked 2026-11-03)",
+      "verified": "2026-11-03",
       "correction": false,
       "unverified": false
     },
@@ -590,9 +590,9 @@ window.GUIDE_DOMAIN = {
         "build",
         "battery"
       ],
-      "text": "Stock is a design constraint. The frame and the flight stack were both out of stock at Rotor Village on 31 Oct 2026, with in-stock 30.5×30.5 alternates listed (checked 2026-10-31). Confirm at checkout, and keep an alternate in the plan.",
-      "source": "Order list banner (2026-10-31)",
-      "verified": "2026-11-01",
+      "text": "Stock is a design constraint. The frame and the flight stack were both out of stock at Rotor Village on 3 Nov 2026 (checked 2026-11-03): the frame was in stock at EpicFPV, the stack only at a US shop. Confirm at checkout, and keep an alternate in the plan.",
+      "source": "Guide, Buy (stock badges and backups, checked 2026-11-03)",
+      "verified": "2026-11-03",
       "correction": false,
       "unverified": false
     },
@@ -636,8 +636,8 @@ window.GUIDE_DOMAIN = {
         "evidence"
       ],
       "text": "What the Job Bank data says. Job Bank groups the data engineer profile under Data scientists (NOC 21211) and rates Alberta prospects \"Moderate\". The Alberta/Edmonton median is CA$43.27/hr (Job Bank, NOC 21211, updated 19 Nov 2025).",
-      "source": "Guide tab 5; Job Bank NOC 21211, updated 19 Nov 2025",
-      "verified": "2026-11-01",
+      "source": "Guide, Learn > Career & pay; Job Bank NOC 21211, updated 19 Nov 2025",
+      "verified": "2026-11-03",
       "correction": false,
       "unverified": false
     },
@@ -658,8 +658,8 @@ window.GUIDE_DOMAIN = {
         "evidence"
       ],
       "text": "The classification question is separate. GoA Systems Analyst is a different classification with its own controls; Level 1 MRS accepts a related two-year diploma, or a related one-year certificate and qualifying experience. Do not assume experience alone replaces the education requirement — check the current MRS wording.",
-      "source": "Guide tab 5 and the MRS discussion there",
-      "verified": "2026-11-01",
+      "source": "Guide, Learn > Career & pay and the MRS discussion there",
+      "verified": "2026-11-03",
       "correction": false,
       "unverified": false
     },
@@ -680,8 +680,8 @@ window.GUIDE_DOMAIN = {
         "evidence"
       ],
       "text": "Portfolio evidence, not promises. A completed, tested project is portfolio evidence; an unbuilt guide is not evidence of a working system, a reference, or interview fluency. No employment outcome is guaranteed — the guide says so in its own words.",
-      "source": "Guide tab 1 (\"Will this land me a job? The straight answer\")",
-      "verified": "2026-11-01",
+      "source": "Guide, Learn > What & Why (\"Will this land me a job? The straight answer\")",
+      "verified": "2026-11-03",
       "correction": false,
       "unverified": false
     },
@@ -701,9 +701,9 @@ window.GUIDE_DOMAIN = {
         "classification",
         "evidence"
       ],
-      "text": "Say only what you measured. The pitch script's rule is that you never claim a detection rate until you have measured it. Demo kit and pitch practice live in the Career tab; the honest version of the pitch is the one that survives the follow-up question.",
-      "source": "Guide tab 1 script and tab 5 demo kit",
-      "verified": "2026-11-01",
+      "text": "Say only what you measured. The pitch script's rule is that you never claim a detection rate until you have measured it. Demo kit and pitch practice live on the Career & pay page in Learn; the honest version of the pitch is the one that survives the follow-up question.",
+      "source": "Guide, Learn > What & Why (script) and Career & pay (demo kit)",
+      "verified": "2026-11-03",
       "correction": false,
       "unverified": false
     },
@@ -724,8 +724,8 @@ window.GUIDE_DOMAIN = {
         "evidence"
       ],
       "text": "Why it matters for your build. Every line of the intended pitch maps to something you did and can show — the build is designed backwards from that interview.",
-      "source": "Guide tab 1 and tab 5",
-      "verified": "2026-11-01",
+      "source": "Guide, Learn > What & Why and Career & pay",
+      "verified": "2026-11-03",
       "correction": false,
       "unverified": false
     }

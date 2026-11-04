@@ -11,8 +11,8 @@ failure this project has actually shipped.
 The MLX90640 gives 768 temperature readings per frame, at roughly ±2 °C over a
 0–100 °C range. That is the specification, not a measured detection result.
 
-source:: MLX90640 datasheet; Guide tab 1 (the honesty box)
-verified:: 2026-11-01
+source:: MLX90640 datasheet; Guide, Learn > What & Why (the honesty box)
+verified:: 2026-11-03
 
 ## The ground footprint decides your pixel size
 
@@ -20,8 +20,8 @@ Ground width for a downward camera is 2 × altitude × tan(FOV ÷ 2). With the 5
 lens at 30 m that is about 31.2 m across, which over 32 pixels is roughly
 0.98 m per pixel.
 
-source:: Guide tab 2 altitude and coverage calculator
-verified:: 2026-11-01
+source:: Guide, Learn > How it works (altitude and coverage calculator)
+verified:: 2026-11-03
 
 ## A one metre heat source at 30 m is about one pixel
 
@@ -29,8 +29,8 @@ At 30 m with the 55° lens a 1 m target covers about one pixel, so detection is 
 sampling question before it is an algorithm question. This is why the guide
 refuses to promise "finds a 1 m heat source from 30 m" as a capability.
 
-source:: Guide tab 1 and tab 2; audit pass 2 finding 12
-verified:: 2026-11-01
+source:: Guide, Learn > What & Why and How it works; audit pass 2 finding 12
+verified:: 2026-11-03
 
 ## What the customer actually receives
 

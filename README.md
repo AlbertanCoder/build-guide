@@ -276,7 +276,7 @@ on spend, falling back to the offline engine rather than billing past it.
 Run the tests:
 
 ```powershell
-# Everything at once: 28 suites, 1507 named checks, one exit code.
+# Everything at once: 28 suites, 1508 named checks, one exit code.
 node scripts/dev/gate.js
 node scripts/dev/gate.js --quick    # skip the browser suite (needs Chrome)
 node scripts/dev/gate.js --json     # machine-readable
@@ -311,7 +311,7 @@ Open `index.html` in a browser. Tabs, build checkboxes, progress, quizzes, flash
 - `shad-drone-icon.svg` — current favicon/header artwork.
 - `docs/js/assistant.js` + `docs/assistant/` — the offline Guide Assistant, plus the optional Cloudflare Worker that lets a model draft answers from retrieved passages.
 
-The unavailable stack, thermal camera, Pi and goggles were replaced with live alternatives, then re-checked on **31 October 2026**. Every link loads, but **a working link is not stock** — the frame and the GEPRC 50A stack were out of stock on that re-check, so confirm availability and freight at checkout. The required parts cost **CA$1,531.69** (no laptop: it assumes you use your own), or **CA$1,607.26 after 5% GST**, before remaining retailer freight — roughly **CA$1,647–1,677 landed** (the same CA$40–70 freight allowance as before). Optional extras: CA$85.51 + GST.
+The unavailable stack, thermal camera and Pi were replaced with live alternatives, and this build uses a monitor, not goggles. Every shop page was re-checked on **3 November 2026**. Every link loads, but **a working link is not stock**: on that re-check the Pi kit, the 55° thermal camera, the frame and the GEPRC stack were out of stock at their main shop, so confirm availability and freight at checkout. The required parts cost **CA$1,531.69** (no laptop: it assumes you use your own), or **CA$1,607.26 after 5% GST**, before remaining retailer freight — roughly **CA$1,647–1,677 landed** (the same CA$40–70 freight allowance as before). Optional extras: CA$85.51 + GST.
 
 ## Payload setup
 
@@ -328,28 +328,31 @@ The viewer defaults to `http://127.0.0.1:8000` and the append-only log is `fligh
 
 ## Validation
 
-- 55/55 browser checks passed, including all tabs, saved state, quizzes, flashcards, budget, coverage and mobile layouts.
-- 12/12 Guide Assistant offline self-tests passed on both the served page and the offline single-file build.
-- 11/11 Guide Assistant AI-path checks passed end to end against a mock streaming provider
-  (`scripts/dev/check-llm-path.ps1`): SSE streaming reached the browser, markdown rendered as real
-  lists, the `[[NAV]]` directive became a button and was stripped from the prose, retrieval ran
-  before the model call, and an empty-passage request was rejected with `422`.
-- 4/4 Guide Assistant price checks passed (`scripts/dev/check-kb-prices.js`): every figure in the
-  assistant's knowledge base also appears in the guide, the budget arithmetic closes
-  (CA$1,511.35 × 5% = CA$75.57; CA$1,531.69 + CA$75.57 = CA$1,607.26), and the superseded
-  CA$1,678.00 total is absent. Verified non-vacuous by re-running it against a deliberately
-  reverted copy, where it failed as intended.
-- 26/26 cost-engine unit checks passed (`scripts/dev/check-cost-engine.js`), and 30/30 cost-path
-  checks passed end to end (`scripts/dev/check-cost-path.js`) against a mock provider: a repeat
-  question produced **zero** upstream calls, passages were compressed 2,308 → 698 characters,
-  duplicates were dropped, `/api/stats` accounted the spend, the daily cap returned `402` without
-  calling the provider, and a cheap-tier refusal escalated exactly once to the strong tier.
-- 14/14 Guide Assistant offline self-tests passed, including that a confident curated question is
-  answered with no model call and an unanswerable one is not.
-- `node --check` clean on `docs/js/assistant.js`, `server/assistant-server.js` and the mock provider;
-  UTF-8 integrity verified for every shipped file.
-- 31/31 payload unit tests passed.
-- Demo, map health/API and viewer responses passed.
+`node scripts/dev/gate.js` runs every suite below with one exit code; its last full run (3 November 2026) passed every
+suite. Checks per suite:
+
+- The guide in a real browser: 29/29 (`scripts/dev/check-browser.js`: the settings drawer, the quiz pass-survival rule,
+  all 10 pages render, the step prerequisite boxes are readable, no page errors).
+- Guide Assistant self-tests: 24/24 on the served page and 24/24 in the offline single-file build, including that a
+  confident curated question is answered with no model call and an unanswerable one is not.
+- Guide Assistant AI path: 11/11 end to end against a mock streaming provider (`scripts/dev/check-llm-path.ps1`): SSE
+  streaming reached the browser, markdown rendered as real lists, the `[[NAV]]` directive became a button and was
+  stripped from the prose, retrieval ran before the model call, and an empty-passage request was rejected with `422`.
+- Price guard: 4/4 (`scripts/dev/check-kb-prices.js`): every figure in the assistant's knowledge base also appears in
+  the guide, the budget arithmetic closes (CA$1,511.35 × 5% = CA$75.57; CA$1,531.69 + CA$75.57 = CA$1,607.26), and the
+  superseded CA$1,678.00 total is absent.
+- Cost engine 27/27 (`scripts/dev/check-cost-engine.js`) and cost path 30/30 (`scripts/dev/check-cost-path.js`) against
+  a mock provider: a repeat question made no upstream call, `/api/stats` accounted the spend, the daily cap returned
+  `402` without calling the provider, and a cheap-tier refusal escalated once to the strong tier.
+- Settings API 39/39, including that the server never serves its saved key or `.env`, answers only to this machine's
+  host names, and refuses cross-site posts.
+- The edit and memory suites: conversation memory 29/29, write gates 13/13, the five bans 37/37, corrections memory
+  22/22, propose loop 41/41, review API 20/20, per-item acceptance 18/18, suggest an edit 128/128, quiz operation 29/29,
+  prose operation 38/38, job spec 8/8, drafter 15/15, build sync 23/23, encoding 3/3, domain pack 1/1.
+- The 3D build: step models 493/493, 3D views 21/21, 3D viewer 178/178, design simulations 13/13, build verification
+  190/190 (`scripts/build/verify_build.py`: 190 passed, 0 failed, 35 need the real parts in hand).
+- `node --check` clean on `docs/js/assistant.js`, `server/assistant-server.js` and the mock provider.
+- Outside the gate: 31/31 payload unit tests (`Shad-Drone-Payload`); demo, map health/API and viewer responses passed.
 - Every order-document link resolves, but a working link is not stock: the frame and the GEPRC 50A
   stack were out of stock on the 31 Oct 2026 re-check.
 

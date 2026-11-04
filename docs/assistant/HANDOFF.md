@@ -9,11 +9,11 @@ running the gate.
 
 | | |
 |---|---|
-| Repo | `C:\Users\SHADHUNTER\Desktop\build-guide-repo`, branch `main` |
+| Repo | `build-guide-repo` (this repository), branch `main` |
 | State | clean, pushed, **0 ahead** |
 | Head at handoff | written at `27e5a05`; run `git log -1` — committing this file necessarily moved it, and any later commit should leave the gate green |
 | Gate | `node scripts/dev/gate.js` → **419/419 named checks**, twenty suites |
-| The file the user opens | `C:\Users\SHADHUNTER\Desktop\Shad's Build Guide.html` — a **generated** single file. Never edit it; edit source and rebuild |
+| The file the user opens | `Shad's Build Guide.html` — a **generated** single file. Never edit it; edit source and rebuild |
 | The user's API key | **not saved yet** (`keyConfigured: false`) |
 
 ## The commands

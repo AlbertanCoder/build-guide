@@ -486,7 +486,23 @@
     { src: "Guide step 5", see: [STEP(5, "Step 5 — charge the batteries safely")] })
     .next = "flight-time";
 
-  kb("flight-time", "How long can it fly, and why does the voltage sag?", "flight time,minutes,how long fly,sag,voltage drop,1500mah,battery,low voltage,land,capacity",
+  /* Fable Part 2, N3: two questions that used to land on the wrong card. Worded from the page's own lines. */
+  kb("vtx-power", "Where does the video transmitter get its power?", "video transmitter,vtx power,power the vtx,get its power,9v pad,9v,vtx wiring,vtx wires,orange wire,green wire",
+    ["From the flight controller's 9V pad (Step 4): red to the FC's 9V pad, both black wires to GND, yellow (video) to the FC's VTX pad, white (control) to T1.",
+     "The VTX also has an orange wire (5 V out) and a green wire (audio). You do not use them. Cut each one short and cover it with heat shrink, so it touches nothing.",
+     "Never power the VTX without its antenna screwed on."],
+    { src: "Guide Step 4 (S4.3)", see: [STEP(4, "Step 4 — control and video")] });
+
+  kb("weight", "How much does the drone weigh?", "weigh,weight,how heavy,heavy,grams,drone weigh,how much does it weigh,how much does the drone weigh,250 g,mass",
+    ["Weigh it: when the drone is finished, put it on a kitchen scale with the battery fitted and write the number down. That figure, not this estimate, is the one that counts.",
+     "A drone of 250 g or more must be registered; this build is over that."],
+    { src: "Guide: Fly safely (How heavy will it be?)", see: [["Fly safely", "fly"]],
+      live: function () {
+        const w = document.getElementById("glance-weight");
+        return w && w.textContent && !/Loading/.test(w.textContent) ? "On the page right now: " + w.textContent : "";
+      } });
+
+  kb("flight-time", "How long can it fly, and why does the voltage sag?", "how long can it fly,how long does it fly,how long will it fly,fly for,flight time,minutes,how long fly,sag,voltage drop,1500mah,battery,low voltage,land,capacity",
     ["There is no honest number until you fly it — payload weight, throttle habits and temperature all move it. Measure it and write it down.",
      "The pack is a 1500 mAh 4S HV. Treat 3.5 V per cell under load as your land-now line (general practice, not from a maker document), and land earlier while you are learning.",
      "Sag is normal: a full 4S HV pack is about 17.4 V (4 cells x 4.35 V, the guide's LiHV figure), and a hard throttle punch can drop a volt for a moment (general practice, not from a maker document). Sustained sag means a tired or cold pack.",
@@ -1372,6 +1388,8 @@
     return "Grounded in this guide \u00b7 works offline";
   }
 
+  const LOCAL_HOST = typeof location !== "undefined" && /^(localhost|127\.0\.0\.1|\[::1\]|::1)$/.test(location.hostname);
+
   function setMode() {
     const sub = document.getElementById("ga-sub");
     if (sub) { sub.textContent = modeLabel(); }
@@ -1387,8 +1405,11 @@
         : SERVER_PRESENT
           ? "No API key yet, so these are the " + KB.length + " written answers only. " +
             "Open \u2699 Settings, paste your provider key, and press Save key."
-          : "No local server, so these are the " + KB.length + " written answers only. " +
-            "For AI, run  node server/assistant-server.js  and reload.";
+          : LOCAL_HOST
+            ? "No local server, so these are the " + KB.length + " written answers only. For AI: " + START_HINT
+            /* Fable Part 2, N2: on the published site (a phone, or any other computer) there is nothing to run */
+            : "These are the " + KB.length + " written answers. AI answers need the guide's local server, which runs " +
+              "on the laptop the guide is set up on; this published page cannot use it.";
     }
   }
 
@@ -3060,6 +3081,23 @@
     /* 10 pages since the five-places layout: Home, Build, Buy, Fly safely + the six Learn pages */
     add("every tab panel renders content", tabs.length >= 10 && rendered === tabs.length,
       rendered + "/" + tabs.length);
+
+    /* Fable Part 2, S1: the "Before you start" boxes in the step headers sat white on cream. Every one must have
+       readable text: contrast of its computed text colour against its own background of at least 4.5:1 (WCAG AA). */
+    const lum = function (css) {
+      const v = (String(css).match(/[\d.]+/g) || [0, 0, 0]).slice(0, 3).map(function (n) {
+        const c = Number(n) / 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+      });
+      return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2];
+    };
+    const notes = Array.prototype.slice.call(document.querySelectorAll(".asm-note-top"));
+    const ratios = notes.map(function (n) {
+      const cs = getComputedStyle(n), a = lum(cs.color), b = lum(cs.backgroundColor);
+      return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+    });
+    const lowest = ratios.length ? Math.min.apply(null, ratios) : 0;
+    add("the step prerequisite boxes have readable text (contrast 4.5:1 or more)", notes.length >= 2 && lowest >= 4.5,
+      notes.length + " boxes, lowest contrast " + lowest.toFixed(1) + ":1");
 
     if (!settingsAvailable()) {
       add("a local server is present", false, "endpoint=" + (ENDPOINT || "none"));
