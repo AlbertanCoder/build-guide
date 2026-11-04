@@ -103,7 +103,7 @@ def build():
     actions.sort(key=lambda a: a["time"])
     actions.append({"id": "S7.5", "hold": 0.7, "shows": ["leg_front_0_foot", "leg_rear_0_foot", "thermal_lens"], "hides": [], "time": 10.8,
                     "short": "Legs stand lower than the payload",
-                    "text": "NOW Nothing hanging below the bottom plate may be the lowest point of the drone: a landing on the lens or the Pi will break it. Fit landing legs that stand lower than the payload before you fly with it. The legs must stand at least 40 mm below the bottom plate. The payload's lowest part sits about 29 mm below it (from the design check; see “How this was checked”).",
+                    "text": "NOW Nothing hanging below the bottom plate may be the lowest point of the drone: a landing on the lens or the Pi will break it. Plan for it now; you fit them later (S7.8, after the first hover): before the first flight WITH the payload, landing legs must stand lower than it. The legs must stand at least 40 mm below the bottom plate. The payload's lowest part sits about 29 mm below it (from the design check; see “How this was checked”).",
                     "focus": [-0.012, 0.0, -0.030], "dist": 0.30, "view": [0.0, -1.0, -0.15]})
     A.finish("step-07-main", 11.6, actions)
 

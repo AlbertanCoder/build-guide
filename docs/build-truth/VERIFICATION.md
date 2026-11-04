@@ -1,6 +1,6 @@
 # How this build was checked
 
-Written by `python -I scripts/build/verify_build.py` on 2026-11-03. Run it again any time; it rewrites this page.
+Written by `python -I scripts/build/verify_build.py` on 2026-11-04. Run it again any time; it rewrites this page.
 
 ## In plain words
 
