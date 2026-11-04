@@ -16,6 +16,10 @@ PORT, AI, PHONE = 8808, 8809, "127.0.0.2"
 LAPTOP_URL = "http://127.0.0.1:%d/index.html#ga-open" % PORT
 PHONE_URL = "http://%s:%d/index.html#ga-open" % (PHONE, PORT)
 fails = []
+# the page has characters such as ⚙ that a cp1252 console cannot print: always write UTF-8 (2026-11-04: this
+# crashed check 10 in a shell whose stdout was cp1252, and the suite stopped at 9 of 18)
+sys.stdout.reconfigure(encoding="utf-8")
+sys.stderr.reconfigure(encoding="utf-8")
 
 
 def check(name, ok, info=""):

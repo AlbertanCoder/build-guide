@@ -15,6 +15,10 @@ URL = "http://127.0.0.1:%d/index.html" % PORT
 SHOTS = tempfile.mkdtemp(prefix="ga-fresh-eyes-")
 STORE = "shad-drone-guide-v1"
 fails = []
+# the page has characters such as ⚙ that a cp1252 console cannot print: always write UTF-8 (2026-11-04: this
+# crashed check 10 in a shell whose stdout was cp1252, and the suite stopped at 9 of 18)
+sys.stdout.reconfigure(encoding="utf-8")
+sys.stderr.reconfigure(encoding="utf-8")
 
 
 def check(name, ok, info=""):
@@ -85,10 +89,10 @@ try:
         ct = pg.evaluate("[...document.querySelectorAll('#arr-groups .arr-row')].map(r => r.getAttribute('data-arr-item'))")
         check("parcels: Canadian Tire shows the new threadlocker test and not the Stage 4 foam-tape tests", ct == ["Threadlocker"], ct)
         stages = [a["stage"] for a in allA]
-        check("parcels: 31 tests, each with what it needs, in stage order", len(allA) == 31 and stages == sorted(stages) and all(a.get("needs") for a in allA), len(allA))
+        check("parcels: every test says what it needs, in stage order (%d tests)" % len(allA), len(allA) >= 31 and stages == sorted(stages) and all(a.get("needs") for a in allA), len(allA))
         pg.select_option("#arr-shop", ""); pg.uncheck("#arr-bought"); pg.wait_for_timeout(200)
         n_all = pg.evaluate("document.querySelectorAll('#arr-groups .arr-row').length")
-        check("parcels: switching \"Only parts I have ticked bought\" off shows all 31", n_all == 31, n_all)
+        check("parcels: switching \"Only parts I have ticked bought\" off shows every test", n_all == len(allA), [n_all, len(allA)])
         pg.check("#arr-bought"); pg.wait_for_timeout(200)
         pg.evaluate("(()=>{const a=document.createElement('a'); a.href='#arrival-card'; a.setAttribute('data-open-arrival',''); a.setAttribute('data-arrival-test','Frame'); a.textContent='x'; document.body.appendChild(a); a.click();})()")
         pg.wait_for_timeout(400)

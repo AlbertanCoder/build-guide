@@ -22,7 +22,7 @@ this week" sliders, and three doors: Buy today, When a parcel arrives, Before yo
 **Your bill** (the required parts with GST, bought so far, still to buy, a progress bar, and the optional
 extras on their own line), the **Buy today** list and every
 part by stage. Every line has a shop link, a dated stock badge and a backup place to buy it (or an honest "none
-found"). The required parts are CA$1,531.69 before GST and freight (CA$1,607.26 with GST), bought in seven small stages that each
+found"). The required parts are CA$1,630.69 before GST and freight (CA$1,711.21 with GST), bought in seven small stages that each
 give you something working the day they arrive. All the money on the page comes from one list (the
 `buy-data` block in `index.html`).
 
@@ -276,7 +276,7 @@ on spend, falling back to the offline engine rather than billing past it.
 Run the tests:
 
 ```powershell
-# Everything at once: 31 suites, 1590 named checks, one exit code.
+# Everything at once: 31 suites, 1600 named checks, one exit code.
 node scripts/dev/gate.js
 node scripts/dev/gate.js --quick    # skip the browser suite (needs Chrome)
 node scripts/dev/gate.js --json     # machine-readable
@@ -311,7 +311,7 @@ Open `index.html` in a browser. Tabs, build checkboxes, progress, quizzes, flash
 - `shad-drone-icon.svg` — current favicon/header artwork.
 - `docs/js/assistant.js` + `docs/assistant/` — the offline Guide Assistant, plus the optional Cloudflare Worker that lets a model draft answers from retrieved passages.
 
-The unavailable stack, thermal camera and Pi were replaced with live alternatives, and this build uses a monitor, not goggles. Every shop page was re-checked on **3 November 2026**. Every link loads, but **a working link is not stock**: on that re-check the Pi kit, the 55° thermal camera, the frame and the GEPRC stack were out of stock at their main shop, so confirm availability and freight at checkout. The required parts cost **CA$1,531.69** (no laptop: it assumes you use your own), or **CA$1,607.26 after 5% GST**, before remaining retailer freight — roughly **CA$1,647–1,677 landed** (the same CA$40–70 freight allowance as before). Optional extras: CA$85.51 + GST.
+The unavailable stack, thermal camera and Pi were replaced with live alternatives, and this build uses a monitor, not goggles. Every shop page was re-checked on **3 November 2026**. Every link loads, but **a working link is not stock**: on that re-check the Pi kit, the 55° thermal camera, the frame and the GEPRC stack were out of stock at their main shop, so confirm availability and freight at checkout. The required parts cost **CA$1,630.69** (no laptop: it assumes you use your own), or **CA$1,711.21 after 5% GST**, before remaining retailer freight — roughly **CA$1,751–1,781 landed** (the same CA$40–70 freight allowance as before). Optional extras: CA$85.51 + GST.
 
 ## Payload setup
 
@@ -339,7 +339,7 @@ suite. Checks per suite:
   streaming reached the browser, markdown rendered as real lists, the `[[NAV]]` directive became a button and was
   stripped from the prose, retrieval ran before the model call, and an empty-passage request was rejected with `422`.
 - Price guard: 4/4 (`scripts/dev/check-kb-prices.js`): every figure in the assistant's knowledge base also appears in
-  the guide, the budget arithmetic closes (CA$1,511.35 × 5% = CA$75.57; CA$1,531.69 + CA$75.57 = CA$1,607.26), and the
+  the guide, the budget arithmetic closes (CA$1,610.35 × 5% = CA$80.52; CA$1,630.69 + CA$80.52 = CA$1,711.21), and the
   superseded CA$1,678.00 total is absent.
 - Cost engine 27/27 (`scripts/dev/check-cost-engine.js`) and cost path 30/30 (`scripts/dev/check-cost-path.js`) against
   a mock provider: a repeat question made no upstream call, `/api/stats` accounted the spend, the daily cap returned

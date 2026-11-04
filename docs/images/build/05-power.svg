@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
 <title id="title">Step 5: Charge the radio and flight batteries safely</title>
-<desc id="desc">Two 18650 cells in the Pocket with USB-C charging, and 4S LiHV packs connected to the M4AC by XT60 and balance lead inside a LiPo bag.</desc>
+<desc id="desc">Two 18650 cells in the Pocket with USB-C charging, and the 4S LiHV and 4S Li-ion packs connected to the M7AC by XT60 and balance lead inside a LiPo bag.</desc>
 <rect width="960" height="540" fill="#f7f2e8"/>
 <style>.t{font:700 23px 'Segoe UI',sans-serif;fill:#123a2e}.s{font:18px 'Segoe UI',sans-serif;fill:#21332b}.b{fill:#fff;stroke:#1b5e4f;stroke-width:3;rx:12}.a{fill:#e4f0ea;stroke:#1b5e4f;stroke-width:3;rx:12}.w{fill:#fbe9dc;stroke:#c2571b;stroke-width:3;rx:12}.g{stroke:#1b5e4f;stroke-width:4;fill:none}.u{stroke:#2d6a8e;stroke-width:4;fill:none}</style>
 <text x="32" y="42" class="t">5 · Set up power before the first flight</text>
 <rect x="70" y="85" width="245" height="145" class="a"/><text x="193" y="120" text-anchor="middle" class="t">POCKET RADIO</text><text x="100" y="154" class="s">2× 18650 installed</text><text x="100" y="184" class="s">USB-C direct charging</text><text x="100" y="214" class="s">Remove contact insulator</text>
-<rect x="360" y="85" width="245" height="145" class="b"/><text x="483" y="120" text-anchor="middle" class="t">M4AC CHARGER</text><text x="390" y="154" class="s">AC 100–240V input</text><text x="390" y="184" class="s">Select LiHV + 4S</text><text x="390" y="214" class="s">Balance charge, attended</text>
+<rect x="360" y="85" width="245" height="145" class="b"/><text x="483" y="120" text-anchor="middle" class="t">M7AC CHARGER</text><text x="390" y="154" class="s">AC 100–240V input</text><text x="390" y="184" class="s">LiHv (GNB) or Lion (Li-ion)</text><text x="390" y="214" class="s">Balance charge, attended</text>
 <rect x="650" y="85" width="245" height="145" class="w"/><text x="773" y="120" text-anchor="middle" class="t">4S LiHV PACK</text><text x="680" y="154" class="s">XT60 discharge lead</text><text x="680" y="184" class="s">JST-XH balance lead</text><text x="680" y="214" class="s">Charge inside LiPo bag</text>
 <path d="M605 157 H650" class="g"/><path d="M605 190 H650" class="u"/>
 <rect x="110" y="285" width="740" height="170" class="b"/><text x="480" y="323" text-anchor="middle" class="t">BEFORE CONNECTING ANY BATTERY</text>

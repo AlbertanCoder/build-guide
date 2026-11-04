@@ -42,7 +42,7 @@ Every category needed for the build is covered below. Prices and stock are point
 | 1 | RadioMaster Pocket 18650 3200mAh battery pair | $17.99 | [Add to cart](https://rotorvillage.ca/radiomaster-pocket-18650-3200mah-3-7v-battery-2pcs/) |
 | 1 | RadioMaster RP1 V2 TCXO ELRS serial receiver | $27.99 | [Add to cart](https://rotorvillage.ca/radiomaster-rp1-v2-tcxo-expresslrs-2-4ghz-receiver/) |
 | 2 | GNB 1500mAh 4S 120C HV LiPo, XT60 | $67.98 | [21 shown](https://rotorvillage.ca/gnb-1500mah-4s-120c-hv-lipo-xt60/) |
-| 1 | ToolkitRC M4AC 30W/2.5A AC charger (LiHV, 1–4S) | $49.99 | [7 shown](https://rotorvillage.ca/toolkitrc-m4ac-charger-30w-2-5a/) |
+| 1 | ToolkitRC M7AC charger, 300 W / 15 A, AC 100 W (LiPo, LiHV, Li-ion, 1-6S) | $118.99 | [6 shown](https://rotorvillage.ca/toolkitrc-m7ac-charger-300w-15a/) |
 | 1 | RunCam Phoenix 2 Special Edition analog camera | $36.99 | [8 shown](https://rotorvillage.ca/runcam-phoenix-2-special-edition/) |
 | 1 | TBS Unify Pro 5G8 HV VTX, 2–6S, SMA | $77.99 | [7 shown](https://rotorvillage.ca/tbs-unify-pro-5g8-hv-vtx/) |
 | 1 | **TBS Triumph PRO SMA RHCP 5.8 GHz antenna** (5500–6000 MHz, 11.5 g) | $29.99 | [Only 3 shown](https://rotorvillage.ca/tbs-triumph-pro-sma-rhcp/) |
@@ -181,7 +181,7 @@ Freight from Rotor Village and PiShop is weight-based; SparkFun international fr
 | Payload mounting | Pi under the bottom plate (or over a measured cutout); MLX90640 below it, lens down; PA1010D above, patch antenna up | **Measure before drilling** — the lens needs a clear vertical line to the ground, and no board may touch bare carbon |
 | Pi power | GEPRC regulated 5V/3A to micro-USB power-only pigtail; separate bench PSU | Meter polarity/voltage and check undervoltage under load before flight |
 | Analog FPV | Phoenix 2 (5–36V), Unify Pro HV (2–6S), **TBS Triumph PRO 5.8 GHz SMA antenna**, Skyzone M5F analog monitor (needs its own 18650 and microSD) | Match channel/band and legal RF settings; use 25 mW / default legal channels unless properly licensed. A 900 MHz Crossfire antenna (e.g. TBS Diamond) will not work here |
-| Charging | M4AC supports 1–4S LiPo/LiHV and AC input | Select LiHV 4S, attended balance charging in LiPo bag |
+| Charging | M7AC supports LiPo, LiHV and Li-ion (Lion), 1-6S, and AC input | LiHv for the GNB pack, Lion for the More Volts pack; attended balance charging in the LiPo bag |
 | Software | Included local package with GPS/camera drivers, logging and offline viewer | **31/31 synthetic tests passed**, then perform Pi hardware and surveyed-target tests |
 
 Payload package: `Shad-Drone-Payload/` (in this repository)  

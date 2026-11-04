@@ -409,11 +409,11 @@
         return line && line.textContent ? "On the page right now: " + line.textContent + (gst ? ". " + gst : "") : "";
       } });
 
-  kb("budget", "What does this cost, and is my total right?", "cost,price,total,budget,gst,money,how much,1603,1682,1678,1759,cheap,expensive,tax,freight",
-    ["The required parts come to CA$1,531.69 for merchandise and the CA$20.34 of Transport Canada fees. It does not include a laptop: you use your own.",
-     "Add 5 % GST on the CA$1,511.35 taxable subtotal — the Transport Canada fees are not taxable — for CA$75.57, a planning total of CA$1,607.26, still before remaining retailer freight on the small items. Optional extras (spare props, the coating spray, the LED strip and the monitor's memory card) are CA$85.51 + GST on top.",
+  kb("budget", "What does this cost, and is my total right?", "cost,price,total,budget,gst,money,how much,1603,1682,1678,1759,cheap,expensive,tax,freight,1630,1711",
+    ["The required parts come to CA$1,630.69 for merchandise and the CA$20.34 of Transport Canada fees. It does not include a laptop: you use your own.",
+     "Add 5 % GST on the CA$1,610.35 taxable subtotal — the Transport Canada fees are not taxable — for CA$80.52, a planning total of CA$1,711.21, still before remaining retailer freight on the small items. Optional extras (spare props, the coating spray, the LED strip and the monitor's memory card) are CA$85.51 + GST on top.",
      "The budget table in Buy is live: change any price and the total, the progress bar and the notes update. Tick an item you already own and it drops out of the total.",
-     "If you want to spread it out, the staged plan splits the required CA$1,531.69 into seven stages, plus the optional Stage 8 (CA$85.51), each of which gives you something to build or test the day it arrives.",
+     "If you want to spread it out, the staged plan splits the required CA$1,630.69 into seven stages, plus the optional Stage 8 (CA$85.51), each of which gives you something to build or test the day it arrives.",
      "Every price was checked on the shop's own page on 3 Nov 2026, with a backup shop where one was found. A working link is not stock: that day the Pi kit, the 55° thermal camera, the frame and the GEPRC stack were out of stock at their main shop (the frame was in stock at EpicFPV, the stack only at a US shop), so confirm availability and freight at checkout rather than trusting a live page."],
     { why: "The staging exists so the project survives real life: seven smaller payments that each end in progress beat one bill you keep postponing.", src: "Guide: Buy, and the order list", see: [["Parts & budget", "parts"], ["Staged buying plan", "parts"]] })
     .next = "stock";
@@ -481,11 +481,11 @@
     { note: "Eye protection and an open window. Solder splatter and flux fumes are the cheap hazards in this build.", src: "Guide step 3", see: [STEP(3, "Step 3 — solder the stack")] })
     .next = "first-power-smoke";
 
-  kb("charger-setup", "How do I set up the M4AC charger for these packs?", "charger,m4ac,toolkitrc,lihv,4s,balance,balance lead,amps,charge rate,storage charge,how to charge",
-    ["The packs in this plan are GNB 1500 mAh 4S 120C HV LiPos. Before you connect a pack, set the charger to LiHV (4.35 V) and 1.0 A, and check the screen shows 4S. Not plain LiPo, or you will stop short of a full pack.",
-     "Plug in the main XT60 lead AND the balance lead. Balance charging is not optional with a 4S pack.",
+  kb("charger-setup", "How do I set up the M7AC charger for these packs?", "charger,m7ac,m4ac,toolkitrc,lihv,lion,li-ion,4s,balance,balance lead,amps,charge rate,storage charge,how to charge",
+    ["Before you connect a pack, open the charge settings (short-press OK) and set Battery Type: LiHv for the GNB 1500 pack, Lion for the More Volts 5000 Li-ion pack. A wrong type can damage the pack and become a fire hazard (the M7AC manual).",
+     "Cells: Auto, Mode: Charge, Charge Current 1.0 A for the GNB and 2.5 A for the More Volts (the guide's cautious settings). Then plug in the main XT60 lead AND the balance lead, scroll to Start and press OK.",
      "Charge inside the closed LiPo bag, on something that will not burn, with you in the room. The guide repeats this because it is the one that matters.",
-     "If you are not flying within a day or two, use LipoStorage (3.85 V per cell) instead of LiHV.",
+     "If you are not flying within a day or two, choose Mode: Storage instead of Charge.",
      "Also put the two 18650 cells in the RadioMaster Pocket — that is a separate power system from the flight battery."],
     { src: "Guide step 5", see: [STEP(5, "Step 5 — charge the batteries safely")] })
     .next = "flight-time";
@@ -507,8 +507,8 @@
       } });
 
   kb("flight-time", "How long can it fly, and why does the voltage sag?", "how long can it fly,how long does it fly,how long will it fly,fly for,flight time,minutes,how long fly,sag,voltage drop,1500mah,battery,low voltage,land,capacity",
-    ["There is no honest number until you fly it — payload weight, throttle habits and temperature all move it. Measure it and write it down.",
-     "The pack is a 1500 mAh 4S HV. Treat 3.5 V per cell under load as your land-now line (general practice, not from a maker document), and land earlier while you are learning.",
+    ["There is no measured number yet: payload weight, throttle habits and temperature all move it. Estimates, not yet measured (the game's flight model, corrected against a similar real build, give or take 25 %): about 9 to 10 minutes of calm flying on the GNB 1500 LiPo, and about 20 to 23 minutes on the More Volts 5000 Li-ion. Measure your own and write it down.",
+     "The pack is a 1500 mAh 4S HV. Treat 3.5 V per cell under load as your land-now line (general practice, not from a maker document), and land earlier while you are learning. The More Volts Li-ion pack sits lower: never let it go below 2.8 V per cell in flight (11.2 V; its listing), and land when it rests at 3.3 V per cell (13.2 V; the game's landing rule, an ASSUMPTION).",
      "Sag is normal: a full 4S HV pack is about 17.4 V (4 cells x 4.35 V, the guide's LiHV figure), and a hard throttle punch can drop a volt for a moment (general practice, not from a maker document). Sustained sag means a tired or cold pack.",
      "The payload, the LED strip (an optional extra) and cold weather all cost flight time. Test flights should be short and purposeful anyway.",
      "Record capacity put back in at the charger — that is your real consumption, straight from the machine."],

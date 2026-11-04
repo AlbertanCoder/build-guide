@@ -1,10 +1,10 @@
 {
   "_note": "Values the corpus treats as CORRECT. A quiz distractor may never equal one of these: a plausible wrong answer that is actually right teaches a falsehood, and nothing errors. Deliberately short — it covers figures that are unambiguously correct as facts in their own right (prices, the metres-per-pixel figure). It does NOT try to cover context-dependent numbers like altitudes, because '122 m' is a fine distractor on a question about battery voltage. Known limitation: this is a blunt instrument, and the real backstop is that a human reads the diff.",
   "values": [
-    "CA$1,531.69",
-    "CA$1,607.26",
-    "CA$1,511.35",
-    "CA$75.57",
+    "CA$1,630.69",
+    "CA$1,711.21",
+    "CA$1,610.35",
+    "CA$80.52",
     "CA$85.51",
     "0.98 m per pixel"
   ]
