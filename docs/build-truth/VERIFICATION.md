@@ -302,7 +302,7 @@ Margin = how much room is left at the design sizes. Runs = the share of the tole
 | PASS | Buy list 'Lumenier M3 rubber landing feet, 8 pack (US shop)' is used by a step |  |  |  |  | used in S7.8 |
 | PASS | Buy list 'M3 set screw assortment, 200 pieces (includes 20 x M3 x 10 m' is used by a step |  |  |  |  | used in S7.8 |
 | PASS | Buy list 'M3 x 10 mm black steel button-head screws, 10 pack (for the ' is used by a step |  |  |  |  | used in S7.8 |
-| PASS | Every buy line in a required stage is used by a step or a stage checklist (optional stages 8 exempt) |  |  |  |  | 47 lines checked, from C:\Users\SHADHUNTER\Desktop\build-guide-ui\index.html #buy-data |
+| PASS | Every buy line in a required stage is used by a step or a stage checklist (optional stages 8 exempt) |  |  |  |  | 47 lines checked, from index.html #buy-data |
 | PASS | Enough heat-shrink: steps use 4, the list gives 10 |  | 6.0 pieces |  |  |  |
 | PASS | Enough heat-shrink-3mm: steps use 1, the list gives 2 |  | 1.0 pieces |  |  |  |
 | PASS | Enough legs-25: steps use 4, the list gives 10 |  | 6.0 pieces |  |  |  |

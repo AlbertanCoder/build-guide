@@ -4036,7 +4036,7 @@
    "action": "",
    "name": "Every buy line in a required stage is used by a step or a stage checklist (optional stages 8 exempt)",
    "status": "PASS",
-   "detail": "47 lines checked, from C:\\Users\\SHADHUNTER\\Desktop\\build-guide-ui\\index.html #buy-data",
+   "detail": "47 lines checked, from index.html #buy-data",
    "margin": null,
    "unit": "",
    "arrival": null,

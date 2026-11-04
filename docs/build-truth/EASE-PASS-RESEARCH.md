@@ -1,6 +1,6 @@
 # Ease pass: research for the beginner testers' rows (Opus)
 
-Plan: `C:\Users\SHADHUNTER\Desktop\beginner-test\ease-pass-plan.md` (91 rows). This file covers the 48 rows that name Opus or are research or model rows, in the plan's batch order. For each: what I found, where (URL and the exact words), and a status:
+Plan: `beginner-test/ease-pass-plan.md` (a planning file outside this repo) (91 rows). This file covers the 48 rows that name Opus or are research or model rows, in the plan's batch order. For each: what I found, where (URL and the exact words), and a status:
 - **FOUND**: a primary source says it.
 - **PARTLY**: some of it is sourced; the rest is marked.
 - **NOT FOUND [REQUIRES REAL INPUT]**: nobody publishes it; it becomes an arrival check.

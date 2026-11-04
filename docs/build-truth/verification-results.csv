@@ -210,7 +210,7 @@ BUY-used-legs-28,cross-checks,,PASS,"Buy list 'M3 x 28 mm knurled aluminium stan
 BUY-used-legs-feet,cross-checks,,PASS,"Buy list 'Lumenier M3 rubber landing feet, 8 pack (US shop)' is used by a step",,,,0,,,,used in S7.8
 BUY-used-legs-setscrews,cross-checks,,PASS,"Buy list 'M3 set screw assortment, 200 pieces (includes 20 x M3 x 10 m' is used by a step",,,,0,,,,used in S7.8
 BUY-used-legs-footscrews,cross-checks,,PASS,"Buy list 'M3 x 10 mm black steel button-head screws, 10 pack (for the ' is used by a step",,,,0,,,,used in S7.8
-BUY-required-all-used,cross-checks,,PASS,Every buy line in a required stage is used by a step or a stage checklist (optional stages 8 exempt),,,,0,,,,"47 lines checked, from C:\Users\SHADHUNTER\Desktop\build-guide-ui\index.html #buy-data"
+BUY-required-all-used,cross-checks,,PASS,Every buy line in a required stage is used by a step or a stage checklist (optional stages 8 exempt),,,,0,,,,"47 lines checked, from index.html #buy-data"
 BUY-qty-heat-shrink,cross-checks,,PASS,"Enough heat-shrink: steps use 4, the list gives 10",6.0,pieces,,0,,,,
 BUY-qty-heat-shrink-3mm,cross-checks,,PASS,"Enough heat-shrink-3mm: steps use 1, the list gives 2",1.0,pieces,,0,,,,
 BUY-qty-legs-25,cross-checks,,PASS,"Enough legs-25: steps use 4, the list gives 10",6.0,pieces,,0,,,,

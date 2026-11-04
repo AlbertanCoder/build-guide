@@ -35,9 +35,13 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, "..", ".."))
 GEO = os.path.join(ROOT, "docs", "build-truth", "geometry")
 OUTD = os.path.join(ROOT, "docs", "build-truth")
-PAGE = os.path.normpath(os.path.join(ROOT, "..", "build-guide-ui", "index.html"))   # Builder's LIVE page, read only
-if "--page" in sys.argv:                                                           # override: --page PATH
+PAGE = os.path.join(ROOT, "index.html")                       # the guide page in this repo (read only); --page PATH overrides
+if "--page" in sys.argv:
     PAGE = os.path.abspath(sys.argv[sys.argv.index("--page") + 1])
+PAGE_SHOWN = os.path.relpath(PAGE, ROOT).replace(os.sep, "/") if os.path.abspath(PAGE).startswith(os.path.abspath(ROOT)) else os.path.basename(PAGE)
+if not os.path.isfile(PAGE):                                   # a missing page is a hard failure, never a quiet pass
+    print(f"VERIFY FAILED: the guide page was not found ({PAGE_SHOWN}). Run from the repo, or pass --page PATH.")
+    sys.exit(2)
 sys.path.insert(0, HERE)
 import simulate_design as SIM  # noqa: E402  (the design simulation's frame geometry and ray checks)
 
@@ -57,14 +61,14 @@ ARR = load("arrival.json")["checks"]
 BUY = load("buy_list.json")
 # The buy list comes from the live page's buy-data (it was a hand-made copy, stale since 10:10 on 2026-11-03);
 # buy_list.json is rewritten as a copy so other tools and readers see the same list.
-BUY_SRC = "buy_list.json (page not found)"
-if os.path.exists(PAGE):
-    _m = re.search(r'<script type="application/json" id="buy-data">(.*?)</script>', open(PAGE, encoding="utf-8").read(), re.S)
-    if _m:
-        BUY = json.loads(_m.group(1))
-        BUY_SRC = PAGE + " #buy-data"
-        with open(os.path.join(GEO, "buy_list.json"), "w", encoding="utf-8") as _f:
-            json.dump(BUY, _f, indent=1, ensure_ascii=False)
+_m = re.search(r'<script type="application/json" id="buy-data">(.*?)</script>', open(PAGE, encoding="utf-8").read(), re.S)
+if not _m:                                                     # no buy list on the page: fail, do not fall back to a stale copy
+    print(f"VERIFY FAILED: {PAGE_SHOWN} has no buy-data block.")
+    sys.exit(2)
+BUY = json.loads(_m.group(1))
+BUY_SRC = PAGE_SHOWN + " #buy-data"
+with open(os.path.join(GEO, "buy_list.json"), "w", encoding="utf-8") as _f:
+    json.dump(BUY, _f, indent=1, ensure_ascii=False)
 ROUTES = load("routes.json")
 V = lambda n: PARTS[n]["values_mm"]  # noqa: E731
 RUNS = int(TOL["runs"])
@@ -771,7 +775,7 @@ def cross_checks():
     add("X-model-truth", "cross-checks", "", "Every 3D action id is in STEP-TRUTH.md", "PASS" if not extra_model else "FAIL",
         ", ".join(extra_model) or "all found", unit="")
     if P is None:
-        add("X-page", "cross-checks", "", "Page action ids (Builder's page)", "NEEDS REAL PARTS", "page file not found: " + PAGE, unit="")
+        add("X-page", "cross-checks", "", "Page action ids", "FAIL", "page file not found: " + PAGE_SHOWN, unit="")
     else:
         untagged = [i for i in G if i not in P]
         add("X-page-tags", "cross-checks", "", "Every 3D action id is tagged on the page", "PASS" if not untagged else "PAGE FIX",

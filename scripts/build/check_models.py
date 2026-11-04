@@ -63,11 +63,15 @@ with open(os.path.join(ROOT, "docs", "build-truth", "STEP-TRUTH.md"), encoding="
     import re as _re
     TRUTH_IDS = set(_re.findall(r"^\| (S\d\.[0-9A-Za-z]+) \|", _f.read(), flags=_re.M))
 PAGE_STEPS = {}
-# The LIVE page (build-guide-ui, read only), as verify_build reads it. Until 2026-11-03 this read the repo's old
-# 05:06 copy, which has no data-action-ids, so the per-action page checks below were silently skipped.
-PAGE = os.path.normpath(os.path.join(ROOT, "..", "build-guide-ui", "index.html"))
+# The guide page in this repo (read only), as verify_build reads it; --page PATH overrides. A missing page is a hard
+# failure: until 2026-11-03 the page checks below were once silently skipped by reading an old page without action ids.
+PAGE = os.path.join(ROOT, "index.html")
 if "--page" in sys.argv:
     PAGE = os.path.abspath(sys.argv[sys.argv.index("--page") + 1])
+if not os.path.isfile(PAGE):
+    print(f"FAIL the guide page was not found ({os.path.basename(PAGE)}). Run from the repo, or pass --page PATH.")
+    print("1 FAILED")
+    sys.exit(1)
 with open(PAGE, encoding="utf-8") as _f:
     _page = _f.read()
     for _m in _re.finditer(r'<section class="asm-step" data-step="(\d)"', _page):

@@ -111,7 +111,7 @@ act("S8.6", 8, "Payload on, hover again", needs=["payload_powered", "legs_on", "
 act("S8.7", 8, "Heat test, props off", needs=["hovered_payload"], set_={"props_on": False})
 
 ALWAYS_HAVE = ["licence", "registration_marked"]   # Transport Canada steps outside the build (buy:exam, buy:registration)
-# Done before the 8 build steps, in the page's stage checklists (quotes from build-guide-ui/index.html)
+# Done before the 8 build steps, in the page's stage checklists (quotes from the guide page, index.html)
 BEFORE_BUILD = {
     "radio_ready": "Stage 3 checklist: 'Charge the cells in the radio; set up EdgeTX: switches, arm switch, timer, model name.'",
     "meter_batteries": "Stage 1 checklist: 'Put two 1.5 V batteries (AA or AAA, whichever fits the battery door) in the multimeter. The kit does not include them. You already have these.'",
