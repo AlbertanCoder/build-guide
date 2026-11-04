@@ -35,7 +35,9 @@ SOURCES = {
     "R8": ("https://rotorvillage.ca/tbs-unify-pro-5g8-hv-vtx/", "31x22x6mm form factor"),
     "R10": ("https://rotorvillage.ca/tbs-triumph-pro-sma-rhcp/", "Height: 78mm"),
     "R11": ("https://www.toolkitrc.com/m4ac/", "Product size 75*54*30mm"),
+    "R-M7AC": ("https://www.amainhobbies.com/toolkitrc-m7-ac-dc-battery-charger-6s-20a-300w-tlk-m7ac/p1445726", "Size: 112x73x38mm; Weight: 245g"),
     "R12": ("https://rotorvillage.ca/gnb-1500mah-4s-120c-hv-lipo-xt60/", "Dimensions: 79mm x 38mm x 26mm (LxWxH)"),
+    "R-MV5000": ("https://rotorvillage.ca/more-volts-4s-5000mah-li-ion-battery/", "Weight: 307.9g (±5 g); Dimensions (L×W×H): ~79.15 x 44.25 x 44.25 mm; Amass XT60H + 4S JST-XH balance lead"),
     "R13": ("https://rotorvillage.ca/radiomaster-pocket-transmitter-elrs-charcoal-edition/", "156.6*65.1*125.3mm (Folded size)"),
     "R14": ("https://rotorvillage.ca/iflight-smart-smoke-stopper-xt30-xt60/", "Size(L x W x H): 42 x 32 x 11 mm"),
     "R15": ("https://rotorvillage.ca/flywoo-fpv-quad-tool-kit-w-multimeter-and-soldering-iron/", "Size of Control Handle: 110x16x15mm"),
@@ -75,11 +77,13 @@ def main():
             continue
         srcs = [s for s in SOURCES if s != "none" and s in d["src"]] or [d["src"]]
         rows[name] = {
-            "values_mm": {k: v for k, v in d.items() if k not in ("src", "approx", "why")},
+            "values_mm": {k: v for k, v in d.items() if k not in ("src", "approx", "why", "mass_g")},
             "accuracy": tag(name, d),
             "why_estimated": d.get("why", ""),
             "sources": [{"id": s, "url": SOURCES.get(s, ("", ""))[0], "quote": SOURCES.get(s, ("", ""))[1]} for s in srcs],
         }
+        if "mass_g" in d:
+            rows[name]["mass_g"] = d["mass_g"]                # grams, kept out of values_mm
     rows["MOTOR"]["note"] = ("Listings disagree on the screw pattern (16 mm vs 19x19 mm). The V6 arm's radial slots "
                              "(TBS drawing) let screw centres sit 8.0-9.5 mm from the shaft, so either pattern fits.")
     with open(os.path.join(OUT, "parts.json"), "w", encoding="utf-8") as f:

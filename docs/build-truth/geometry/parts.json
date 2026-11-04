@@ -382,6 +382,23 @@
     }
    ]
   },
+  "PACK_LIION": {
+   "values_mm": {
+    "l": 79.15,
+    "w": 44.25,
+    "h": 44.25
+   },
+   "accuracy": "DATASHEET",
+   "why_estimated": "",
+   "sources": [
+    {
+     "id": "R-MV5000",
+     "url": "https://rotorvillage.ca/more-volts-4s-5000mah-li-ion-battery/",
+     "quote": "Weight: 307.9g (±5 g); Dimensions (L×W×H): ~79.15 x 44.25 x 44.25 mm; Amass XT60H + 4S JST-XH balance lead"
+    }
+   ],
+   "mass_g": 307.9
+  },
   "STRAP": {
    "values_mm": {
     "len": 245.0,
@@ -414,19 +431,20 @@
   },
   "CHARGER": {
    "values_mm": {
-    "l": 75.0,
-    "w": 54.0,
-    "h": 30.0
+    "l": 112.0,
+    "w": 73.0,
+    "h": 38.0
    },
    "accuracy": "DATASHEET",
    "why_estimated": "",
    "sources": [
     {
-     "id": "R11",
-     "url": "https://www.toolkitrc.com/m4ac/",
-     "quote": "Product size 75*54*30mm"
+     "id": "R-M7AC",
+     "url": "https://www.amainhobbies.com/toolkitrc-m7-ac-dc-battery-charger-6s-20a-300w-tlk-m7ac/p1445726",
+     "quote": "Size: 112x73x38mm; Weight: 245g"
     }
-   ]
+   ],
+   "mass_g": 245.0
   },
   "SMOKE_STOPPER": {
    "values_mm": {

@@ -47,7 +47,8 @@ act("S5.1", 5, "Cells into the radio", needs=["buy:radio", "buy:radio-cells"], p
 act("S5.1b", 5, "Charge the radio", needs=["radio_cells"], produces=["radio_ready"])
 act("S5.2", 5, "Fireproof surface, charger mains cable in", needs=["buy:charger"], produces=["charger_on"])
 act("S5.3", 5, "Set LiHV and 1.0 A before the pack goes in", needs=["charger_on"], produces=["charger_set"])
-act("S5.3c", 5, "Pack into the LiPo bag", needs=["buy:batteries", "buy:lipo-bag"], produces=["pack_in_bag"])
+act("S5.3c", 5, "Pack into the LiPo bag", needs=["buy:batteries", "buy:lipo-bag"], produces=["pack_in_bag"],
+    uses={"buy:liion-5000": 1}, notes="the bag holds either pack: Shad's second pack, the More Volts Li-ion (mixed Stage 5, 2026-11-04)")
 act("S5.4a", 5, "Main plug and balance lead: it starts by itself", needs=["charger_set", "pack_in_bag"], produces=["charging"])
 act("S5.4", 5, "Stay beside it until the screen shows F", needs=["charging"], produces=["packs_charged"])
 act("S5.5", 5, "Storage mode if not flying soon", needs=["charger_on"])

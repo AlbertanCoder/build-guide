@@ -114,6 +114,7 @@ def palette():
         "silicone_black": material("SiliconeBlack", (0.055, 0.055, 0.060, 1), 0.0, 0.52),
         # battery / soft goods
         "battery": material("BatteryWrap", (0.055, 0.095, 0.240, 1), 0.0, 0.36),
+        "battery_liion": material("BatteryWrapLiion", (0.090, 0.090, 0.095, 1), 0.0, 0.40),   # wrap colour drawn (not from a photo)
         "battery_label": material("BatteryLabel", (0.78, 0.79, 0.80, 1), 0.0, 0.44),
         "strap": material("KevlarStrapVisible", (0.96, 0.80, 0.08, 1), 0.0, 0.60),   # colour shown for visibility
         "bag": material("LiPoBag", (0.44, 0.20, 0.14, 1), 0.0, 0.78),

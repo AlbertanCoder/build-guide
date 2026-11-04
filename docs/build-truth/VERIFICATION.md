@@ -4,10 +4,10 @@ Written by `python -I scripts/build/verify_build.py` on 2026-11-04. Run it again
 
 ## In plain words
 
-- **225 checks** on the guide, the 3D models and the parts list.
-- **190 passed.**
+- **236 checks** on the guide, the 3D models and the parts list.
+- **199 passed.**
 - **0 failed.**
-- **35 need the real parts.** Listings leave out a size or a detail, so you check these in your hands before you build. That is the arrival checklist at the end: 30 short tests.
+- **37 need the real parts.** Listings leave out a size or a detail, so you check these in your hands before you build. That is the arrival checklist at the end: 30 short tests.
 - **0 are page fixes.** The page's own lists disagree with each other, for example a part on the buy list that no step uses. They do not stop anything fitting.
 - Every measured check was repeated **10,000 times**. Each run used slightly different sizes, so a part a little bigger or smaller than its listing is covered. The random seed is fixed (20261103), so every run of this page gives the same numbers.
 - This is not a promise that nothing can go wrong. It says exactly what was checked, how, and what can only be checked with the parts in hand. The list of things not checked at all is near the end.
@@ -19,19 +19,19 @@ Written by `python -I scripts/build/verify_build.py` on 2026-11-04. Run it again
 | Build order and safety order | 56 | 0 | 0 | 0 |
 | Wiring (every connection, every wire long enough) | 14 | 0 | 3 | 0 |
 | Parts fit (holes, screws, pads) | 6 | 0 | 14 | 0 |
-| Nothing hits anything (props, ground, views) | 10 | 0 | 3 | 0 |
+| Nothing hits anything (props, ground, views) | 14 | 0 | 4 | 0 |
 | Tools can reach (iron, driver, fingers) | 7 | 0 | 4 | 0 |
-| Power (voltages and currents) | 12 | 0 | 7 | 0 |
-| Lists, ids and directions agree | 82 | 0 | 4 | 0 |
-| Weight and balance | 3 | 0 | 0 | 0 |
+| Power (voltages and currents) | 13 | 0 | 8 | 0 |
+| Lists, ids and directions agree | 84 | 0 | 4 | 0 |
+| Weight and balance | 5 | 0 | 0 | 0 |
 
 ## The smallest safety margins that still pass
 
 - speed controller, flight controller and frame stack holes line up (30.5 mm, with the soft grommets): 0.5 mm as designed, 0.3 mm in the worst of 10,000 runs
 - M3 x 10 set screw: at least 3 mm of thread on each side of the plate: 1.0 mm as designed, 0.5 mm in the worst of 10,000 runs
 - Battery slid forward to about 2 mm from the GPS leaves the balance point within 5 mm of centre: 2.48 mm as designed, 0.59 mm in the worst of 10,000 runs
+- With the Li-ion pack slid forward to about 2 mm from the GPS, the balance point stays within 5 mm of centre: 3.59 mm as designed, 0.8 mm in the worst of 10,000 runs
 - Stack screw tip stays below the top plate: 2.0 mm as designed, 1.03 mm in the worst of 10,000 runs
-- Motor M1's 120 mm leads, measured from the motor's edge, reach the speed controller pad farthest from the motor, with the climb up to the speed controller board, 10 % extra for bends and 10 mm to spare: 6.09 mm as designed, 1.25 mm in the worst of 10,000 runs
 
 ## How the sizes were varied
 
@@ -179,7 +179,9 @@ Margin = how much room is left at the design sizes. Runs = the share of the tole
 | NEEDS REAL PARTS | The stack box's 4-wire cable fits the FC's G/5V/R2/T2 socket; its colours are known | S4.1 |  |  |  | The box lists '2 x sh1.0 4pinsilicone cable'; colours and fit are not published. |
 | NEEDS REAL PARTS | The frame has a hole for the SMA nut; the top-plate screws and threadlock are named | S4.4 |  |  |  | No Source One V6 build manual was found. |
 | NEEDS REAL PARTS | The VTX's startup flashes (25 mW) and the smoke stopper's light are seen at the first power-up | S8.2 |  |  |  | Read from the TBS manual's table and the iFlight listing; not seen on the real parts. |
-| NEEDS REAL PARTS | The packs' labels say HV; the charger's storage mode can lower a full pack | S5.3 |  |  |  | Shop names say HV; only a shop's Q&A says the charger discharges to storage. |
+| NEEDS REAL PARTS | On the Li-ion pack, a throttle limit keeps a full punch near the pack's recommended current | S4.6 |  |  |  | Listing: '30-50A (typical UAV/FPV use)', '90A (Thermally limited)'. Betaflight throttle_limit_type SCALE / throttle_limit_percent (flight/mixer.c; per rate profile, cli/settings.c PROFILE_RATE_VALUE). The game's flight model (drone-sim tests/packs.test.mjs, an ESTIMATE from the Emax-scaled thrust and power) draws about 88 A at full throttle and about 41 A at SCALE 65 %. Needs a current reading on the real drone. |
+| PASS | The M7AC has a Li-ion mode that stays at or below the Li-ion pack's maximum charge voltage | S5.3 | 0.1 V per cell |  |  | ToolkitRC M7 manual V1.0 (the M7AC's own manual not read): 'Lion ... a fully charged battery of 4.10V', end voltage fixed for Lion ('Only LiPo, LiHV, LiFe batteries can set the cut-off voltage'); M7AC types 'Lipo LiHV LiFe Lion LTO@1-6S', AC 'MAX 100W' (Oscar Liang's review); pack: 'Max Charge Voltage: 16.8 V (4.2 V/cell)'. 4.10 V <= 4.2 V. |
+| NEEDS REAL PARTS | The packs' labels say HV; the charger's storage mode can lower a full pack | S5.3 |  |  |  | Shop names say HV (the real label is not seen yet). Charger: ToolkitRC M7 manual V1.0 (the M7AC's own manual not read) 'Lipo, LiHV, LiFe, Lion batteries can be charged, discharged, and stored'. |
 | NEEDS REAL PARTS | The foam tape's thickness, the GPS board's back and the real zip-tie loop are checked | S7.3 |  |  |  | Thickness and loop length are not published; the design uses estimates. |
 | NEEDS REAL PARTS | Betaflight's Motors tab sliders and the kit's prop tool on the prop nut are checked | S8.3 |  |  |  | Betaflight's docs name the Master slider; the prop tool's fit is not listed. |
 | NEEDS REAL PARTS | Something on the list can shrink the heat shrink (the iron's side) | S6.2b |  |  |  | The kit has a 65 W iron but no heat gun; a lighter is not on the list. Whether the iron's side shrinks the 3 mm tube cleanly is not stated anywhere. |
@@ -198,6 +200,9 @@ Margin = how much room is left at the design sizes. Runs = the share of the tole
 | PASS | Prop circles clear the GPS board | S7.3 | 10.69 mm | 100.0% (9.74) |  |  |
 | NEEDS REAL PARTS | Battery at S7.7's forward limit (2 mm ahead, +-3 mm by hand) leaves a gap to the GPS | S7.7 | 2.0 mm | 78.35% (-4.12) | battery_x (r=-0.70), gps_x (r=+0.70) | Passes in 78.35% of 10,000 tolerance runs (more than 0.1% fail). |
 | PASS | As designed, the battery (at its drawn place and at its forward limit) does not overlap the GPS | S7.7 | 2.0 mm |  |  | battery front edge 42.0 mm (furthest forward of parts.json battery_x, battery_ok_to and positions.json battery_x, plus half the 79 mm pack); GPS rear edge 44.0 mm |
+| PASS | Prop circles clear the Li-ion pack (79 x 44 mm) | S7.7 | 11.16 mm | 100.0% (9.24) |  |  |
+| NEEDS REAL PARTS | Li-ion pack at S7.7's forward limit (2 mm ahead, +-3 mm by hand) leaves a gap to the GPS | S7.7 | 1.92 mm | 77.42% (-4.01) | battery_x (r=-0.70), gps_x (r=+0.70) | Passes in 77.42% of 10,000 tolerance runs (more than 0.1% fail). |
+| PASS | As designed, the Li-ion pack (at its drawn place and at its forward limit) does not overlap the GPS | S7.7 | 1.92 mm |  |  | pack front edge 42.08 mm (half the listing's 79.15 mm pack); GPS rear edge 44.0 mm |
 | PASS | Pigtail route stays out of the prop circles | S7.4b | 42.76 mm | 100.0% (40.8) |  |  |
 | PASS | Thermal camera sees past the Pi, legs, plates and props at every prop angle | S7.3 | -0.0 % blocked (0 = clear) | 100.0% (-0.0) |  |  |
 | PASS | Legs, not the payload, touch the ground (10 mm to spare) | S7.8 | 15.6 mm | 100.0% (5.68) |  |  |
@@ -208,6 +213,10 @@ Margin = how much room is left at the design sizes. Runs = the share of the tole
 | NEEDS REAL PARTS | Camera cable reaches the FC's CAM socket | S4.3 |  |  |  | The stack box's camera cable length is not published. |
 | PASS | Battery slid forward to about 2 mm from the GPS (change request 43) leaves the balance point within 5 mm of centre | S7.7 | 2.48 mm | 100.0% (0.59) |  | Includes about 46 g of parts the page does not weigh yet (legs, HAT, pad, pigtail, wires, GPS cable extension: my estimates). The exact balance point is about 12 mm ahead of centre, past the GPS, so the drone stays a little tail-heavy. |
 | PASS | Centre of gravity sits inside the four feet | S7.8 | 10.94 mm | 100.0% (10.79) |  |  |
+| PASS | With the Li-ion pack slid forward to about 2 mm from the GPS, the balance point stays within 5 mm of centre | S7.7 | 3.59 mm | 100.0% (0.8) |  |  |
+| PASS | With the Li-ion pack, the centre of gravity sits inside the four feet | S7.8 | 10.95 mm | 100.0% (10.84) |  |  |
+| PASS | The 245 mm strap goes round the LiPo pack and the top plate, with 40 mm to fasten | S7.7 | 73.0 mm |  |  | 2 x (38 + 26 + 2 plate) + 40 overlap (ASSUMPTION) = 172.0 mm; strap 245 mm (R18) |
+| PASS | The 245 mm strap goes round the Li-ion pack and the top plate, with 40 mm to fasten | S7.7 | 24.0 mm |  |  | 2 x (44.25 + 44.25 + 2 plate) + 40 overlap (ASSUMPTION) = 221.0 mm; strap 245 mm (R18) |
 | PASS | No pad or pin belongs to two different nets | S3.3 |  |  |  | 58 ends in 28 nets |
 | PASS | Every net has both ends connected | S4.1 |  |  |  |  |
 | PASS | Every TX goes to an RX (receiver T->R2, FC T2->receiver R, FC T1->VTX) | S4.1 |  |  |  | RP1 T -> FC R2; FC T2 -> RP1 R; FC T1 -> VTX RX (SmartAudio) |
@@ -241,7 +250,7 @@ Margin = how much room is left at the design sizes. Runs = the share of the tole
 | PASS | 9 V rail load (VTX at 25 mW) within its 2.5 A | S4.7 | 2.25 A |  |  | VTX at 25 mW: 0.25 A (R9 '25mW: 250mA'); rail 2.5 A (R2 '9V 2.5A') |
 | NEEDS REAL PARTS | 5 V rail (3 A) carries the Pi, receiver, camera and sensors | S8.6 |  |  |  | no published current for: Pi Zero 2 W, receiver, camera, MLX90640 + PA1010D |
 | PASS | Iron (65 W) on the 24 V 5 A adapter | S3.2 | 2.29 A |  |  | 65 W / 24 V = 2.71 A of 5 A (buy list (live page, iron-psu): 'SHNITPWR 24 V DC 5 A 120 W power supply for the iron (5.5 x 2.5 mm plug)') |
-| PASS | Charge current 1.0 A is within 1C for the 1500 mAh packs | S5.3b | 0.5 A |  |  | 1C = 1.5 A (R12 1500 mAh); charger manual '1C to 2C' (R11) |
+| PASS | Charge current 1.0 A is within 1C for the 1500 mAh packs | S5.3b | 0.5 A |  |  | 1C = 1.5 A (R12 1500 mAh); charger: ToolkitRC M7 manual V1.0 (the M7AC's own manual not read) 'set the charging rate of 1-2C', 'step by 0.1A' (2026-11-04: the M7AC replaced the M4AC) |
 | PASS | All-up weight: 505 g from the page's sourced weights + 46 g estimated = about 551 g | S8.6 |  |  |  | estimates: legs: 8 aluminium standoffs (ESTIMATED 1.0 g each); legs: 4 rubber feet (ESTIMATED 1.0 g each; the listing's weight line is a typo); Pi pad, 6 nylon standoffs, screws, zip ties (ESTIMATED 6 g); Qwiic HAT + 2 cables (ESTIMATED 6 g; not weighed on the page); micro-USB pigtail (ESTIMATED 5 g); wires, XT60, solder, capacitor (ESTIMATED 15 g); GPS cable extension: 4 x 120 mm 26 AWG, 8 joints, heat shrink (ESTIMATED 2 g) |
 | PASS | Every replayed action id is in STEP-TRUTH.md |  |  |  |  | 50 ids |
 | PASS | Every replayed action has a button in the 3D models |  |  |  |  | 54 model actions |
@@ -279,8 +288,9 @@ Margin = how much room is left at the design sizes. Runs = the share of the tole
 | PASS | Buy list 'LED COB strip, 4S, 1 m' is used by a step |  |  |  |  | not used by a step; exempt: stage 8 is optional (Optional extras) |
 | PASS | Buy list 'GEPRC TAKER F405 BLS 50A flight stack' is used by a step |  |  |  |  | used in S3.0, S4.1 |
 | PASS | Buy list 'RadioMaster RP1 V2 receiver' is used by a step |  |  |  |  | used in S4.1 |
-| PASS | Buy list 'GNB 1500 mAh 4S flight batteries' is used by a step |  |  |  |  | used in S5.3c |
-| PASS | Buy list 'ToolkitRC M4AC charger' is used by a step |  |  |  |  | used in S5.2 |
+| PASS | Buy list 'GNB 1500 mAh 4S HV LiPo (the learning pack)' is used by a step |  |  |  |  | used in S5.3c |
+| PASS | Buy list 'More Volts 4S 5000 mAh Li-ion pack (long, gentle searches)' is used by a step |  |  |  |  | used in S5.3c |
+| PASS | Buy list 'ToolkitRC M7AC charger (LiPo, LiHV and Li-ion)' is used by a step |  |  |  |  | used in S5.2 |
 | PASS | Buy list 'Small home fire extinguisher for electrical fires: Garrison ' is used by a step |  |  |  |  | Stage 5 note: 'Before your first charge: buy a small home fire extinguisher rated for electrical fires. ... Keep it within reach of the charging spot' |
 | PASS | Buy list 'RunCam Phoenix 2 Special Edition camera' is used by a step |  |  |  |  | used in S4.3 |
 | PASS | Buy list 'TBS Unify Pro 5G8 HV video transmitter' is used by a step |  |  |  |  | used in S4.3 |
@@ -302,7 +312,7 @@ Margin = how much room is left at the design sizes. Runs = the share of the tole
 | PASS | Buy list 'Lumenier M3 rubber landing feet, 8 pack (US shop)' is used by a step |  |  |  |  | used in S7.8 |
 | PASS | Buy list 'M3 set screw assortment, 200 pieces (includes 20 x M3 x 10 m' is used by a step |  |  |  |  | used in S7.8 |
 | PASS | Buy list 'M3 x 10 mm black steel button-head screws, 10 pack (for the ' is used by a step |  |  |  |  | used in S7.8 |
-| PASS | Every buy line in a required stage is used by a step or a stage checklist (optional stages 8 exempt) |  |  |  |  | 47 lines checked, from index.html #buy-data |
+| PASS | Every buy line in a required stage is used by a step or a stage checklist (optional stages 8 exempt) |  |  |  |  | 48 lines checked, from index.html #buy-data |
 | PASS | Enough heat-shrink: steps use 4, the list gives 10 |  | 6.0 pieces |  |  |  |
 | PASS | Enough heat-shrink-3mm: steps use 1, the list gives 2 |  | 1.0 pieces |  |  |  |
 | PASS | Enough legs-25: steps use 4, the list gives 10 |  | 6.0 pieces |  |  |  |
@@ -310,6 +320,7 @@ Margin = how much room is left at the design sizes. Runs = the share of the tole
 | PASS | Enough legs-feet: steps use 4, the list gives 8 |  | 4.0 pieces |  |  |  |
 | PASS | Enough legs-footscrews: steps use 4, the list gives 8 |  | 4.0 pieces |  |  |  |
 | PASS | Enough legs-setscrews: steps use 8, the list gives 20 |  | 12.0 pieces |  |  | list item: 'includes 20 x M3 x 10 mm' |
+| PASS | Enough liion-5000: steps use 1, the list gives 1 |  | 0.0 pieces |  |  |  |
 | PASS | Enough m25-screws: steps use 6, the list gives 420 |  | 414.0 pieces |  |  | list item: '420 pieces' (screws, nuts and standoffs together) |
 | PASS | Enough motors: steps use 4, the list gives 4 |  | 0.0 pieces |  |  |  |
 | PASS | Enough props: steps use 4, the list gives 8 |  | 4.0 pieces |  |  | list item: 'set of 4' |

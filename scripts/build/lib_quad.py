@@ -533,6 +533,28 @@ def battery(P, loc=None, crosswise=False, label=True):
     return objs
 
 
+def battery_liion(P, loc=None, crosswise=False, label=True, ghost=False):
+    """More Volts 4S 5000 mAh Li-ion (TenPower 50XG), 79.15 x 44.25 x 44.25 mm, XT60H lead and JST-XH balance lead
+    (R-MV5000). ghost=True: a see-through outline, to show how the taller pack fits where the LiPo is strapped."""
+    x0, y0, z0 = loc if loc is not None else BAT
+    l, w, h = mm(S.PACK_LIION["l"]), mm(S.PACK_LIION["w"]), mm(S.PACK_LIION["h"])
+    sx, sy = (w, l) if crosswise else (l, w)
+    cz = z0 + h / 2.0
+    mat = P["prop_ghost"] if ghost else P["battery_liion"]
+    objs = [C.box("battery_pack_liion", (sx, sy, h), (x0, y0, cz), mat=mat, bevel=0.004, seg=2)]
+    if not ghost:
+        end = (x0 - sx / 2.0, y0, cz) if not crosswise else (x0, y0 - sy / 2.0, cz)
+        objs += [C.tube("battery_liion_lead", [end, (end[0] - 0.012, end[1] - 0.004, cz - 0.006), (end[0] - 0.020, end[1] - 0.006, cz - 0.014)],
+                        0.0012, P["wire_red"], res=6),
+                 C.tube("battery_liion_lead_black", [(end[0], end[1] + 0.004, cz), (end[0] - 0.012, end[1] + 0.002, cz - 0.006),
+                                                     (end[0] - 0.020, end[1] + 0.001, cz - 0.014)], 0.0012, P["wire_black"], res=6),
+                 C.box("battery_liion_xt60", (0.016, 0.009, 0.008), (end[0] - 0.028, end[1] - 0.002, cz - 0.016), mat=P["plastic_black"], bevel=0.0008),
+                 C.box("battery_liion_balance_plug", (0.004, 0.012, 0.005), (end[0] - 0.006, end[1] + 0.014, cz + 0.012), mat=P["plastic_white"], bevel=0.0004)]
+    if label:
+        C.label("MORE VOLTS 4S 5000 LI-ION PACK", (x0, y0, z0 + h + 0.010))
+    return objs
+
+
 def battery_pad(P, loc=None, crosswise=False):
     x0, y0, z0 = loc if loc is not None else BAT
     l, w = mm(S.PACK["l"]), mm(S.PACK["w"])

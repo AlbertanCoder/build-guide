@@ -2,10 +2,10 @@
  "date": "2026-11-04",
  "command": "python -I scripts/build/verify_build.py",
  "totals": {
-  "checks": 225,
-  "passed": 190,
+  "checks": 236,
+  "passed": 199,
   "failed": 0,
-  "need_real_parts": 35,
+  "need_real_parts": 37,
   "page_fixes": 0
  },
  "per_category": {
@@ -28,9 +28,9 @@
    "PAGE FIX": 0
   },
   "clearance": {
-   "PASS": 10,
+   "PASS": 14,
    "FAIL": 0,
-   "NEEDS REAL PARTS": 3,
+   "NEEDS REAL PARTS": 4,
    "PAGE FIX": 0
   },
   "access": {
@@ -40,19 +40,19 @@
    "PAGE FIX": 0
   },
   "power": {
-   "PASS": 12,
+   "PASS": 13,
    "FAIL": 0,
-   "NEEDS REAL PARTS": 7,
+   "NEEDS REAL PARTS": 8,
    "PAGE FIX": 0
   },
   "cross-checks": {
-   "PASS": 82,
+   "PASS": 84,
    "FAIL": 0,
    "NEEDS REAL PARTS": 4,
    "PAGE FIX": 0
   },
   "weight": {
-   "PASS": 3,
+   "PASS": 5,
    "FAIL": 0,
    "NEEDS REAL PARTS": 0,
    "PAGE FIX": 0
@@ -60,7 +60,7 @@
  },
  "tolerance_runs": 10000,
  "seed": 20261103,
- "measured_checks_varied": 32,
+ "measured_checks_varied": 36,
  "tolerances": {
   "CAD": "+-0.2 mm",
   "datasheet": "+-0.5 mm",
@@ -74,8 +74,8 @@
   "speed controller, flight controller and frame stack holes line up (30.5 mm, with the soft grommets): 0.5 mm as designed, 0.3 mm in the worst of 10,000 runs",
   "M3 x 10 set screw: at least 3 mm of thread on each side of the plate: 1.0 mm as designed, 0.5 mm in the worst of 10,000 runs",
   "Battery slid forward to about 2 mm from the GPS leaves the balance point within 5 mm of centre: 2.48 mm as designed, 0.59 mm in the worst of 10,000 runs",
-  "Stack screw tip stays below the top plate: 2.0 mm as designed, 1.03 mm in the worst of 10,000 runs",
-  "Motor M1's 120 mm leads, measured from the motor's edge, reach the speed controller pad farthest from the motor, with the climb up to the speed controller board, 10 % extra for bends and 10 mm to spare: 6.09 mm as designed, 1.25 mm in the worst of 10,000 runs"
+  "With the Li-ion pack slid forward to about 2 mm from the GPS, the balance point stays within 5 mm of centre: 3.59 mm as designed, 0.8 mm in the worst of 10,000 runs",
+  "Stack screw tip stays below the top plate: 2.0 mm as designed, 1.03 mm in the worst of 10,000 runs"
  ],
  "failures": [],
  "page_fixes": [],
@@ -177,7 +177,8 @@
     "Rotor Village"
    ],
    "needed_by": [
-    "CLEAR-battery-gps"
+    "CLEAR-battery-gps",
+    "CLEAR-battery-gps-liion"
    ]
   },
   {
@@ -213,6 +214,7 @@
     "Rotor Village"
    ],
    "needed_by": [
+    "POWER-liion-current",
     "POWER-pack-hv-storage",
     "CONN-pack-charger"
    ]
@@ -2061,12 +2063,44 @@
    "name_plain": "The video transmitter's startup flashes (25 mW) and the smoke stopper's light are seen at the first power-up"
   },
   {
+   "id": "POWER-liion-current",
+   "category": "power",
+   "action": "S4.6",
+   "name": "On the Li-ion pack, a throttle limit keeps a full punch near the pack's recommended current",
+   "status": "NEEDS REAL PARTS",
+   "detail": "Listing: '30-50A (typical UAV/FPV use)', '90A (Thermally limited)'. Betaflight throttle_limit_type SCALE / throttle_limit_percent (flight/mixer.c; per rate profile, cli/settings.c PROFILE_RATE_VALUE). The game's flight model (drone-sim tests/packs.test.mjs, an ESTIMATE from the Emax-scaled thrust and power) draws about 88 A at full throttle and about 41 A at SCALE 65 %. Needs a current reading on the real drone.",
+   "margin": null,
+   "unit": "",
+   "arrival": "Packs and charger",
+   "pass_rate": null,
+   "runs": 0,
+   "driver": "",
+   "worst": null,
+   "name_plain": "On the Li-ion pack, a throttle limit keeps a full punch near the pack's recommended current"
+  },
+  {
+   "id": "CHARGE-liion-m7ac",
+   "category": "power",
+   "action": "S5.3",
+   "name": "The M7AC has a Li-ion mode that stays at or below the Li-ion pack's maximum charge voltage",
+   "status": "PASS",
+   "detail": "ToolkitRC M7 manual V1.0 (the M7AC's own manual not read): 'Lion ... a fully charged battery of 4.10V', end voltage fixed for Lion ('Only LiPo, LiHV, LiFe batteries can set the cut-off voltage'); M7AC types 'Lipo LiHV LiFe Lion LTO@1-6S', AC 'MAX 100W' (Oscar Liang's review); pack: 'Max Charge Voltage: 16.8 V (4.2 V/cell)'. 4.10 V <= 4.2 V.",
+   "margin": 0.1,
+   "unit": "V per cell",
+   "arrival": null,
+   "pass_rate": null,
+   "runs": 0,
+   "driver": "",
+   "worst": null,
+   "name_plain": "The M7AC has a Li-ion mode that stays at or below the Li-ion pack's maximum charge voltage"
+  },
+  {
    "id": "POWER-pack-hv-storage",
    "category": "power",
    "action": "S5.3",
    "name": "The packs' labels say HV; the charger's storage mode can lower a full pack",
    "status": "NEEDS REAL PARTS",
-   "detail": "Shop names say HV; only a shop's Q&A says the charger discharges to storage.",
+   "detail": "Shop names say HV (the real label is not seen yet). Charger: ToolkitRC M7 manual V1.0 (the M7AC's own manual not read) 'Lipo, LiHV, LiFe, Lion batteries can be charged, discharged, and stored'.",
    "margin": null,
    "unit": "mm",
    "arrival": "Packs and charger",
@@ -2365,6 +2399,54 @@
    "name_plain": "As designed, the battery (at its drawn place and at its forward limit) does not overlap the GPS"
   },
   {
+   "id": "CLEAR-prop-battery-liion",
+   "category": "clearance",
+   "action": "S7.7",
+   "name": "Prop circles clear the Li-ion pack (79 x 44 mm)",
+   "status": "PASS",
+   "detail": "",
+   "margin": 11.16,
+   "unit": "mm",
+   "arrival": null,
+   "pass_rate": 100.0,
+   "runs": 10000,
+   "driver": "battery_x (r=-0.99), prop_d (r=-0.13)",
+   "worst": 9.24,
+   "name_plain": "Prop circles clear the Li-ion pack (79 x 44 mm)"
+  },
+  {
+   "id": "CLEAR-battery-gps-liion",
+   "category": "clearance",
+   "action": "S7.7",
+   "name": "Li-ion pack at S7.7's forward limit (2 mm ahead, +-3 mm by hand) leaves a gap to the GPS",
+   "status": "NEEDS REAL PARTS",
+   "detail": " Passes in 77.42% of 10,000 tolerance runs (more than 0.1% fail).",
+   "margin": 1.92,
+   "unit": "mm",
+   "arrival": "Battery and GPS do not touch",
+   "pass_rate": 77.42,
+   "runs": 10000,
+   "driver": "battery_x (r=-0.70), gps_x (r=+0.70)",
+   "worst": -4.01,
+   "name_plain": "Li-ion pack at step 7's forward limit (2 mm ahead, +-3 mm by hand) leaves a gap to the GPS"
+  },
+  {
+   "id": "CLEAR-battery-gps-design-liion",
+   "category": "clearance",
+   "action": "S7.7",
+   "name": "As designed, the Li-ion pack (at its drawn place and at its forward limit) does not overlap the GPS",
+   "status": "PASS",
+   "detail": "pack front edge 42.08 mm (half the listing's 79.15 mm pack); GPS rear edge 44.0 mm",
+   "margin": 1.92,
+   "unit": "mm",
+   "arrival": null,
+   "pass_rate": null,
+   "runs": 0,
+   "driver": "",
+   "worst": null,
+   "name_plain": "As designed, the Li-ion pack (at its drawn place and at its forward limit) does not overlap the GPS"
+  },
+  {
    "id": "CLEAR-wire-prop",
    "category": "clearance",
    "action": "S7.4b",
@@ -2525,6 +2607,70 @@
    "driver": "pi_y (r=-0.86), gps_w (r=-0.02)",
    "worst": 10.79,
    "name_plain": "Centre of gravity sits inside the four feet"
+  },
+  {
+   "id": "WEIGHT-forward-stop-liion",
+   "category": "weight",
+   "action": "S7.7",
+   "name": "With the Li-ion pack slid forward to about 2 mm from the GPS, the balance point stays within 5 mm of centre",
+   "status": "PASS",
+   "detail": "",
+   "margin": 3.59,
+   "unit": "mm",
+   "arrival": null,
+   "pass_rate": 100.0,
+   "runs": 10000,
+   "driver": "gps_x (r=+0.89), gps_w (r=-0.10)",
+   "worst": 0.8,
+   "name_plain": "With the Li-ion pack slid forward to about 2 mm from the GPS, the balance point stays within 5 mm of centre"
+  },
+  {
+   "id": "WEIGHT-feet-liion",
+   "category": "weight",
+   "action": "S7.8",
+   "name": "With the Li-ion pack, the centre of gravity sits inside the four feet",
+   "status": "PASS",
+   "detail": "",
+   "margin": 10.95,
+   "unit": "mm",
+   "arrival": null,
+   "pass_rate": 100.0,
+   "runs": 10000,
+   "driver": "pi_y (r=-0.86), gps_w (r=-0.02)",
+   "worst": 10.84,
+   "name_plain": "With the Li-ion pack, the centre of gravity sits inside the four feet"
+  },
+  {
+   "id": "FIT-strap",
+   "category": "clearance",
+   "action": "S7.7",
+   "name": "The 245 mm strap goes round the LiPo pack and the top plate, with 40 mm to fasten",
+   "status": "PASS",
+   "detail": "2 x (38 + 26 + 2 plate) + 40 overlap (ASSUMPTION) = 172.0 mm; strap 245 mm (R18)",
+   "margin": 73.0,
+   "unit": "mm",
+   "arrival": null,
+   "pass_rate": null,
+   "runs": 0,
+   "driver": "",
+   "worst": null,
+   "name_plain": "The 245 mm strap goes round the LiPo pack and the top plate, with 40 mm to fasten"
+  },
+  {
+   "id": "FIT-strap-liion",
+   "category": "clearance",
+   "action": "S7.7",
+   "name": "The 245 mm strap goes round the Li-ion pack and the top plate, with 40 mm to fasten",
+   "status": "PASS",
+   "detail": "2 x (44.25 + 44.25 + 2 plate) + 40 overlap (ASSUMPTION) = 221.0 mm; strap 245 mm (R18)",
+   "margin": 24.0,
+   "unit": "mm",
+   "arrival": null,
+   "pass_rate": null,
+   "runs": 0,
+   "driver": "",
+   "worst": null,
+   "name_plain": "The 245 mm strap goes round the Li-ion pack and the top plate, with 40 mm to fasten"
   },
   {
    "id": "NET-shorts",
@@ -3060,7 +3206,7 @@
    "action": "S5.3b",
    "name": "Charge current 1.0 A is within 1C for the 1500 mAh packs",
    "status": "PASS",
-   "detail": "1C = 1.5 A (R12 1500 mAh); charger manual '1C to 2C' (R11)",
+   "detail": "1C = 1.5 A (R12 1500 mAh); charger: ToolkitRC M7 manual V1.0 (the M7AC's own manual not read) 'set the charging rate of 1-2C', 'step by 0.1A' (2026-11-04: the M7AC replaced the M4AC)",
    "margin": 0.5,
    "unit": "A",
    "arrival": null,
@@ -3666,7 +3812,7 @@
    "id": "BUY-used-batteries",
    "category": "cross-checks",
    "action": "",
-   "name": "Buy list 'GNB 1500 mAh 4S flight batteries' is used by a step",
+   "name": "Buy list 'GNB 1500 mAh 4S HV LiPo (the learning pack)' is used by a step",
    "status": "PASS",
    "detail": "used in S5.3c",
    "margin": null,
@@ -3676,13 +3822,29 @@
    "runs": 0,
    "driver": "",
    "worst": null,
-   "name_plain": "Buy list 'GNB 1500 mAh 4S flight batteries' is used by a step"
+   "name_plain": "Buy list 'GNB 1500 mAh 4S HV LiPo (the learning pack)' is used by a step"
+  },
+  {
+   "id": "BUY-used-liion-5000",
+   "category": "cross-checks",
+   "action": "",
+   "name": "Buy list 'More Volts 4S 5000 mAh Li-ion pack (long, gentle searches)' is used by a step",
+   "status": "PASS",
+   "detail": "used in S5.3c",
+   "margin": null,
+   "unit": "",
+   "arrival": null,
+   "pass_rate": null,
+   "runs": 0,
+   "driver": "",
+   "worst": null,
+   "name_plain": "Buy list 'More Volts 4S 5000 mAh Li-ion pack (long, gentle searches)' is used by a step"
   },
   {
    "id": "BUY-used-charger",
    "category": "cross-checks",
    "action": "",
-   "name": "Buy list 'ToolkitRC M4AC charger' is used by a step",
+   "name": "Buy list 'ToolkitRC M7AC charger (LiPo, LiHV and Li-ion)' is used by a step",
    "status": "PASS",
    "detail": "used in S5.2",
    "margin": null,
@@ -3692,7 +3854,7 @@
    "runs": 0,
    "driver": "",
    "worst": null,
-   "name_plain": "Buy list 'ToolkitRC M4AC charger' is used by a step"
+   "name_plain": "Buy list 'ToolkitRC M7AC charger (LiPo, LiHV and Li-ion)' is used by a step"
   },
   {
    "id": "BUY-used-extinguisher",
@@ -4036,7 +4198,7 @@
    "action": "",
    "name": "Every buy line in a required stage is used by a step or a stage checklist (optional stages 8 exempt)",
    "status": "PASS",
-   "detail": "47 lines checked, from index.html #buy-data",
+   "detail": "48 lines checked, from index.html #buy-data",
    "margin": null,
    "unit": "",
    "arrival": null,
@@ -4157,6 +4319,22 @@
    "driver": "",
    "worst": null,
    "name_plain": "Enough legs-setscrews: steps use 8, the list gives 20"
+  },
+  {
+   "id": "BUY-qty-liion-5000",
+   "category": "cross-checks",
+   "action": "",
+   "name": "Enough liion-5000: steps use 1, the list gives 1",
+   "status": "PASS",
+   "detail": "",
+   "margin": 0.0,
+   "unit": "pieces",
+   "arrival": null,
+   "pass_rate": null,
+   "runs": 0,
+   "driver": "",
+   "worst": null,
+   "name_plain": "Enough liion-5000: steps use 1, the list gives 1"
   },
   {
    "id": "BUY-qty-m25-screws",

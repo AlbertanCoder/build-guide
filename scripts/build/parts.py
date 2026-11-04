@@ -87,9 +87,14 @@ GPS_EXT = P("Shad decision 2026-11-03 + change request 43", approx=True, why="ex
 
 # --- power ------------------------------------------------------------------------------------
 PACK = P("R12", l=79.0, w=38.0, h=26.0, xt60_lead=85.0, balance_lead=40.0)
+# Shad's second flight pack (mixed Stage 5, 2026-11-04): More Volts 4S 5000mAh Li-ion (TenPower 50XG cells), read 2026-11-04.
+# R-MV5000 "Weight: 307.9g (±5 g)"; "Dimensions (L×W×H): ~79.15 x 44.25 x 44.25 mm"; XT60H; "30-50A (typical UAV/FPV use)".
+PACK_LIION = P("R-MV5000", l=79.15, w=44.25, h=44.25, mass_g=307.9)
 STRAP = P("R18", len=245.0, w=20.0)
 CELL_18650 = P("rv sam30q", dia=18.33, len=64.85)        # "Approximate Dimensions: 18.33mm x 64.85mm"
-CHARGER = P("R11", l=75.0, w=54.0, h=30.0)               # "Product size 75*54*30mm"
+# Shad replaced the M4AC with the ToolkitRC M7AC (mixed Stage 5, 2026-11-04; it has a Li-ion mode). R-M7AC: Amain Hobbies
+# listing "Size: 112x73x38mm", "Weight: 245g" (read 2026-11-04). The M4AC was R11 "Product size 75*54*30mm".
+CHARGER = P("R-M7AC", l=112.0, w=73.0, h=38.0, mass_g=245.0)
 SMOKE_STOPPER = P("R14", l=42.0, w=32.0, h=11.0)        # "Size(L x W x H): 42 x 32 x 11 mm"
 LIPO_BAG = P("R16", w=220.0, d=110.0, h=170.0)          # "Height: 170mm Width: 220mm Depth: 110mm"
 
@@ -183,6 +188,8 @@ PART_INFO = {
     "battery_pack": ("GNB 1500 mAh 4S LiHV pack, 79 x 38 x 26 mm", "DATASHEET", False),
     "battery_": ("GNB 4S pack lead", "ESTIMATED", False),
     "battery_balance": ("Balance lead plug (JST-XH)", "DATASHEET", False),
+    "battery_pack_liion": ("More Volts 4S 5000 mAh Li-ion pack, 79 x 44 x 44 mm (colour drawn)", "DATASHEET", False),
+    "battery_liion_": ("More Volts pack lead (XT60H, JST-XH balance)", "ESTIMATED", False),
     "battery_grip_pad": ("Battery grip pad", "ESTIMATED", True),
     "strap_": ("Kevlar battery strap, 20 mm wide", "DATASHEET", True),
     "pi_strap_second_lock": ("Kevlar strap: second lock on the Pi", "DATASHEET", True),
@@ -217,7 +224,7 @@ PART_INFO = {
     "cone_thermal": ("What the thermal camera sees (55 x 35 degrees, straight down)", "DATASHEET", False),
     "radio_": ("RadioMaster Pocket radio", "DATASHEET", False),
     "cell_18650": ("18650 cell", "DATASHEET", False),
-    "charger_": ("ToolkitRC M4AC charger", "DATASHEET", False),
+    "charger_": ("ToolkitRC M7AC charger (LiPo, LiHV and Li-ion)", "DATASHEET", False),
     "charge_lead": ("Charger main lead", "ESTIMATED", False),
     "balance_lead": ("Balance lead to the charger", "ESTIMATED", False),
     "bag_": ("LiPo bag", "DATASHEET", False),

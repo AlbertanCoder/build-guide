@@ -44,7 +44,7 @@ SPEC = {
     "step-04-receiver-fpv": {"labels": ["RP1 V2", "UART2", "PHOENIX 2", "UNIFY", "TRIUMPH", "9V", "MONITOR", "USB",
                                        "TX -> R2  /  RX -> T2 (Crossed on purpose)"],
                              "absent": ["prop_", "battery_pack"]},
-    "step-05-power": {"labels": ["RADIO", "18650", "USB-C", "4S", "M4AC", "BALANCE", "LIPO BAG", "LIHV 4S 1.0A",
+    "step-05-power": {"labels": ["RADIO", "18650", "USB-C", "4S", "M7AC", "BALANCE", "LIPO BAG", "LIHV, 1.0 A", "LION, 2.5 A",
                                  "FIRE EXTINGUISHER"],
                       "absent": ["frame_", "prop_"]},
     "step-06-payload": {"labels": ["PI ZERO 2 WH", "QWIIC HAT", "MLX90640", "PA1010D", "CAB-17261", "PIGTAIL",

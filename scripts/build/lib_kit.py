@@ -77,6 +77,27 @@ def charger_m4ac(P, loc=(0, 0, 0)):
     return objs
 
 
+def charger_m7ac(P, loc=(0, 0, 0)):
+    """ToolkitRC M7AC, 112 x 73 x 38 mm (R-M7AC): colour screen, scroll wheel with OK and Exit (M7 manual), output and
+    balance ports on the front, AC switch and mains socket on the back (page S5.2). Port types are not published."""
+    x0, y0, z0 = loc
+    l, w, h = mm(S.CHARGER["l"]), mm(S.CHARGER["w"]), mm(S.CHARGER["h"])
+    top = z0 + h
+    objs = [
+        C.box("charger_body", (l, w, h), (x0, y0, z0 + h / 2.0), mat=P["plastic_black"], bevel=0.004, seg=2),
+        C.box("charger_screen_bezel", (0.052, 0.040, 0.0022), (x0 - 0.018, y0, top - 0.0004), mat=P["plastic_grey"]),
+        C.box("charger_screen", (0.046, 0.034, 0.0016), (x0 - 0.018, y0, top + 0.0004), mat=P["screen"]),
+        C.cyl("charger_scroll_wheel", 0.009, 0.006, (x0 + 0.030, y0 + 0.008, top + 0.002), mat=P["alu"], seg=16),
+        C.box("charger_button_ok", (0.010, 0.006, 0.002), (x0 + 0.030, y0 - 0.014, top + 0.001), mat=P["plastic_grey"], bevel=0.0005),
+        C.box("charger_button_exit", (0.010, 0.006, 0.002), (x0 + 0.045, y0 - 0.014, top + 0.001), mat=P["plastic_grey"], bevel=0.0005),
+        C.box("charger_xt60", (0.012, 0.010, 0.010), (x0 + 0.020, y0 - w / 2.0 - 0.003, z0 + 0.016), mat=P["plastic_white"], bevel=0.0006),
+        C.box("charger_balance_port", (0.020, 0.006, 0.006), (x0 - 0.010, y0 - w / 2.0 - 0.002, z0 + 0.016), mat=P["plastic_white"]),
+        C.box("charger_ac_switch", (0.012, 0.004, 0.008), (x0 + 0.025, y0 + w / 2.0 + 0.002, z0 + 0.020), mat=P["pcb_red"], bevel=0.0005),
+        C.box("charger_ac_socket", (0.020, 0.006, 0.012), (x0 - 0.010, y0 + w / 2.0 + 0.003, z0 + 0.020), mat=P["plastic_grey"]),
+    ]
+    return objs
+
+
 def lipo_bag(P, loc=(0, 0, 0), open_top=True):
     """RVS LiPo bag (220 x 110 mm footprint; drawn low and open so the pack inside shows)."""
     x0, y0, z0 = loc

@@ -188,9 +188,11 @@
     "pack_in_bag"
    ],
    "set": {},
-   "uses": {},
+   "uses": {
+    "buy:liion-5000": 1
+   },
    "tools": [],
-   "notes": ""
+   "notes": "the bag holds either pack: Shad's second pack, the More Volts Li-ion (mixed Stage 5, 2026-11-04)"
   },
   {
    "id": "S5.4a",

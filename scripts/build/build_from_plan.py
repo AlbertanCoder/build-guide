@@ -102,7 +102,7 @@ PARTS = {
     "multimeter": kit(K.multimeter),
     "radio": kit(K.radio_pocket),
     "sd_reader": lambda P, o: K.sd_reader(P, point(o.get("at", (0, 0, 0)))),
-    "charger": lambda P, o: K.charger_m4ac(P, point(o.get("at", (0, 0, 0)))),
+    "charger": lambda P, o: K.charger_m7ac(P, point(o.get("at", (0, 0, 0)))),   # the M7AC replaced the M4AC (2026-11-04)
     "lipo_bag": lambda P, o: K.lipo_bag(P, point(o.get("at", (0, 0, 0)))),
 }
 

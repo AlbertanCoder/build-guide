@@ -346,7 +346,8 @@ def weight_items():
     return WITEMS
 
 
-def cg_x(d):
+def cg_x(d, battery_g=None):
+    """battery_g: weigh the flight battery at this instead of the page's GNB 1500 figure (Shad's second pack)."""
     items, est = weight_items()
     n = len(d["pi_x"])
     w = d["_wscale"][:, :len(items) + len(est)]
@@ -362,6 +363,8 @@ def cg_x(d):
               "pi" if x is not None and abs(x - POS["pi_xy"][0]) < 1e-6 else None) for name, g, x, y, _f in est]
     m = np.zeros(n); mx = np.zeros(n); my = np.zeros(n)
     for j, (name, g, x, y, mv) in enumerate(rows):
+        if battery_g is not None and name == "Flight battery, GNB 1500 mAh 4S":
+            g = battery_g
         gm = g * w[:, j]
         xs = x + (dx[mv] if mv else 0.0)
         ys = y + (dy[mv] if mv else 0.0)
@@ -541,8 +544,18 @@ def measured():
         "No Source One V6 build manual was found.", arrival="Frame")
     add("POWER-vtx-smoke-lights", "power", "S8.2", "The VTX's startup flashes (25 mW) and the smoke stopper's light are seen at the first power-up", "NEEDS REAL PARTS",
         "Read from the TBS manual's table and the iFlight listing; not seen on the real parts.", arrival="Receiver, video transmitter and smoke stopper")
+    add("POWER-liion-current", "power", "S4.6", "On the Li-ion pack, a throttle limit keeps a full punch near the pack's recommended current", "NEEDS REAL PARTS",
+        "Listing: '30-50A (typical UAV/FPV use)', '90A (Thermally limited)'. Betaflight throttle_limit_type SCALE / throttle_limit_percent (flight/mixer.c; "
+        "per rate profile, cli/settings.c PROFILE_RATE_VALUE). The game's flight model (drone-sim tests/packs.test.mjs, an ESTIMATE from the "
+        "Emax-scaled thrust and power) draws about 88 A at full throttle and about 41 A at SCALE 65 %. Needs a current reading on the real drone.",
+        unit="", arrival="Packs and charger")
+    add("CHARGE-liion-m7ac", "power", "S5.3", "The M7AC has a Li-ion mode that stays at or below the Li-ion pack's maximum charge voltage", "PASS",
+        "ToolkitRC M7 manual V1.0 (the M7AC's own manual not read): 'Lion ... a fully charged battery of 4.10V', end voltage fixed for Lion "
+        "('Only LiPo, LiHV, LiFe batteries can set the cut-off voltage'); M7AC types 'Lipo LiHV LiFe Lion LTO@1-6S', AC 'MAX 100W' (Oscar Liang's review); "
+        "pack: 'Max Charge Voltage: 16.8 V (4.2 V/cell)'. 4.10 V <= 4.2 V.", margin=4.20 - 4.10, unit="V per cell")
     add("POWER-pack-hv-storage", "power", "S5.3", "The packs' labels say HV; the charger's storage mode can lower a full pack", "NEEDS REAL PARTS",
-        "Shop names say HV; only a shop's Q&A says the charger discharges to storage.", arrival="Packs and charger")
+        "Shop names say HV (the real label is not seen yet). Charger: ToolkitRC M7 manual V1.0 (the M7AC's own manual not read) "
+        "'Lipo, LiHV, LiFe, Lion batteries can be charged, discharged, and stored'.", arrival="Packs and charger")
     add("FIT-tape-backs", "fit", "S7.3", "The foam tape's thickness, the GPS board's back and the real zip-tie loop are checked", "NEEDS REAL PARTS",
         "Thickness and loop length are not published; the design uses estimates.", arrival="Foam tape and boards")
     add("TOOL-motor-sliders-prop-tool", "cross-checks", "S8.3", "Betaflight's Motors tab sliders and the kit's prop tool on the prop nut are checked", "NEEDS REAL PARTS",
@@ -596,6 +609,17 @@ def measured():
         "PASS" if gps_rear - bat_front >= -1e-9 else "FAIL",
         f"battery front edge {bat_front:.1f} mm (furthest forward of parts.json battery_x, battery_ok_to and positions.json battery_x, "
         f"plus half the {float(NOM['pack_l'][0]):g} mm pack); GPS rear edge {gps_rear:.1f} mm", margin=gps_rear - bat_front)
+    # Shad's mixed Stage 5 (2026-11-04): the second flight pack, More Volts 4S 5000mAh Li-ion (parts.json PACK_LIION)
+    LI = V("PACK_LIION")
+    add("CLEAR-prop-battery-liion", "clearance", "S7.7", "Prop circles clear the Li-ion pack (79 x 44 mm)", "",
+        mc=lambda d: to_box(d, d["battery_x"], LI["l"] / 2.0, LI["w"] / 2.0))
+    add("CLEAR-battery-gps-liion", "clearance", "S7.7", "Li-ion pack at S7.7's forward limit (2 mm ahead, +-3 mm by hand) leaves a gap to the GPS", "",
+        mc=lambda d: (d["gps_x"] - d["gps_w"] / 2.0) - (V("LAYOUT")["battery_ok_to"] + (d["battery_x"] - DIMS["battery_x"][0]) + LI["l"] / 2.0),
+        arrival="Battery and GPS do not touch")
+    li_front = max(float(NOM["battery_x"][0]), float(V("LAYOUT")["battery_ok_to"]), float(POS["battery_x"])) + LI["l"] / 2.0
+    add("CLEAR-battery-gps-design-liion", "clearance", "S7.7", "As designed, the Li-ion pack (at its drawn place and at its forward limit) does not overlap the GPS",
+        "PASS" if gps_rear - li_front >= -1e-9 else "FAIL",
+        f"pack front edge {li_front:.2f} mm (half the listing's {LI['l']:g} mm pack); GPS rear edge {gps_rear:.1f} mm", margin=gps_rear - li_front)
     add("CLEAR-wire-prop", "clearance", "S7.4b", "Pigtail route stays out of the prop circles", "",
         mc=per_build(lambda d, i: SIM.prop_wire_clearance(*place_d(d, i))))
     add("CLEAR-thermal-view", "clearance", "S7.3", "Thermal camera sees past the Pi, legs, plates and props at every prop angle", "",
@@ -638,6 +662,28 @@ def measured():
         side = min(abs(p[1]) for p in REAR_LEGS + FRONT_LEGS)
         return np.minimum(np.minimum(x - min(xs), max(xs) - x), side - np.abs(y))
     add("WEIGHT-feet", "weight", "S7.8", "Centre of gravity sits inside the four feet", "", mc=feet)
+
+    # Shad's second pack: 307.9 g Li-ion (parts.json PACK_LIION), the same strap and the same S7.7 forward stop
+    li_g = float(PARTS["PACK_LIION"]["mass_g"])
+    def forward_stop_li(d):
+        return (d["gps_x"] - d["gps_w"] / 2.0) - gap_min - LI["l"] / 2.0 - np.abs(d["battery_x"] - DIMS["battery_x"][0])
+    add("WEIGHT-forward-stop-liion", "weight", "S7.7", "With the Li-ion pack slid forward to about 2 mm from the GPS, the balance point stays within 5 mm of centre",
+        "", mc=lambda d: SIM.BAL_TOL - np.abs(cg_x(dict(d, battery_x=forward_stop_li(d)), battery_g=li_g)[0]))
+    def feet_li(d):
+        x, y, m = cg_x(d, battery_g=li_g)
+        xs = [p[0] for p in REAR_LEGS + FRONT_LEGS]
+        side = min(abs(p[1]) for p in REAR_LEGS + FRONT_LEGS)
+        return np.minimum(np.minimum(x - min(xs), max(xs) - x), side - np.abs(y))
+    add("WEIGHT-feet-liion", "weight", "S7.8", "With the Li-ion pack, the centre of gravity sits inside the four feet", "", mc=feet_li)
+
+    # the strap goes once round the pack and the top plate (the short way); ASSUMPTION: 40 mm of overlap to fasten it
+    st = V("STRAP")["len"]; overlap = 40.0
+    for tag, pk, label in (("", V("PACK"), "LiPo"), ("-liion", LI, "Li-ion")):
+        need = 2.0 * (pk["w"] + pk["h"] + DIMS["top_t"][0]) + overlap
+        add("FIT-strap" + tag, "clearance", "S7.7", f"The {st:g} mm strap goes round the {label} pack and the top plate, with {overlap:g} mm to fasten",
+            "PASS" if st - need >= 0 else "FAIL",
+            f"2 x ({pk['w']:g} + {pk['h']:g} + {DIMS['top_t'][0]:g} plate) + {overlap:g} overlap (ASSUMPTION) = {need:.1f} mm; strap {st:g} mm (R18)",
+            margin=st - need)
 
 
 def static_checks():
@@ -726,7 +772,8 @@ def static_checks():
         f"{ir['watts']:g} W / {ir['adapter_v']:g} V = {amps:.2f} A of {ir['adapter_a']:g} A ({ir['src_adapter']})",
         margin=ir["adapter_a"] - amps, unit="A")
     add("POWER-charge", "power", "S5.3b", "Charge current 1.0 A is within 1C for the 1500 mAh packs", "PASS",
-        "1C = 1.5 A (R12 1500 mAh); charger manual '1C to 2C' (R11)", margin=1.5 - 1.0, unit="A")
+        "1C = 1.5 A (R12 1500 mAh); charger: ToolkitRC M7 manual V1.0 (the M7AC's own manual not read) 'set the charging rate of 1-2C', "
+        "'step by 0.1A' (2026-11-04: the M7AC replaced the M4AC)", margin=1.5 - 1.0, unit="A")
 
     # --- weight total (report)
     items, est = weight_items()
