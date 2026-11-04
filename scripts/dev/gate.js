@@ -256,6 +256,17 @@ function summarise(suite, r) {
   else if (failed) { detail = failed + " failing check(s)"; }
   else if (short) { detail = "only " + passed + " checks, expected " + suite.expect; }
   else if (!r.ok) { detail = "exit " + r.status; }
+  /* A failing suite's whole output (its tracebacks included) is kept in a file, so a failure that cannot be
+     reproduced later can still be read (2026-11-04: a suite stopped early in someone else's run and left no trace). */
+  let log = "";
+  if (result === "FAIL") {
+    try {
+      const dir = path.join(require("os").tmpdir(), "guide-gate-logs");
+      fs.mkdirSync(dir, { recursive: true });
+      log = path.join(dir, new Date().toISOString().replace(/[:.]/g, "-") + "-" + suite.name.replace(/[^a-z0-9]+/gi, "-") + ".log");
+      fs.writeFileSync(log, "exit " + r.status + "\n" + r.out, "utf8");
+    } catch (e) { log = ""; }
+  }
   return {
     name: suite.name,
     result: result,
@@ -263,6 +274,7 @@ function summarise(suite, r) {
     expect: suite.expect,
     ms: r.ms,
     detail: detail,
+    log: log,
     failures: r.out.split(/\r?\n/).filter((l) => l.indexOf("FAIL ") === 0)
   };
 }
@@ -350,6 +362,7 @@ async function runSuite(suite) {
     for (const r of failed) {
       console.log("  " + r.name + ": " + (r.detail || "failed"));
       r.failures.slice(0, 8).forEach((f) => console.log("      " + f.trim()));
+      if (r.log) { console.log("      full output: " + r.log); }
     }
   }
   if (skipped.length) {

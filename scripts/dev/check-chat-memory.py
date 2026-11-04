@@ -177,6 +177,11 @@ try:
               FakeAI.calls == before)
         check("no page errors on the laptop or the phone", not errs, errs[:3])
         b.close()
+except Exception as e:
+    # an error must name itself in the gate's summary, not just leave the count short (2026-11-04)
+    import traceback
+    traceback.print_exc()
+    check("the browser run finished without an error", False, "%s: %s" % (type(e).__name__, str(e)[:300]))
 finally:
     srv.terminate()
     ai.shutdown()

@@ -109,6 +109,11 @@ try:
         ctx.close()
         check("no page errors", not errs, errs[:3])
         b.close()
+except Exception as e:
+    # an error must name itself in the gate's summary, not just leave the count short (2026-11-04)
+    import traceback
+    traceback.print_exc()
+    check("the browser run finished without an error", False, "%s: %s" % (type(e).__name__, str(e)[:300]))
 finally:
     srv.terminate()
 print("screenshots in", SHOTS)
