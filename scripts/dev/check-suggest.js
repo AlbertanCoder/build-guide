@@ -536,12 +536,14 @@ async function runSuite() {
     let r = run("git", ["clone", "--quiet", "--branch", "main", ROOT, CLONE], TMP);
     check("an isolated main clone is created for all live proposal tests", r.status === 0, r.out.slice(0, 180));
     if (r.status !== 0) { throw new Error("clone failed"); }
-    ["server/assistant-server.js", "server/ops/suggest.js", "docs/js/assistant.js", "index.html"].forEach((rel) => {
+    /* server/memory.js and server/cost-engine.js (job 8): the server under test needs the memory module and the prices it reads */
+    const FIXTURE = ["server/assistant-server.js", "server/memory.js", "server/cost-engine.js", "server/ops/suggest.js", "docs/js/assistant.js", "index.html"];
+    FIXTURE.forEach((rel) => {
       fs.copyFileSync(path.join(ROOT, rel), path.join(CLONE, rel));
     });
     git(["config", "user.email", "suggest-test@example.invalid"]);
     git(["config", "user.name", "Suggestion Test"]);
-    git(["add", "--", "server/assistant-server.js", "server/ops/suggest.js", "docs/js/assistant.js", "index.html"]);
+    git(["add", "--"].concat(FIXTURE));
     r = git(["diff", "--cached", "--quiet"]);
     if (r.status !== 0) { r = git(["commit", "--quiet", "-m", "Item D test fixture"]); }
     check("the isolated clone has a clean Item D fixture", r.status === 0 && treeState(CLONE).status === "", r.out.slice(0, 180));

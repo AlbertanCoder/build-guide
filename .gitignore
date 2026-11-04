@@ -21,5 +21,8 @@ server/.cache/
 # Conversation memory: the user's own threads, mirrored from the page
 server/.conversations/
 
+# What the assistant remembers, synced ticks, paired phones (token hashes) and the month's spend (job 8)
+server/.memory/
+
 # 3D views made on request: rebuilt from their plan, never committed
 server/.renders/

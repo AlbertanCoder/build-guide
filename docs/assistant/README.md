@@ -128,7 +128,7 @@ that chain fails, the answer comes from the offline engine with a one-line note 
 
 ## The gate
 
-28 suites, 1508 named checks, one exit code:
+30 suites, 1577 named checks, one exit code:
 
 ```powershell
 node scripts/dev/gate.js            # everything
@@ -155,9 +155,11 @@ node scripts/dev/gate.js --json     # machine-readable, for the agent to consume
 | corrections memory | 22 |
 | write gates | 13 |
 | conversation memory | 29 |
+| memory and phone (job 8) | 51 |
+| chat memory, browser (job 8; Python Playwright) | 18 |
 | build sync | 23 |
 | suggest an edit | 128 |
-| browser (Chrome) | 28 |
+| browser (Chrome) | 29 |
 | self-test served | 24 |
 | self-test single file | 24 |
 | 3d views (needs Blender) | 21 |
@@ -209,6 +211,21 @@ endpoints also refuse a non-JSON content type (`415`) and a mismatched `Origin`
 At the verified rates, **$0.10/day is about 500 cheap questions** and
 **$2.00/day about 3,200 mixed ones** — the slider's minimum is already more than
 a demo needs.
+
+## Memory, your step, and your phone (job 8, 3 November 2026)
+
+- **It knows your step.** Each question takes along the step the build page is on (or the first step not ticked),
+  the steps you have ticked, and that step's text. The chat's top line shows it: `Step 4 · AI on (model) · US$0.12 of US$2.00 this month`.
+- **It remembers.** When you tell it something lasting ("my batteries arrived"), it keeps it on the laptop in
+  `server/.memory/` (never committed, never served) and says `Remembered: ... (Forget)` under the answer.
+  **What I remember** lists everything, with Delete and Forget everything. Keys, passwords, emails, addresses and
+  phone numbers are never kept.
+- **Your phone, on home Wi-Fi.** On the laptop: ⚙ Settings, **Phone access: on**, then **Pair a phone**. Open the
+  address it shows on the phone, type the 6-digit code (one use, 5 minutes; 5 wrong codes lock pairing for 10 minutes).
+  The phone then shares the laptop's AI, memory and ticks. Windows asks once to allow Node.js on private networks:
+  click Allow. Use it on home Wi-Fi only (plain HTTP). **Paired phones > Remove** locks a phone out at once.
+- **A hard monthly cap** (default US$2.00, between US$0.50 and US$20) is kept on the laptop. At the cap the chat says so
+  and uses the written answers until next month. Settings says which company the questions go to.
 
 ## Keeping it cheap without making it dumb
 

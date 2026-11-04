@@ -276,7 +276,7 @@ on spend, falling back to the offline engine rather than billing past it.
 Run the tests:
 
 ```powershell
-# Everything at once: 28 suites, 1508 named checks, one exit code.
+# Everything at once: 30 suites, 1577 named checks, one exit code.
 node scripts/dev/gate.js
 node scripts/dev/gate.js --quick    # skip the browser suite (needs Chrome)
 node scripts/dev/gate.js --json     # machine-readable
@@ -346,6 +346,9 @@ suite. Checks per suite:
   `402` without calling the provider, and a cheap-tier refusal escalated once to the strong tier.
 - Settings API 39/39, including that the server never serves its saved key or `.env`, answers only to this machine's
   host names, and refuses cross-site posts.
+- The chat's memory and phone access (job 8): memory and phone 51/51 (`scripts/dev/check-memory.js`: what it remembers,
+  step awareness, pairing a phone and its security, the monthly cap) and chat memory in a real browser 18/18
+  (`scripts/dev/check-chat-memory.py`).
 - The edit and memory suites: conversation memory 29/29, write gates 13/13, the five bans 37/37, corrections memory
   22/22, propose loop 41/41, review API 20/20, per-item acceptance 18/18, suggest an edit 128/128, quiz operation 29/29,
   prose operation 38/38, job spec 8/8, drafter 15/15, build sync 23/23, encoding 3/3, domain pack 1/1.

@@ -171,8 +171,9 @@ const PRESETS = [
     cheap: "llama-3.3-70b-versatile", strong: "llama-3.3-70b-versatile" },
   { id: "openrouter", label: "OpenRouter", kind: "openai", baseUrl: "https://openrouter.ai/api/v1",
     cheap: "anthropic/claude-haiku-5.5", strong: "anthropic/claude-sonnet-5.5" },
+  /* deepseek-flash: the cheaper of the two models on DeepSeek's own pricing page (checked 2026-11-03) */
   { id: "deepseek", label: "DeepSeek", kind: "openai", baseUrl: "https://api.deepseek.com/v1",
-    cheap: "deepseek-chat", strong: "deepseek-chat" },
+    cheap: "deepseek-flash", strong: "deepseek-flash" },
   { id: "mistral", label: "Mistral", kind: "openai", baseUrl: "https://api.mistral.ai/v1",
     cheap: "mistral-small-latest", strong: "mistral-large-latest" },
   { id: "ollama", label: "Ollama (local, free, no key)", kind: "openai",
@@ -218,6 +219,83 @@ const DAILY_USD_MAX = Number(SETTINGS.dailyUsdMax || ENV.DAILY_USD_MAX || 0);
 const CACHE_OFF = String(ENV.CACHE || "").toLowerCase() === "off";
 const CACHE_FILE = ENV.CACHE_FILE || path.join(__dirname, ".cache", "answers.json");
 const meter = new ENGINE.CostMeter({ dailyUsdMax: DAILY_USD_MAX });
+
+/* ---------- job 8 (2026-11-03): memory, the monthly cap, phone access ----------
+   What the assistant remembers lives in server/.memory/ (memory.js); nothing goes to the cloud except the
+   question itself, to the AI provider. The monthly cap is kept here, on the server, so the page cannot raise it. */
+const MEMORY = require("./memory.js");
+const MEMORY_DIR = ENV.MEMORY_DIR || path.join(__dirname, ".memory");
+const MEM = MEMORY.createMemory({ dir: MEMORY_DIR });
+const MONTHLY_MIN = 0.5, MONTHLY_MAX = 20;          /* USD per month the settings may choose between */
+let MONTHLY_USD_MAX = Number(SETTINGS.monthlyUsdMax != null ? SETTINGS.monthlyUsdMax : (ENV.MONTHLY_USD_MAX || 2));
+function monthState() { const s = MEM.spend.get(); return { month: s.month, usd: s.usd, cap: MONTHLY_USD_MAX, blocked: MEM.spend.blocked(MONTHLY_USD_MAX) }; }
+/* the company the questions go to, named from the provider's address (shown in the chat's Settings) */
+function providerHost() {
+  try { return new URL(BASE_URL).hostname.replace(/^api\./, ""); } catch (e) { return String(PROVIDER); }
+}
+
+/* Phone access: a SECOND listener on the laptop's home-network address, off by default. Every /api request
+   that arrives on it needs a paired device's token; its Host must be that address; cross-site is refused;
+   laptop-only routes (settings, pairing codes, edits, review) are refused outright. */
+const os = require("os");
+function lanAddress() {
+  if (ENV.PHONE_BIND) { return ENV.PHONE_BIND; }     /* tests: a second loopback address stands in for the home network */
+  const nets = os.networkInterfaces();
+  for (const name of Object.keys(nets)) {
+    for (const n of nets[name] || []) {
+      if ((n.family === "IPv4" || n.family === 4) && !n.internal && /^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(n.address)) { return n.address; }
+    }
+  }
+  return null;
+}
+let phoneServer = null, phoneAddr = null;
+function phoneUrl() { return phoneAddr ? "http://" + phoneAddr + ":" + PORT + "/" : null; }
+const PHONE_ROUTES = /^\/api\/(health|ask|stats|progress|memory(\/[a-f0-9]{6,16})?|conversations(\/[^/]+)?)$/;
+function phoneGate(req, res) {
+  const u = (req.url || "/").split("?")[0];
+  const host = String(req.headers.host || "").toLowerCase();
+  if (!phoneAddr || (host !== phoneAddr && host !== phoneAddr + ":" + PORT)) {
+    sendJson(res, 403, { error: "Wrong address for this server." }); return false;
+  }
+  if (crossSite(req)) { sendJson(res, 403, { error: "Cross-site request refused." }); return false; }
+  if (u === "/api/pair") { return true; }             /* the one route a phone may use before it is paired */
+  if (u.indexOf("/api/") === 0) {
+    if (!PHONE_ROUTES.test(u)) { sendJson(res, 403, { error: "That only works on the laptop." }); return false; }
+    const dev = MEM.devices.verify(String(req.headers["x-device-token"] || ""));
+    if (!dev) { sendJson(res, 401, { error: "This phone is not paired yet.", pair: true }); return false; }
+    req.device = dev;
+    return true;
+  }
+  if (u === "/review" || u.indexOf("/proposals/") === 0) { sendJson(res, 403, { error: "That only works on the laptop." }); return false; }
+  return true;                                        /* the guide's own files (the deny list in serveStatic still applies) */
+}
+function setPhoneAccess(on) {
+  return new Promise(function (resolve) {
+    if (!on) {
+      if (!phoneServer) { resolve({ on: false }); return; }
+      const s = phoneServer; phoneServer = null; phoneAddr = null;
+      s.close(function () { resolve({ on: false }); });
+      if (s.closeAllConnections) { s.closeAllConnections(); }
+      return;
+    }
+    if (phoneServer) { resolve({ on: true, url: phoneUrl() }); return; }
+    if (REMOTE) { resolve({ on: false, error: "Phone access is for a server bound to this laptop only." }); return; }
+    const addr = lanAddress();
+    if (!addr) { resolve({ on: false, error: "No home-network address found: is the laptop on Wi-Fi?" }); return; }
+    const s = http.createServer(function (req, res) { req.fromPhone = true; if (phoneGate(req, res)) { route(req, res); } });
+    s.once("error", function (e) { resolve({ on: false, error: "Could not open phone access: " + String(e.code || e.message || e) }); });
+    s.listen(PORT, addr, function () { phoneServer = s; phoneAddr = addr; resolve({ on: true, url: phoneUrl() }); });
+  });
+}
+/* a small JSON body (POST/DELETE): null when it is too big or not JSON */
+function readJson(req, max) {
+  return new Promise(function (resolve) {
+    let raw = "", big = false;
+    req.on("data", function (c) { raw += c; if (raw.length > max) { big = true; req.destroy(); resolve(null); } });
+    req.on("end", function () { if (big) { return; } try { resolve(JSON.parse(raw || "{}")); } catch (e) { resolve(null); } });
+    req.on("error", function () { resolve(null); });
+  });
+}
 const cache = new ENGINE.AnswerCache({
   /* tests always start with an empty cache, so a second run of a test still
      exercises the provider instead of replaying the first run's answer */
@@ -274,13 +352,31 @@ function systemPrompt() {
     "   a 1 m target at 30 m with the 55 degree lens is about one pixel.",
     "6. Style: practical and short. Lead with the fix. Numbered list for sequences, max 5 items,",
     "   one line each. Plain words, no marketing, no exclamation marks. Max 160 words.",
+    "   When the user asks for more detail, up to 400 words.",
     "7. You may add navigation buttons by writing a directive on its own line:",
     "   [[NAV steps 6]] or [[NAV parts]]. Tabs: why, build, parts, steps, career, quiz, limits.",
-    "   Use at most two, and only for places you actually referenced."
+    "   Use at most two, and only for places you actually referenced.",
+    "8. WHERE SHAD IS and WHAT SHAD HAS TOLD YOU, when given, describe this user's own build. Answer for",
+    "   his current step and his parts, and say which step you mean. Do not repeat advice he has already",
+    "   acted on. A generic, FAQ-style answer is a failure when you know his step.",
+    "9. Memory: when the user tells you a lasting fact about his build (a part arrived or is missing, a tool",
+    "   he has or lacks, a problem he hit, a preference), add at most two lines at the very end, each exactly",
+    "   [[REMEMBER the fact in plain words]]. Never remember keys, passwords, addresses, emails, phone",
+    "   numbers or other people's names. Do not mention these lines."
   ].join("\n");
 }
 
-function userPrompt(question, passages, history) {
+function userPrompt(question, passages, history, extra) {
+  extra = extra || {};
+  const c = extra.context || {};
+  const where = c.step
+    ? ["WHERE SHAD IS IN THE BUILD:",
+      "Step " + c.step + (c.stepTitle ? ": " + c.stepTitle : "") + " (" + (c.done && c.done.length ? "steps done: " + c.done.join(", ") : "no steps ticked yet") + ")",
+      c.next && c.next.length ? "Next on this step: " + c.next.join("; ") : ""].filter(Boolean).join("\n")
+    : "";
+  const told = extra.facts && extra.facts.length
+    ? "WHAT SHAD HAS TOLD YOU (remembered on his laptop):\n" + extra.facts.map(function (f) { return "- " + f.text; }).join("\n")
+    : "";
   const blocks = passages.map((p, i) =>
     "[P" + (i + 1) + "] " + (p.label || "guide passage") +
     (p.tab ? " (tab: " + p.tab + (p.step ? ", step " + p.step : "") + ")" : "") +
@@ -296,7 +392,10 @@ function userPrompt(question, passages, history) {
     "",
     blocks,
     "",
+    where ? where + "\n" : "",
+    told ? told + "\n" : "",
     convo ? "CONVERSATION SO FAR:\n" + convo + "\n" : "",
+    extra.detail ? "The user asked for more detail this time." : "",
     "USER QUESTION: " + question
   ].filter(Boolean).join("\n");
 }
@@ -509,6 +608,12 @@ function settingsPayload() {
     dailyUsdMax: cap,
     budgetMin: BUDGET_MIN,
     budgetMax: BUDGET_MAX,
+    /* job 8: the hard monthly cap, this month's spend, and the company the questions go to */
+    monthlyUsdMax: MONTHLY_USD_MAX,
+    monthlyMin: MONTHLY_MIN,
+    monthlyMax: MONTHLY_MAX,
+    month: monthState(),
+    sendsTo: providerHost(),
     /* A research job must never be able to eat the whole day. */
     jobBudgetUsd: Number(Math.min(0.05, Math.max(0.02, cap / 2)).toFixed(3)),
     remainingUsd: snap.remainingUsd,
@@ -1137,6 +1242,28 @@ async function handleAsk(req, res) {
     });
     return;
   }
+  /* job 8: the hard MONTHLY cap, kept on the server. Same fallback, said plainly. */
+  if (MEM.spend.blocked(MONTHLY_USD_MAX)) {
+    meter.count("blocked");
+    const m = monthState();
+    sendJson(res, 402, {
+      error: "This month's AI budget is spent (US$" + m.usd.toFixed(2) + " of US$" + m.cap.toFixed(2) + "), so answers come from the written ones until next month.",
+      month: m
+    });
+    return;
+  }
+
+  /* job 8: where Shad is in the build (from the page) and what he has told it (from the laptop's memory) */
+  const c = body.context && typeof body.context === "object" ? body.context : {};
+  const stepN = Number(c.step);
+  const context = {
+    step: Number.isInteger(stepN) && stepN >= 1 && stepN <= 8 ? stepN : null,
+    stepTitle: String(c.stepTitle || "").replace(/\s+/g, " ").slice(0, 120),
+    done: (Array.isArray(c.done) ? c.done : []).map(Number).filter((n) => Number.isInteger(n) && n >= 1 && n <= 8).slice(0, 8),
+    next: (Array.isArray(c.next) ? c.next : []).map((s) => String(s).replace(/\s+/g, " ").slice(0, 160)).filter(Boolean).slice(0, 3)
+  };
+  const facts = MEM.facts.relevant(question, 10);
+  const detail = body.detail === true;
 
   const rawPassages = (Array.isArray(body.passages) ? body.passages : [])
     .slice(0, MAX_PASSAGES)
@@ -1185,8 +1312,10 @@ async function handleAsk(req, res) {
 
   const messages = [
     { role: "system", content: systemPrompt() },
-    { role: "user", content: userPrompt(question, passages, history) }
+    { role: "user", content: userPrompt(question, passages, history, { context: context, facts: facts, detail: detail }) }
   ];
+  /* the same words at another step, or after he told it something new, are a different question */
+  const cacheKey = question + " §step" + (context.step || 0) + " §mem" + MEM.facts.version() + (detail ? " §detail" : "");
 
   res.writeHead(200, {
     "content-type": "text/event-stream; charset=utf-8",
@@ -1199,7 +1328,7 @@ async function handleAsk(req, res) {
   /* Layer 1, the cache. A question already answered is replayed, not re-bought.
      Checked after the 422 tripwire so a cached answer cannot dodge the rule that
      no evidence means no answer. */
-  const cached = cache.get(question);
+  const cached = cache.get(cacheKey);
   if (cached) {
     meter.count("cacheHits");
     /* A cached answer passes the five bans like any other: an old cache entry
@@ -1273,8 +1402,17 @@ async function handleAsk(req, res) {
       } catch (e) { /* the cheap answer stands; the escalation was a bonus */ }
     }
 
-    const nav = extractNav(full);
+    const nav0 = extractNav(full);
+    /* job 8: [[REMEMBER ...]] lines come out of the answer and into the laptop's memory (at most two) */
+    const rem = MEMORY.extractRemember(nav0.text);
+    const nav = { text: rem.text, see: nav0.see };
     if (nav.text !== full) { send({ type: "replace", text: nav.text }); }
+    const remembered = [];
+    rem.facts.forEach(function (f) {
+      const r = MEM.facts.add(f, { from: req.fromPhone ? "phone" : "laptop" });
+      if (r.ok && !r.existed) { remembered.push({ id: r.fact.id, text: r.fact.text }); }
+    });
+    MEM.spend.record(spent);
 
     /* The five code-enforced bans: a banned claim is REPLACED with a block
        notice before the response completes, and never cached. The replacement
@@ -1294,15 +1432,19 @@ async function handleAsk(req, res) {
       tier: decision.tier,
       reason: bans.ok ? decision.reason : "blocked by the five bans",
       compressedChars: packed.savedChars,
-      estimated: !first.usage
+      estimated: !first.usage,
+      remembered: remembered,
+      step: context.step,
+      month: monthState()
     });
     send({ type: "done" });
 
     /* Never cache a refusal: "not in this guide" is exactly the answer that
        deserves a second opinion next time, not a stored verdict. And never
-       cache a banned answer - the check must run again next time. */
-    if (bans.ok && !REFUSAL.test(nav.text)) {
-      cache.set(question, {
+       cache a banned answer - the check must run again next time. Nor an answer
+       that remembered something: it was about that moment. */
+    if (bans.ok && !REFUSAL.test(nav.text) && !rem.facts.length) {
+      cache.set(cacheKey, {
         answer: nav.text,
         model: model,
         sources: ["Retrieved from this guide"],
@@ -1458,9 +1600,17 @@ async function handleConversations(req, res, u) {
   }
 }
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(function (req, res) { req.fromPhone = false; route(req, res); });
+/* Every request, from the laptop's own listener or (already through phoneGate) from the phone listener. */
+function route(req, res) {
   const u = (req.url || "/").split("?")[0];
-  if (!hostAllowed(req)) { sendJson(res, 403, { error: "This server only answers on this machine." }); return; }
+  if (!req.fromPhone && !hostAllowed(req)) { sendJson(res, 403, { error: "This server only answers on this machine." }); return; }
+
+  /* ---------- job 8: memory, progress, phone access ---------- */
+  if (u.indexOf("/api/memory") === 0 || u === "/api/progress" || u === "/api/phone" || u.indexOf("/api/pair") === 0 || u.indexOf("/api/devices") === 0) {
+    handleMemoryRoutes(req, res, u);
+    return;
+  }
 
   /* ---------- settings: the key and the daily cap, set from the page ----------
      Guarded three ways: the server binds loopback, the JSON content type forces a
@@ -1573,6 +1723,14 @@ const server = http.createServer((req, res) => {
         patch.dailyUsdMax = Number(clamped.toFixed(2));
         meter.dailyUsdMax = patch.dailyUsdMax;
       }
+      if (body.monthlyUsdMax != null) {
+        const n = Number(body.monthlyUsdMax);
+        if (!Number.isFinite(n)) {
+          sendJson(res, 400, { error: "The monthly budget must be a number." }); return;
+        }
+        patch.monthlyUsdMax = Number(Math.min(MONTHLY_MAX, Math.max(MONTHLY_MIN, n)).toFixed(2));
+        MONTHLY_USD_MAX = patch.monthlyUsdMax;
+      }
       try { writeSettings(patch); } catch (e) {
         sendJson(res, 500, { error: "Could not save settings: " + String(e.message || e) });
         return;
@@ -1605,7 +1763,12 @@ const server = http.createServer((req, res) => {
       keyConfigured: !!API_KEY,
       local: /127\.0\.0\.1|localhost/.test(BASE_URL),
       budget: meter.blocked() ? "reached" : "ok",
-      cacheEntries: cache.stats().entries
+      cacheEntries: cache.stats().entries,
+      /* job 8: the month's spend against the hard cap, where the questions go, and phone access */
+      month: monthState(),
+      sendsTo: providerHost(),
+      memoryFacts: MEM.facts.list().length,
+      phone: { on: !!phoneServer, here: !!req.fromPhone }
     });
     return;
   }
@@ -1696,7 +1859,94 @@ const server = http.createServer((req, res) => {
   if (u === "/review") { req.url = "/docs/assistant/review.html"; serveStatic(req, res); return; }
 
   serveStatic(req, res);
-});
+}
+
+/* Job 8 routes. Reads are open on the laptop and to paired phones (phoneGate checked the token); changes need
+   JSON from the same site; pairing codes, the device list and phone access itself are laptop-only. */
+function handleMemoryRoutes(req, res, u) {
+  const laptopOnly = function () {
+    if (req.fromPhone) { sendJson(res, 403, { error: "That only works on the laptop." }); return true; }
+    return false;
+  };
+  const writeOk = function () {
+    if (!hasJsonMediaType(req)) { sendJson(res, 415, { error: "Send application/json." }); return false; }
+    if (crossSite(req)) { sendJson(res, 403, { error: "Cross-site request refused." }); return false; }
+    return true;
+  };
+  const query = (req.url || "").split("?")[1] || "";
+
+  if (u === "/api/memory") {
+    if (req.method === "GET") { sendJson(res, 200, { ok: true, facts: MEM.facts.list(), limit: MEMORY.LIMITS.facts }); return; }
+    if (req.method === "DELETE") {
+      if (crossSite(req)) { sendJson(res, 403, { error: "Cross-site request refused." }); return; }
+      if (!/(^|&)all=1(&|$)/.test(query)) { sendJson(res, 400, { error: "Add ?all=1 to forget everything." }); return; }
+      MEM.facts.clear(); sendJson(res, 200, { ok: true, facts: [] }); return;
+    }
+    sendJson(res, 405, { error: "GET or DELETE." }); return;
+  }
+  const one = /^\/api\/memory\/([a-f0-9]{6,16})$/.exec(u);
+  if (one) {
+    if (req.method !== "DELETE") { sendJson(res, 405, { error: "DELETE only." }); return; }
+    if (crossSite(req)) { sendJson(res, 403, { error: "Cross-site request refused." }); return; }
+    const gone = MEM.facts.remove(one[1]);
+    sendJson(res, gone ? 200 : 404, gone ? { ok: true } : { error: "No such fact." }); return;
+  }
+  if (u === "/api/progress") {
+    if (req.method === "GET") { sendJson(res, 200, Object.assign({ ok: true }, MEM.progress.get())); return; }
+    if (req.method !== "POST") { sendJson(res, 405, { error: "GET or POST." }); return; }
+    if (!writeOk()) { return; }
+    readJson(req, 40000).then(function (body) {
+      if (!body || typeof body.changes !== "object") { sendJson(res, 400, { error: "Send { changes: { key: { v, at } } }." }); return; }
+      const r = MEM.progress.merge(body.changes);
+      sendJson(res, 200, { ok: true, applied: r.applied, ticks: r.ticks });
+    });
+    return;
+  }
+  if (u === "/api/pair") {
+    if (req.method !== "POST") { sendJson(res, 405, { error: "POST only." }); return; }
+    if (!writeOk()) { return; }
+    readJson(req, 2000).then(function (body) {
+      if (!body) { sendJson(res, 400, { error: "Bad JSON." }); return; }
+      const r = MEM.devices.pair(body.code, body.name);
+      if (r.ok) { sendJson(res, 200, { ok: true, token: r.token, name: r.name }); return; }
+      sendJson(res, r.reason === "locked" ? 429 : 403, { error: r.reason, triesLeft: r.triesLeft, retryInS: r.retryInS });
+    });
+    return;
+  }
+  if (laptopOnly()) { return; }
+  if (u === "/api/pair/start") {
+    if (req.method !== "POST") { sendJson(res, 405, { error: "POST only." }); return; }
+    if (!writeOk()) { return; }
+    if (!phoneServer) { sendJson(res, 409, { error: "Turn phone access on first." }); return; }
+    const r = MEM.devices.startPairing();
+    sendJson(res, r.ok ? 200 : 429, r.ok ? { ok: true, code: r.code, expiresInS: r.expiresInS, url: phoneUrl() } : { error: r.reason, retryInS: r.retryInS });
+    return;
+  }
+  if (u === "/api/phone") {
+    if (req.method === "GET") {
+      sendJson(res, 200, { ok: true, on: !!phoneServer, url: phoneUrl(), devices: MEM.devices.list(), pairingOpen: MEM.devices.pairingOpen, locked: MEM.devices.locked });
+      return;
+    }
+    if (req.method !== "POST") { sendJson(res, 405, { error: "GET or POST." }); return; }
+    if (!writeOk()) { return; }
+    readJson(req, 500).then(function (body) {
+      if (!body || typeof body.on !== "boolean") { sendJson(res, 400, { error: "Send { on: true|false }." }); return; }
+      setPhoneAccess(body.on).then(function (r) {
+        sendJson(res, r.error ? 500 : 200, Object.assign({ ok: !r.error, devices: MEM.devices.list() }, r));
+      });
+    });
+    return;
+  }
+  const dev = /^\/api\/devices\/([a-f0-9]{8})$/.exec(u);
+  if (dev) {
+    if (req.method !== "DELETE") { sendJson(res, 405, { error: "DELETE only." }); return; }
+    if (crossSite(req)) { sendJson(res, 403, { error: "Cross-site request refused." }); return; }
+    const gone = MEM.devices.remove(dev[1]);
+    sendJson(res, gone ? 200 : 404, gone ? { ok: true, devices: MEM.devices.list() } : { error: "No such device." });
+    return;
+  }
+  sendJson(res, 404, { error: "not found" });
+}
 
 /* Persist the cache on the way out: a Ctrl-C should not cost the answers that
    were already paid for. */
@@ -1720,6 +1970,11 @@ server.listen(PORT, BIND, () => {
   console.log("  cheap    : " + CHEAP_MODEL);
   console.log("  strong   : " + STRONG_MODEL + (canEscalate() ? "" : "   (no escalation; set STRONG_MODEL to enable)"));
   console.log("  budget   : " + (DAILY_USD_MAX > 0 ? "$" + DAILY_USD_MAX + "/day" : "no cap (set DAILY_USD_MAX)"));
+  const m = monthState();
+  console.log("  month    : US$" + m.usd.toFixed(2) + " spent of US$" + m.cap.toFixed(2) + " (hard cap, " + m.month + ")");
+  console.log("  memory   : " + MEMORY_DIR + "  (" + MEM.facts.list().length + " facts)");
+  console.log("  sends to : " + providerHost());
+  console.log("  phone    : off (turn it on in the chat's Settings)");
   console.log("  cache    : " + (CACHE_OFF ? "off" : CACHE_FILE + "  (" + cache.stats().entries + " entries)"));
   console.log("  base url : " + BASE_URL);
   console.log("  bind     : " + BIND);

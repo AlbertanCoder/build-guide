@@ -114,6 +114,20 @@ const SUITES = [
     expect: 29
   },
   {
+    /* job 8 (2026-11-03): what the assistant remembers, step awareness, phone pairing and its security, the monthly cap */
+    name: "memory and phone",
+    cmd: ["node", ["scripts/dev/check-memory.js"]],
+    expect: 51
+  },
+  {
+    /* job 8 in a real browser (Python Playwright, Chromium): status line, memory view, pairing a phone, synced
+       ticks, More detail, where questions go, the monthly cap */
+    name: "chat memory (browser)",
+    cmd: ["python", ["scripts/dev/check-chat-memory.py"]],
+    expect: 18,
+    optional: true
+  },
+  {
     name: "build sync",
     cmd: ["node", ["scripts/dev/check-build-sync.js"]],
     expect: 23

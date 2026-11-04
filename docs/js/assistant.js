@@ -33,6 +33,10 @@
      the settings drawer must work before AI does, or the first key can never
      be entered from the page. */
   let SERVER_PRESENT = false;
+  /* job 8: what /api/health last said (month's spend, where questions go), and whether this is an unpaired phone */
+  let HEALTH = null;
+  let PAIR_NEEDED = false;
+  const DEVICE_KEY = "ga-device-token";
 
   /* ?endpoint=http://localhost:8790/api/ask points any copy of this page at a
      proxy (handy for testing); #ga-local forces the offline engine even then. */
@@ -1170,7 +1174,8 @@
   function renderMarkdown(container, text) {
     container.textContent = "";
     String(text || "").split(/\n{2,}/).forEach(function (block) {
-      const lines = block.split("\n").filter(function (l) { return l.trim(); });
+      /* [[NAV ...]] and [[REMEMBER ...]] are instructions for the page and the server, never text to read */
+      const lines = block.split("\n").filter(function (l) { return l.trim() && !/^\s*\[\[/.test(l); });
       if (!lines.length) { return; }
       const allBullet = lines.every(function (l) { return /^\s*[-*\u2022]\s+/.test(l); });
       const allNumber = lines.every(function (l) { return /^\s*\d+[.)]\s+/.test(l); });
@@ -1402,6 +1407,9 @@
       note.textContent = isFile
         ? "This is the offline copy: " + KB.length + " written answers, no AI, and no API key can be entered here. " +
           "For AI: " + START_HINT
+        : PAIR_NEEDED
+          ? "This phone is not paired with the laptop yet, so these are the " + KB.length + " written answers. " +
+            "On the laptop: ⚙ Settings, Phone access, Pair a phone. Then type its 6-digit code below."
         : SERVER_PRESENT
           ? "No API key yet, so these are the " + KB.length + " written answers only. " +
             "Open \u2699 Settings, paste your provider key, and press Save key."
@@ -1420,14 +1428,21 @@
     if (ENDPOINT || location.protocol === "file:" || typeof fetch !== "function") {
       return Promise.resolve(ENDPOINT);
     }
-    return fetch("/api/health", { cache: "no-store" })
-      .then(function (r) { return r.ok ? r.json() : null; })
+    return fetch("/api/health", { cache: "no-store", headers: writeTokenHeaders() })
+      .then(function (r) {
+        /* job 8: a phone on the home network that is not paired yet gets 401 with pair: true */
+        if (r.status === 401) {
+          return r.json().then(function (j) { if (j && j.pair) { PAIR_NEEDED = true; setMode(); showPairCard(true); } return null; }, function () { return null; });
+        }
+        return r.ok ? r.json() : null;
+      })
       .then(function (j) {
-        if (j && j.ok) { SERVER_PRESENT = true; setMode(); }
+        if (j && j.ok) { SERVER_PRESENT = true; PAIR_NEEDED = false; HEALTH = j; showPairCard(false); setMode(); }
         if (j && j.ok && (j.keyConfigured || j.local)) {
           ENDPOINT = "/api/ask";
           setMode();
         }
+        if (j && j.ok) { updateStatus(); startProgressSync(); }
         return ENDPOINT;
       })
       .catch(function () { return ENDPOINT; /* not our server: stay offline */ });
@@ -1532,6 +1547,7 @@
     document.documentElement.classList.toggle("ga-lock", on && window.innerWidth < 560);
     if (on) {
       UI.panel.removeAttribute("inert");
+      updateStatus();
       if (UI.input) { UI.input.focus(); }
     } else {
       UI.panel.setAttribute("inert", "");
@@ -1721,48 +1737,85 @@
     });
 
     const settings = buildSettings();
+    /* job 8: where questions go, the monthly cap and phone access sit at the end of Settings */
+    const job8 = buildJob8Settings();
+    settings.node.appendChild(job8.node);
+    const memory = buildMemoryPanel();
+    const pairCard = buildPairCard();
     const history = buildHistory();
     const chatRow = el("div", "ga-row ga-chatrow");
     const freshChat = el("button", "ga-chip", "New chat");
     freshChat.type = "button";
-    freshChat.addEventListener("click", function () { clear.click(); showSettings(false); });
+    freshChat.addEventListener("click", function () { clear.click(); showSettings(false); showMemory(false); });
     /* the History button (id ga-history-btn) now lives here, labelled "Past chats" */
     hist.className = "ga-chip";
     hist.textContent = "Past chats";
+    const memBtn = el("button", "ga-chip", "What I remember");
+    memBtn.type = "button";
+    memBtn.id = "ga-memory-btn";
+    memBtn.setAttribute("aria-expanded", "false");
     chatRow.appendChild(freshChat);
     chatRow.appendChild(hist);
+    chatRow.appendChild(memBtn);
     let settingsOpen = false;
     let historyOpen = false;
+    let memoryOpen = false;
+    function paintViews() {
+      log.hidden = settingsOpen || historyOpen || memoryOpen;
+      form.hidden = settingsOpen || historyOpen || memoryOpen;
+    }
     function showSettings(on) {
       settingsOpen = !!on;
-      if (settingsOpen) { historyOpen = false; history.node.hidden = true; hist.setAttribute("aria-expanded", "false"); }
+      if (settingsOpen) {
+        historyOpen = false; history.node.hidden = true; hist.setAttribute("aria-expanded", "false");
+        memoryOpen = false; memory.node.hidden = true; memBtn.setAttribute("aria-expanded", "false");
+      }
       settings.node.hidden = !settingsOpen;
-      log.hidden = settingsOpen || historyOpen;
-      form.hidden = settingsOpen || historyOpen;
+      paintViews();
       gear.setAttribute("aria-expanded", settingsOpen ? "true" : "false");
-      if (settingsOpen) { settings.refresh(); }
+      if (settingsOpen) { settings.refresh(); job8.refresh(); }
     }
     function showHistory(on) {
       historyOpen = !!on;
-      if (historyOpen) { settingsOpen = false; settings.node.hidden = true; gear.setAttribute("aria-expanded", "false"); }
+      if (historyOpen) {
+        settingsOpen = false; settings.node.hidden = true; gear.setAttribute("aria-expanded", "false");
+        memoryOpen = false; memory.node.hidden = true; memBtn.setAttribute("aria-expanded", "false");
+      }
       history.node.hidden = !historyOpen;
-      log.hidden = settingsOpen || historyOpen;
-      form.hidden = settingsOpen || historyOpen;
+      paintViews();
       hist.setAttribute("aria-expanded", historyOpen ? "true" : "false");
       if (historyOpen) { history.refresh(); }
     }
+    function showMemory(on) {
+      memoryOpen = !!on;
+      if (memoryOpen) {
+        settingsOpen = false; settings.node.hidden = true; gear.setAttribute("aria-expanded", "false");
+        historyOpen = false; history.node.hidden = true; hist.setAttribute("aria-expanded", "false");
+      }
+      memory.node.hidden = !memoryOpen;
+      paintViews();
+      memBtn.setAttribute("aria-expanded", memoryOpen ? "true" : "false");
+      if (memoryOpen) { memory.refresh(); }
+    }
     gear.addEventListener("click", function () { showSettings(!settingsOpen); });
     hist.addEventListener("click", function () { showHistory(!historyOpen); });
+    memBtn.addEventListener("click", function () { showMemory(!memoryOpen); });
+    const status = el("p", "ga-status");
+    status.id = "ga-status";
+    status.hidden = true;
 
     const offlineNote = el("p", "ga-offline-note");
     offlineNote.id = "ga-offline-note";
     offlineNote.hidden = true;
 
     panel.appendChild(head);
+    panel.appendChild(status);
     panel.appendChild(chatRow);
     panel.appendChild(offlineNote);
+    panel.appendChild(pairCard);
     panel.appendChild(settings.node);
     panel.appendChild(history.node);
+    panel.appendChild(memory.node);
     panel.appendChild(log);
     panel.appendChild(form);
     root.appendChild(panel);
@@ -1771,6 +1824,7 @@
 
     UI.root = root; UI.panel = panel; UI.log = log; UI.input = input;
     UI.showSettings = showSettings;
+    UI.showMemory = showMemory;
     setOpen(false);
 
     launcher.addEventListener("click", function () {
@@ -2323,8 +2377,14 @@
     return step();
   }
 
-  function askModel(question, sink, signal) {
+  function askModel(question, sink, signal, opts) {
+    opts = opts || {};
     let passages = buildContext(question);
+    /* job 8: the step he is on goes first, so the answer is about HIS build, not the FAQ */
+    const sc = stepContext();
+    if (sc.passage && !passages.some(function (p) { return p.step === sc.step && /^Your step/.test(p.label || ""); })) {
+      passages.unshift(sc.passage);
+    }
     /* Nothing retrieved ("can you help me?", a general how-to): send the guide's
        overview so the model can say what it covers or label a general answer. */
     if (!passages.length) {
@@ -2334,12 +2394,14 @@
     if (!passages.length) { return Promise.reject(new Error("no passages")); }
     return fetch(ENDPOINT, {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: writeTokenHeaders({ "content-type": "application/json" }),
       signal: signal,
       body: JSON.stringify({
         question: question,
-        passages: passages,
+        passages: passages.slice(0, 6),
         history: ctx.history.slice(-6),
+        context: sc.context,
+        detail: opts.detail === true,
         /* Routing hints for the server: a confident curated answer is the
            cheapest and most reliable case, and the retrieval score says whether
            the evidence is strong enough for a small model. */
@@ -2353,7 +2415,13 @@
       const type = res.headers.get("content-type") || "";
       if (!res.ok) {
         return res.text().then(function (body) {
-          throw new Error("HTTP " + res.status + ": " + body.slice(0, 120));
+          /* job 8: the server's own plain sentence (the monthly cap, an unpaired phone) is shown as it is */
+          let said = "";
+          try { said = String((JSON.parse(body) || {}).error || ""); } catch (e) { /* not JSON */ }
+          if (res.status === 401) { PAIR_NEEDED = true; setMode(); showPairCard(true); }
+          const err = new Error("HTTP " + res.status + ": " + body.slice(0, 120));
+          if (res.status === 402 && said) { err.plain = said; }
+          throw err;
         });
       }
       if (type.indexOf("text/event-stream") !== -1 && res.body && res.body.getReader) {
@@ -2369,7 +2437,8 @@
   }
 
   /* ---------- model answer with a live, streaming card --------------------- */
-  function modelAnswer(question) {
+  function modelAnswer(question, opts) {
+    opts = opts || {};
     const card = streamingCard();
     card.card.classList.add("ga-live");
     const state = { text: "", meta: null };
@@ -2394,7 +2463,7 @@
       card.stop.style.display = "none";
     }
 
-    return askModel(question, sink, controller ? controller.signal : undefined)
+    return askModel(question, sink, controller ? controller.signal : undefined, { detail: opts.detail === true })
       .then(function () {
         const text = String(state.text || "").trim();
         if (!text) { throw new Error("empty answer"); }
@@ -2407,6 +2476,7 @@
           chips: Array.isArray(meta.chips) ? meta.chips : []
         };
         finishStream(card, msg);
+        answerExtras(card, question, meta, opts);
         ctx.history.push({ role: "assistant", content: text });
         MESSAGES.push(msg);
         persist();
@@ -2424,7 +2494,9 @@
         };
         local.note = (local.note ? local.note + " " : "") + (aborted
           ? "(Stopped, so this answer came from the offline guide instead.)"
-          : "(The AI service did not answer: " + plainError(err) + ". So this came from the offline guide instead.)");
+          : err && err.plain
+            ? "(" + err.plain + ")"
+            : "(The AI service did not answer: " + plainError(err) + ". So this came from the offline guide instead.)");
         ctx.history.push({ role: "assistant", content: historyText(local) });
         return push(local);
       });
@@ -2469,6 +2541,9 @@
     try {
       const t = window.localStorage ? (localStorage.getItem("ga-write-token") || "") : "";
       if (t) { h["x-write-token"] = t; }
+      /* job 8: a paired phone proves itself with its device token on every request to the laptop */
+      const d = window.localStorage ? (localStorage.getItem(DEVICE_KEY) || "") : "";
+      if (d) { h["x-device-token"] = d; }
     } catch (e) { /* storage unavailable */ }
     return h;
   }
@@ -2763,7 +2838,7 @@
       }
     }
 
-    return modelAnswer(t).then(function (msg) {
+    return modelAnswer(t, { detail: !!(opts && opts.detail) }).then(function (msg) {
       UI.busy = false;
       return msg;
     }, function () {
@@ -3225,6 +3300,352 @@
   /* ======================================================================
      INIT
      ====================================================================== */
+  /* ======================================================================
+     JOB 8 (2026-11-03): step awareness, memory, phone pairing, the month's spend.
+     The memory and the synced ticks live on the laptop's server (server/.memory); this page only shows them.
+     ====================================================================== */
+
+  /* The step he is on: the assembly walker's current step, or else the first step not ticked. */
+  function stepContext() {
+    const out = { step: null, context: null, passage: null };
+    try {
+      const ticks = (typeof saved !== "undefined" && saved && saved.ticks) ? saved.ticks : {};
+      const done = [];
+      for (let n = 1; n <= 8; n += 1) { if (ticks["asm-" + n]) { done.push(n); } }
+      /* the step the walker shows, unless that one is already ticked: then the first step not ticked */
+      const dot = document.querySelector("[data-asm-dot][aria-current='step']");
+      let step = dot ? Number(dot.getAttribute("data-asm-dot")) : NaN;
+      if (!(step >= 1 && step <= 8) || done.indexOf(step) !== -1) {
+        let first = 1;
+        while (first < 8 && done.indexOf(first) !== -1) { first += 1; }
+        if (!(step >= 1 && step <= 8) || done.indexOf(first) === -1) { step = first; }
+      }
+      const d = document.querySelector('[data-asm-dot="' + step + '"]');
+      const title = d ? String(d.getAttribute("title") || "").replace(/^Step\s*\d+\s*:\s*/i, "").slice(0, 120) : "";
+      const sec = document.querySelectorAll(".asm-step")[step - 1];
+      const next = sec ? Array.prototype.slice.call(sec.querySelectorAll("ol li")).slice(0, 2)
+        .map(function (li) { return clip(plain(li), 160); }).filter(Boolean) : [];
+      out.step = step;
+      out.context = { step: step, stepTitle: title, done: done, next: done.indexOf(step) === -1 ? next : [] };
+      const text = sec ? clip(plain(sec), 1300) : "";
+      if (text.length > 40) { out.passage = { label: "Your step " + step + (title ? ": " + title : ""), tab: "steps", step: step, text: text }; }
+    } catch (e) { /* no walker on this page: no step context */ }
+    return out;
+  }
+
+  function forgetFact(id) {
+    return fetch("/api/memory/" + encodeURIComponent(id), { method: "DELETE", headers: writeTokenHeaders() })
+      .then(function (r) { return r.ok; }, function () { return false; });
+  }
+
+  /* Under an AI answer: what it remembered (with Forget), "More detail", and the month's spend. */
+  function answerExtras(card, question, meta, opts) {
+    if (meta && meta.month) { if (HEALTH) { HEALTH.month = meta.month; } updateStatus(); }
+    (meta && Array.isArray(meta.remembered) ? meta.remembered : []).forEach(function (f) {
+      const row = el("p", "ga-remembered");
+      row.appendChild(document.createTextNode("Remembered: " + f.text + " "));
+      const b = el("button", "ga-link", "Forget");
+      b.type = "button";
+      b.addEventListener("click", function () { forgetFact(f.id).then(function (ok) { if (ok) { row.textContent = "Forgotten."; } }); });
+      row.appendChild(b);
+      card.foot.appendChild(row);
+    });
+    if (!(opts && opts.detail)) {
+      const more = el("button", "ga-link ga-more", "More detail");
+      more.type = "button";
+      more.addEventListener("click", function () {
+        if (UI.busy) { return; }
+        more.disabled = true;
+        ask("More detail: " + question, { detail: true, forceModel: true });
+      });
+      card.foot.appendChild(more);
+    }
+  }
+
+  /* Where the questions go, in plain words (shown in Settings). */
+  function sendsToText(h) {
+    h = h || {};
+    const host = String(h.sendsTo || ""), model = String(h.cheapModel || h.model || "");
+    if (!host) { return ""; }
+    if (/^(127\.0\.0\.1|localhost)$/.test(host)) { return "Questions are answered by a model on this laptop (" + model + "): nothing is sent out."; }
+    const via = /openrouter/.test(host)
+      ? "OpenRouter (" + host + "), which passes them on to a company that runs the model " + model
+      : host + " (model " + model + ")";
+    return "Where your questions go: your question, the step you are on and the facts it remembers are sent to " + via +
+      " to be answered. The memory and your ticks stay on this laptop.";
+  }
+
+  function updateStatus() {
+    const s = document.getElementById("ga-status");
+    if (!s) { return; }
+    if (!HEALTH || !ENDPOINT) { s.hidden = true; return; }
+    const sc = stepContext(), m = HEALTH.month || {};
+    s.textContent = (sc.step ? "Step " + sc.step + " \u00b7 " : "") + "AI on (" + (HEALTH.cheapModel || HEALTH.model || "model") + ")" +
+      (m.cap ? " \u00b7 US$" + Number(m.usd || 0).toFixed(2) + " of US$" + Number(m.cap).toFixed(2) + " this month" : "");
+    s.hidden = false;
+  }
+
+  /* An unpaired phone: type the laptop's 6-digit code. */
+  function buildPairCard() {
+    const box = el("div", "ga-pair");
+    box.id = "ga-pair";
+    box.hidden = true;
+    box.appendChild(el("p", null, "Pair this phone with the laptop: in the laptop's chat open \u2699 Settings, turn Phone access on, press Pair a phone, then type the 6 digits here."));
+    const row = el("div", "ga-row");
+    const inp = el("input", "ga-pair-code");
+    inp.id = "ga-pair-code"; inp.inputMode = "numeric"; inp.maxLength = 6; inp.autocomplete = "one-time-code";
+    inp.setAttribute("aria-label", "The 6-digit code from the laptop");
+    const go = el("button", "ga-chip", "Pair");
+    go.type = "button"; go.id = "ga-pair-go";
+    const msg = el("p", "ga-src");
+    msg.id = "ga-pair-msg";
+    go.addEventListener("click", function () {
+      fetch("/api/pair", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ code: inp.value, name: "Phone" }) })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j || {} }; }); })
+        .then(function (x) {
+          if (x.ok && x.j.token) {
+            try { localStorage.setItem(DEVICE_KEY, x.j.token); } catch (e) { /* private mode: pairing lasts this visit */ }
+            msg.textContent = "Paired. This phone now uses the laptop's AI, memory and ticks.";
+            PAIR_NEEDED = false; ENDPOINT = ""; probeEndpoint();
+          } else {
+            msg.textContent = x.j.error === "locked"
+              ? "Too many wrong codes: wait " + Math.ceil((x.j.retryInS || 600) / 60) + " minutes, then make a new code on the laptop."
+              : "That did not work: " + (x.j.error || "error") + (x.j.triesLeft ? " (" + x.j.triesLeft + " tries left)." : ".");
+          }
+        }, function () { msg.textContent = "The laptop could not be reached: is it on, with Phone access on?"; });
+    });
+    row.appendChild(inp); row.appendChild(go);
+    box.appendChild(row); box.appendChild(msg);
+    return box;
+  }
+  function showPairCard(on) {
+    const c = document.getElementById("ga-pair");
+    if (c) { c.hidden = !on; }
+  }
+
+  /* "What I remember": every fact, with Delete, and Forget everything (two taps). */
+  function buildMemoryPanel() {
+    const node = el("div", "ga-memory");
+    node.id = "ga-memory";
+    node.hidden = true;
+    node.appendChild(el("h4", "ga-title", "What I remember"));
+    node.appendChild(el("p", "ga-src", "Kept on the laptop only. Each question takes along the facts that match it. Delete anything you do not want kept."));
+    const list = el("ul", "ga-memory-list");
+    list.id = "ga-memory-list";
+    const forgetAll = el("button", "ga-chip", "Forget everything");
+    forgetAll.type = "button"; forgetAll.id = "ga-forget-all";
+    let armed = false;
+    forgetAll.addEventListener("click", function () {
+      if (!armed) {
+        armed = true; forgetAll.textContent = "Tap again to forget everything";
+        setTimeout(function () { armed = false; forgetAll.textContent = "Forget everything"; }, 5000);
+        return;
+      }
+      armed = false; forgetAll.textContent = "Forget everything";
+      fetch("/api/memory?all=1", { method: "DELETE", headers: writeTokenHeaders() }).then(refresh, refresh);
+    });
+    node.appendChild(list);
+    node.appendChild(forgetAll);
+    function refresh() {
+      return fetch("/api/memory", { cache: "no-store", headers: writeTokenHeaders() })
+        .then(function (r) { return r.ok ? r.json() : null; }, function () { return null; })
+        .then(function (j) {
+          list.textContent = "";
+          const facts = j && Array.isArray(j.facts) ? j.facts : [];
+          if (!facts.length) {
+            list.appendChild(el("li", "ga-empty", j ? "Nothing yet. Tell it things like \u201cmy batteries arrived\u201d and it will remember them."
+              : "The laptop's server is not reachable here, so there is no memory to show."));
+          }
+          facts.forEach(function (f) {
+            const li = el("li");
+            li.appendChild(el("span", null, f.text));
+            li.appendChild(el("small", null, "told on the " + (f.from === "phone" ? "phone" : "laptop") + ", " + new Date(f.at).toLocaleDateString()));
+            const del = el("button", "ga-link", "Delete");
+            del.type = "button";
+            del.addEventListener("click", function () { forgetFact(f.id).then(refresh); });
+            li.appendChild(del);
+            list.appendChild(li);
+          });
+          forgetAll.hidden = !facts.length;
+        });
+    }
+    return { node: node, refresh: refresh };
+  }
+
+  /* Settings, job 8 part: where questions go, the monthly cap, phone access and paired phones (laptop only). */
+  function buildJob8Settings() {
+    const node = el("div", "ga-job8");
+    node.id = "ga-job8";
+    const where = el("p", "ga-where");
+    where.id = "ga-sends-to";
+    node.appendChild(where);
+    const laptopOnly = el("div");
+    node.appendChild(laptopOnly);
+    const capLabel = el("label", "ga-src", "Monthly AI budget in US$ (a hard limit kept on the laptop; at the limit the chat uses the written answers): ");
+    capLabel.setAttribute("for", "ga-month-cap");
+    const cap = el("input", "ga-month-cap");
+    cap.id = "ga-month-cap"; cap.type = "number"; cap.min = "0.5"; cap.max = "20"; cap.step = "0.5";
+    const capSave = el("button", "ga-chip", "Save budget");
+    capSave.type = "button"; capSave.id = "ga-month-save";
+    const capMsg = el("p", "ga-src");
+    capMsg.id = "ga-month-msg";
+    capSave.addEventListener("click", function () {
+      fetch("/api/settings", { method: "POST", headers: writeTokenHeaders({ "content-type": "application/json" }), body: JSON.stringify({ monthlyUsdMax: Number(cap.value) }) })
+        .then(function (r) { return r.json(); })
+        .then(function (j) {
+          if (j && j.monthlyUsdMax != null) {
+            cap.value = j.monthlyUsdMax;
+            capMsg.textContent = "Saved: US$" + Number(j.monthlyUsdMax).toFixed(2) + " a month. Spent so far this month: US$" + Number((j.month || {}).usd || 0).toFixed(2) + ".";
+            if (HEALTH && j.month) { HEALTH.month = j.month; updateStatus(); }
+          } else { capMsg.textContent = (j && j.error) || "Not saved."; }
+        }, function () { capMsg.textContent = "Not saved: the laptop's server did not answer."; });
+    });
+    const capRow = el("div", "ga-row");
+    capRow.appendChild(cap); capRow.appendChild(capSave);
+    laptopOnly.appendChild(capLabel); laptopOnly.appendChild(capRow); laptopOnly.appendChild(capMsg);
+
+    laptopOnly.appendChild(el("h4", "ga-title", "Phone access (home Wi-Fi)"));
+    const phoneBtn = el("button", "ga-chip", "Phone access: off");
+    phoneBtn.type = "button"; phoneBtn.id = "ga-phone-toggle";
+    const pairBtn = el("button", "ga-chip", "Pair a phone");
+    pairBtn.type = "button"; pairBtn.id = "ga-pair-start";
+    const phoneRow = el("div", "ga-row");
+    phoneRow.appendChild(phoneBtn); phoneRow.appendChild(pairBtn);
+    const phoneInfo = el("p", "ga-src");
+    phoneInfo.id = "ga-phone-info";
+    const codeShow = el("p", "ga-pair-codeshow");
+    codeShow.id = "ga-pair-codeshow";
+    const devices = el("ul", "ga-devices");
+    devices.id = "ga-devices";
+    laptopOnly.appendChild(phoneRow); laptopOnly.appendChild(phoneInfo); laptopOnly.appendChild(codeShow); laptopOnly.appendChild(devices);
+    let phoneOn = false;
+    function paintPhone(j) {
+      phoneOn = !!(j && j.on);
+      phoneBtn.textContent = phoneOn ? "Phone access: on" : "Phone access: off";
+      phoneBtn.setAttribute("aria-pressed", String(phoneOn));
+      pairBtn.disabled = !phoneOn;
+      phoneInfo.textContent = j && j.error ? j.error
+        : phoneOn ? "On. On your phone, on the same home Wi-Fi, open " + j.url + " . The first time, Windows may ask to allow Node.js on private networks: click Allow. Use it on home Wi-Fi only, not public Wi-Fi."
+          : "Off: nothing on the home network can reach the guide.";
+      if (!phoneOn) { codeShow.textContent = ""; }
+      devices.textContent = "";
+      ((j && j.devices) || []).forEach(function (d) {
+        const li = el("li");
+        li.appendChild(el("span", null, d.name));
+        li.appendChild(el("small", null, "paired " + new Date(d.at).toLocaleDateString() + ", last used " + new Date(d.lastSeen).toLocaleString()));
+        const rm = el("button", "ga-link", "Remove");
+        rm.type = "button";
+        rm.addEventListener("click", function () {
+          fetch("/api/devices/" + encodeURIComponent(d.id), { method: "DELETE", headers: writeTokenHeaders() }).then(refreshPhone, refreshPhone);
+        });
+        li.appendChild(rm);
+        devices.appendChild(li);
+      });
+    }
+    function refreshPhone() {
+      return fetch("/api/phone", { cache: "no-store", headers: writeTokenHeaders() })
+        .then(function (r) { return r.ok ? r.json() : null; }, function () { return null; })
+        .then(function (j) { if (j) { paintPhone(j); } });
+    }
+    phoneBtn.addEventListener("click", function () {
+      phoneBtn.disabled = true;
+      fetch("/api/phone", { method: "POST", headers: writeTokenHeaders({ "content-type": "application/json" }), body: JSON.stringify({ on: !phoneOn }) })
+        .then(function (r) { return r.json(); })
+        .then(function (j) { phoneBtn.disabled = false; paintPhone(j); }, function () { phoneBtn.disabled = false; });
+    });
+    pairBtn.addEventListener("click", function () {
+      fetch("/api/pair/start", { method: "POST", headers: writeTokenHeaders({ "content-type": "application/json" }), body: "{}" })
+        .then(function (r) { return r.json(); })
+        .then(function (j) {
+          codeShow.textContent = j && j.code ? j.code : "";
+          phoneInfo.textContent = j && j.code ? "Type this code on the phone within 5 minutes. It works once." : ((j && j.error) || "No code.");
+        });
+    });
+    function refresh() {
+      const isLaptop = LOCAL_HOST && !PAIR_NEEDED;
+      laptopOnly.hidden = !isLaptop;
+      where.textContent = sendsToText(HEALTH);
+      where.hidden = !where.textContent;
+      if (!isLaptop) { return Promise.resolve(); }
+      fetch("/api/settings", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }, function () { return null; })
+        .then(function (j) {
+          if (!j) { return; }
+          cap.value = j.monthlyUsdMax != null ? j.monthlyUsdMax : 2;
+          const m = j.month || {};
+          capMsg.textContent = "Spent this month: US$" + Number(m.usd || 0).toFixed(2) + " of US$" + Number(j.monthlyUsdMax || 2).toFixed(2) + ".";
+          if (!where.textContent) { where.textContent = sendsToText(j); where.hidden = !where.textContent; }
+        });
+      return refreshPhone();
+    }
+    return { node: node, refresh: refresh };
+  }
+
+  /* Ticks from every device: send this browser's changes to the laptop, and take the laptop's newer ones.
+     A tick is applied by setting its box and firing "change", so the page's own code saves it as usual. */
+  let progressSync = null;
+  function startProgressSync() {
+    if (progressSync || typeof saved === "undefined" || !saved || !saved.ticks) { return; }
+    const AT_KEY = "ga-progress-at";
+    let at = {};
+    try { at = JSON.parse(localStorage.getItem(AT_KEY)) || {}; } catch (e) { at = {}; }
+    let last = JSON.stringify(saved.ticks);
+    const storeAt = function () { try { localStorage.setItem(AT_KEY, JSON.stringify(at)); } catch (e) { /* private mode */ } };
+    const send = function (changes) {
+      if (!Object.keys(changes).length) { return Promise.resolve(); }
+      return fetch("/api/progress", { method: "POST", headers: writeTokenHeaders({ "content-type": "application/json" }), body: JSON.stringify({ changes: changes }) })
+        .catch(function () { /* the next change retries */ });
+    };
+    function applyRemote(ticks) {
+      Object.keys(ticks || {}).forEach(function (k) {
+        const r = ticks[k];
+        if (!r || (at[k] && at[k] >= r.at)) { return; }
+        at[k] = r.at;
+        if (!!saved.ticks[k] === r.v) { return; }
+        const box = document.querySelector('input[type="checkbox"][data-key="' + k.replace(/["\\]/g, "") + '"]') ||
+          (/^asm-\d$/.test(k) ? document.querySelector('input[type="checkbox"][data-asm="' + k.slice(4) + '"]') : null);
+        if (box) { box.checked = r.v; box.dispatchEvent(new Event("change", { bubbles: true })); }
+        else { saved.ticks[k] = r.v; if (typeof save === "function") { save(); } }
+      });
+      storeAt();
+      last = JSON.stringify(saved.ticks);
+    }
+    function pull(first) {
+      return fetch("/api/progress", { cache: "no-store", headers: writeTokenHeaders() })
+        .then(function (r) { return r.ok ? r.json() : null; }, function () { return null; })
+        .then(function (j) {
+          if (!j || !j.ticks) { return; }
+          applyRemote(j.ticks);
+          if (first) {
+            /* ticks made before syncing existed: send the ones the laptop does not have, as old changes */
+            const seed = {};
+            Object.keys(saved.ticks).forEach(function (k) { if (saved.ticks[k] && !j.ticks[k]) { seed[k] = { v: true, at: 1 }; at[k] = 1; } });
+            storeAt();
+            send(seed);
+          }
+        });
+    }
+    function push() {
+      const now = JSON.stringify(saved.ticks);
+      if (now === last) { return; }
+      const prev = JSON.parse(last), cur = saved.ticks, changes = {}, t = Date.now();
+      Object.keys(Object.assign({}, prev, cur)).forEach(function (k) {
+        if (!!prev[k] !== !!cur[k]) { changes[k] = { v: !!cur[k], at: t }; at[k] = t; }
+      });
+      last = now;
+      storeAt();
+      send(changes);
+    }
+    progressSync = setInterval(function () { push(); updateStatus(); }, 3000);
+    /* a tick changes the step he is on: show it at once, not at the next sync */
+    document.addEventListener("change", function (e) {
+      const t = e.target;
+      if (t && t.matches && t.matches('input[type="checkbox"][data-asm], input[type="checkbox"][data-key]')) { updateStatus(); }
+    });
+    window.addEventListener("focus", function () { pull(false); });   // back on this tab: pick up the other device's ticks
+    window.GuideAssistant.syncProgress = function () { push(); return pull(false); };
+    pull(true);
+  }
+
   function init() {
     buildIndex();
     mount();

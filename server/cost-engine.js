@@ -40,6 +40,15 @@ const PRICES = {
   "claude-haiku-5.5": { input: 0.1, cached: 0.01, output: 0.5, write: 0.125 },
   "claude-haiku-4.5": { input: 1.0, cached: 0.1, output: 5.0, write: 1.25 },
   "claude-sonnet-5.5": { input: 2.0, cached: 0.1, output: 10.0, write: 2.5 },
+  /* DeepSeek direct, from DeepSeek's own page https://api-docs.deepseek.com/quick_start/pricing (checked
+     2026-11-03; the page has no "last updated" date). "cached" is their cache-hit price. Billed here at their
+     PEAK rate (01:00-04:00 and 06:00-10:00 UTC, Monday to Friday: Edmonton weekday evenings) so a cap is never
+     under-counted; off-peak is half. */
+  "deepseek-flash": { input: 0.3, cached: 0.006, output: 1.2 },
+  "deepseek-v4-pro": { input: 1.32, cached: 0.044, output: 3.96 },
+  /* The same model through OpenRouter, from OpenRouter's public list https://openrouter.ai/api/v1/models
+     (checked 2026-11-03). The full "maker/model" name is matched before the bare one. */
+  "deepseek/deepseek-v4.1-flash-1017": { input: 0.15, cached: 0.003, output: 0.6 },
   /* Anything unlisted: assume the mid-tier we used to hardcode. */
   __default: { input: 0.15, cached: 0.075, output: 0.6 }
 };
