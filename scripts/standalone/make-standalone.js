@@ -67,6 +67,16 @@ html = html.replace(
 );
 log.push(`step SVGs inlined: ${svgCount}`);
 
+// ---- 3b. pictures (<img src="docs/images/....jpg|png">) -> data URIs --------
+// the phone's picture of the finished drone, shown until its 3D view is tapped (phone pass, 4 Nov 2026)
+let picCount = 0;
+html = html.replace(/<img src="(docs\/images\/[^"]+\.(jpe?g|png))"/g, (whole, file, ext) => {
+  const pic = fs.readFileSync(path.join(REPO, file)).toString('base64');
+  picCount += 1;
+  return `<img src="data:image/${ext === 'png' ? 'png' : 'jpeg'};base64,${pic}"`;
+});
+log.push(`pictures inlined: ${picCount}`);
+
 // ---- 4. drop the import map (no module resolution needed any more) --------
 const beforeImport = html.length;
 html = html.replace(/<script type="importmap">[\s\S]*?<\/script>\s*/g, '');

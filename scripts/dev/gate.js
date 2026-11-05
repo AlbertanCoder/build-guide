@@ -136,6 +136,16 @@ const SUITES = [
     optional: true
   },
   {
+    /* the phone pass (job 11, approved 2026-11-04) in a real browser: on a phone the 3D views fold their extras under
+       "More 3D options" and the finished drone waits as a picture; the step line, the chat button, the stock chips, no
+       sideways scroll, no zoom-in on text boxes, and the one-time "Copy my ticks to my phone" link; the laptop keeps
+       everything (Python Playwright, Chromium) */
+    name: "phone pass (browser)",
+    cmd: ["python", ["scripts/dev/check-phone.py"]],
+    expect: 24,
+    optional: true
+  },
+  {
     name: "build sync",
     cmd: ["node", ["scripts/dev/check-build-sync.js"]],
     expect: 23
@@ -245,6 +255,7 @@ const SUITE_PORTS = {
   "check-memory.js": [8806, 8807],
   "check-chat-memory.py": [8808, 8809],
   "check-fresh-eyes.py": [8813],
+  "check-phone.py": [8815],
   "check-assistant.ps1": [8899]   /* only in a usage comment: the gate serves this suite on a free port */
 };
 

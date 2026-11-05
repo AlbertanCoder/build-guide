@@ -1,0 +1,266 @@
+# -*- coding: utf-8 -*-
+"""The phone pass (job 11, approved 4 Nov 2026) in a real browser: a phone (up to 600 px wide) gets simpler defaults
+and the laptop keeps everything. Needs Python Playwright with Chromium (used on this laptop).
+
+    python scripts/dev/check-phone.py
+
+Serves the repo on 127.0.0.1:8815 with Python's own static server and drives a 1280 px laptop page and a 390 px
+phone page: the 3D views (one "More 3D options" button; the finished drone a picture until tapped), the step line,
+the chat button, the stock chips, no sideways scroll, no zoom-in on text boxes, and the one-time "Copy my ticks to my
+phone" link (tick ids only, after the #; the phone asks first). Ticks are set the way the page stores them
+(localStorage), never typed by hand. Exit 1 on any failure."""
+import base64, json, os, re, subprocess, sys, tempfile, time, urllib.request
+
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+PORT = 8815
+URL = "http://127.0.0.1:%d/index.html" % PORT
+PUBLIC = "https://albertancoder.github.io/build-guide/"
+SHOTS = tempfile.mkdtemp(prefix="ga-phone-")
+STORE = "shad-drone-guide-v1"
+ID = re.compile(r"^[a-z0-9][a-z0-9:_-]{0,48}$", re.I)
+fails = []
+sys.stdout.reconfigure(encoding="utf-8")
+sys.stderr.reconfigure(encoding="utf-8")
+
+OWNED = {"radio": True, "radio-cells": True, "tools": True, "lipo-bag": False}
+TICKS = {"asm-1": True, "stg-1-done": True, "stg-3-done": False}
+
+
+def check(name, ok, info=""):
+    print(("PASS " if ok else "FAIL ") + name + (("  [" + str(info)[:240] + "]") if info != "" else ""))
+    if not ok:
+        fails.append(name)
+
+
+def unb64url(t):
+    return base64.urlsafe_b64decode(t + "=" * (-len(t) % 4)).decode("utf-8")
+
+
+def b64url(t):
+    return base64.urlsafe_b64encode(t.encode("utf-8")).decode("ascii").rstrip("=")
+
+
+# the visible step 3D view (not the finished drone at the top of Build)
+STEP_VIEW = "[...document.querySelectorAll('#p-steps .viewer3d')].find(v => v.offsetParent !== null && v.getAttribute('data-title') !== 'The finished build' && v.classList.contains('is-ready'))"
+TOP_VIEW = "document.querySelector('#p-steps .viewer3d[data-title=\"The finished build\"]')"
+SHOWN = "(e => !!e && e.offsetParent !== null && getComputedStyle(e).display !== 'none')"
+
+srv = subprocess.Popen([sys.executable, "-m", "http.server", str(PORT), "--bind", "127.0.0.1"], cwd=ROOT,
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+try:
+    for _ in range(40):
+        try:
+            urllib.request.urlopen(URL, timeout=2); break
+        except Exception:
+            time.sleep(0.25)
+    from playwright.sync_api import sync_playwright
+    with sync_playwright() as p:
+        b = p.chromium.launch()
+        errs = []
+
+        def page_with(owned, ticks, width, public=False, hash_=""):
+            phone = width <= 600
+            ctx = b.new_context(viewport={"width": width, "height": 844 if phone else 900}, is_mobile=phone, has_touch=phone)
+            ctx.add_init_script("if (/^http/.test(location.protocol) && !sessionStorage.getItem('seeded')) { sessionStorage.setItem('seeded', '1'); localStorage.setItem(%s, %s); }"
+                                % (json.dumps(STORE), json.dumps(json.dumps({"owned": owned, "ticks": ticks}))))
+            if public:
+                ctx.add_init_script("window.GUIDE_FORCE_PUBLIC = true;")
+            pg = ctx.new_page()
+            pg.on("pageerror", lambda e: errs.append("%d px: %s" % (width, e.message)))
+            pg.goto(URL + hash_)
+            pg.wait_for_function("document.getElementById('here-step') && !/Loading/.test(document.getElementById('here-step').textContent)", timeout=15000)
+            return ctx, pg
+
+        def step_view(pg):
+            pg.evaluate("[...document.querySelectorAll('#p-steps .viewer3d')].find(v => v.offsetParent !== null && v.getAttribute('data-title') !== 'The finished build').scrollIntoView({ block: 'center' })")
+            pg.wait_for_function("!!(" + STEP_VIEW + ")", timeout=40000)
+
+        def store(pg):
+            s_ = pg.evaluate("JSON.parse(localStorage.getItem(%s) || '{}')" % json.dumps(STORE))
+            return {"owned": {k: v for k, v in (s_.get("owned") or {}).items() if v}, "ticks": {k: v for k, v in (s_.get("ticks") or {}).items() if v}}
+
+        # ---------------- the laptop (1280 px): nothing changes ----------------
+        ctx, pg = page_with(OWNED, TICKS, 1280, hash_="#steps")
+        pg.wait_for_function(TOP_VIEW + ".classList.contains('is-ready')", timeout=40000)
+        step_view(pg); pg.wait_for_timeout(800)
+        lap = pg.evaluate("""(() => { const S = %s, top = %s, v = %s;
+          return { topModel: top.getAttribute('data-model'), topPoster: top.classList.contains('v3d-poster-on'), posterShown: S(top.querySelector('.v3d-poster')),
+                   moreShown: [...document.querySelectorAll('.v3d-more')].some(S), more: document.querySelectorAll('.v3d-more').length,
+                   play: S(v.querySelector('.viewer3d-anim > [data-anim="play"]')), range: S(v.querySelector('.viewer3d-anim > input[type="range"]')),
+                   views: S(v.querySelector('.viewer3d-views')), bar: S(v.querySelector('.viewer3d-bar:not(.viewer3d-anim)')), chips: S(v.querySelector('.viewer3d-chips')) }; })()"""
+                          % (SHOWN, TOP_VIEW, STEP_VIEW))
+        check("laptop (1280 px): the 3D views keep every control (timeline, Focus, camera views, the bar); no 'More 3D options' button; the finished drone is a live 3D view",
+              lap["topModel"] == "docs/models/final-product.glb" and not lap["topPoster"] and not lap["posterShown"] and not lap["moreShown"] and lap["more"] >= 2
+              and lap["play"] and lap["range"] and lap["views"] and lap["bar"] and lap["chips"], lap)
+        pg.screenshot(path=os.path.join(SHOTS, "laptop-build.png"))
+        nav = pg.evaluate("""(() => { const n = [...document.querySelectorAll('#p-steps .asm-nav')].find(x => x.offsetParent !== null);
+          const r = e => e.getBoundingClientRect(), a = r(n.querySelector('[data-asm-prev]')), c = r(n.querySelector('.asm-count')), z = r(n.querySelector('.asm-count').nextElementSibling);
+          return { inRow: a.right <= c.left + 1 && c.right <= z.left + 1, sameLine: Math.abs((a.top + a.bottom) / 2 - (c.top + c.bottom) / 2) < 12 }; })()""")
+        check("laptop: 'Step 1 of 8 ...' stays between Previous and Next, on one row", nav["inRow"] and nav["sameLine"], nav)
+        ga = pg.evaluate("(() => { const s = getComputedStyle(document.getElementById('ga-root')), l = document.querySelector('.ga-launcher'); return { right: s.right, bottom: s.bottom, h: Math.round(l.getBoundingClientRect().height), words: getComputedStyle(document.querySelector('.ga-launcher-label')).display !== 'none' }; })()")
+        check("laptop: the chat button stays where it was (18 px from the corner, with its words)", ga["right"] == "18px" and ga["bottom"] == "18px" and ga["words"], ga)
+        foot = pg.evaluate("[getComputedStyle(document.querySelector('.sync-server')).display, document.querySelector('.sync-public').hidden, document.querySelector('footer') ? document.querySelector('footer').innerText : '']")
+        check("laptop: the footer keeps its sentence about the guide server on the laptop", foot[0] != "none" and foot[1] is True and "guide server on your laptop" in foot[2], foot[:2])
+        pg.goto(URL + "#parts"); pg.wait_for_timeout(600)
+        chips = pg.evaluate("[...document.querySelectorAll('#stage-chips .stage-chip.is-blocked')].map(c => [getComputedStyle(c).opacity, c.textContent])")
+        check("laptop: an out-of-stock stage chip looks as before (greyed, 'Out of stock')",
+              len(chips) >= 1 and all(c[0] == "0.55" and "Out of stock" in c[1] for c in chips), chips)
+        pg.click("#ticks-copy > summary"); pg.wait_for_timeout(300)
+        link = pg.input_value("#ticks-copy-link")
+        note = pg.text_content("#ticks-copy-note")
+        data, ok_ids = None, False
+        try:
+            assert link.startswith(PUBLIC + "#ticks=") and "?" not in link
+            data = json.loads(unb64url(link[len(PUBLIC + "#ticks="):]))
+            ok_ids = (sorted(data) == ["o", "t"] and sorted(data["o"]) == sorted(k for k, v in OWNED.items() if v)
+                      and sorted(data["t"]) == sorted(k for k, v in TICKS.items() if v) and all(ID.match(k) for k in data["o"] + data["t"]))
+        except Exception as e:
+            data = "not readable: %s" % e
+        check("laptop: Buy has 'Copy my ticks to my phone'; the link is the public guide with only the ticked ids, after the # (never sent to a server)",
+              ok_ids and "3 parts ticked bought and 2 other boxes ticked" in (note or ""), [link[:80], data, note])
+        pg.screenshot(path=os.path.join(SHOTS, "laptop-copy-ticks.png"))
+        ctx.close()
+
+        # ---------------- the phone (390 px) ----------------
+        ctx, pg = page_with(OWNED, TICKS, 390, hash_="#steps")
+        pg.wait_for_timeout(1500)
+        step_view(pg); pg.wait_for_timeout(2500)                           # time for any other view to start, if one were going to
+        ph = pg.evaluate("""(() => { const S = %s, top = %s, btn = top.querySelector('.v3d-poster'), img = btn && btn.querySelector('img');
+          const live = [...document.querySelectorAll('.viewer3d')].filter(v => v.querySelector('canvas'));
+          return { model: top.getAttribute('data-model'), poster: top.classList.contains('v3d-poster-on'), shown: S(btn), img: !!img && img.complete && img.naturalWidth > 0,
+                   topCanvas: !!top.querySelector('canvas'), live: live.length }; })()""" % (SHOWN, TOP_VIEW))
+        check("phone (390 px): the finished drone at the top of Build is a picture until tapped, so one 3D view is live",
+              ph["model"] is None and ph["poster"] and ph["shown"] and ph["img"] and not ph["topCanvas"] and ph["live"] == 1, ph)
+        pg.screenshot(path=os.path.join(SHOTS, "phone-build-top.png"))
+        V = "(" + STEP_VIEW + ")"
+        state = lambda: pg.evaluate("""(() => { const S = %s, v = %s, m = v.querySelector('.v3d-more');
+          return { canvas: S(v.querySelector('canvas')), chips: S(v.querySelector('.viewer3d-chips')) && v.querySelectorAll('.viewer3d-chips button').length > 0,
+                   play: S(v.querySelector('.viewer3d-anim > [data-anim="play"]')), range: S(v.querySelector('.viewer3d-anim > input[type="range"]')),
+                   time: S(v.querySelector('.viewer3d-anim > .viewer3d-time')), views: S(v.querySelector('.viewer3d-views')), tilt: S(v.querySelector('.viewer3d-tilt')),
+                   bar: S(v.querySelector('.viewer3d-bar:not(.viewer3d-anim)')), more: S(m), moreText: m ? m.textContent : '', expanded: m ? m.getAttribute('aria-expanded') : '',
+                   closeup: v.getAttribute('data-closeup') }; })()""" % (SHOWN, V))
+        s0 = state()
+        check("phone: the step's 3D view shows the model, its step chips and one 'More 3D options' button, nothing else",
+              s0["canvas"] and s0["chips"] and s0["more"] and s0["moreText"] == "More 3D options"
+              and not any(s0[k] for k in ("play", "range", "time", "views", "tilt", "bar")) and s0["closeup"] is None, s0)
+        el = pg.evaluate_handle(V)
+        el.as_element().scroll_into_view_if_needed(); pg.wait_for_timeout(300)
+        el.as_element().screenshot(path=os.path.join(SHOTS, "phone-step-view.png"))
+        el.as_element().query_selector(".v3d-more").click(); pg.wait_for_timeout(400)
+        s1 = state()
+        el.as_element().screenshot(path=os.path.join(SHOTS, "phone-step-view-more.png"))
+        nox_more = pg.evaluate("document.documentElement.scrollWidth <= innerWidth")
+        el.as_element().query_selector(".v3d-more").click(); pg.wait_for_timeout(300)
+        s2 = state()
+        check("phone: 'More 3D options' shows the timeline, Focus, the camera views and the bar and asks the viewer for its close-up box; 'Fewer 3D options' folds them away",
+              s1["play"] and s1["range"] and s1["views"] and s1["bar"] and s1["chips"] and s1["closeup"] == "on" and s1["moreText"] == "Fewer 3D options" and s1["expanded"] == "true"
+              and nox_more and not any(s2[k] for k in ("play", "range", "views", "bar")) and s2["closeup"] is None and s2["moreText"] == "More 3D options", [s1, s2])
+        nav = pg.evaluate("""(() => { const n = [...document.querySelectorAll('#p-steps .asm-nav')].find(x => x.offsetParent !== null);
+          const r = e => e.getBoundingClientRect(), nr = r(n), a = r(n.querySelector('[data-asm-prev]')), c = r(n.querySelector('.asm-count')), z = r(n.querySelector('.asm-count').nextElementSibling);
+          const fit = [...n.querySelectorAll('button')].every(x => x.scrollWidth <= x.clientWidth + 1);
+          return { above: c.bottom <= Math.min(a.top, z.top) + 1, full: c.width >= nr.width - 40, oneRow: a.top < z.bottom && z.top < a.bottom && a.right <= z.left + 1, fit: fit,
+                   prev: [Math.round(a.left), Math.round(a.top), Math.round(a.width), Math.round(a.height)], next: [Math.round(z.left), Math.round(z.top), Math.round(z.width), Math.round(z.height)] }; })()""")
+        check("phone: 'Step 1 of 8 ...' is on its own full-width line above Previous and Next (the two buttons side by side, their words fit)",
+              nav["above"] and nav["full"] and nav["oneRow"] and nav["fit"], nav)
+        top_el = pg.evaluate_handle(TOP_VIEW).as_element()
+        top_el.scroll_into_view_if_needed(); top_el.query_selector(".v3d-poster").click()
+        try:
+            pg.wait_for_function(TOP_VIEW + ".classList.contains('is-ready')", timeout=40000)
+        except Exception:
+            pass
+        pg.wait_for_timeout(800)
+        t = pg.evaluate("(() => { const top = %s; return { model: top.getAttribute('data-model'), ready: top.classList.contains('is-ready'), canvas: !!top.querySelector('canvas'), poster: top.classList.contains('v3d-poster-on'), btnHidden: top.querySelector('.v3d-poster').hidden }; })()" % TOP_VIEW)
+        check("phone: tapping the picture opens the finished drone's 3D view",
+              t["model"] == "docs/models/final-product.glb" and t["ready"] and t["canvas"] and not t["poster"] and t["btnHidden"], t)
+        top_el.screenshot(path=os.path.join(SHOTS, "phone-top-opened.png"))
+        ctx.close()
+
+        ctx, pg = page_with(OWNED, TICKS, 390, hash_="#home")
+        gp = pg.evaluate("""(() => { const l = document.querySelector('.ga-launcher').getBoundingClientRect(), t = document.getElementById('tabs').getBoundingClientRect();
+          return { gap: Math.round(t.top - l.bottom), h: Math.round(l.height), words: getComputedStyle(document.querySelector('.ga-launcher-label')).display !== 'none' }; })()""")
+        check("phone: the chat button is smaller than on the laptop and sits above the bottom bar with a gap",
+              gp["gap"] >= 6 and gp["h"] < ga["h"] and gp["h"] <= 46 and not gp["words"], [gp, "laptop height %s" % ga["h"]])
+        tabs = pg.evaluate("[...document.querySelectorAll('section[role=tabpanel]')].map(s => s.id.replace(/^p-/, ''))")
+        wide, ends = [], []
+        for tb in tabs:
+            pg.evaluate("location.hash = %s" % json.dumps("#" + tb)); pg.wait_for_timeout(500)
+            if not pg.evaluate("document.documentElement.scrollWidth <= innerWidth && document.body.scrollWidth <= innerWidth"):
+                wide.append([tb, pg.evaluate("document.documentElement.scrollWidth")])
+            pg.evaluate("window.scrollTo(0, document.documentElement.scrollHeight)"); pg.wait_for_timeout(300)
+            e = pg.evaluate("""(() => { const l = document.querySelector('.ga-launcher').getBoundingClientRect();
+              const ps = [...document.querySelectorAll('footer p, footer')].filter(x => x.offsetParent !== null && x.innerText.trim());
+              const last = ps.length ? ps[ps.length - 1].getBoundingClientRect() : null;
+              return last ? Math.round(l.top - last.bottom) : null; })()""")
+            if e is None or e < 0:
+                ends.append([tb, e])
+        pg.screenshot(path=os.path.join(SHOTS, "phone-page-end.png"))
+        check("phone: no sideways scroll on any tab (%d tabs)" % len(tabs), len(tabs) >= 5 and not wide, wide)
+        check("phone: at the end of every tab the last words sit clear of the chat button", len(tabs) >= 5 and not ends, ends)
+        boxes = pg.evaluate("""[...document.querySelectorAll('input, textarea, select')].filter(e => !['checkbox','radio','range','button','submit','hidden','color','file','image','reset'].includes((e.type || '').toLowerCase()))
+          .map(e => [e.id || e.name || e.className || e.tagName, parseFloat(getComputedStyle(e).fontSize)]).filter(x => x[1] < 16)""")
+        n_boxes = pg.evaluate("[...document.querySelectorAll('input, textarea, select')].filter(e => !['checkbox','radio','range','button','submit','hidden','color','file','image','reset'].includes((e.type || '').toLowerCase())).length")
+        check("phone: every text box, number box and drop-down is 16 px or more, so iOS does not zoom in when one is tapped (%d boxes)" % n_boxes, n_boxes >= 3 and not boxes, boxes[:6])
+        z = pg.evaluate("[getComputedStyle(document.body).touchAction, getComputedStyle(document.documentElement).webkitTextSizeAdjust || getComputedStyle(document.documentElement).textSizeAdjust]")
+        check("phone: no double-tap zoom (touch-action: manipulation) and the phone does not resize the text", z[0] == "manipulation" and z[1] == "100%", z)
+        pg.evaluate("location.hash = '#parts'"); pg.wait_for_timeout(600)
+        st = pg.evaluate("""[[...document.querySelectorAll('#stage-chips .stage-chip.is-blocked')].map(c => [getComputedStyle(c).opacity, c.textContent]),
+          [...document.querySelectorAll('#p-parts *')].filter(e => e.children.length === 0 && /^Out of stock, checked \\d+ [A-Z][a-z]{2}$/.test(e.textContent.trim())).length,
+          getComputedStyle(document.getElementById('ticks-copy')).display]""")
+        check("phone: an out-of-stock stage chip is not greyed out and still says 'Out of stock'; the part keeps its dated 'Out of stock, checked 3 Nov' badge",
+              len(st[0]) >= 1 and all(c[0] == "1" and "Out of stock" in c[1] for c in st[0]) and st[1] >= 1, st[:2])
+        check("phone: 'Copy my ticks to my phone' is not shown on the phone (it is made on the laptop)", st[2] == "none", st[2])
+        pg.screenshot(path=os.path.join(SHOTS, "phone-buy.png"))
+        ctx.close()
+
+        # ---------------- the phone on the public site: the laptop's link ----------------
+        P_OWNED, P_TICKS = {"lipo-bag": True}, {"stg-2-done": True}
+        frag = link[len(PUBLIC):] if isinstance(data, dict) else "#ticks="
+        ctx, pg = page_with(P_OWNED, P_TICKS, 390, public=True, hash_=frag)
+        pg.wait_for_timeout(500)
+        f = pg.evaluate("[window.GUIDE_PUBLIC_SITE, document.querySelector('footer').innerText]")
+        check("phone, public site: the footer says how to bring the laptop's ticks over and no longer mentions a guide server on the laptop",
+              f[0] is True and "Copy my ticks to my phone" in f[1] and "guide server on your laptop" not in f[1], f)
+        before = store(pg)
+        card = pg.evaluate("(() => { const c = document.querySelector('.ticks-import'); return c && getComputedStyle(c).display !== 'none' && c.getBoundingClientRect().height > 0 ? c.innerText : null; })()")  # fixed: offsetParent is always null
+        check("phone: opening the laptop's link asks first ('3 parts ticked bought and 2 other boxes'), and nothing is saved before 'Copy them'",
+              card is not None and "3 parts ticked bought and 2 other boxes" in card and before == {"owned": P_OWNED, "ticks": P_TICKS}, [card, before])
+        pg.screenshot(path=os.path.join(SHOTS, "phone-import-ask.png"))
+        with pg.expect_navigation():
+            pg.click(".ticks-import button.primary")
+        pg.wait_for_function("document.getElementById('here-step') && !/Loading/.test(document.getElementById('here-step').textContent)", timeout=15000)
+        after = store(pg)
+        pg.evaluate("location.hash = '#parts'"); pg.wait_for_timeout(700)
+        boxes_on = pg.evaluate("['radio', 'radio-cells', 'tools', 'lipo-bag'].map(id => { const c = document.querySelector('input[data-own=\"' + id + '\"]'); return c ? c.checked : null; })")
+        hash_after = pg.evaluate("[location.hash, location.href.indexOf('ticks=') < 0, !document.querySelector('.ticks-import')]")
+        ow, tk = after.get("owned", {}), after.get("ticks", {})
+        check("phone: 'Copy them' adds the laptop's ticks (the phone's own stay), Buy shows the parts bought, and the link leaves the address bar",
+              all(ow.get(k) for k in ("radio", "radio-cells", "tools", "lipo-bag")) and all(tk.get(k) for k in ("asm-1", "stg-1-done", "stg-2-done"))
+              and not tk.get("stg-3-done") and boxes_on == [True, True, True, True] and hash_after[1] and hash_after[2], [ow, tk, boxes_on, hash_after])
+        pg.screenshot(path=os.path.join(SHOTS, "phone-import-done.png"))
+        ctx.close()
+
+        ctx, pg = page_with(P_OWNED, P_TICKS, 390, public=True, hash_=frag)
+        pg.wait_for_timeout(400)
+        pg.click(".ticks-import button:not(.primary)"); pg.wait_for_timeout(300)
+        nn = [store(pg), pg.evaluate("[location.href.indexOf('ticks=') < 0, !document.querySelector('.ticks-import')]")]
+        check("phone: 'Not now' saves nothing and clears the link", nn[0] == {"owned": P_OWNED, "ticks": P_TICKS} and nn[1] == [True, True], nn)
+        bad = "#ticks=" + b64url(json.dumps({"o": ["not-a-part", "<b>x</b>"], "t": ["../../etc", "a b", 7]}))
+        pg.goto("about:blank"); pg.goto(URL + bad); pg.wait_for_timeout(500)
+        r1 = [pg.evaluate("!document.querySelector('.ticks-import')"), pg.evaluate("location.href.indexOf('ticks=') < 0"), store(pg)]
+        pg.goto("about:blank"); pg.goto(URL + "#ticks=%%%***"); pg.wait_for_timeout(500)
+        r2 = [pg.evaluate("!document.querySelector('.ticks-import')"), store(pg)]
+        check("phone: a made-up or broken ticks link is ignored (no question, nothing saved, no error)",
+              r1[0] and r1[1] and r1[2] == {"owned": P_OWNED, "ticks": P_TICKS} and r2[0] and r2[1] == {"owned": P_OWNED, "ticks": P_TICKS}, [r1, r2])
+        ctx.close()
+        check("no page errors on the laptop or the phone", not errs, errs[:3])
+        b.close()
+except Exception as e:
+    # an error must name itself in the gate's summary, not just leave the count short
+    import traceback
+    traceback.print_exc()
+    check("the browser run finished without an error", False, "%s: %s" % (type(e).__name__, str(e)[:300]))
+finally:
+    srv.terminate()
+print("screenshots in", SHOTS)
+print("%d failed" % len(fails))
+sys.exit(1 if fails else 0)
