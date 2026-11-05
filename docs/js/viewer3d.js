@@ -37,7 +37,10 @@ const PHONE_FILL = 0.7;         // phone: the camera moves in until the highligh
                                 // in height AND width, so the whole group stays in frame (Builder's phone shots 2026-11-04)
 const PHONE_OVERVIEW = 0.5;     // phone: no move-in when the highlighted parts span this share of the model or more (ART)
 const PHONE_EASE_MS = 450;
-const PHONE_OUTLINE_PX = 2.5;   // phone: an ember rim this many CSS px wide around each highlighted part (ART)      // ...in a quick ease, not a slow fly-through (ART)
+// phone: the steps whose highlighted parts are too thin to see when the whole group is framed (long wires across the
+// payload), so they keep the close-up box: the one exception (measured by check_viewer: 24 px of outline framed whole)
+const PHONE_CLOSEUP_STEPS = new Set(['S6.1']);
+const PHONE_OUTLINE_PX = 3.5;   // phone: an ember rim this many CSS px wide around each highlighted part (ART)      // ...in a quick ease, not a slow fly-through (ART)
 
 const reducedMotion = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
@@ -741,6 +744,7 @@ class ModelViewer {
   /* Phone width: one picture, nothing covering anything (Shad's iPhone review 2026-11-04). When the highlighted part is
      small in the view, the main camera eases in until it fills PHONE_FILL of the view height, from the same side. */
   phoneMoveIn() {
+    this.phoneNeedsCloseup = false;
     if (!this.ready || !this.camera || !this.isPhone() || this.root.dataset.closeup === 'on') return;
     if (!this.focusParts || !this.focusParts.length) return;
     const box = this.focusBox();
@@ -750,13 +754,26 @@ class ModelViewer {
     // an overview step (Step 1's five piles, all four props): the highlighted parts span half the model or more, so
     // the whole view stays (ART threshold)
     const all = new THREE.Box3().setFromObject(this.model);
-    if (!all.isEmpty() && size >= PHONE_OVERVIEW * all.getSize(new THREE.Vector3()).length()) return;
+    const overview = !all.isEmpty() && size >= PHONE_OVERVIEW * all.getSize(new THREE.Vector3()).length();
     // the narrower of the view's height and width decides, so the group fits both ways
     const half = Math.tan((this.camera.fov * Math.PI) / 360) * Math.min(1, this.camera.aspect || 1);
-    const fill = size / (2 * Math.max(this.camera.position.distanceTo(c), 1e-4) * half);
-    if (fill >= PHONE_FILL) return;
+    const cur = Math.max(this.camera.position.distanceTo(c), 1e-4);
     const dir = this.camera.position.clone().sub(this.controls.target).normalize();
-    const d = Math.max(size / (2 * PHONE_FILL * half), this.camera.near * 4);
+    // overview steps only pull back as far as the whole group needs (the phone's narrow frame cut them off);
+    // other steps move in to PHONE_FILL, but never so far that the group leaves the frame
+    let d = overview ? cur : Math.min(cur, Math.max(size / (2 * PHONE_FILL * half), this.camera.near * 4));
+    // perspective makes the near side of the group bigger than its size says: from the pose the camera will end in,
+    // back off until all eight corners of the group sit inside 92 % of the frame (Builder's phone shot, 656be08)
+    const probe = this.camera.clone(), corners = [];
+    for (let k = 0; k < 8; k++) corners.push(new THREE.Vector3(k & 1 ? box.max.x : box.min.x, k & 2 ? box.max.y : box.min.y, k & 4 ? box.max.z : box.min.z));
+    const fits = () => {
+      probe.position.copy(c).addScaledVector(dir, d); probe.lookAt(c); probe.updateMatrixWorld(true);
+      return corners.every((q) => { const v = q.clone().project(probe); return v.z < 1 && Math.abs(v.x) <= 0.92 && Math.abs(v.y) <= 0.92; });
+    };
+    for (let k = 0; k < 30 && !fits(); k++) d *= 1.12;
+    const act = this.activeChip >= 0 ? this.actionList[this.activeChip] : null;
+    this.phoneNeedsCloseup = !!(act && PHONE_CLOSEUP_STEPS.has(act.id));   // the named exception keeps its close-up box
+    if (Math.abs(d - cur) < 0.02 * cur && c.distanceTo(this.controls.target) < 0.02 * cur) return;   // already right
     this.easeCamera(c, c.clone().addScaledVector(dir, d), PHONE_EASE_MS);
   }
 
@@ -827,7 +844,23 @@ class ModelViewer {
     }
     // On a phone-width viewer the close-up box covered the labels (Shad, iPhone, 2026-11-04): none there (the main camera
     // moves in on the part instead, phoneMoveIn), unless the page turns it on with data-closeup="on" ("More 3D options").
-    if (this.isPhone() && this.root.dataset.closeup !== 'on') return null;
+    if (this.isPhone() && this.root.dataset.closeup !== 'on' && !this.phoneNeedsCloseup) return null;
+    if (this.isPhone() && this.phoneNeedsCloseup) {
+      // the named phone exception: the main view shows the whole group; the box zooms on the first part the step names
+      const act = this.activeChip >= 0 ? this.actionList[this.activeChip] : null, first = act && (act.shows || [])[0];
+      const o = this.focusParts.find((q) => first && q.name.startsWith(first)) || this.focusParts[0];
+      const pb = new THREE.Box3();
+      if (o && o.geometry) { o.geometry.computeBoundingBox(); pb.copy(o.geometry.boundingBox).applyMatrix4(o.matrixWorld); }
+      if (!pb.isEmpty()) {
+        const pc = pb.getCenter(new THREE.Vector3()), ps = Math.max(pb.getSize(new THREE.Vector3()).length(), 0.01);
+        const dir = this.camera.position.clone().sub(this.controls.target).normalize();
+        const cam = this.magCam || (this.magCam = new THREE.PerspectiveCamera(32, 4 / 3, 0.002, 20));
+        cam.aspect = 4 / 3; cam.updateProjectionMatrix();
+        cam.position.copy(pc).addScaledVector(dir, Math.max(ps * 1.6, 0.03)); cam.lookAt(pc);
+        this.insetZoom = null; this.focusFill = null;
+        return { cam, title: 'Close-up' };
+      }
+    }
     // A close-up only when it is a TRUE zoom: the part at least 2x bigger than in the main view (fresh-eyes review
     // 2026-11-04: for a big group like the four arms the old box showed the same view, only smaller). Otherwise none:
     // the part is already large in the main view.
@@ -1097,6 +1130,11 @@ class ModelViewer {
     this.actHost.replaceChildren();
     this.actShown = [];
     const host = this.actHost.getBoundingClientRect(), taken = [];
+    if (phone && this.insetShown === 'Close-up') {               // labels never touch the close-up box
+      const w = Math.round(Math.min(W * 0.38, 300)), h = Math.round(w / (4 / 3));
+      taken.push({ l: W - w - 8, t: H - h - 8, r: W - 8, b: H - 8 });
+      this.insetRect = taken[0];
+    } else this.insetRect = null;
     for (const it of items) {
       if (phone && this.actShown.length >= PHONE_LABELS_MAX) break;
       const v = it.pos.clone().project(this.camera);

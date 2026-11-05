@@ -70,6 +70,7 @@ function finishPhone(ph) {
   check(ph.errors.length === 0, "phone width: no page errors " + (ph.errors.length ? JSON.stringify(ph.errors.slice(0, 3)) : ""));
   ph.steps.forEach((s) => {
     const name = (s.model || "?").split("/").pop();
+    if (s.phoneCloseups) console.log(`INFO phone width ${name}: close-up box kept (parts too small framed whole) on ${s.phoneCloseups.join(", ")}`);
     (s.actionChecks || []).forEach((c) => check(c.ok, `phone width ${name}: ${c.id}: no close-up box, at most 3 labels, none overlapping, 14 px text` +
       (c.ok ? "" : " (" + c.bad.join("; ") + ")")));
   });

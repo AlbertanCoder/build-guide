@@ -203,10 +203,13 @@
           }
           if (!inst.focusParts || !inst.focusParts.length) bad.push("focus did not outline the parts");
           // a close-up box only as a TRUE zoom (2x or more); none is right when the part already fills the view
-          if (inst.insetShown === "Close-up" && !(inst.insetZoom >= 2)) bad.push("close-up is not a 2x zoom (" + inst.insetZoom + ")");
+          if (inst.insetShown === "Close-up" && !inst.phoneNeedsCloseup && !(inst.insetZoom >= 2)) bad.push("close-up is not a 2x zoom (" + inst.insetZoom + ")");
           if (!PHONE && inst.insetShown !== "Close-up" && !(inst.focusFill >= 0.15)) bad.push("no close-up and the part is small (" + inst.focusFill + ")");
           if (PHONE) {                                   // phone: no close-up box, at most 3 labels, none touching, readable
-            if (inst.insetShown === "Close-up") bad.push("close-up box on a phone-width viewer");
+            if (inst.insetShown === "Close-up" && !inst.phoneNeedsCloseup) bad.push("close-up box on a phone-width viewer");
+            if (inst.insetShown === "Close-up") rec.phoneCloseups = (rec.phoneCloseups || []).concat(a.id);
+            const ir = inst.insetRect;
+            if (ir) for (const l of inst.actShown || []) if (l.box && l.box.l < ir.r && l.box.r > ir.l && l.box.t < ir.b && l.box.b > ir.t) bad.push("label touches the close-up box: " + l.text);
             const sh = inst.actShown || [];
             if (sh.length > 3) bad.push(sh.length + " labels at once on a phone");
             for (let i = 0; i < sh.length; i++) for (let j = i + 1; j < sh.length; j++) {
@@ -216,6 +219,16 @@
             }
             const lab = inst.actHost && inst.actHost.querySelector(".viewer3d-actlabel");
             if (lab && parseFloat(getComputedStyle(lab).fontSize) < 14) bad.push("phone label text under 14 px");
+            // the highlighted group is fully in the frame (the Builder's Step 1 shot was cropped by the move-in)
+            const fb = inst.focusBox && inst.focusBox();
+            if (fb && !fb.isEmpty()) {
+              const V = inst.camera.position.constructor, out = [];
+              for (let q = 0; q < 8; q++) {
+                const v = new V(q & 1 ? fb.max.x : fb.min.x, q & 2 ? fb.max.y : fb.min.y, q & 4 ? fb.max.z : fb.min.z).project(inst.camera);
+                if (Math.abs(v.x) > 1 || Math.abs(v.y) > 1) out.push(q);
+              }
+              if (out.length) bad.push("highlighted parts cut off at the frame edge (" + out.length + " of 8 corners outside)");
+            }
           }
           // labels start OFF, but the action names what it is about
           if (!(inst.actShown || []).length) bad.push("nothing named in the frame");
