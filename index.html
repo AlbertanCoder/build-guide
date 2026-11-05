@@ -24,7 +24,7 @@
   })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Shad's Fire-Detecting Drone &mdash; Step-by-Step Build Guide</title>
+<title>Shad's Heat-Spotting Drone &mdash; Step-by-Step Build Guide</title>
 <link rel="icon" type="image/svg+xml" href="shad-drone-icon.svg">
 <link rel="icon" href="docs/icons/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="docs/icons/apple-touch-icon.png">
@@ -739,6 +739,15 @@
   .ticks-import { position: fixed; z-index: 80; left: 12px; right: 12px; bottom: 96px; max-width: 460px; margin: 0 auto; background: var(--card);
     border: 1px solid var(--pine); border-radius: 14px; box-shadow: 0 18px 48px rgba(18,58,46,.25); padding: 14px 16px; }
   .ticks-import p { margin: 0; }
+  /* job 13: "Full screen" where the browser has none for a page element (iPhone Safari): the 3D view fills the screen */
+  .v3d-close { display: none; }
+  .viewer3d.v3d-overlay { position: fixed; inset: 0; z-index: 95; margin: 0; border-radius: 0; display: flex; flex-direction: column;
+    width: 100vw; height: 100vh; height: 100dvh; background: var(--bg); overflow-y: auto;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); box-sizing: border-box; }
+  .viewer3d.v3d-overlay .viewer3d-canvas { flex: 1 1 auto; aspect-ratio: auto; min-height: 0; }
+  .viewer3d.v3d-overlay .v3d-close { display: block; position: absolute; z-index: 5; top: calc(10px + env(safe-area-inset-top)); right: calc(10px + env(safe-area-inset-right));
+    padding: 12px 20px; border: 0; border-radius: 999px; background: var(--pine); color: #fff; font-size: 17px; font-weight: 700; }
+  html.v3d-locked, html.v3d-locked body { overflow: hidden; }
 
   /* ===== Five places: sidebar (laptop), tab bar (phone), compact header away from Home ===== */
   #tabs > button { display: inline-flex; align-items: center; gap: 6px; }
@@ -794,7 +803,13 @@
   /* ===== Phone pass (job 11): the phone rules (up to 600 px); after the 760 px rules so they win there ===== */
   @media (max-width: 600px) {
     html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-    body { touch-action: manipulation; padding-bottom: calc(140px + env(safe-area-inset-bottom)); }  /* no double-tap zoom; the page end clears the chat button */
+    html, body { touch-action: pan-x pan-y; }                         /* job 13, Shad: no page zoom on a phone (pinch or double-tap); the 3D canvas keeps its own pinch (touch-action: none) */
+    body { padding-bottom: calc(140px + env(safe-area-inset-bottom)); }  /* the page end clears the chat button */
+    .viewer3d-bar:not(.viewer3d-anim) { flex-wrap: wrap; }
+    .viewer3d-bar:not(.viewer3d-anim) .viewer3d-hint { flex: 1 1 100%; }   /* the step's line (e.g. the safety line) gets its own full row */
+    /* a step's paper diagram: wide enough to read, scrolled sideways inside its own box (the page itself never scrolls sideways) */
+    .asm-picture { overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+    .asm-picture img { width: 760px !important; max-width: none !important; }
     input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select { font-size: 16px !important; }  /* iOS zooms in on a text box under 16 px; !important: the boxes' own rules set 13-14.5 px */
     /* the 3D view shows the model and its step chips; everything else waits under "More 3D options" */
     .viewer3d:not(.v3d-more-open) .viewer3d-anim > [data-anim="play"],
@@ -838,7 +853,7 @@
   <div class="wrap">
     <div class="brand">
       <div class="mark" aria-hidden="true">
-        <svg viewBox="0 0 512 512" role="img" aria-label="Fire-detecting drone logo">
+        <svg viewBox="0 0 512 512" role="img" aria-label="Heat-spotting drone logo">
           <rect width="512" height="512" rx="116" fill="#123a2e"/>
           <g fill="none" stroke="#f7f2e8" stroke-width="28" stroke-linecap="round" stroke-linejoin="round">
             <path d="M110 182 V150 A40 40 0 0 1 150 110 H182"/>
@@ -853,7 +868,7 @@
       </div>
       <div>
         <p class="kicker">Built for Shad &middot; Edmonton</p>
-        <h1>Build a Fire-Detecting Drone</h1>
+        <h1>Build a Heat-Spotting Drone</h1>
       </div>
     </div>
     <p class="sub">A parts list, a step-by-step build and heat-detector software for a small thermal-camera drone. This is a learning and portfolio project.</p>
@@ -2449,6 +2464,44 @@
     <p><strong>Weather:</strong> Not weatherproof: dry, calm, mild days only until tested. <a href="#weather-card" data-open="weather-card">Weather details</a></p>
   </section>
 </div>
+  <details class="acc" id="where-card" open>
+    <summary>Where and when you can fly (this drone)</summary>
+    <div class="acc-body">
+      <p>This drone flies under Transport Canada's Basic operations (TC page updated 19 Mar 2026). Every spot must also pass the airspace check: look up the exact take-off point on one of the free maps at the bottom, every time. The 5.6 km airport, 1.9 km heliport and uncontrolled-airspace rules rule out a lot of Edmonton: an empty park is not a legal site.</p>
+      <p><strong>Where you can fly:</strong></p>
+      <ul>
+        <li>On private land, with the owner's permission: your own, or someone else's. The City of Edmonton says a drone of any size may take off and land from private property with the owner's permission. The federal rules still apply. (<a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use" target="_blank" rel="noopener">City of Edmonton, recreational microdrone use</a>)</li>
+        <li>At a model-aircraft club field, as a member. The Northern Alberta FPV League flies 5-inch drones in summer at Ministik Park, about 22 km east of Edmonton on Highway 14, under a Strathcona County exemption. You need a MAAC membership (see Licences and courses in Learn). Ask the club when the field is in use and whether this drone suits it. (<a href="https://www.maac.ca/clubs/view/928" target="_blank" rel="noopener">MAAC, club 928</a>; <a href="https://northernalbertafpv.ca/getting-started-in-fpv/" target="_blank" rel="noopener">the league says absolute beginners are welcome</a>)</li>
+        <li>At other model-aircraft club fields near Edmonton, as a MAAC member. Most club pages do not say whether drones are allowed, so ask the club first. (<a href="https://www.maac.ca/clubs/list?zoneCode=A" target="_blank" rel="noopener">MAAC, Zone A club list</a>)</li>
+        <li id="fly-indoors"><strong>Indoors, with the building owner's permission.</strong> Transport Canada's drone rules (Part IX of the Canadian Aviation Regulations) do not apply indoors, but you must still fly safely and respect all other laws, and Transport Canada recommends getting permission from the building owner and/or occupants before you fly indoors (in an apartment, ask your landlord). This drone weighs <span data-weight-min>at least 510 g</span> and spins four 5-inch props: it is not an indoor drone. To practise indoors, use the simulator (Stage 3 practice); the Northern Alberta FPV League flies small "whoop" drones, with ducts around the props, indoors in winter. (<a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/where-fly-your-drone" target="_blank" rel="noopener">Transport Canada, Where to fly your drone</a>; <a href="https://northernalbertafpv.ca/getting-started-in-fpv/" target="_blank" rel="noopener">the league's getting-started page</a>)</li>
+      </ul>
+      <p><strong>Where you can't fly:</strong></p>
+      <ul>
+        <li><strong>In Edmonton, City parks are for microdrones only.</strong> The City allows drones under 250 grams (counting everything attached) to take off and land on cut grass in most named parks. This drone weighs <span data-weight-min>at least 510 g</span> with the LiPo and more with the Li-ion, so it may not fly from, within or over a City park or other public space (Bylaw 20700, s. 55; the fine is $250). Take off and land from private property instead: your own, or someone else's with the owner's permission. All flights still follow the Transport Canada rules. (City of Edmonton, <a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use" target="_blank" rel="noopener">Public Spaces Bylaw 20700, Section 55</a>.)</li>
+        <li>In Strathcona County parks: the parks bylaw bans remote-controlled flying objects. (<a href="https://www.strathcona.ca/emergencies-enforcement/policing-and-enforcement/drones/" target="_blank" rel="noopener">Strathcona County, drones</a>)</li>
+        <li>In Parkland County parks: no drones, except under 250 g in a marked area, or with a County permit. (<a href="https://www.parklandcounty.com/media/swwb4tgx/bylaw-2023-16-parks.pdf" target="_blank" rel="noopener">Parkland County Parks Bylaw 2023-16</a>)</li>
+        <li>In any Alberta provincial park: recreational drones of any size are banned. (<a href="https://albertaparks.ca/albertaparksca/science-and-research/conducting-research/use-of-unmanned-aerial-vehicles" target="_blank" rel="noopener">Alberta Parks</a>)</li>
+        <li>In Elk Island National Park, or any national park. (<a href="https://parks.canada.ca/pn-np/ab/elkisland/securite-safety/drones" target="_blank" rel="noopener">Parks Canada, Elk Island</a>)</li>
+        <li>Near airports and heliports: within 5.6 km of a certified airport's centre, or 1.9 km of a heliport's. Near a military airfield you need its permission. (<a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations" target="_blank" rel="noopener">Transport Canada, Basic operations</a>)</li>
+        <li>In controlled airspace. Much of the Edmonton region sits under Edmonton International's. (<a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/where-fly-your-drone" target="_blank" rel="noopener">Transport Canada, Where to fly your drone</a>; <a href="https://map.navdrone.ca" target="_blank" rel="noopener">check the exact spot on NAV Drone Viewer</a>)</li>
+        <li>Near wildfires: Do not fly over a forest-fire area or within 5 nautical miles (9.3 km) of one below 3,000 ft AGL (CAR 601.15), and do not enter airspace restricted by a NOTAM under 601.16. Real fires are agency airspace: drones ground air tankers and endanger crews. Check NOTAMs and Alberta fire bans before you fly. Practise only on controlled heat targets, such as a mug of hot water, on private land with permission. Never light a fire to test the drone. (<a href="https://laws-lois.justice.gc.ca/eng/regulations/SOR-96-433/FullText.html" target="_blank" rel="noopener">CAR 601.15</a>)</li>
+        <li>Over people: keep 30 m sideways from bystanders, and never fly over a crowd, an event, a concert or a game. (<a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations" target="_blank" rel="noopener">Transport Canada, Basic operations</a>)</li>
+        <li>Inside a police, fire or crash scene. Edmonton Fire Rescue's perimeter is 30 m sideways and 400 ft up around an active emergency. (<a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use" target="_blank" rel="noopener">City of Edmonton, recreational microdrone use</a>)</li>
+      </ul>
+      <p><strong>Before you fly:</strong></p>
+      <ul>
+        <li>Pass the Basic pilot exam: online, in Transport Canada's Drone Management Portal; 35 multiple-choice questions, 90 minutes, 65% to pass, age 14 or older; CA$10.17 a try (1 Apr 2026 to 31 Mar 2027). (<a href="https://tc.canada.ca/en/aviation/drone-safety/drone-pilot-licensing/take-drone-pilot-online-exam/small-basic" target="_blank" rel="noopener">Transport Canada, Small Basic exam</a>)</li>
+        <li>Register the drone in the same portal (250 g or more must be registered): CA$10.17 (1 Apr 2026 to 31 Mar 2027). Mark the number on the drone. (<a href="https://tc.canada.ca/en/aviation/drone-safety/registering-your-drone" target="_blank" rel="noopener">Transport Canada, registering your drone</a>)</li>
+        <li>The video licence: the 5.8 GHz video needs the ISED Amateur Radio Operator Certificate (Basic), as "Before you fly" below explains.</li>
+        <li>Check the exact take-off spot on NAV Drone Viewer, every time. (<a href="https://map.navdrone.ca" target="_blank" rel="noopener">NAV Drone Viewer</a>)</li>
+        <li>Carry proof of registration and your pilot certificate, and keep the drone in sight. (<a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations" target="_blank" rel="noopener">Transport Canada, Basic operations</a>)</li>
+      </ul>
+      <p><strong>When:</strong> by day. At night only with lights on the drone that the pilot or a visual observer can see, turned on (CAR 901.39). Lighting is necessary, not sufficient: line of sight, airspace, people, airports, NOTAMs and the site's own rules still apply. No step in this build fits lights.</p>
+      <p><strong>Not checked:</strong> Leduc County. No drone rule was found on the county's website, so ask the county before you fly there.</p>
+      <p><strong>Free maps:</strong> the <a href="https://nrc.canada.ca/en/drone-tool/">NRC Drone Site Selection Tool</a> (red: no; orange: needs permission; yellow: take care; the NRC says it is a convenience only) and NAV CANADA's <a href="https://map.navdrone.ca">NAV Drone Viewer</a> (no account needed).</p>
+      <p class="muted">Read on 4 Nov 2026: Transport Canada, <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/where-fly-your-drone">Where you can fly</a> and <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations">Basic operations</a>; <a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use">City of Edmonton, recreational microdrone use</a>; <a href="https://www.strathcona.ca/emergencies-enforcement/policing-and-enforcement/drones/">Strathcona County, drones</a>; <a href="https://www.parklandcounty.com/media/swwb4tgx/bylaw-2023-16-parks.pdf">Parkland County Parks Bylaw 2023-16</a>; <a href="https://albertaparks.ca/albertaparksca/science-and-research/conducting-research/use-of-unmanned-aerial-vehicles">Alberta Parks</a>; <a href="https://parks.canada.ca/pn-np/ab/elkisland/securite-safety/drones">Parks Canada, Elk Island</a>; <a href="https://www.maac.ca/clubs/view/928">MAAC, club 928</a>.</p>
+    </div>
+  </details>
   <details class="acc" id="fly-card" open>
     <summary><strong>Before you fly</strong> <span class="fly-first">Not weatherproof: dry, calm, mild days only until tested</span></summary>
     <div class="acc-body">
@@ -2703,34 +2756,6 @@
  ]
 }
       </script>
-    </div>
-  </details>
-  <details class="acc" id="where-card">
-    <summary>Where and when you can fly (this drone)</summary>
-    <div class="acc-body">
-      <p>This drone flies under Transport Canada's Basic operations (TC page updated 19 Mar 2026). Every spot must also pass the airspace check: look up the exact take-off point on one of the free maps at the bottom, every time. The 5.6 km airport, 1.9 km heliport and uncontrolled-airspace rules rule out a lot of Edmonton: an empty park is not a legal site.</p>
-      <p><strong>You can fly:</strong></p>
-      <ul>
-        <li>On private land, with the owner's permission: your own, or someone else's. The City of Edmonton says a drone of any size may take off and land from private property with the owner's permission. The federal rules still apply.</li>
-        <li>At a model-aircraft club field, as a member. The Northern Alberta FPV League flies 5-inch drones in summer at Ministik Park, about 22 km east of Edmonton on Highway 14, under a Strathcona County exemption. You need a MAAC membership (see Licences and courses in Learn). Ask the club when the field is in use and whether this drone suits it.</li>
-      </ul>
-      <p><strong>You can't fly:</strong></p>
-      <ul>
-        <li><strong>In Edmonton, City parks are for microdrones only.</strong> The City allows drones under 250 grams (counting everything attached) to take off and land on cut grass in most named parks. This drone weighs about 550 g with the LiPo and more with the Li-ion, so it may not fly from, within or over a City park or other public space (Bylaw 20700, s. 55; the fine is $250). Take off and land from private property instead: your own, or someone else's with the owner's permission. All flights still follow the Transport Canada rules. (City of Edmonton, <a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use" target="_blank" rel="noopener">Public Spaces Bylaw 20700, Section 55</a>.)</li>
-        <li>In Strathcona County parks: the parks bylaw bans remote-controlled flying objects.</li>
-        <li>In Parkland County parks: no drones, except under 250 g in a marked area, or with a County permit.</li>
-        <li>In any Alberta provincial park: recreational drones of any size are banned.</li>
-        <li>In Elk Island National Park, or any national park.</li>
-        <li>Near airports and heliports: within 5.6 km of a certified airport's centre, or 1.9 km of a heliport's. Near a military airfield you need its permission.</li>
-        <li>In controlled airspace. Much of the Edmonton region sits under Edmonton International's.</li>
-        <li>Near wildfires: Do not fly over a forest-fire area or within 5 nautical miles (9.3 km) of one below 3,000 ft AGL (CAR 601.15), and do not enter airspace restricted by a NOTAM under 601.16. Real fires are agency airspace: drones ground air tankers and endanger crews. Check NOTAMs and Alberta fire bans before you fly. Practise only on controlled heat targets, such as a mug of hot water, on private land with permission. Never light a fire to test the drone.</li>
-        <li>Over people: keep 30 m sideways from bystanders, and never fly over a crowd, an event, a concert or a game.</li>
-        <li>Inside a police, fire or crash scene. Edmonton Fire Rescue's perimeter is 30 m sideways and 400 ft up around an active emergency.</li>
-      </ul>
-      <p><strong>When:</strong> by day. At night only with lights on the drone that the pilot or a visual observer can see, turned on (CAR 901.39). Lighting is necessary, not sufficient: line of sight, airspace, people, airports, NOTAMs and the site's own rules still apply. No step in this build fits lights.</p>
-      <p><strong>Not checked:</strong> Leduc County. No drone rule was found on the county's website, so ask the county before you fly there.</p>
-      <p><strong>Free maps:</strong> the <a href="https://nrc.canada.ca/en/drone-tool/">NRC Drone Site Selection Tool</a> (red: no; orange: needs permission; yellow: take care; the NRC says it is a convenience only) and NAV CANADA's <a href="https://map.navdrone.ca">NAV Drone Viewer</a> (no account needed).</p>
-      <p class="muted">Read on 4 Nov 2026: Transport Canada, <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/where-fly-your-drone">Where you can fly</a> and <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations">Basic operations</a>; <a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use">City of Edmonton, recreational microdrone use</a>; <a href="https://www.strathcona.ca/emergencies-enforcement/policing-and-enforcement/drones/">Strathcona County, drones</a>; <a href="https://www.parklandcounty.com/media/swwb4tgx/bylaw-2023-16-parks.pdf">Parkland County Parks Bylaw 2023-16</a>; <a href="https://albertaparks.ca/albertaparksca/science-and-research/conducting-research/use-of-unmanned-aerial-vehicles">Alberta Parks</a>; <a href="https://parks.canada.ca/pn-np/ab/elkisland/securite-safety/drones">Parks Canada, Elk Island</a>; <a href="https://www.maac.ca/clubs/view/928">MAAC, club 928</a>.</p>
     </div>
   </details>
   <p class="fly-crash"><a href="#crash-card" data-open-crash><strong>After a hard landing</strong></a> <span class="fly-first">Twelve checks before you fly again</span></p>
@@ -4626,6 +4651,8 @@ while True:
       out.appendChild(det);
       const gl = document.getElementById("glance-weight");
       if (gl) gl.textContent = "At least " + Math.round(total) + " g from listed parts, so it must be registered (250 g or more).";
+      /* job 13: every other weight on the page comes from this same total (the weight list), never a typed figure */
+      Array.prototype.forEach.call(document.querySelectorAll("[data-weight-min]"), function (s) { s.textContent = "at least " + Math.round(total) + " g"; });
       const how = el("p");
       how.appendChild(el("strong", "", "Weigh it: "));
       how.appendChild(document.createTextNode("when the drone is finished, put it on a kitchen scale with the battery fitted and write the number down. That figure, not this estimate, is the one that counts."));
@@ -5050,7 +5077,7 @@ while True:
           else if (plan.picks.some(function (s) { return s.n === n; })) { li.classList.add("is-pick"); state = "In this week's buy"; }
           else { li.classList.add("is-wait"); state = st.left > budget ? "More than this week" : "Later"; }
           li.appendChild(mk("strong", "", stageLabel(n)));
-          li.appendChild(mk("span", "", cad(st.left) + " · " + state));
+          li.appendChild(mk("span", "", cad(st.done ? st.total : st.left) + " · " + state));   /* job 13: a bought stage shows its price, not CA$0.00 */
           chips.appendChild(li);
         });
       }
@@ -5546,6 +5573,46 @@ while True:
 <script>
   /* Phone pass (job 11, 4 Nov 2026) */
   (function () {
+    /* job 13 (Shad): no page zoom on a phone. CSS touch-action covers pinch and double-tap; iOS Safari also needs its
+       gesture events cancelled. The 3D views zoom with their own pinch (pointer events, touch-action: none). */
+    if (window.matchMedia && matchMedia("(max-width: 600px)").matches) {
+      ["gesturestart", "gesturechange"].forEach(function (n) { document.addEventListener(n, function (e) { e.preventDefault(); }, { passive: false }); });
+    }
+    /* job 13: "Full screen" on a browser with no full screen for a page element (iPhone Safari), or when it fails: the
+       3D view fills the screen as an overlay with a Close button, and the page behind it does not scroll. The viewer
+       (viewer3d.js) keeps a view with class v3d-overlay alive and resizes its canvas itself (Opus, 5 Nov 2026). */
+    function closeOverlay(root) {
+      root.classList.remove("v3d-overlay");
+      document.documentElement.classList.remove("v3d-locked");
+      var b = root.querySelector(".v3d-close"); if (b) { b.remove(); }
+      var fs = root.querySelector('[data-action="fullscreen"]'); if (fs && fs.focus) { fs.focus(); }
+    }
+    function openOverlay(root) {
+      if (root.classList.contains("v3d-overlay")) { return; }
+      root.classList.add("v3d-overlay");
+      document.documentElement.classList.add("v3d-locked");
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "v3d-close"; b.textContent = "Close full screen";
+      b.addEventListener("click", function () { closeOverlay(root); });
+      root.appendChild(b);
+      b.focus();
+    }
+    document.addEventListener("click", function (e) {
+      var btn = e.target && e.target.closest ? e.target.closest('[data-action="fullscreen"]') : null;
+      var root = btn && btn.closest(".viewer3d");
+      if (!root) { return; }
+      if (root.classList.contains("v3d-overlay")) { e.stopPropagation(); e.preventDefault(); closeOverlay(root); return; }
+      if (typeof root.requestFullscreen === "function") { return; }       /* the viewer's own (real) full screen */
+      e.stopPropagation(); e.preventDefault(); openOverlay(root);
+    }, true);
+    document.addEventListener("fullscreenerror", function (e) {
+      var root = e.target && e.target.closest ? e.target.closest(".viewer3d") : null;
+      if (root) { openOverlay(root); }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape") { return; }
+      var root = document.querySelector(".viewer3d.v3d-overlay"); if (root) { closeOverlay(root); }
+    });
     /* job 12: on a touch screen the 3D views' hint names touch gestures (the architect approved the wording, touch
        only). Set before any view starts: the viewer keeps this text and puts it back after showing a step's line. */
     if (window.matchMedia && matchMedia("(pointer: coarse)").matches) {
@@ -5625,6 +5692,6 @@ while True:
 </script>
 <script src="docs/js/domain.js"></script>
 <!-- Guide Assistant: offline-first Q&A. Remove these two lines to drop it. -->
-<script src="docs/js/assistant.js?v=build-guide-v5"></script>
+<script src="docs/js/assistant.js?v=build-guide-v6"></script>
 </body>
 </html>

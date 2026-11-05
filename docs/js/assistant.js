@@ -1,6 +1,6 @@
 /*!
  * Guide Assistant — an offline-first question answering panel for
- * "Shad's Fire-Detecting Drone — Step-by-Step Build Guide".
+ * "Shad's Heat-Spotting Drone — Step-by-Step Build Guide".
  *
  * Three deliberate design rules, because the guide's whole value is that it
  * only states what was checked:
@@ -899,6 +899,49 @@
     };
   }
 
+  /* job 13: where he may fly, and flying indoors, read from Fly safely's "Where and when you can fly" card (#where-card) */
+  const WHERE_FLY = /\bwhere\b[^?]*\b(fly|flying|fly it|take off|launch)\b|\b(can|may) i fly\b[^?]*\b(park|parks|city|edmonton|here|outside|nearby)\b|\b(legal|allowed) to fly\b/;
+  const FLY_WORD = /\b(fly|flying|hover|hovering|take off)\b/;
+  const INDOOR_Q = /\b(indoors?|inside|in my (apartment|house|home|room|basement|garage|condo|place)|in the (house|apartment|basement|garage|living room)|in a (gym|warehouse))\b/;
+  function whereCard() { return document.getElementById("where-card"); }
+  function whereFlyMessage() {
+    const card = whereCard();
+    if (!card) { return null; }
+    const lists = card.querySelectorAll(".acc-body > ul");
+    const intro = card.querySelector(".acc-body > p");
+    if (!intro || lists.length < 2) { return null; }
+    const can = Array.prototype.slice.call(lists[0].querySelectorAll("li")).map(function (li) { return "You can: " + clip(plain(li), 300); });
+    const want = [/^In Edmonton/, /^Over people/, /^Near airports/, /^In controlled airspace/];
+    const cant = Array.prototype.slice.call(lists[1].querySelectorAll("li")).filter(function (li) {
+      return want.some(function (w) { return w.test(plain(li)); });
+    }).map(function (li) { return "You can't: " + clip(plain(li), 300); });
+    if (!can.length || !cant.length) { return null; }
+    return {
+      role: "bot",
+      title: "Where you can fly it",
+      body: [clip(plain(intro), 360)],
+      steps: can.concat(cant),
+      note: "Before you fly (the Basic certificate, registration, the video licence, the NAV Drone check), the full list (other parks, wildfires, night flying) and the free airspace maps are in Fly safely.",
+      src: "Guide: Fly safely (Where and when you can fly)",
+      see: [{ label: "Where and when you can fly", tab: "fly", step: null }],
+      chips: []
+    };
+  }
+  function indoorMessage() {
+    const p = document.getElementById("fly-indoors");
+    if (!p) { return null; }
+    return {
+      role: "bot",
+      title: "Flying it indoors",
+      body: [plain(p).replace(/^Indoors:\s*/, "")],
+      steps: [],
+      note: "",
+      src: "Guide: Fly safely (Where and when you can fly), quoting Transport Canada",
+      see: [{ label: "Where and when you can fly", tab: "fly", step: null }],
+      chips: []
+    };
+  }
+
   function refusalMessage(query) {
     const hits = searchPassages(query, 2);
     if (hits.length && hits[0].score >= 2) {
@@ -1007,6 +1050,10 @@
        buttons that each lead to a written answer (job 12, Shad's iPhone 4 Nov 2026: "I need help" got an
        unrelated passage). "Checks for Step 3" reads that step's own checks from the page. --- */
     if (VAGUE.test(q)) { return vagueHelpMessage(); }
+    /* job 13 (Shad's iPhone, 5 Nov 2026): "Where do I fly it ...?" got the weight card; where and indoors come from
+       Fly safely's own "Where and when you can fly" card, read from the page */
+    if (INDOOR_Q.test(q) && FLY_WORD.test(q)) { const im = indoorMessage(); if (im) { return im; } }
+    if (WHERE_FLY.test(q)) { const wm = whereFlyMessage(); if (wm) { return wm; } }
     const chk = q.match(/\bchecks?\b.*\b(step|stage)\s*([1-8])\b/) || q.match(/\b(step|stage)\s*([1-8])\b.*\bchecks?\b/);
     if (chk) {
       const cm = checksMessage(chk[1], Number(chk[2]));

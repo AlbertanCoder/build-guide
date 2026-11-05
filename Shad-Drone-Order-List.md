@@ -1,4 +1,4 @@
-# Shad's Fire-Detecting Drone — Source-Verified Order Plan
+# Shad's Heat-Spotting Drone — Source-Verified Order Plan
 
 > **2026-11-03: the guide page is now the source of truth for what to buy** (the "Buy today" list and the "What to Buy" tab). It carries every part, the missing small parts added on 3 Nov (wire strippers, thin silicone wire, electrical tape, M2.5 screws and nuts, foam tape, USB-C data cable, spare propellers), dated stock, and a backup shop for each. This file keeps the 31 Oct line-by-line sourcing notes; its totals do not include those additions.
 

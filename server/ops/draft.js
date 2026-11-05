@@ -27,7 +27,7 @@ function buildPrompt(job, passages) {
 
   return [
     "You are drafting multiple-choice quiz questions for a build guide about a",
-    "fire-detecting drone. The reader is the person building it.",
+    "heat-spotting drone. The reader is the person building it.",
     "",
     "RULES — a candidate that breaks any of these is discarded by a machine, not by a person:",
     "1. The correct answer must be provable from the PASSAGES below. Put the exact",

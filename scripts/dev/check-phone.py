@@ -235,7 +235,7 @@ try:
         n_boxes = pg.evaluate("[...document.querySelectorAll('input, textarea, select')].filter(e => !['checkbox','radio','range','button','submit','hidden','color','file','image','reset'].includes((e.type || '').toLowerCase())).length")
         check("phone: every text box, number box and drop-down is 16 px or more, so iOS does not zoom in when one is tapped (%d boxes)" % n_boxes, n_boxes >= 3 and not boxes, boxes[:6])
         z = pg.evaluate("[getComputedStyle(document.body).touchAction, getComputedStyle(document.documentElement).webkitTextSizeAdjust || getComputedStyle(document.documentElement).textSizeAdjust]")
-        check("phone: no double-tap zoom (touch-action: manipulation) and the phone does not resize the text", z[0] == "manipulation" and z[1] == "100%", z)
+        check("phone: no page zoom by pinch or double-tap (touch-action: pan-x pan-y, job 13) and the phone does not resize the text", z[0] == "pan-x pan-y" and z[1] == "100%", z)
         pg.evaluate("location.hash = '#parts'"); pg.wait_for_timeout(600)
         st = pg.evaluate("""[[...document.querySelectorAll('#stage-chips .stage-chip.is-blocked')].map(c => [getComputedStyle(c).opacity, c.textContent]),
           [...document.querySelectorAll('#p-parts *')].filter(e => e.children.length === 0 && /^Out of stock, checked \\d+ [A-Z][a-z]{2}$/.test(e.textContent.trim())).length,
@@ -315,6 +315,103 @@ try:
         check("chat: each of the other 4 buttons leads to a written answer (not 'Closest thing in the guide')",
               len(titles) == 4 and all(x_ and x_ not in ("Closest thing in the guide", "That one is outside this guide", "Let's find the problem") for x_ in titles), titles)
         ctx.close()
+        # ---------------- job 13 (Shad's iPhone shots of the live c7c7473, 5 Nov 2026) ----------------
+        ctx, pg = page_with({}, {}, 390, public=True, hash_="#fly")
+        pg.wait_for_function("window.GuideAssistant", timeout=15000); pg.wait_for_timeout(500)
+        last13 = "(() => { const c = [...document.querySelectorAll('#ga-log .ga-msg')].pop(); return { title: (c.querySelector('.ga-title') || {}).textContent || '', text: c.innerText }; })()"
+        pg.evaluate("GuideAssistant.ask('Where do I fly it, if the drone is in over 550 grams?')"); pg.wait_for_timeout(500)
+        w = pg.evaluate(last13)
+        check("chat (Shad's shot 1): 'Where do I fly it ...?' answers from Fly safely: where he can fly (private land, the club field) and where he can't (Edmonton parks), not the weight card",
+              w["title"] == "Where you can fly it" and "You can: On private land" in w["text"] and "You can: At a model-aircraft club field" in w["text"]
+              and "You can't: In Edmonton" in w["text"] and "How much does the drone weigh" not in w["text"], [w["title"], w["text"][:200]])
+        pg.evaluate("GuideAssistant.ask('Can I fly it inside my apartment?')"); pg.wait_for_timeout(500)
+        ind = pg.evaluate(last13)
+        check("chat: 'Can I fly it inside my apartment?' gets the guide's sourced indoors line (Part IX does not apply, the building owner's permission, the simulator)",
+              ind["title"] == "Flying it indoors" and "Part IX" in ind["text"] and "building owner" in ind["text"] and "simulator" in ind["text"], [ind["title"], ind["text"][:200]])
+        wt = pg.evaluate("""(() => { const W = JSON.parse(document.getElementById('weight-data').textContent);
+          const total = W.parts.filter(p => !p.alt).reduce((s, p) => s + Math.round(p.g * 100) * p.qty, 0) / 100;
+          return { n: Math.round(total), spans: [...document.querySelectorAll('[data-weight-min]')].map(s => s.textContent), glance: document.getElementById('glance-weight').textContent,
+                   about550: /about 55[0-9] g/.test(document.body.innerText) }; })()""")
+        check("weight: every figure the page shows comes from the one weight list (%s g): the park and indoor lines, the Home and Fly safely glance" % wt["n"],
+              len(wt["spans"]) >= 2 and all(x == "at least %d g" % wt["n"] for x in wt["spans"]) and wt["glance"].startswith("At least %d g" % wt["n"]) and not wt["about550"], wt)
+        fl = pg.evaluate("""(() => { const first = document.querySelector('#p-fly details.acc'), c = document.getElementById('where-card');
+          const heads = [...c.querySelectorAll('.acc-body > p > strong')].map(s => s.textContent).filter(x => /^Where you|^Before you fly/.test(x));
+          const lists = [...c.querySelectorAll('.acc-body > ul')].slice(0, 3);
+          const nolink = lists.flatMap(u => [...u.children]).filter(li => !li.querySelector('a[href^="http"]') && !/below explains/.test(li.textContent)).map(li => li.textContent.slice(0, 50));
+          return { first: first && first.id, open: c.open, heads: heads, counts: lists.map(u => u.children.length), nolink: nolink }; })()""")
+        check("Fly safely (Shad, item 11) leads with 'Where you can fly', then 'Where you can't fly', then 'Before you fly'; every line has its source link",
+              fl["first"] == "where-card" and fl["open"] and fl["heads"] == ["Where you can fly:", "Where you can't fly:", "Before you fly:"] and fl["counts"][0] >= 4 and fl["counts"][2] >= 5 and not fl["nolink"], fl)
+        tt = pg.evaluate("[document.title, document.querySelector('header h1').textContent, /Fire-Detecting/i.test(document.body.innerText + document.title)]")
+        check("title (Shad's decision): 'Build a Heat-Spotting Drone' in the header and the page title; 'Fire-Detecting' nowhere on the page",
+              tt[0].startswith("Shad's Heat-Spotting Drone") and tt[1] == "Build a Heat-Spotting Drone" and tt[2] is False, tt)
+        ctx.close()
+
+        ctx, pg = page_with({}, {}, 390, hash_="#parts")
+        buy13 = pg.evaluate("JSON.parse(document.getElementById('buy-data').textContent)")
+        ctx.close()
+        st1 = {l["id"]: True for l in buy13["lines"] if int(l["stage"]) == 1}
+        ctx, pg = page_with(st1, {}, 390, hash_="#parts"); pg.wait_for_timeout(600)
+        chip = pg.evaluate("[...document.querySelectorAll('#stage-chips .stage-chip')].map(c => c.textContent).filter(x => /^Stage 1/.test(x))[0] || ''")
+        check("Buy (Shad's shot 2): a bought stage shows its price with Bought, not CA$0.00", "· Bought" in chip and "CA$0.00" not in chip and re.search(r"CA\$[1-9]", chip) is not None, chip)
+        ctx.close()
+
+        ctx, pg = page_with(OWNED, TICKS, 390, hash_="#steps"); pg.wait_for_timeout(1000)
+        step_view(pg); pg.wait_for_timeout(800)
+        el13 = pg.evaluate_handle(STEP_VIEW).as_element()
+        el13.query_selector(".v3d-more").click(); pg.wait_for_timeout(400)
+        bar = pg.evaluate("""(() => { const S = %s, v = %s, bar = v.querySelector('.viewer3d-bar:not(.viewer3d-anim)'), h = bar.querySelector('.viewer3d-hint'), r = bar.querySelector('[data-action="reset"]');
+          const resets = [...v.querySelectorAll('button')].filter(b => S(b) && b.textContent.trim() === 'Reset view').length;
+          const hb = h.getBoundingClientRect(), bb = bar.getBoundingClientRect(), rb = r.getBoundingClientRect();
+          return { resets: resets, full: hb.width >= bb.width - 40, below: rb.top >= hb.bottom - 1 }; })()""" % (SHOWN, STEP_VIEW))
+        check("phone, 'More 3D options' open (Shad's shot 6): one Reset view, and the step's line (e.g. the safety line) has its own full-width row", bar["resets"] == 1 and bar["full"] and bar["below"], bar)
+        dg = pg.evaluate("""(() => { const pic = [...document.querySelectorAll('#p-steps .asm-picture')].find(p => p.offsetParent !== null), img = pic && pic.querySelector('img');
+          return { w: img ? Math.round(img.getBoundingClientRect().width) : 0, scrolls: pic ? pic.scrollWidth > pic.clientWidth : false, wide: document.documentElement.scrollWidth > innerWidth }; })()""")
+        check("phone (Shad's shot 7): the step's paper diagram is wide enough to read (760 px) and scrolls sideways in its own box; the page does not",
+              dg["w"] >= 700 and dg["scrolls"] and not dg["wide"], dg)
+        zm = pg.evaluate("""(() => { const e = new Event('gesturestart', { cancelable: true }); document.dispatchEvent(e);
+          const cv = document.querySelector('#p-steps .viewer3d canvas');
+          return { html: getComputedStyle(document.documentElement).touchAction, body: getComputedStyle(document.body).touchAction, gesture: e.defaultPrevented, canvas: cv ? getComputedStyle(cv).touchAction : '' }; })()""")
+        check("phone (Shad: no zoom at all): the page cannot be pinch- or double-tap-zoomed (touch-action pan-x pan-y, Safari's gesture cancelled); the 3D view keeps its own pinch",
+              zm["html"] == "pan-x pan-y" and zm["body"] == "pan-x pan-y" and zm["gesture"] is True and zm["canvas"] == "none", zm)
+        ctx.close()
+
+        def overlay_run(browser, label):
+            c2 = browser.new_context(viewport={"width": 390, "height": 844}, has_touch=True, is_mobile=label != "WebKit")
+            c2.add_init_script("delete Element.prototype.requestFullscreen; delete Element.prototype.webkitRequestFullscreen; delete Element.prototype.webkitRequestFullScreen;"
+                               "if (/^http/.test(location.protocol) && !sessionStorage.getItem('seeded')) { sessionStorage.setItem('seeded', '1'); localStorage.setItem(%s, %s); }"
+                               % (json.dumps(STORE), json.dumps(json.dumps({"owned": OWNED, "ticks": TICKS}))))
+            p2 = c2.new_page()
+            p2.on("pageerror", lambda e: errs.append("%s: %s" % (label, e.message)))
+            p2.goto(URL + "#steps"); p2.wait_for_timeout(1500)
+            step_view(p2); p2.wait_for_timeout(800)
+            v2 = p2.evaluate_handle(STEP_VIEW).as_element()
+            v2.query_selector(".v3d-more").click(); p2.wait_for_timeout(300)
+            v2.query_selector('[data-action="fullscreen"]').click(); p2.wait_for_timeout(700)
+            on = p2.evaluate("""(() => { const v = document.querySelector('.viewer3d.v3d-overlay'); if (!v) return { on: false };
+              const r = v.getBoundingClientRect(), cv = v.querySelector('.viewer3d-canvas').getBoundingClientRect(), cl = v.querySelector('.v3d-close');
+              return { on: true, fills: r.left <= 1 && r.top <= 1 && r.width >= innerWidth - 2 && r.height >= innerHeight - 2, canvasTall: cv.height >= innerHeight * 0.45,
+                       locked: document.documentElement.classList.contains('v3d-locked') && getComputedStyle(document.documentElement).overflow === 'hidden',
+                       close: !!cl && cl.getBoundingClientRect().height >= 40 }; })()""")
+            p2.screenshot(path=os.path.join(SHOTS, "phone-fullscreen-%s.png" % label))
+            p2.evaluate("(document.querySelector('.v3d-close') || { click: function () {} }).click()"); p2.wait_for_timeout(300)
+            off = p2.evaluate("[!document.querySelector('.viewer3d.v3d-overlay'), !document.documentElement.classList.contains('v3d-locked')]")
+            g = p2.evaluate("(() => { const e = new Event('gesturestart', { cancelable: true }); document.dispatchEvent(e); return [e.defaultPrevented, getComputedStyle(document.documentElement).touchAction]; })()")
+            c2.close()
+            return on, off, g
+
+        on, off, g = overlay_run(b, "Chromium")
+        check("phone, a browser with no element full screen (iPhone Safari): 'Full screen' fills the screen with the 3D view, a big Close button and the page locked; Close puts it back",
+              on.get("on") and on.get("fills") and on.get("canvasTall") and on.get("locked") and on.get("close") and off == [True, True], [on, off])
+        try:
+            wk = p.webkit.launch()
+            try:
+                on, off, g = overlay_run(wk, "WebKit")
+            finally:
+                wk.close()
+            check("WebKit (Safari's engine) at 390 px: Full screen opens and closes the overlay, and the page's zoom gesture is cancelled",
+                  on.get("on") and on.get("fills") and on.get("locked") and on.get("close") and off == [True, True] and g == [True, "pan-x pan-y"], [on, off, g])
+        except Exception as e_:
+            check("WebKit (Safari's engine) at 390 px: Full screen opens and closes the overlay, and the page's zoom gesture is cancelled", False, "%s: %s" % (type(e_).__name__, str(e_)[:200]))
         check("no page errors on the laptop or the phone", not errs, errs[:3])
         b.close()
 except Exception as e:

@@ -1,7 +1,7 @@
 {
   "name": "Shad's Build Guide",
   "short_name": "Build Guide",
-  "description": "Parts list, build steps and 3D models for the fire-detecting drone.",
+  "description": "Parts list, build steps and 3D models for the heat-spotting drone.",
   "id": "./",
   "start_url": "./",
   "scope": "./",

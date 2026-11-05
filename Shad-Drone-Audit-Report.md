@@ -1,4 +1,4 @@
-# Shad's Fire-Detecting Drone — Audit & Order Plan
+# Shad's Heat-Spotting Drone — Audit & Order Plan
 
 **Updated:** 2026-10-31  
 **Guide:** `index.html` (source) and the generated standalone  
