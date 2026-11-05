@@ -49,17 +49,36 @@ const server = http.createServer((req, res) => {
 server.listen(0, "127.0.0.1", async () => {
   const port = server.address().port;
   if (!CHROME) { check(false, "Chrome found"); return finish(null); }
-  const profile = fs.mkdtempSync(path.join(os.tmpdir(), "viewer-test-"));
-  const chrome = spawn(CHROME, ["--headless=new", "--use-angle=d3d11", "--enable-gpu", "--ignore-gpu-blocklist",
-    "--no-first-run", "--no-sandbox", "--window-size=900,800", "--user-data-dir=" + profile,
-    "http://127.0.0.1:" + port + "/scripts/build/viewer-test.html" + (SHEETS ? "?sheets=1" : "")], { stdio: "ignore" });
-  for (let i = 0; i < 1800 && !report; i += 1) await new Promise((r) => setTimeout(r, 100));
-  finish(chrome);
+  // two passes: the desktop page, then the same models at a phone column's width (Shad's iPhone review 2026-11-04)
+  const run = async (query, size, extra = []) => {
+    report = null;
+    const profile = fs.mkdtempSync(path.join(os.tmpdir(), "viewer-test-"));
+    const chrome = spawn(CHROME, ["--headless=new", "--use-angle=d3d11", "--enable-gpu", "--ignore-gpu-blocklist",
+      "--no-first-run", "--no-sandbox", "--window-size=" + size, "--user-data-dir=" + profile, ...extra,
+      "http://127.0.0.1:" + port + "/scripts/build/viewer-test.html" + query], { stdio: "ignore" });
+    for (let i = 0; i < 1800 && !report; i += 1) await new Promise((r) => setTimeout(r, 100));
+    try { chrome.kill(); } catch (e) { /* gone */ }
+    return report;
+  };
+  const desk = await run(SHEETS ? "?sheets=1" : "", "900,800");
+  const phone = SHEETS ? null : await run("?phone=1", "420,900");   // CSS pixels (1x): what a person sees
+  finish(desk, phone);
 });
 
-function finish(chrome) {
-  try { if (chrome) chrome.kill(); } catch (e) { /* gone */ }
+function finishPhone(ph) {
+  if (!ph) { check(false, "phone width: the test page reported (no report in 180 s)"); return; }
+  check(ph.errors.length === 0, "phone width: no page errors " + (ph.errors.length ? JSON.stringify(ph.errors.slice(0, 3)) : ""));
+  ph.steps.forEach((s) => {
+    const name = (s.model || "?").split("/").pop();
+    (s.actionChecks || []).forEach((c) => check(c.ok, `phone width ${name}: ${c.id}: no close-up box, at most 3 labels, none overlapping, 14 px text` +
+      (c.ok ? "" : " (" + c.bad.join("; ") + ")")));
+  });
+}
+
+function finish(desk, phone) {
+  report = desk;
   server.close();
+  if (!SHEETS) finishPhone(phone);
   if (!report) {
     check(false, "the test page reported (no report in 180 s)");
   } else {

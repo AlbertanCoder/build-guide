@@ -10,6 +10,11 @@
   .viewer3d-labels { position: absolute; inset: 0; pointer-events: none; }
   .gap { height: 1400px; }
 </style>
+<script>
+  // ?phone=1: viewers at a phone column's size (ASSUMPTION: about Shad's iPhone page, 340 x 280 CSS px)
+  if (new URLSearchParams(location.search).has("phone"))
+    document.write("<style>.viewer3d { width: 340px; } .viewer3d-canvas { height: 280px; }</style>");
+</script>
 <script type="importmap">
 { "imports": { "three": "/docs/vendor/three/build/three.module.js", "three/addons/": "/docs/vendor/three/addons/" } }
 </script>
@@ -35,6 +40,7 @@
 <script type="module">
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const SHEETS = new URLSearchParams(location.search).has("sheets");
+  const PHONE = new URLSearchParams(location.search).has("phone");
   function wrap(ctx, text, width) {
     const words = String(text).split(" "); const lines = []; let line = "";
     for (const w of words) { const tryLine = line ? line + " " + w : w;
@@ -170,6 +176,7 @@
         inst.action("reset");
         inst.jumpTo(k);
         await sleep(60);
+        if (PHONE && inst.camEaseDone) await inst.camEaseDone;   // phone: the camera eases in on the part first
         const find = (pre) => { const hit = []; inst.model.traverse((o) => { if (o.isMesh && o.name.startsWith(pre)) hit.push(o); }); return hit; };
         // scale as drawn, parents included: a solder joint is a child of its wire, so it is hidden when the wire is
         inst.model.updateMatrixWorld(true);
@@ -197,7 +204,19 @@
           if (!inst.focusParts || !inst.focusParts.length) bad.push("focus did not outline the parts");
           // a close-up box only as a TRUE zoom (2x or more); none is right when the part already fills the view
           if (inst.insetShown === "Close-up" && !(inst.insetZoom >= 2)) bad.push("close-up is not a 2x zoom (" + inst.insetZoom + ")");
-          if (inst.insetShown !== "Close-up" && !(inst.focusFill >= 0.15)) bad.push("no close-up and the part is small (" + inst.focusFill + ")");
+          if (!PHONE && inst.insetShown !== "Close-up" && !(inst.focusFill >= 0.15)) bad.push("no close-up and the part is small (" + inst.focusFill + ")");
+          if (PHONE) {                                   // phone: no close-up box, at most 3 labels, none touching, readable
+            if (inst.insetShown === "Close-up") bad.push("close-up box on a phone-width viewer");
+            const sh = inst.actShown || [];
+            if (sh.length > 3) bad.push(sh.length + " labels at once on a phone");
+            for (let i = 0; i < sh.length; i++) for (let j = i + 1; j < sh.length; j++) {
+              const p = sh[i].box, q = sh[j].box;
+              if (!p || !q) bad.push("label box not measured");
+              else if (p.l < q.r && p.r > q.l && p.t < q.b && p.b > q.t) bad.push("labels overlap: " + sh[i].text + " / " + sh[j].text);
+            }
+            const lab = inst.actHost && inst.actHost.querySelector(".viewer3d-actlabel");
+            if (lab && parseFloat(getComputedStyle(lab).fontSize) < 14) bad.push("phone label text under 14 px");
+          }
           // labels start OFF, but the action names what it is about
           if (!(inst.actShown || []).length) bad.push("nothing named in the frame");
           if (ember < 40) bad.push("outline not visible on screen (" + ember + " px)");

@@ -29,6 +29,14 @@ const MODEL_VERSION = '2026-11-03e';
 
 // Most WebGL contexts alive at once (the current step plus one neighbour). Old laptops freeze with more.
 const MAX_ALIVE = 2;
+// Phone-width viewers (Shad's iPhone review 2026-11-04: labels overlapped, the close-up covered them): at most this
+// many step labels, never touching, no close-up box. Both numbers are ART (picked for a ~360 px wide viewer).
+const PHONE_MAX_W = 560;
+const PHONE_LABELS_MAX = 3;
+const PHONE_FILL = 0.7;         // phone: the camera moves in until the highlighted part is this share of the view height (ART;
+                                // 0.45 left thin spread-out parts like the four props at 31-35 px of outline)
+const PHONE_EASE_MS = 450;
+const PHONE_OUTLINE_PX = 2.5;   // phone: an ember rim this many CSS px wide around each highlighted part (ART)      // ...in a quick ease, not a slow fly-through (ART)
 
 const reducedMotion = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
@@ -119,6 +127,7 @@ function injectStyle() {
     '.viewer3d-tag b{display:block;font-size:12.5px}.viewer3d-tag span{display:block;opacity:.85}',
     '.viewer3d-actlabels{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}',
     '.viewer3d-actlabel{position:absolute;transform:translate(-50%,-115%);white-space:nowrap;padding:3px 7px;border-radius:5px;background:rgba(20,30,26,.9);color:#fff;font:700 11.5px/1.25 sans-serif;box-shadow:0 1px 3px rgba(0,0,0,.35)}',
+    '.viewer3d-actlabels.is-phone .viewer3d-actlabel{font-size:14px;padding:4px 8px}',
     '.viewer3d-inset{position:absolute;z-index:2;display:none;border:4px solid #ff6a1a;box-shadow:0 0 0 3px #fff,0 2px 8px rgba(0,0,0,.35);border-radius:4px;color:#ff6a1a;font:700 11px sans-serif;padding:2px 5px;box-sizing:border-box;pointer-events:none}',
   ].join('\n');
   document.head.appendChild(s);
@@ -674,6 +683,7 @@ class ModelViewer {
     for (const o of this.dimmed) o.material = o.userData._orig;
     this.dimmed = [];
     if (this.arrow) { this.scene.remove(this.arrow); this.arrow.dispose?.(); this.arrow = null; }
+    this.clearOutlines();
     this.focusParts = this.focusOn && a ? this.involvedFor(a) : [];
     this.actionLabelsFor(a);
     if (this.focusParts.length) {
@@ -686,8 +696,85 @@ class ModelViewer {
       });
       this.arrow = new THREE.ArrowHelper(new THREE.Vector3(0, -1, 0), new THREE.Vector3(), 0.03, EMBER, 0.012, 0.008);
       this.scene.add(this.arrow);
+      if (this.isPhone()) this.addOutlines(this.focusParts.filter((o) => !o.userData.keep_colour));
     }
     this.render();
+    Promise.resolve().then(() => this.phoneMoveIn());          // after jumpTo's own camera move (same click)
+  }
+
+  /* Phone width: thin parts (prop blades, wires) are hard to see on a small screen, so each highlighted part gets an
+     ember rim PHONE_OUTLINE_PX CSS px wide: its own geometry, back faces, moved outward on screen (constant width). */
+  addOutlines(parts) {
+    if (!this.outlineMat) {
+      this.outlineU = { uOutlinePx: { value: PHONE_OUTLINE_PX }, uViewport: { value: new THREE.Vector2(640, 420) } };
+      const m = new THREE.MeshBasicMaterial({ color: EMBER, side: THREE.BackSide, toneMapped: false });
+      m.onBeforeCompile = (sh) => {
+        Object.assign(sh.uniforms, this.outlineU);
+        sh.vertexShader = 'uniform float uOutlinePx;\nuniform vec2 uViewport;\n' + sh.vertexShader.replace('#include <project_vertex>', `#include <project_vertex>
+	{
+		vec4 nc = projectionMatrix * modelViewMatrix * vec4( transformed + normalize( normal ) * 0.001, 1.0 );
+		vec2 d = nc.xy / nc.w - gl_Position.xy / gl_Position.w;
+		float l = length( d );
+		if ( l > 1e-7 ) gl_Position.xy += ( d / l ) * uOutlinePx * 2.0 / uViewport * gl_Position.w;
+	}`);
+      };
+      m.customProgramCacheKey = () => 'v3d-outline';
+      this.outlineMat = m;
+    }
+    this.outlines = this.outlines || [];
+    for (const o of parts) {
+      if (!o.isMesh || !o.geometry || !o.geometry.attributes.normal) continue;
+      const rim = new THREE.Mesh(o.geometry, this.outlineMat);
+      rim.raycast = () => {};                                 // never picked by tap-to-name
+      rim.renderOrder = -1;
+      o.add(rim);
+      this.outlines.push(rim);
+    }
+  }
+
+  clearOutlines() {
+    for (const r of this.outlines || []) if (r.parent) r.parent.remove(r);
+    this.outlines = [];
+  }
+
+  /* Phone width: one picture, nothing covering anything (Shad's iPhone review 2026-11-04). When the highlighted part is
+     small in the view, the main camera eases in until it fills PHONE_FILL of the view height, from the same side. */
+  phoneMoveIn() {
+    if (!this.ready || !this.camera || !this.isPhone() || this.root.dataset.closeup === 'on') return;
+    if (!this.focusParts || !this.focusParts.length) return;
+    const box = this.focusBox();
+    if (box.isEmpty()) return;
+    const c = box.getCenter(new THREE.Vector3());
+    const size = Math.max(box.getSize(new THREE.Vector3()).length(), 1e-3);
+    const half = Math.tan((this.camera.fov * Math.PI) / 360);
+    const fill = size / (2 * Math.max(this.camera.position.distanceTo(c), 1e-4) * half);
+    if (fill >= PHONE_FILL) return;
+    const dir = this.camera.position.clone().sub(this.controls.target).normalize();
+    const d = Math.max(size / (2 * PHONE_FILL * half), this.camera.near * 4);
+    this.easeCamera(c, c.clone().addScaledVector(dir, d), PHONE_EASE_MS);
+  }
+
+  /* Move the orbit target and camera together, smoothly (ease in-out); instant with reduced motion. */
+  easeCamera(t1, p1, ms) {
+    if (this.easeRaf) { cancelAnimationFrame(this.easeRaf); this.easeRaf = 0; }
+    const t0 = this.controls.target.clone(), p0 = this.camera.position.clone();
+    const apply = (e) => {
+      this.controls.target.lerpVectors(t0, t1, e);
+      this.camera.position.lerpVectors(p0, p1, e);
+      this.controls.update();
+      if (!this.playing) this.render();
+    };
+    if (reducedMotion() || !(ms > 0)) { apply(1); this.camEaseDone = Promise.resolve(); return; }
+    this.camEaseDone = new Promise((res) => {
+      const start = performance.now();
+      const step = (now) => {
+        const k = Math.min(1, (now - start) / ms);
+        apply(k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2);
+        if (k < 1 && this.ready) this.easeRaf = requestAnimationFrame(step);
+        else { this.easeRaf = 0; res(); }
+      };
+      this.easeRaf = requestAnimationFrame(step);
+    });
   }
 
   focusBox() {
@@ -732,6 +819,9 @@ class ModelViewer {
       this.arrow.position.copy(c).add(new THREE.Vector3(0, len + size * 0.5, 0));
       this.arrow.setLength(len, Math.min(len * 0.4, 0.014), Math.min(len * 0.25, 0.009));
     }
+    // On a phone-width viewer the close-up box covered the labels (Shad, iPhone, 2026-11-04): none there (the main camera
+    // moves in on the part instead, phoneMoveIn), unless the page turns it on with data-closeup="on" ("More 3D options").
+    if (this.isPhone() && this.root.dataset.closeup !== 'on') return null;
     // A close-up only when it is a TRUE zoom: the part at least 2x bigger than in the main view (fresh-eyes review
     // 2026-11-04: for a big group like the four arms the old box showed the same view, only smaller). Otherwise none:
     // the part is already large in the main view.
@@ -769,8 +859,11 @@ class ModelViewer {
       };
     }
     this.gen += 1;
+    if (this.easeRaf) { cancelAnimationFrame(this.easeRaf); this.easeRaf = 0; }
     this.pause();
     this.clearHighlight();
+    this.clearOutlines();
+    if (this.outlineMat) { this.outlineMat.dispose(); this.outlineMat = null; this.outlineU = null; }
     for (const o of this.dimmed) o.material = o.userData._orig;
     this.dimmed = [];
     this.focusParts = [];
@@ -922,6 +1015,7 @@ class ModelViewer {
     if (!this.ready) return;
     const r = this.renderer;
     const inset = this.insetCamera();
+    if (this.outlineU) this.outlineU.uViewport.value.set(this.canvasHost.clientWidth || 640, this.canvasHost.clientHeight || 420);
     if (this.arrow) this.arrow.visible = !!(inset || (this.focusParts && this.focusParts.length));
     const W = this.canvasHost.clientWidth || 640;
     const H = this.canvasHost.clientHeight || 420;
@@ -992,9 +1086,13 @@ class ModelViewer {
     }
     const W = this.canvasHost.clientWidth || 640;
     const H = this.canvasHost.clientHeight || 420;
+    const phone = this.isPhone();
+    this.actHost.classList.toggle('is-phone', phone);
     this.actHost.replaceChildren();
     this.actShown = [];
+    const host = this.actHost.getBoundingClientRect(), taken = [];
     for (const it of items) {
+      if (phone && this.actShown.length >= PHONE_LABELS_MAX) break;
       const v = it.pos.clone().project(this.camera);
       if (v.z < -1 || v.z > 1) continue;
       if (it.keep) { v.x = Math.max(-0.85, Math.min(0.85, v.x)); v.y = Math.max(-0.8, Math.min(0.88, v.y)); }
@@ -1002,12 +1100,27 @@ class ModelViewer {
       const el = document.createElement('span');
       el.className = 'viewer3d-actlabel';
       el.textContent = it.text;
-      el.style.left = Math.round(((v.x + 1) / 2) * W) + 'px';
-      el.style.top = Math.round(((1 - v.y) / 2) * H) + 'px';
+      let x = ((v.x + 1) / 2) * W;
+      const y = ((1 - v.y) / 2) * H;
+      el.style.left = Math.round(x) + 'px';
+      el.style.top = Math.round(y) + 'px';
       this.actHost.appendChild(el);
-      this.actShown.push({ text: it.text, x: ((v.x + 1) / 2) * W, y: ((1 - v.y) / 2) * H });
+      let r = null;
+      if (phone) {
+        // phone: keep the label inside the frame, and drop it if it would touch one already shown (first listed wins)
+        r = el.getBoundingClientRect();
+        const shift = Math.max(2 - (r.left - host.left), 0) - Math.max(r.right - host.left - (W - 2), 0);
+        if (shift) { x += shift; el.style.left = Math.round(x) + 'px'; r = el.getBoundingClientRect(); }
+        const box = { l: r.left - host.left, t: r.top - host.top, r: r.right - host.left, b: r.bottom - host.top };
+        if (taken.some((q) => box.l < q.r + 4 && box.r > q.l - 4 && box.t < q.b + 4 && box.b > q.t - 4)) { el.remove(); continue; }
+        taken.push(box); r = box;
+      }
+      this.actShown.push({ text: it.text, x, y, box: r });
     }
   }
+
+  /* Phone width: the viewer's own width, so a narrow column on a big screen counts too (ASSUMPTION: under 560 px). */
+  isPhone() { return (this.canvasHost.clientWidth || 640) < PHONE_MAX_W; }
 }
 
 // ---------------------------------------------------------------------------
@@ -1024,6 +1137,7 @@ function hasWebGL() {
 }
 
 let pageViewers = [];
+let pageAdd = null;             // set by boot(): adds a viewer made later to the page's limit and scroll release
 
 function boot() {
   const roots = [...document.querySelectorAll('.viewer3d[data-model]')];
@@ -1068,6 +1182,15 @@ function boot() {
   }, { rootMargin: '250px 0px' });
 
   roots.forEach((root) => io.observe(root));
+  // viewers mounted later (BuildGuideViewer.mount) join the same limit and release-on-scroll
+  pageAdd = (root) => {
+    const v = new ModelViewer(root);
+    roots.push(root); viewers.push(v);
+    v.onInit = (me) => { alive.add(me); enforce(me); };
+    v.onRelease = (me) => { alive.delete(me); };
+    io.observe(root);
+    return v;
+  };
 
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) viewers.forEach((v) => v.kick());
@@ -1087,7 +1210,7 @@ function boot() {
 window.BuildGuideViewer = {
   mount(root) {
     if (!hasWebGL()) { root.classList.add('is-failed'); return null; }
-    const viewer = new ModelViewer(root);
+    const viewer = pageAdd ? pageAdd(root) : new ModelViewer(root);
     viewer.visible = true;
     viewer.init();
     return viewer;
