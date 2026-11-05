@@ -121,6 +121,19 @@
         slider.value = "0"; slider.dispatchEvent(new Event("input")); playBtn.click();  // restart from 0, playing
         const t0 = Number(slider.value); await sleep(700); const t1 = Number(slider.value);
         rec.timeMovesWhilePlaying = t1 > t0;
+        if (PHONE) {                                   // the real page autoplays: the highlighted parts stay in frame while playing
+          const pv = window.BuildGuideViewer.instances()[i], crop = [];
+          for (const wait of [800, 2500]) {
+            await sleep(wait);
+            const fb = pv.focusBox && pv.focusBox();
+            if (!fb || fb.isEmpty()) continue;
+            const V = pv.camera.position.constructor; let outN = 0;
+            for (let q = 0; q < 8; q++) { const v = new V(q & 1 ? fb.max.x : fb.min.x, q & 2 ? fb.max.y : fb.min.y, q & 4 ? fb.max.z : fb.min.z).project(pv.camera);
+              if (Math.abs(v.x) > 1 || Math.abs(v.y) > 1) outN++; }
+            if (outN) crop.push("t " + pv.currentTime().toFixed(1) + " s: " + outN + " of 8 corners outside");
+          }
+          rec.phonePlayCrop = crop;
+        }
         playBtn.click();                                            // pause
         const p0 = Number(slider.value); await sleep(500); const p1 = Number(slider.value);
         rec.timeStopsWhenPaused = Math.abs(p1 - p0) < 1e-6;

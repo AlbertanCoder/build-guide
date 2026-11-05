@@ -448,6 +448,9 @@ class ModelViewer {
 
   play() {
     if (!this.mixer) return;
+    // phone: parts move while the clip plays (Step 1 lays out its piles), so a framing made for one moment crops the
+    // next; playing goes back to the view the viewer had before any phone move-in (Builder's real-page shot, f0c6a9c)
+    if (this.phonePrePose) { this.easeCamera(this.phonePrePose.target, this.phonePrePose.position, PHONE_EASE_MS); this.phonePrePose = null; }
     this.playing = true;
     this.playBtn.textContent = 'Pause';
     this.playBtn.setAttribute('aria-pressed', 'true');
@@ -746,6 +749,7 @@ class ModelViewer {
   phoneMoveIn() {
     this.phoneNeedsCloseup = false;
     if (!this.ready || !this.camera || !this.isPhone() || this.root.dataset.closeup === 'on') return;
+    if (this.playing) return;                                    // only when paused (a chip tap): parts move while playing
     if (!this.focusParts || !this.focusParts.length) return;
     const box = this.focusBox();
     if (box.isEmpty()) return;
@@ -774,6 +778,7 @@ class ModelViewer {
     const act = this.activeChip >= 0 ? this.actionList[this.activeChip] : null;
     this.phoneNeedsCloseup = !!(act && PHONE_CLOSEUP_STEPS.has(act.id));   // the named exception keeps its close-up box
     if (Math.abs(d - cur) < 0.02 * cur && c.distanceTo(this.controls.target) < 0.02 * cur) return;   // already right
+    if (!this.phonePrePose) this.phonePrePose = { target: this.controls.target.clone(), position: this.camera.position.clone() };
     this.easeCamera(c, c.clone().addScaledVector(dir, d), PHONE_EASE_MS);
   }
 
