@@ -158,10 +158,12 @@ try:
         nav = pg.evaluate("""(() => { const n = [...document.querySelectorAll('#p-steps .asm-nav')].find(x => x.offsetParent !== null);
           const r = e => e.getBoundingClientRect(), nr = r(n), a = r(n.querySelector('[data-asm-prev]')), c = r(n.querySelector('.asm-count')), z = r(n.querySelector('.asm-count').nextElementSibling);
           const fit = [...n.querySelectorAll('button')].every(x => x.scrollWidth <= x.clientWidth + 1);
-          return { above: c.bottom <= Math.min(a.top, z.top) + 1, full: c.width >= nr.width - 40, oneRow: a.top < z.bottom && z.top < a.bottom && a.right <= z.left + 1, fit: fit,
+          const lines = x => { const g = document.createRange(); g.selectNodeContents(x); return new Set([...g.getClientRects()].map(q => Math.round(q.top))).size; };
+          const one = [...n.querySelectorAll('button')].every(x => lines(x) === 1);   /* the words' line boxes: 1 = no wrap */
+          return { above: c.bottom <= Math.min(a.top, z.top) + 1, full: c.width >= nr.width - 40, oneRow: a.top < z.bottom && z.top < a.bottom && a.right <= z.left + 1, fit: fit, oneLine: Math.abs(a.height - z.height) < 1 && one,
                    prev: [Math.round(a.left), Math.round(a.top), Math.round(a.width), Math.round(a.height)], next: [Math.round(z.left), Math.round(z.top), Math.round(z.width), Math.round(z.height)] }; })()""")
-        check("phone: 'Step 1 of 8 ...' is on its own full-width line above Previous and Next (the two buttons side by side, their words fit)",
-              nav["above"] and nav["full"] and nav["oneRow"] and nav["fit"], nav)
+        check("phone: 'Step 1 of 8 ...' is on its own full-width line above Previous and Next (the two buttons side by side, each on one line, their words fit)",
+              nav["above"] and nav["full"] and nav["oneRow"] and nav["fit"] and nav["oneLine"], nav)
         top_el = pg.evaluate_handle(TOP_VIEW).as_element()
         top_el.scroll_into_view_if_needed(); top_el.query_selector(".v3d-poster").click()
         try:

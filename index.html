@@ -815,6 +815,8 @@
     .asm-nav { flex-wrap: wrap; }
     .asm-nav .asm-count { order: -1; flex: 1 1 100%; }
     .asm-nav .asm-btn, .asm-nav .asm-btn.primary { flex: 1 1 0; min-width: 0; }
+    .asm-nav { padding: 12px; gap: 8px; }                           /* room for both buttons' words on one line each */
+    .asm-nav .asm-btn { white-space: nowrap; padding: 10px 8px; font-size: 13.5px; }
     /* the chat button: smaller, just above the bottom bar */
     #ga-root { right: 10px; bottom: calc(84px + env(safe-area-inset-bottom)); }  /* the bar grows by the iPhone's home-bar inset, so the button rises with it */
     .ga-launcher { padding: 9px; }
