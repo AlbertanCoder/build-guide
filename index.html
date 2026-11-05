@@ -1558,10 +1558,19 @@
    "stage": 2,
    "status": "out",
    "stockNote": "Out of stock",
-   "checkedOn": "2026-11-03",
+   "checkedOn": "2026-11-05",
    "today": false,
-   "backup": null,
-   "backupNote": "No in-stock like-for-like backup found. The Amazon.ca kit I checked is a different kit and showed \"Currently unavailable\"."
+   "backup": {
+    "shop": "CanaKit",
+    "url": "https://www.canakit.com/raspberry-pi-zero-2-w.html",
+    "status": "cart",
+    "price": 89.95,
+    "currency": "USD",
+    "same": true,
+    "checkedOn": "2026-11-05",
+    "note": "Pi Zero 2 W Starter Kit with Pre-Soldered Header (PI-Z2WH-STR32-C4-BLK): Pi Zero 2 W board, 32 GB microSD, 2.5 A power supply, case, heat sink, USB OTG cable, mini-HDMI adapter. Price shown in USD; check the CAD total at checkout. No card reader included: use your laptop's microSD slot if it has one, or buy a reader. Shipping origin not stated."
+   },
+   "backupNote": null
   },
   {
    "id": "spare-sd",
@@ -4790,6 +4799,7 @@ while True:
     const bits = [];
     if (bk.status === "unchecked") bits.push("not checked yet");
     else if (bk.status === "out") bits.push("out of stock when checked");
+    else if (bk.status === "cart") bits.push("Add to Cart shown");   /* the shop shows Add to Cart but states no stock (job 14) */
     else if (bk.status === "page_ok") bits.push("page opens, stock not shown");
     else if (bk.status === "low") bits.push("low stock");
     else if (bk.status === "in_stock") bits.push("in stock");
