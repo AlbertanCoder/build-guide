@@ -14,6 +14,11 @@ const { spawn } = require("child_process");
 
 const ROOT = path.resolve(__dirname, "..", "..");
 const MAX_ALIVE = 2;
+// phone 3D speed floor: ms per render of Step 1 at phone width on this laptop (no CPU throttling). Measured 2026-11-05:
+// 3.1 ms (389 draw calls, pixel ratio 1, no shadows). Floor 8 ms = about 2.5x that, for laptop noise (ASSUMPTION margin).
+// On a simulated phone (390x844, 3x, CPU 4x slower) Step 1 went from 13.1 to 30.6 renders/s playing, 12.3 to 23.7
+// rotating, and 304 to 110 ms from a chip tap to the next frame (scratch phone_perf.py).
+const PHONE_MS_PER_RENDER_MAX = 8;
 const SHEETS = process.argv.includes("--sheets");   // also write docs/build-truth/contact-step-0N.png
 const results = {};
 const CHROME = [
@@ -70,6 +75,13 @@ function finishPhone(ph) {
   check(ph.errors.length === 0, "phone width: no page errors " + (ph.errors.length ? JSON.stringify(ph.errors.slice(0, 3)) : ""));
   ph.steps.forEach((s) => {
     const name = (s.model || "?").split("/").pop();
+    if (s.phoneSpeed) {
+      const sp = s.phoneSpeed;
+      console.log(`INFO phone 3D speed ${name}: ${sp.msPerRender} ms a render, ${sp.calls} draw calls, pixel ratio ${sp.pixelRatio}, shadows ${sp.shadows}`);
+      check(!sp.shadows && sp.pixelRatio <= 1.5, `phone 3D speed ${name}: no shadow maps and pixel ratio at most 1.5 on phone`);
+      check(sp.msPerRender <= PHONE_MS_PER_RENDER_MAX, `phone 3D speed ${name}: at most ${PHONE_MS_PER_RENDER_MAX} ms a render (got ${sp.msPerRender})`);
+    }
+    if (s.phoneLabelsFade !== undefined) check(s.phoneLabelsFade, `phone width ${name}: the step's labels show after a chip tap and fade after 3 s`);
     if (s.phonePlayCrop) check(!s.phonePlayCrop.length, `phone width ${name}: while playing from the start, the highlighted parts stay in frame` +
       (s.phonePlayCrop.length ? " (" + s.phonePlayCrop.join("; ") + ")" : ""));
     if (s.phoneCloseups) console.log(`INFO phone width ${name}: close-up box kept (parts too small framed whole) on ${s.phoneCloseups.join(", ")}`);

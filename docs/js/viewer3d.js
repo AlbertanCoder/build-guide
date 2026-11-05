@@ -40,6 +40,13 @@ const PHONE_EASE_MS = 450;
 // phone: the steps whose highlighted parts are too thin to see when the whole group is framed (long wires across the
 // payload), so they keep the close-up box: the one exception (measured by check_viewer: 24 px of outline framed whole)
 const PHONE_CLOSEUP_STEPS = new Set(['S6.1']);
+// the steps' own camera moves (focus + dist in the step data) were set on a 16:9 desktop frame; a narrower phone frame
+// backs off by the width it lacks, so the same things stay in view (Shad's iPhone, S1.4 "Props stay bagged", 2026-11-05)
+const DESIGN_ASPECT = 16 / 9;
+const PHONE_LABEL_MS = 3000;
+// phone speed (job: phone 3D performance, measured in scratch phone_perf.py): no shadow maps, no antialias, pixel ratio <= 1.5
+const PHONE_PIXEL_RATIO = 1.5;
+const pixelRatioFor = (phone) => Math.min(window.devicePixelRatio || 1, phone ? PHONE_PIXEL_RATIO : 2);    // phone: a step's labels show this long after a chip tap, then fade (Shad, job 13 item 9)
 const PHONE_OUTLINE_PX = 3.5;   // phone: an ember rim this many CSS px wide around each highlighted part (ART)      // ...in a quick ease, not a slow fly-through (ART)
 
 const reducedMotion = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -132,6 +139,7 @@ function injectStyle() {
     '.viewer3d-actlabels{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}',
     '.viewer3d-actlabel{position:absolute;transform:translate(-50%,-115%);white-space:nowrap;padding:3px 7px;border-radius:5px;background:rgba(20,30,26,.9);color:#fff;font:700 11.5px/1.25 sans-serif;box-shadow:0 1px 3px rgba(0,0,0,.35)}',
     '.viewer3d-actlabels.is-phone .viewer3d-actlabel{font-size:14px;padding:4px 8px}',
+    '.viewer3d-actlabels{transition:opacity .6s}.viewer3d-actlabels.is-faded{opacity:0}',
     '.viewer3d-inset{position:absolute;z-index:2;display:none;border:4px solid #ff6a1a;box-shadow:0 0 0 3px #fff,0 2px 8px rgba(0,0,0,.35);border-radius:4px;color:#ff6a1a;font:700 11px sans-serif;padding:2px 5px;box-sizing:border-box;pointer-events:none}',
   ].join('\n');
   document.head.appendChild(s);
@@ -231,11 +239,12 @@ class ModelViewer {
     this.camera = new THREE.PerspectiveCamera(42, width / height, 0.004, 40);
     this.camera.position.set(0.30, 0.22, 0.34);
 
-    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    const phoneGl = width < PHONE_MAX_W;                       // phone: lighter rendering (measured), desktop unchanged
+    this.renderer = new THREE.WebGLRenderer({ antialias: !phoneGl });
     liveRenderers += 1;
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    this.renderer.setPixelRatio(pixelRatioFor(phoneGl));
     this.renderer.setSize(width, height, false);
-    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.enabled = !phoneGl;
     this.renderer.shadowMap.type = THREE.PCFShadowMap;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.05;
@@ -513,6 +522,9 @@ class ModelViewer {
   jumpTo(i) {
     const a = this.actionList[i];
     if (!a) return;
+    this.labelsShownAt = performance.now();                    // phone: the labels show briefly after a tap
+    clearTimeout(this.labelFadeTimer);
+    this.labelFadeTimer = setTimeout(() => { if (this.ready) this.render(); }, PHONE_LABEL_MS + 50);
     this.pause();
     // land just after the action's moment, so its pose is complete
     this.seek(Math.min(a.time + (a.hold || 0.6), this.duration));
@@ -524,7 +536,8 @@ class ModelViewer {
         dir = new THREE.Vector3(a.view[0], a.view[2], -a.view[1]).normalize();
         if (dir.y < 0) this.controls.maxPolarAngle = Math.PI * 0.97;
       }
-      const d = a.dist || this.camera.position.distanceTo(this.controls.target) * 0.45;
+      let d = a.dist || this.camera.position.distanceTo(this.controls.target) * 0.45;
+      if (this.isPhone() && this.camera.aspect < DESIGN_ASPECT) d *= DESIGN_ASPECT / this.camera.aspect;
       this.controls.target.copy(f);
       this.camera.position.copy(f).addScaledVector(dir, d);
       this.controls.update();
@@ -750,6 +763,8 @@ class ModelViewer {
     this.phoneNeedsCloseup = false;
     if (!this.ready || !this.camera || !this.isPhone() || this.root.dataset.closeup === 'on') return;
     if (this.playing) return;                                    // only when paused (a chip tap): parts move while playing
+    const act0 = this.activeChip >= 0 ? this.actionList[this.activeChip] : null;
+    const authored = !!(act0 && act0.focus);                     // the step's own camera move (widened in jumpTo): only pull back
     if (!this.focusParts || !this.focusParts.length) return;
     const box = this.focusBox();
     if (box.isEmpty()) return;
@@ -761,25 +776,26 @@ class ModelViewer {
     const overview = !all.isEmpty() && size >= PHONE_OVERVIEW * all.getSize(new THREE.Vector3()).length();
     // the narrower of the view's height and width decides, so the group fits both ways
     const half = Math.tan((this.camera.fov * Math.PI) / 360) * Math.min(1, this.camera.aspect || 1);
-    const cur = Math.max(this.camera.position.distanceTo(c), 1e-4);
+    const aim = authored ? this.controls.target.clone() : c;    // an authored view keeps its own aim point
+    const cur = Math.max(this.camera.position.distanceTo(aim), 1e-4);
     const dir = this.camera.position.clone().sub(this.controls.target).normalize();
     // overview steps only pull back as far as the whole group needs (the phone's narrow frame cut them off);
     // other steps move in to PHONE_FILL, but never so far that the group leaves the frame
-    let d = overview ? cur : Math.min(cur, Math.max(size / (2 * PHONE_FILL * half), this.camera.near * 4));
+    let d = overview || authored ? cur : Math.min(cur, Math.max(size / (2 * PHONE_FILL * half), this.camera.near * 4));
     // perspective makes the near side of the group bigger than its size says: from the pose the camera will end in,
     // back off until all eight corners of the group sit inside 92 % of the frame (Builder's phone shot, 656be08)
     const probe = this.camera.clone(), corners = [];
     for (let k = 0; k < 8; k++) corners.push(new THREE.Vector3(k & 1 ? box.max.x : box.min.x, k & 2 ? box.max.y : box.min.y, k & 4 ? box.max.z : box.min.z));
     const fits = () => {
-      probe.position.copy(c).addScaledVector(dir, d); probe.lookAt(c); probe.updateMatrixWorld(true);
+      probe.position.copy(aim).addScaledVector(dir, d); probe.lookAt(aim); probe.updateMatrixWorld(true);
       return corners.every((q) => { const v = q.clone().project(probe); return v.z < 1 && Math.abs(v.x) <= 0.92 && Math.abs(v.y) <= 0.92; });
     };
     for (let k = 0; k < 30 && !fits(); k++) d *= 1.12;
     const act = this.activeChip >= 0 ? this.actionList[this.activeChip] : null;
     this.phoneNeedsCloseup = !!(act && PHONE_CLOSEUP_STEPS.has(act.id));   // the named exception keeps its close-up box
-    if (Math.abs(d - cur) < 0.02 * cur && c.distanceTo(this.controls.target) < 0.02 * cur) return;   // already right
+    if (Math.abs(d - cur) < 0.02 * cur && aim.distanceTo(this.controls.target) < 0.02 * cur) return;   // already right
     if (!this.phonePrePose) this.phonePrePose = { target: this.controls.target.clone(), position: this.camera.position.clone() };
-    this.easeCamera(c, c.clone().addScaledVector(dir, d), PHONE_EASE_MS);
+    this.easeCamera(aim, aim.clone().addScaledVector(dir, d), PHONE_EASE_MS);
   }
 
   /* Move the orbit target and camera together, smoothly (ease in-out); instant with reduced motion. */
@@ -892,7 +908,7 @@ class ModelViewer {
   // -------------------------------------------------------------------------
   release() {
     if (!this.ready && !this.initing) return;
-    if (document.fullscreenElement === this.root) return;
+    if (document.fullscreenElement === this.root || this.root.classList.contains('v3d-overlay')) return;   // real or page full screen
     if (this.ready && this.camera) {
       this.savedTilt = this.tiltDeg;
       this.saved = {
@@ -1049,7 +1065,7 @@ class ModelViewer {
     if (!w || !h) return;
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    this.renderer.setPixelRatio(pixelRatioFor(this.isPhone()));
     this.renderer.setSize(w, h, false);
     this.labelRenderer.setSize(w, h);
     this.render();
@@ -1132,9 +1148,12 @@ class ModelViewer {
     const H = this.canvasHost.clientHeight || 420;
     const phone = this.isPhone();
     this.actHost.classList.toggle('is-phone', phone);
+    // phone: the step's labels only for a moment after a chip tap (the Labels button keeps the full set on)
+    this.actHost.classList.toggle('is-faded', phone && !this.labelsOn && !(performance.now() - (this.labelsShownAt || -1e9) < PHONE_LABEL_MS));
     this.actHost.replaceChildren();
     this.actShown = [];
-    const host = this.actHost.getBoundingClientRect(), taken = [];
+    const taken = [];
+    this.labelSize = this.labelSize || new Map();                // label text -> [w, h] in CSS px, measured once
     if (phone && this.insetShown === 'Close-up') {               // labels never touch the close-up box
       const w = Math.round(Math.min(W * 0.38, 300)), h = Math.round(w / (4 / 3));
       taken.push({ l: W - w - 8, t: H - h - 8, r: W - 8, b: H - 8 });
@@ -1157,10 +1176,11 @@ class ModelViewer {
       let r = null;
       if (phone) {
         // phone: keep the label inside the frame, and drop it if it would touch one already shown (first listed wins)
-        r = el.getBoundingClientRect();
-        const shift = Math.max(2 - (r.left - host.left), 0) - Math.max(r.right - host.left - (W - 2), 0);
-        if (shift) { x += shift; el.style.left = Math.round(x) + 'px'; r = el.getBoundingClientRect(); }
-        const box = { l: r.left - host.left, t: r.top - host.top, r: r.right - host.left, b: r.bottom - host.top };
+        let sz = this.labelSize.get(it.text);
+        if (!sz) { sz = [el.offsetWidth, el.offsetHeight]; this.labelSize.set(it.text, sz); }   // one layout read per text
+        const half = sz[0] / 2, shift = Math.max(2 - (x - half), 0) - Math.max(x + half - (W - 2), 0);
+        if (shift) { x += shift; el.style.left = Math.round(x) + 'px'; }
+        const box = { l: x - half, r: x + half, t: y - 1.15 * sz[1], b: y - 0.15 * sz[1] };   // CSS: translate(-50%, -115%)
         if (taken.some((q) => box.l < q.r + 4 && box.r > q.l - 4 && box.t < q.b + 4 && box.b > q.t - 4)) { el.remove(); continue; }
         taken.push(box); r = box;
       }

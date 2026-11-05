@@ -187,6 +187,7 @@
       for (let k = 0; inst && inst.actionList && k < inst.actionList.length; k += 1) {
         const a = inst.actionList[k];
         inst.action("reset");
+        const dDesign = a.dist || inst.camera.position.distanceTo(inst.controls.target) * 0.45;
         inst.jumpTo(k);
         await sleep(60);
         if (PHONE && inst.camEaseDone) await inst.camEaseDone;   // phone: the camera eases in on the part first
@@ -232,6 +233,10 @@
             }
             const lab = inst.actHost && inst.actHost.querySelector(".viewer3d-actlabel");
             if (lab && parseFloat(getComputedStyle(lab).fontSize) < 14) bad.push("phone label text under 14 px");
+            if (a.focus) {                               // the step's own camera move shows at least its 16:9 width
+              const d = inst.camera.position.distanceTo(inst.controls.target);
+              if (d * inst.camera.aspect < dDesign * (16 / 9) * 0.98) bad.push("authored view narrower on phone than designed (" + (d * inst.camera.aspect).toFixed(3) + " < " + (dDesign * 16 / 9).toFixed(3) + ")");
+            }
             // the highlighted group is fully in the frame (the Builder's Step 1 shot was cropped by the move-in)
             const fb = inst.focusBox && inst.focusBox();
             if (fb && !fb.isEmpty()) {
@@ -256,6 +261,17 @@
                         w: inst.canvasHost.clientWidth, h: inst.canvasHost.clientHeight,
                         inset: inst.insetShown === "Close-up" ? Math.round(Math.min(inst.canvasHost.clientWidth * 0.38, 300)) : 0 });
         }
+      }
+      if (PHONE && i === 0 && inst && inst.ready) {        // phone 3D speed: lighter settings, and ms per render of Step 1
+        const t0 = performance.now(); for (let q = 0; q < 30; q++) inst.render();
+        rec.phoneSpeed = { msPerRender: +((performance.now() - t0) / 30).toFixed(2), shadows: inst.renderer.shadowMap.enabled,
+          pixelRatio: inst.renderer.getPixelRatio(), calls: inst.renderer.info.render.calls };
+      }
+      if (PHONE && i === 0 && inst && inst.actionList && inst.actionList.length) {   // phone: labels show after a tap, then fade
+        inst.jumpTo(0); await sleep(300);
+        const shown = inst.actHost && !inst.actHost.classList.contains("is-faded");
+        await sleep(3300);
+        rec.phoneLabelsFade = shown && inst.actHost.classList.contains("is-faded");
       }
       if (SHEETS && frames.length) rec.sheet = await sheet(rec.model, rec.clip, frames);
       out.steps.push(rec);
