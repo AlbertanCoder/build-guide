@@ -391,7 +391,8 @@ try:
               const r = v.getBoundingClientRect(), cv = v.querySelector('.viewer3d-canvas').getBoundingClientRect(), cl = v.querySelector('.v3d-close');
               return { on: true, fills: r.left <= 1 && r.top <= 1 && r.width >= innerWidth - 2 && r.height >= innerHeight - 2, canvasTall: cv.height >= innerHeight * 0.45,
                        locked: document.documentElement.classList.contains('v3d-locked') && getComputedStyle(document.documentElement).overflow === 'hidden',
-                       close: !!cl && cl.getBoundingClientRect().height >= 40 }; })()""")
+                       close: !!cl && cl.getBoundingClientRect().height >= 40,
+                       onTop: [[innerWidth / 2, innerHeight - 20], [innerWidth - 30, innerHeight - 90], [innerWidth / 2, innerHeight / 2]].every(([x, y]) => { const e = document.elementFromPoint(x, y); return !!e && !!e.closest('.v3d-overlay'); }) }; })()""")
             p2.screenshot(path=os.path.join(SHOTS, "phone-fullscreen-%s.png" % label))
             p2.evaluate("(document.querySelector('.v3d-close') || { click: function () {} }).click()"); p2.wait_for_timeout(300)
             off = p2.evaluate("[!document.querySelector('.viewer3d.v3d-overlay'), !document.documentElement.classList.contains('v3d-locked')]")
@@ -401,7 +402,7 @@ try:
 
         on, off, g = overlay_run(b, "Chromium")
         check("phone, a browser with no element full screen (iPhone Safari): 'Full screen' fills the screen with the 3D view, a big Close button and the page locked; Close puts it back",
-              on.get("on") and on.get("fills") and on.get("canvasTall") and on.get("locked") and on.get("close") and off == [True, True], [on, off])
+              on.get("on") and on.get("fills") and on.get("canvasTall") and on.get("locked") and on.get("close") and on.get("onTop") and off == [True, True], [on, off])
         try:
             wk = p.webkit.launch()
             try:
@@ -409,7 +410,7 @@ try:
             finally:
                 wk.close()
             check("WebKit (Safari's engine) at 390 px: Full screen opens and closes the overlay, and the page's zoom gesture is cancelled",
-                  on.get("on") and on.get("fills") and on.get("locked") and on.get("close") and off == [True, True] and g == [True, "pan-x pan-y"], [on, off, g])
+                  on.get("on") and on.get("fills") and on.get("locked") and on.get("close") and on.get("onTop") and off == [True, True] and g == [True, "pan-x pan-y"], [on, off, g])
         except Exception as e_:
             check("WebKit (Safari's engine) at 390 px: Full screen opens and closes the overlay, and the page's zoom gesture is cancelled", False, "%s: %s" % (type(e_).__name__, str(e_)[:200]))
         check("no page errors on the laptop or the phone", not errs, errs[:3])

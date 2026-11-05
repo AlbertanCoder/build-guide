@@ -748,6 +748,7 @@
   .viewer3d.v3d-overlay .v3d-close { display: block; position: absolute; z-index: 5; top: calc(10px + env(safe-area-inset-top)); right: calc(10px + env(safe-area-inset-right));
     padding: 12px 20px; border: 0; border-radius: 999px; background: var(--pine); color: #fff; font-size: 17px; font-weight: 700; }
   html.v3d-locked, html.v3d-locked body { overflow: hidden; }
+  html.v3d-locked #tabs, html.v3d-locked #ga-root { display: none !important; }   /* the overlay sits inside the page's layers, so the bar and the chat button step aside */
 
   /* ===== Five places: sidebar (laptop), tab bar (phone), compact header away from Home ===== */
   #tabs > button { display: inline-flex; align-items: center; gap: 6px; }
