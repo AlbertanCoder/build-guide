@@ -268,10 +268,19 @@
    "stage": 2,
    "status": "out",
    "stockNote": "Out of stock",
-   "checkedOn": "2026-11-03",
+   "checkedOn": "2026-11-05",
    "today": false,
-   "backup": null,
-   "backupNote": "No in-stock like-for-like backup found. The Amazon.ca kit I checked is a different kit and showed \"Currently unavailable\"."
+   "backup": {
+    "shop": "CanaKit",
+    "url": "https://www.canakit.com/raspberry-pi-zero-2-w.html",
+    "status": "cart",
+    "price": 89.95,
+    "currency": "USD",
+    "same": true,
+    "checkedOn": "2026-11-05",
+    "note": "Pi Zero 2 W Starter Kit with Pre-Soldered Header (PI-Z2WH-STR32-C4-BLK): Pi Zero 2 W board, 32 GB microSD, 2.5 A power supply, case, heat sink, USB OTG cable, mini-HDMI adapter. Price shown in USD; check the CAD total at checkout. No card reader included: use your laptop's microSD slot if it has one, or buy a reader. Shipping origin not stated."
+   },
+   "backupNote": null
   },
   {
    "id": "spare-sd",
