@@ -201,8 +201,12 @@ try:
               fold["more"] and not fold["bar"] and not fold["views"] and not fold["tilt"] and fit["bar"] and fit["views"] and fit["shown"] >= 5 and not fit["out"] and not fit["wide"], [fold, fit])
         ph_hints = pg.evaluate("[...new Set([...document.querySelectorAll('.viewer3d-hint')].map(h => h.textContent.trim()))]")
         check("touch screens: the 3D hint says 'Drag to rotate · pinch to zoom · two-finger drag to pan'; the laptop keeps its mouse wording (Shad's shot 13)",
-              ph_hints == ["Drag to rotate · pinch to zoom · two-finger drag to pan"] and lap_hints == ["Drag to rotate · scroll to zoom · right-drag to pan"]
-              and fit["hint"] == "Drag to rotate · pinch to zoom · two-finger drag to pan", [ph_hints, lap_hints, fit["hint"]])
+              # a playing step shows its action's line in the hint (viewer3d.js), so only the gesture lines are compared
+              [h_ for h_ in ph_hints if h_.startswith("Drag to rotate")] == ["Drag to rotate · pinch to zoom · two-finger drag to pan"]
+              and not any("scroll to zoom" in h_ or "right-drag" in h_ for h_ in ph_hints)
+              and [h_ for h_ in lap_hints if h_.startswith("Drag to rotate")] == ["Drag to rotate · scroll to zoom · right-drag to pan"]
+              and fit["hint"] == "Drag to rotate · pinch to zoom · two-finger drag to pan",
+              [[h_ for h_ in ph_hints if h_.startswith("Drag")], [h_ for h_ in lap_hints if h_.startswith("Drag")], fit["hint"]])
         ctx.close()
 
         ctx, pg = page_with(OWNED, TICKS, 390, hash_="#home")
