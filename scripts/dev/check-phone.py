@@ -458,8 +458,8 @@ try:
         st13 = {l["id"]: True for l in buy13["lines"] if int(l["stage"]) in (1, 3)}
         ctx, pg = page_with(st13, {}, 390, hash_="#steps"); pg.wait_for_timeout(600)
         pr = pg.evaluate("document.getElementById('practice-now').textContent")
-        check("Build, Before Step 1 (Shad's shot 23): the practice line says what he can practise now (Stages 1 and 3 bought) and that Stage 2 waits, out of stock with its date",
-              pr.startswith("You can practise now: Stage 1 and Stage 3.") and "Stage 2 waits: part of it is out of stock (checked 3 Nov)." in pr, pr)
+        check("Build, Before Step 1 (Shad's shot 23): the practice line says what he can practise now (Stages 1 and 3 bought) and that Stage 2 waits, out of stock with its latest check date",
+              pr.startswith("You can practise now: Stage 1 and Stage 3.") and "Stage 2 waits: part of it is out of stock (checked 5 Nov)." in pr, pr)   # the latest check of its out-of-stock parts (the Pi kit, 5 Nov)
         ctx.close()
         check("no page errors on the laptop or the phone", not errs, errs[:3])
         b.close()
