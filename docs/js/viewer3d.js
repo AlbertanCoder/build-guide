@@ -33,8 +33,9 @@ const MAX_ALIVE = 2;
 // many step labels, never touching, no close-up box. Both numbers are ART (picked for a ~360 px wide viewer).
 const PHONE_MAX_W = 560;
 const PHONE_LABELS_MAX = 3;
-const PHONE_FILL = 0.7;         // phone: the camera moves in until the highlighted part is this share of the view height (ART;
-                                // 0.45 left thin spread-out parts like the four props at 31-35 px of outline)
+const PHONE_FILL = 0.7;         // phone: the camera moves in until the highlighted part is this share of the view (ART),
+                                // in height AND width, so the whole group stays in frame (Builder's phone shots 2026-11-04)
+const PHONE_OVERVIEW = 0.5;     // phone: no move-in when the highlighted parts span this share of the model or more (ART)
 const PHONE_EASE_MS = 450;
 const PHONE_OUTLINE_PX = 2.5;   // phone: an ember rim this many CSS px wide around each highlighted part (ART)      // ...in a quick ease, not a slow fly-through (ART)
 
@@ -746,7 +747,12 @@ class ModelViewer {
     if (box.isEmpty()) return;
     const c = box.getCenter(new THREE.Vector3());
     const size = Math.max(box.getSize(new THREE.Vector3()).length(), 1e-3);
-    const half = Math.tan((this.camera.fov * Math.PI) / 360);
+    // an overview step (Step 1's five piles, all four props): the highlighted parts span half the model or more, so
+    // the whole view stays (ART threshold)
+    const all = new THREE.Box3().setFromObject(this.model);
+    if (!all.isEmpty() && size >= PHONE_OVERVIEW * all.getSize(new THREE.Vector3()).length()) return;
+    // the narrower of the view's height and width decides, so the group fits both ways
+    const half = Math.tan((this.camera.fov * Math.PI) / 360) * Math.min(1, this.camera.aspect || 1);
     const fill = size / (2 * Math.max(this.camera.position.distanceTo(c), 1e-4) * half);
     if (fill >= PHONE_FILL) return;
     const dir = this.camera.position.clone().sub(this.controls.target).normalize();
