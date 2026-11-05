@@ -717,6 +717,10 @@ class ModelViewer {
       this.arrow = new THREE.ArrowHelper(new THREE.Vector3(0, -1, 0), new THREE.Vector3(), 0.03, EMBER, 0.012, 0.008);
       this.scene.add(this.arrow);
       if (this.isPhone()) this.addOutlines(this.focusParts.filter((o) => !o.userData.keep_colour));
+      // an overview step (parts spread over half the model or more): the pointer arrow points at nothing useful and, on a
+      // phone, showed as a thin orange line from the top of the frame (Builder's Step 1 shot, 2026-11-05)
+      const fb = this.focusBox(), all = new THREE.Box3().setFromObject(this.model);
+      this.focusIsOverview = !fb.isEmpty() && !all.isEmpty() && fb.getSize(new THREE.Vector3()).length() >= PHONE_OVERVIEW * all.getSize(new THREE.Vector3()).length();
     }
     this.render();
     Promise.resolve().then(() => this.phoneMoveIn());          // after jumpTo's own camera move (same click)
@@ -858,6 +862,8 @@ class ModelViewer {
     if (box.isEmpty()) return null;
     const c = box.getCenter(new THREE.Vector3());
     const size = box.getSize(new THREE.Vector3()).length();
+    if (!this.modelDiag) { const mb = new THREE.Box3().setFromObject(this.model); this.modelDiag = mb.isEmpty() ? 1 : mb.getSize(new THREE.Vector3()).length(); }
+    this.focusIsOverview = size >= PHONE_OVERVIEW * this.modelDiag;   // live pose: Step 1's piles spread while it plays
     if (this.arrow) {
       const len = Math.max(size * 0.9, 0.02);
       this.arrow.position.copy(c).add(new THREE.Vector3(0, len + size * 0.5, 0));
@@ -1076,7 +1082,8 @@ class ModelViewer {
     const r = this.renderer;
     const inset = this.insetCamera();
     if (this.outlineU) this.outlineU.uViewport.value.set(this.canvasHost.clientWidth || 640, this.canvasHost.clientHeight || 420);
-    if (this.arrow) this.arrow.visible = !!(inset || (this.focusParts && this.focusParts.length));
+    // phone: no pointer arrow while playing (parts move) or on an overview step (judged on the live pose, every frame)
+    if (this.arrow) this.arrow.visible = !!(inset || (this.focusParts && this.focusParts.length)) && !(this.isPhone() && (this.playing || this.focusIsOverview));
     const W = this.canvasHost.clientWidth || 640;
     const H = this.canvasHost.clientHeight || 420;
     r.setScissorTest(false);
