@@ -193,7 +193,7 @@ const SUITES = [
        chips, reduced motion, and every action's pose shows what its text names. */
     name: "3d viewer",
     cmd: ["node", ["scripts/build/check_viewer.js"]],
-    expect: 235   /* 179 -> 235 (2026-11-04, Opus's 229cdba): 56 phone-width checks (no close-up box, at most 3 labels, none touching, the camera eases in). Before: 178 -> 179 (2026-11-04, practical cards, Opus): S4.9's pose. Before: 177 -> 178 (2026-11-03): the new S3.5 action's pose shows what its text names */
+    expect: 243   /* 235 -> 243 (2026-11-05, Opus): 8 playback checks, each model played from the start on a phone, the highlighted parts never leave the frame. Before: 179 -> 235 (2026-11-04, Opus's 229cdba): 56 phone-width checks (no close-up box, at most 3 labels, none touching, the camera eases in). Before: 178 -> 179 (2026-11-04, practical cards, Opus): S4.9's pose. Before: 177 -> 178 (2026-11-03): the new S3.5 action's pose shows what its text names */
   },
   {
     /* Phase E: payload layout sweeps on the real frame outlines (thermal view, fit, balance, legs, wires) */
