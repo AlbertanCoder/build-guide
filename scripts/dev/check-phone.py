@@ -413,6 +413,54 @@ try:
                   on.get("on") and on.get("fills") and on.get("locked") and on.get("close") and on.get("onTop") and off == [True, True] and g == [True, "pan-x pan-y"], [on, off, g])
         except Exception as e_:
             check("WebKit (Safari's engine) at 390 px: Full screen opens and closes the overlay, and the page's zoom gesture is cancelled", False, "%s: %s" % (type(e_).__name__, str(e_)[:200]))
+        # ---------------- job 14 (Shad's iPhone shots 20-25, 5 Nov 2026) ----------------
+        def sheet_run(browser, label):
+            c3 = browser.new_context(viewport={"width": 390, "height": 844}, has_touch=True, is_mobile=label != "WebKit")
+            c3.add_init_script("if (/^http/.test(location.protocol) && !sessionStorage.getItem('seeded')) { sessionStorage.setItem('seeded', '1'); localStorage.setItem(%s, %s); }"
+                               % (json.dumps(STORE), json.dumps(json.dumps({"owned": OWNED, "ticks": TICKS}))))
+            p3 = c3.new_page()
+            p3.on("pageerror", lambda e: errs.append("%s sheet: %s" % (label, e.message)))
+            p3.goto(URL + "#steps")
+            p3.wait_for_function("window.GuideAssistant && document.querySelector('.ga-launcher')", timeout=15000); p3.wait_for_timeout(600)
+            p3.evaluate("window.scrollTo(0, 1200)"); p3.wait_for_timeout(200)
+            y0 = p3.evaluate("Math.round(window.scrollY)")
+            p3.click(".ga-launcher"); p3.wait_for_timeout(500)
+            probe = """(() => { const pn = document.querySelector('.ga-panel').getBoundingClientRect(), inp = document.getElementById('ga-input').getBoundingClientRect();
+              const pts = [[20, 20], [innerWidth - 20, innerHeight - 20], [innerWidth / 2, innerHeight / 2]];
+              return { lock: document.documentElement.classList.contains('ga-lock'), top: Math.round(pn.top), bottom: Math.round(pn.bottom), w: Math.round(pn.width), h: innerHeight,
+                       inputIn: inp.top >= 0 && inp.bottom <= innerHeight + 1, covered: pts.every(([x, y]) => { const e = document.elementFromPoint(x, y); return !!e && !!e.closest('#ga-root'); }),
+                       pinned: document.documentElement.scrollHeight <= innerHeight + 2 }; })()"""
+            r1 = p3.evaluate(probe)
+            p3.set_viewport_size({"width": 390, "height": 480}); p3.wait_for_timeout(500)      # the keyboard takes the lower part of the screen
+            r2 = p3.evaluate(probe)
+            p3.screenshot(path=os.path.join(SHOTS, "phone-chat-keyboard-%s.png" % label))
+            p3.set_viewport_size({"width": 390, "height": 844}); p3.wait_for_timeout(300)
+            p3.click(".ga-close"); p3.wait_for_timeout(400)
+            back = p3.evaluate("[!document.documentElement.classList.contains('ga-lock'), Math.round(window.scrollY)]")
+            c3.close()
+            ok = (r1["lock"] and r1["top"] <= 1 and r1["bottom"] >= r1["h"] - 1 and r1["w"] >= 389 and r1["covered"] and r1["pinned"] and r1["inputIn"]
+                  and r2["top"] >= -1 and r2["bottom"] <= 481 and r2["inputIn"] and r2["covered"] and back[0] and abs(back[1] - y0) <= 2)
+            return ok, [r1, r2, back, y0]
+
+        ok14, info14 = sheet_run(b, "Chromium")
+        check("phone chat (Shad's shot 22): the open chat is a full sheet, the page behind covered and pinned; with the keyboard up (480 px left) the sheet and its text box fit above it; closing puts the page back where it was",
+              ok14, info14)
+        try:
+            wk2 = p.webkit.launch()
+            try:
+                ok14w, info14w = sheet_run(wk2, "WebKit")
+            finally:
+                wk2.close()
+            check("WebKit (Safari's engine): the same chat sheet over a simulated keyboard", ok14w, info14w)
+        except Exception as e_:
+            check("WebKit (Safari's engine): the same chat sheet over a simulated keyboard", False, "%s: %s" % (type(e_).__name__, str(e_)[:200]))
+
+        st13 = {l["id"]: True for l in buy13["lines"] if int(l["stage"]) in (1, 3)}
+        ctx, pg = page_with(st13, {}, 390, hash_="#steps"); pg.wait_for_timeout(600)
+        pr = pg.evaluate("document.getElementById('practice-now').textContent")
+        check("Build, Before Step 1 (Shad's shot 23): the practice line says what he can practise now (Stages 1 and 3 bought) and that Stage 2 waits, out of stock with its date",
+              pr.startswith("You can practise now: Stage 1 and Stage 3.") and "Stage 2 waits: part of it is out of stock (checked 3 Nov)." in pr, pr)
+        ctx.close()
         check("no page errors on the laptop or the phone", not errs, errs[:3])
         b.close()
 except Exception as e:

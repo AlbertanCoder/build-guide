@@ -1654,9 +1654,35 @@
     return msg;
   }
 
+  /* job 14 (Shad's iPhone, 5 Nov 2026): on a phone the open chat is a full sheet that sits on the keyboard. Its top and
+     height follow the visible area (visualViewport), and the page behind is pinned where it was, then put back. */
+  const PHONE_Q = window.matchMedia ? window.matchMedia("(max-width: 600px)") : null;
+  let lockY = 0;
+  function fitSheet() {
+    const vv = window.visualViewport, d = document.documentElement;
+    if (!vv) { return; }
+    d.style.setProperty("--ga-vv-top", Math.round(vv.offsetTop) + "px");
+    d.style.setProperty("--ga-vv-h", Math.round(vv.height) + "px");
+  }
+  if (window.visualViewport) {
+    ["resize", "scroll"].forEach(function (n) {
+      window.visualViewport.addEventListener(n, function () { if (document.documentElement.classList.contains("ga-lock")) { fitSheet(); } });
+    });
+  }
   function setOpen(on) {
     UI.panel.hidden = !on;
-    document.documentElement.classList.toggle("ga-lock", on && window.innerWidth < 560);
+    const d = document.documentElement, b = document.body;
+    const phone = PHONE_Q ? PHONE_Q.matches : window.innerWidth < 560;
+    if (on && phone && !d.classList.contains("ga-lock")) {
+      lockY = window.scrollY || 0;
+      b.style.position = "fixed"; b.style.top = -lockY + "px"; b.style.left = "0"; b.style.right = "0";
+      d.classList.add("ga-lock");
+      fitSheet();
+    } else if (!on && d.classList.contains("ga-lock")) {
+      d.classList.remove("ga-lock");
+      b.style.position = ""; b.style.top = ""; b.style.left = ""; b.style.right = "";
+      window.scrollTo(0, lockY);
+    }
     if (on) {
       UI.panel.removeAttribute("inert");
       updateStatus();

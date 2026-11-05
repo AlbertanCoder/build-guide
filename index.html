@@ -837,7 +837,13 @@
     #ga-root { right: 10px; bottom: calc(84px + env(safe-area-inset-bottom)); }  /* the bar grows by the iPhone's home-bar inset, so the button rises with it */
     .ga-launcher { padding: 9px; }
     .ticks-copy { display: none; }                                 /* the copy-to-phone tool is for the laptop */
-    .stage-chip.is-blocked { opacity: 1; background: #fff8ec; border-color: #e6cf9f; }  /* out of stock: noted, not greyed out (the part keeps its dated badge) */
+    .stage-chip.is-blocked { opacity: 1; background: #fff8ec; border-color: #e6cf9f; }
+    /* job 14 (Shad's shot 22): the open chat is a full sheet that sits on the keyboard: its top and height follow the
+       visible area (visualViewport, set by assistant.js); the page behind is covered and pinned */
+    html.ga-lock #ga-root::before { content: ""; position: fixed; inset: 0; background: var(--bg); }
+    html.ga-lock .ga-launcher { display: none; }
+    html.ga-lock .ga-panel { position: fixed; left: 0; right: 0; bottom: auto; top: var(--ga-vv-top, 0px); width: auto; max-width: none;
+      height: var(--ga-vv-h, 100vh); border-radius: 0; border: 0; box-shadow: none; z-index: 1; }  /* out of stock: noted, not greyed out (the part keeps its dated badge) */
   }
 </style>
 <script type="importmap">
@@ -2771,7 +2777,7 @@
   <details class="acc practice-wrap" open id="practice">
     <summary>Before Step 1: practice (Stages 0 to 3)</summary>
     <div class="acc-body">
-      <p>Practise with the parts from Stages 1 to 3 while the rest ships. Tick each stage when its practice is done: the Home page then moves on.</p>
+      <p id="practice-now">Practise with the parts from Stages 1 to 3 while the rest ships. Tick each stage when its practice is done: the Home page then moves on.</p>
         <div class="practice-stage" id="practice-stage-0">
           <h4>Stage 0 &middot; Start tonight</h4>
           <div class="asm-do">
@@ -5081,6 +5087,25 @@ while True:
           li.appendChild(mk("span", "", cad(st.done ? st.total : st.left) + " · " + state));   /* job 13: a bought stage shows its price, not CA$0.00 */
           chips.appendChild(li);
         });
+      }
+      /* job 14 (Shad, 5 Nov 2026): the practice intro says what he can practise now, from this same buy list */
+      const pn = document.getElementById("practice-now");
+      if (pn) {
+        const can = [], wait = [];
+        [1, 2, 3].forEach(function (n) {
+          const st = stageInfo(n);
+          if (!st.lines.length) { return; }
+          if (st.done) { can.push("Stage " + n); return; }
+          if (st.blocked.length) {
+            const when = st.blocked.map(function (l) { return l.checkedOn || ""; }).filter(Boolean).sort().pop();
+            wait.push("Stage " + n + " waits: part of it is out of stock" + (when ? " (checked " + dayLabel(when) + ")" : "") + ".");
+          } else {
+            wait.push("Stage " + n + " waits until its parts are bought and arrive.");
+          }
+        });
+        const list = function (a) { return a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " and " + a[a.length - 1]; };
+        pn.textContent = (can.length ? "You can practise now: " + list(can) + ". " : "Nothing for Stages 1 to 3 is ticked bought yet, so start with Stage 0: it needs no parts. ")
+          + wait.join(" ") + (wait.length ? " " : "") + "Tick each stage when its practice is done: the Home page then moves on.";
       }
     }
 
