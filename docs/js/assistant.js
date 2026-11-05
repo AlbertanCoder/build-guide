@@ -908,7 +908,7 @@
     const card = whereCard();
     if (!card) { return null; }
     const lists = card.querySelectorAll(".acc-body > ul");
-    const intro = card.querySelector(".acc-body > p");
+    const intro = document.getElementById("fly-basic") || card.querySelector(".acc-body > p");   /* the Basic-operations paragraph (now after the list of places he can fly) */
     if (!intro || lists.length < 2) { return null; }
     const can = Array.prototype.slice.call(lists[0].querySelectorAll("li")).map(function (li) { return "You can: " + clip(plain(li), 300); });
     const want = [/^In Edmonton/, /^Over people/, /^Near airports/, /^In controlled airspace/];

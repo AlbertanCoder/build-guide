@@ -338,9 +338,9 @@ try:
           const heads = [...c.querySelectorAll('.acc-body > p > strong')].map(s => s.textContent).filter(x => /^Where you|^Before you fly/.test(x));
           const lists = [...c.querySelectorAll('.acc-body > ul')].slice(0, 3);
           const nolink = lists.flatMap(u => [...u.children]).filter(li => !li.querySelector('a[href^="http"]') && !/below explains/.test(li.textContent)).map(li => li.textContent.slice(0, 50));
-          return { first: first && first.id, open: c.open, heads: heads, counts: lists.map(u => u.children.length), nolink: nolink }; })()""")
+          const firstP = (c.querySelector('.acc-body > p') || {}).textContent || ''; return { first: first && first.id, open: c.open, leadsWithCan: firstP.trim() === 'Where you can fly:', heads: heads, counts: lists.map(u => u.children.length), nolink: nolink }; })()""")
         check("Fly safely (Shad, item 11) leads with 'Where you can fly', then 'Where you can't fly', then 'Before you fly'; every line has its source link",
-              fl["first"] == "where-card" and fl["open"] and fl["heads"] == ["Where you can fly:", "Where you can't fly:", "Before you fly:"] and fl["counts"][0] >= 4 and fl["counts"][2] >= 5 and not fl["nolink"], fl)
+              fl["first"] == "where-card" and fl["open"] and fl["leadsWithCan"] and fl["heads"] == ["Where you can fly:", "Where you can't fly:", "Before you fly:"] and fl["counts"][0] >= 4 and fl["counts"][2] >= 5 and not fl["nolink"], fl)
         tt = pg.evaluate("[document.title, document.querySelector('header h1').textContent, /Fire-Detecting/i.test(document.body.innerText + document.title)]")
         check("title (Shad's decision): 'Build a Heat-Spotting Drone' in the header and the page title; 'Fire-Detecting' nowhere on the page",
               tt[0].startswith("Shad's Heat-Spotting Drone") and tt[1] == "Build a Heat-Spotting Drone" and tt[2] is False, tt)
