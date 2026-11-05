@@ -36,6 +36,17 @@ def unb64url(t):
     return base64.urlsafe_b64decode(t + "=" * (-len(t) % 4)).decode("utf-8")
 
 
+def same_text(chat, page):
+    """the chat's lines are the page's lines: whole, or cut at 320 characters ending in an ellipsis (assistant.js clip())."""
+    if len(chat) != len(page) or not page:
+        return False
+    for c, p in zip(chat, page):
+        c = " ".join(c.split())
+        if c != p and not (len(p) > 320 and c.endswith("…") and p.startswith(c[:-1])):
+            return False
+    return True
+
+
 def b64url(t):
     return base64.urlsafe_b64encode(t.encode("utf-8")).decode("ascii").rstrip("=")
 
@@ -93,6 +104,7 @@ try:
               lap["topModel"] == "docs/models/final-product.glb" and not lap["topPoster"] and not lap["posterShown"] and not lap["moreShown"] and lap["more"] >= 2
               and lap["play"] and lap["range"] and lap["views"] and lap["bar"] and lap["chips"], lap)
         pg.screenshot(path=os.path.join(SHOTS, "laptop-build.png"))
+        lap_hints = pg.evaluate("[...new Set([...document.querySelectorAll('.viewer3d-hint')].map(h => h.textContent.trim()))]")
         nav = pg.evaluate("""(() => { const n = [...document.querySelectorAll('#p-steps .asm-nav')].find(x => x.offsetParent !== null);
           const r = e => e.getBoundingClientRect(), a = r(n.querySelector('[data-asm-prev]')), c = r(n.querySelector('.asm-count')), z = r(n.querySelector('.asm-count').nextElementSibling);
           return { inRow: a.right <= c.left + 1 && c.right <= z.left + 1, sameLine: Math.abs((a.top + a.bottom) / 2 - (c.top + c.bottom) / 2) < 12 }; })()""")
@@ -175,6 +187,22 @@ try:
         check("phone: tapping the picture opens the finished drone's 3D view",
               t["model"] == "docs/models/final-product.glb" and t["ready"] and t["canvas"] and not t["poster"] and t["btnHidden"], t)
         top_el.screenshot(path=os.path.join(SHOTS, "phone-top-opened.png"))
+        # job 12 (Shad's iPhone shots 11-13): the opened finished drone uses the same fold, and opened it fits 390 px
+        fold = pg.evaluate("""(() => { const S = %s, top = %s;
+          return { more: S(top.querySelector('.v3d-more')), bar: S(top.querySelector('.viewer3d-bar:not(.viewer3d-anim)')), views: S(top.querySelector('.viewer3d-views')), tilt: S(top.querySelector('.viewer3d-tilt')) }; })()""" % (SHOWN, TOP_VIEW))
+        top_el.query_selector(".v3d-more").click(); pg.wait_for_timeout(500)
+        fit = pg.evaluate("""(() => { const S = %s, top = %s, W = document.documentElement.clientWidth;
+          const shown = [...top.querySelectorAll('button, input, label, .viewer3d-hint')].filter(S);
+          const out = shown.filter(e => { const r = e.getBoundingClientRect(); return r.left < -1 || r.right > W + 1; }).map(e => (e.textContent || e.type).trim().slice(0, 30));
+          return { shown: shown.length, out: out, bar: S(top.querySelector('.viewer3d-bar:not(.viewer3d-anim)')), views: S(top.querySelector('.viewer3d-views')),
+                   wide: document.documentElement.scrollWidth > innerWidth, hint: (top.querySelector('.viewer3d-hint') || {}).textContent }; })()""" % (SHOWN, TOP_VIEW))
+        top_el.screenshot(path=os.path.join(SHOTS, "phone-top-more.png"))
+        check("phone: the opened finished drone folds its controls under 'More 3D options'; opened, they all fit 390 px with no sideways scroll (Shad's shots 11-12)",
+              fold["more"] and not fold["bar"] and not fold["views"] and not fold["tilt"] and fit["bar"] and fit["views"] and fit["shown"] >= 5 and not fit["out"] and not fit["wide"], [fold, fit])
+        ph_hints = pg.evaluate("[...new Set([...document.querySelectorAll('.viewer3d-hint')].map(h => h.textContent.trim()))]")
+        check("touch screens: the 3D hint says 'Drag to rotate · pinch to zoom · two-finger drag to pan'; the laptop keeps its mouse wording (Shad's shot 13)",
+              ph_hints == ["Drag to rotate · pinch to zoom · two-finger drag to pan"] and lap_hints == ["Drag to rotate · scroll to zoom · right-drag to pan"]
+              and fit["hint"] == "Drag to rotate · pinch to zoom · two-finger drag to pan", [ph_hints, lap_hints, fit["hint"]])
         ctx.close()
 
         ctx, pg = page_with(OWNED, TICKS, 390, hash_="#home")
@@ -253,6 +281,35 @@ try:
         r2 = [pg.evaluate("!document.querySelector('.ticks-import')"), store(pg)]
         check("phone: a made-up or broken ticks link is ignored (no question, nothing saved, no error)",
               r1[0] and r1[1] and r1[2] == {"owned": P_OWNED, "ticks": P_TICKS} and r2[0] and r2[1] == {"owned": P_OWNED, "ticks": P_TICKS}, [r1, r2])
+        ctx.close()
+        ctx, pg = page_with({}, {}, 390, public=True, hash_="#home")
+        pg.wait_for_function("window.GuideAssistant", timeout=15000)
+        last = "(() => { const c = [...document.querySelectorAll('#ga-log .ga-msg')].pop(); return { title: (c.querySelector('.ga-title') || {}).textContent || '', text: c.innerText, quote: !!c.querySelector('.ga-quote'), chips: [...c.querySelectorAll('.ga-chip')].map(b => b.textContent), steps: [...c.querySelectorAll('.ga-steps li')].map(li => li.textContent) }; })()"
+        here = pg.evaluate("document.getElementById('here-step').textContent.replace(/^Next:\\s*/, '')")
+        pg.evaluate("GuideAssistant.ask('I need help')"); pg.wait_for_timeout(500)
+        h = pg.evaluate(last)
+        pg.screenshot(path=os.path.join(SHOTS, "phone-chat-help.png"))
+        check("chat (public site, Shad's shot 9): 'I need help' names where he is (the Home card's words), asks what is wrong and offers 5 buttons; no unrelated passage",
+              h["title"] == "Let's find the problem" and ("You are at: " + here) in h["text"] and "What is going wrong?" in h["text"] and not h["quote"] and len(h["chips"]) == 5
+              and h["chips"][0] == "Checks for Stage 1", [here, h])
+        same = []
+        for q_ in ("I'm stuck", "what now?", "help", "Can you help me?"):
+            pg.evaluate("GuideAssistant.ask(%s)" % json.dumps(q_)); pg.wait_for_timeout(300); same.append(pg.evaluate(last)["title"])
+        pg.evaluate("GuideAssistant.ask('help, my receiver will not bind')"); pg.wait_for_timeout(300)
+        specific = pg.evaluate(last)["title"]
+        check("chat: other vague asks get the same reply; a specific question still gets its own answer",
+              same == ["Let's find the problem"] * 4 and specific not in ("Let's find the problem", "Closest thing in the guide", "That one is outside this guide"), [same, specific])
+        page_checks = pg.evaluate("[...document.querySelectorAll('#practice-stage-1 .asm-check li')].map(li => li.textContent.replace(/\\s+/g, ' ').trim())")
+        pg.evaluate("GuideAssistant.ask('I need help')"); pg.wait_for_timeout(300)
+        pg.evaluate("[...document.querySelectorAll('#ga-log .ga-msg')].pop().querySelector('.ga-chip').click()"); pg.wait_for_timeout(400)
+        c1 = pg.evaluate(last)
+        check("chat: the 'Checks for Stage 1' button lists the checks written on the page for Stage 1's practice, word for word",
+              c1["title"] == "Stage 1 practice: done when" and same_text(c1["steps"], page_checks), [c1["title"], c1["steps"][:2], page_checks[:2]])
+        titles = []
+        for ch in h["chips"][1:]:
+            pg.evaluate("GuideAssistant.ask(%s)" % json.dumps(ch)); pg.wait_for_timeout(300); titles.append(pg.evaluate(last)["title"])
+        check("chat: each of the other 4 buttons leads to a written answer (not 'Closest thing in the guide')",
+              len(titles) == 4 and all(x_ and x_ not in ("Closest thing in the guide", "That one is outside this guide", "Let's find the problem") for x_ in titles), titles)
         ctx.close()
         check("no page errors on the laptop or the phone", not errs, errs[:3])
         b.close()

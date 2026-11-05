@@ -142,7 +142,7 @@ const SUITES = [
        everything (Python Playwright, Chromium) */
     name: "phone pass (browser)",
     cmd: ["python", ["scripts/dev/check-phone.py"]],
-    expect: 24,
+    expect: 30,   /* 24 -> 30 (2026-11-04, job 12, Shad's iPhone shots 9-13): the touch hint, the opened finished drone folded and fitting 390 px, the chat's reply to a vague ask and its 5 buttons */
     optional: true
   },
   {

@@ -5546,6 +5546,13 @@ while True:
 <script>
   /* Phone pass (job 11, 4 Nov 2026) */
   (function () {
+    /* job 12: on a touch screen the 3D views' hint names touch gestures (the architect approved the wording, touch
+       only). Set before any view starts: the viewer keeps this text and puts it back after showing a step's line. */
+    if (window.matchMedia && matchMedia("(pointer: coarse)").matches) {
+      Array.prototype.forEach.call(document.querySelectorAll(".viewer3d-hint"), function (h) {
+        if (/scroll to zoom/.test(h.textContent)) { h.textContent = "Drag to rotate · pinch to zoom · two-finger drag to pan"; }
+      });
+    }
     /* the public copy's footer: no laptop server there, so it says how the ticks do travel */
     if (window.GUIDE_PUBLIC_SITE) {
       Array.prototype.forEach.call(document.querySelectorAll(".sync-server"), function (e) { e.hidden = true; });

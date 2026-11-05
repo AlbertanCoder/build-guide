@@ -844,6 +844,61 @@
     };
   }
 
+  /* Job 12 (4 Nov 2026): a vague ask gets where he is (the Home card's own words), a question back, and buttons
+     that each lead to a written answer. Nothing here is made up: the place and the checks are read from the page. */
+  const VAGUE = /^(please )?(i need help|i need some help|need help|help|help me|help please|can you help( me)?|i'?m stuck|im stuck|i am stuck|stuck|what now|now what|what do i do( now)?|i'?m lost|im lost|i am lost|lost|i'?m confused|im confused|i am confused|confused|i don'?t know what to do|idk what to do|where do i go from here|sos)( please)?[ .!]*$/;
+
+  /* the checks written on the page for a stage's practice ("Stage done when") or a step ("Before you go on") */
+  function pageChecks(kind, n) {
+    const box = kind === "stage" ? document.getElementById("practice-stage-" + n)
+      : document.querySelector(".asm-step[data-step='" + n + "']");
+    if (!box) { return []; }
+    return Array.prototype.slice.call(box.querySelectorAll(".asm-check li"))
+      .map(function (li) { return clip(plain(li), 320); }).filter(Boolean);
+  }
+
+  function checksMessage(kind, n) {
+    const items = pageChecks(kind, n);
+    if (!items.length) { return null; }
+    const isStage = kind === "stage";
+    return {
+      role: "bot",
+      title: isStage ? "Stage " + n + " practice: done when" : "Step " + n + ": before you go on",
+      body: [isStage ? "The checks written on the page for Stage " + n + "'s practice:" : "The checks written on the page for Step " + n + ":"],
+      steps: items,
+      note: "",
+      src: isStage ? "Guide: Build, Stage " + n + " practice" : "Guide: Build, Step " + n,
+      see: [isStage ? { label: "Stage " + n + " practice", tab: "steps", step: null } : { label: "Step " + n, tab: "steps", step: n }],
+      chips: ["What should I do next?"]
+    };
+  }
+
+  function vagueHelpMessage() {
+    const where = stepContext();
+    const label = where.label || "";
+    const m = label.match(/^Stage\s*([1-8])\b/);
+    const kind = where.step ? "step" : (m ? "stage" : "");
+    const n = where.step || (m ? Number(m[1]) : 0);
+    const chips = [];
+    if (kind && pageChecks(kind, n).length) { chips.push("Checks for " + (kind === "step" ? "Step " : "Stage ") + n); }
+    chips.push("What do I buy today?", "What should I do next?", "No video on the monitor", "Receiver won't bind");
+    const see = [];
+    if (kind === "step") { see.push({ label: "Step " + n, tab: "steps", step: n }); }
+    else if (where.passage) { see.push({ label: label.split(" · ")[0], tab: where.passage.tab, step: null }); }
+    return {
+      role: "bot",
+      title: "Let's find the problem",
+      buttons: true,
+      body: [label ? "You are at: " + label + "." : "You have not started a stage yet.",
+        "What is going wrong? Say it in a few words (for example \"the iron won't heat up\" or \"no video on the monitor\"), or pick one below."],
+      steps: [],
+      note: "",
+      src: "Where you are, as on the Home card",
+      see: see,
+      chips: chips.slice(0, 5)
+    };
+  }
+
   function refusalMessage(query) {
     const hits = searchPassages(query, 2);
     if (hits.length && hits[0].score >= 2) {
@@ -946,6 +1001,16 @@
         body: ["Props off, safety glasses on, and check the obvious thing before the expensive thing."],
         steps: [], src: "", see: [], chips: ["What should I do next?", "Thermal image is noisy at 8 Hz"]
       };
+    }
+
+    /* --- a vague ask ("I need help", "I'm stuck", "what now"): say where he is, ask what is wrong, and offer
+       buttons that each lead to a written answer (job 12, Shad's iPhone 4 Nov 2026: "I need help" got an
+       unrelated passage). "Checks for Step 3" reads that step's own checks from the page. --- */
+    if (VAGUE.test(q)) { return vagueHelpMessage(); }
+    const chk = q.match(/\bchecks?\b.*\b(step|stage)\s*([1-8])\b/) || q.match(/\b(step|stage)\s*([1-8])\b.*\bchecks?\b/);
+    if (chk) {
+      const cm = checksMessage(chk[1], Number(chk[2]));
+      if (cm) { return cm; }
     }
 
     const last = ctx.lastId ? entryById(ctx.lastId) : null;
@@ -1072,7 +1137,7 @@
       card.appendChild(row);
     }
     wrap.appendChild(card);
-    if (msg.chips && msg.chips.length && msg.intro) {
+    if (msg.chips && msg.chips.length && (msg.intro || msg.buttons)) {   /* buttons: the help reply's choices (job 12) */
       const row = el("div", "ga-chips");
       msg.chips.forEach(function (c) {
         const b = el("button", "ga-chip", c);
