@@ -496,10 +496,23 @@
     .buy-row input[type="checkbox"] { width: 30px; height: 30px; margin: 4px 7px 7px; }
     details.buy-backup > summary { padding: 11px 0; }
     .stage-by-shop { min-height: 44px; }
+    .wt-link { padding: 12px 16px; }                                 /* PHONES P1: the 3D lesson button was 38 px high */
   }
   @media (max-width: 600px) {
     #p-career table { font-size: 13.5px; table-layout: fixed; }
     #p-career th, #p-career td { padding: 8px 6px; overflow-wrap: anywhere; }
+    /* PHONES P2: on a 320 px phone the Plan page's hours table stuck out 4 px */
+    #p-plan table { font-size: 13.5px; }
+    #p-plan th, #p-plan td { padding: 8px 6px; overflow-wrap: anywhere; }
+  }
+  /* Final audit, 11 Nov 2026 (PHONES P3): a phone on its side is too short for the floating chat box (its top, with
+     the close button, slid out of view). There the open chat is the same full sheet as on an upright phone
+     (assistant.js sets ga-lock for it). */
+  @media (max-height: 520px) and (min-width: 601px) {
+    html.ga-lock #ga-root::before { content: ""; position: fixed; inset: 0; background: var(--bg); }
+    html.ga-lock .ga-launcher { display: none; }
+    html.ga-lock .ga-panel { position: fixed; left: 0; right: 0; bottom: auto; top: var(--ga-vv-top, 0px); width: auto; max-width: none;
+      height: var(--ga-vv-h, 100vh); border-radius: 0; border: 0; box-shadow: none; z-index: 1; }
   }
 </style>
 <!-- Interactive 3D build models: three.js is vendored in docs/vendor/three, so
@@ -5895,6 +5908,6 @@ while True:
 </script>
 <script src="docs/js/domain.js"></script>
 <!-- Guide Assistant: offline-first Q&A. Remove these two lines to drop it. -->
-<script src="docs/js/assistant.js?v=build-guide-v6"></script>
+<script src="docs/js/assistant.js?v=build-guide-v7"></script>
 </body>
 </html>

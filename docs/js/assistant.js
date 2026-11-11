@@ -1745,7 +1745,8 @@
 
   /* job 14 (Shad's iPhone, 5 Nov 2026): on a phone the open chat is a full sheet that sits on the keyboard. Its top and
      height follow the visible area (visualViewport), and the page behind is pinned where it was, then put back. */
-  const PHONE_Q = window.matchMedia ? window.matchMedia("(max-width: 600px)") : null;
+  /* Final audit, 11 Nov 2026 (PHONES P3): a phone on its side (short, but wider than 600 px) gets the full sheet too. */
+  const PHONE_Q = window.matchMedia ? window.matchMedia("(max-width: 600px), (max-height: 520px)") : null;
   let lockY = 0;
   function fitSheet() {
     const vv = window.visualViewport, d = document.documentElement;

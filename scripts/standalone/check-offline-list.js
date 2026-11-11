@@ -37,7 +37,12 @@ const vendor = [];
 })("docs/vendor/three");
 vendor.forEach((v) => used.add(v));
 
-for (const u of used) {
+for (const raw of used) {
+  /* Final audit, 11 Nov 2026: this check reported 13 false problems. A file asked for with a version (assistant.js?v=...)
+     is the same file; and the 3D lessons are separate pages the guide links to, not files this page needs to run
+     (a lesson is kept for offline use when it is first watched). */
+  const u = raw.replace(/[?#].*$/, "");
+  if (/^docs\/walkthrough\//.test(u)) continue;
   if (u.endsWith("/")) continue;                                             /* a folder entry in the importmap */
   if (/\.md$/.test(u) || /^docs\/images\/(?!build\/)/.test(u)) continue;     /* not needed to run the page */
   if (!listed.includes(u)) { console.log("NOT PRE-CACHED: " + u); bad += 1; }

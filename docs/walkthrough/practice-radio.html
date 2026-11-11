@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Practice Radio</title>
+<link rel="icon" type="image/svg+xml" href="../../shad-drone-icon.svg">
+<link rel="icon" href="../icons/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<style>
+  :root { --bg:#eef1f4; --panel:#ffffff; --ink:#1d2329; --soft:#5b6670; --accent:#0a6cff; --line:#d5dbe1; --good:#137a3a; --bad:#c81e1e; --warn:#b45a00; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#14181c; --panel:#1d2329; --ink:#e9edf1; --soft:#9aa6b1; --accent:#5aa2ff; --line:#323b44; --good:#3fbf6f; --bad:#ff6b6b; --warn:#f0a040; } }
+  * { box-sizing:border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.4 system-ui,Segoe UI,Roboto,sans-serif; }
+  header { display:flex; align-items:center; gap:12px; padding:8px 16px; background:var(--panel); border-bottom:1px solid var(--line); }
+  header a { color:var(--accent); text-decoration:none; font-size:14px; }
+  header h1 { font-size:17px; margin:0; flex:1; }
+  #prog { font-size:14px; color:var(--soft); white-space:nowrap; }
+  #bar { height:4px; background:var(--line); } #bar i { display:block; height:100%; width:0; background:var(--good); transition:width .3s; }
+  main { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); gap:12px; padding:12px 16px; max-width:1300px; margin:0 auto; }
+  @media (max-width: 860px) { main { grid-template-columns:1fr; } }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px; }
+  #stage { position:relative; height:330px; border-radius:12px; overflow:hidden; border:1px solid var(--line); }
+  #stage canvas { display:block; width:100%; height:100%; }
+  #lcd { margin-top:10px; }
+  #lcd canvas { display:block; width:100%; max-width:520px; margin:0 auto; border-radius:6px; border:6px solid #1b1d20; image-rendering:pixelated; }
+  #lcdNote { font-size:12px; color:var(--soft); text-align:center; margin-top:4px; }
+  .mission h2 { margin:0 0 4px; font-size:18px; }
+  .mission .why { color:var(--soft); font-size:14px; margin-top:6px; }
+  .mission .hint { margin-top:8px; padding:8px 10px; border-radius:8px; background:color-mix(in srgb, var(--accent) 10%, transparent); font-size:15px; display:none; }
+  .mission.showhint .hint { display:block; }
+  #msg { min-height:24px; margin:10px 0 0; font-size:15px; color:var(--warn); }
+  #msg.good { color:var(--good); font-weight:600; }
+  .controls { margin-top:12px; display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; }
+  .col { display:flex; flex-direction:column; gap:6px; }
+  .col h3 { margin:0; font-size:12px; color:var(--soft); font-weight:600; text-transform:uppercase; letter-spacing:.04em; }
+  button.k { font:inherit; font-weight:600; font-size:15px; padding:9px 6px; border-radius:10px; border:1px solid var(--line); background:var(--bg); color:var(--ink); cursor:pointer; }
+  button.k:hover { border-color:var(--accent); }
+  button.k:active, button.k.hit { background:var(--accent); color:#fff; }
+  button.k.round { border-radius:999px; }
+  .switches { display:grid; grid-template-columns:repeat(4, 1fr); gap:6px; margin-top:10px; }
+  .row { display:flex; gap:8px; align-items:center; margin-top:10px; flex-wrap:wrap; }
+  .row label { font-size:14px; color:var(--soft); }
+  input[type=range] { flex:1; min-width:140px; }
+  .btn { border:0; border-radius:10px; padding:9px 14px; font:inherit; font-weight:600; cursor:pointer; background:var(--accent); color:#fff; }
+  .btn.ghost { background:transparent; color:var(--accent); border:1px solid var(--line); }
+  ol#list { margin:10px 0 0; padding-left:22px; font-size:14px; color:var(--soft); }
+  ol#list li.done { color:var(--good); } ol#list li.done::marker { content:"✓ "; }
+  ol#list li.now { color:var(--ink); font-weight:600; }
+  .small { font-size:13px; color:var(--soft); }
+</style>
+</head>
+<body>
+<header>
+  <a href="index.html#s3r-tour">← 3D guide</a>
+  <h1>Practice radio</h1>
+  <span id="prog">0 of 10 done</span>
+</header>
+<div id="bar"><i></i></div>
+<main>
+  <section>
+    <div id="stage"></div>
+    <div id="lcd"></div>
+    <div id="lcdNote">The radio's screen, made big. A practice copy: simplified, but it follows the same menus as your Pocket.</div>
+  </section>
+  <section>
+    <div class="card mission" id="mission">
+      <div class="small" id="mNum">Mission 1 of 10</div>
+      <h2 id="mTitle"></h2>
+      <div id="mDo"></div>
+      <div class="why" id="mWhy"></div>
+      <div class="hint" id="mHint"></div>
+      <div class="row">
+        <button class="btn ghost" id="hintBtn">I'm stuck: show me how</button>
+        <button class="btn ghost" id="resetBtn">Start over</button>
+      </div>
+      <div id="msg" role="status"></div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="small">Buttons laid out like the radio. Keyboard works too: ↑ ↓ roll the wheel, Enter = push, Esc = RTN, M = MDL, [ and ] = PAGE&lt; and PAGE&gt;.</div>
+      <div class="switches">
+        <button class="k" id="sw-SA">SA ↑</button>
+        <button class="k" id="sw-SB">SB ↑</button>
+        <button class="k" id="sw-SC">SC ↑</button>
+        <button class="k" id="sw-SD">SD ↑</button>
+      </div>
+      <div class="controls">
+        <div class="col"><h3>Under the left stick</h3>
+          <button class="k" data-k="RTN">RTN</button>
+          <button class="k" data-k="PAGEN">PAGE&gt;</button>
+          <button class="k" data-k="PAGEP">PAGE&lt;</button>
+          <button class="k" data-k="TELE">TELE</button>
+        </div>
+        <div class="col"><h3>Round buttons</h3>
+          <button class="k round" data-k="SYS">SYS</button>
+          <button class="k round" data-k="MDL">MDL</button>
+        </div>
+        <div class="col"><h3>Menu wheel</h3>
+          <button class="k" data-k="UP">Roll up ▲</button>
+          <button class="k" data-k="PUSH">Push (Enter)</button>
+          <button class="k" data-k="DOWN">Roll down ▼</button>
+          <button class="k" data-k="LONG">Long push</button>
+        </div>
+      </div>
+      <div class="row"><label for="thr">Left stick (throttle): down … up</label><input type="range" id="thr" min="-100" max="100" value="0"></div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="small">All missions</div>
+      <ol id="list"></ol>
+    </div>
+  </section>
+</main>
+<script type="importmap">
+{ "imports": { "three": "../vendor/three/build/three.module.js" } }
+</script>
+<script type="module">
+import * as E from "./engine.js";
+import { makePocket } from "./lessons/s3r-radio.js";
+const $ = id => document.getElementById(id);
+
+/* ---------------- the pretend radio (simplified EdgeTX, black-and-white) ----------------
+   Follows ~/bench-clips/radio-facts/POCKET-FACTS.md: short MDL = Model Select; PAGE> from Model Select = Setup;
+   Enter on an empty slot = Create / Restore; on a model not in use = Select / Backup / Copy / Move / Delete;
+   Name: push to edit, roll = letter, push = next, long push = capital/small, RTN ends; Enter on an empty mix line
+   opens a mix, on a line with the sticks starts copy/move (RTN cancels); Source: push, flick, push; PAGE> on the main
+   screen wraps to CHANNELS MONITOR, PAGE< goes back; Timer (11 Nov audit): Mode first; the other lines show once it is not OFF: Switch, Start, and Remain once a time is set.
+   PRACTICE ASSUMPTION (not from a manual): here SA down = -100 (disarmed). Check yours on CHANNELS MONITOR. */
+const LETTERS = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-";
+const MODES = ["OFF", "ON", "Strt", "THs", "TH%", "THt"];
+const TSW = ["---", "SA up", "SA down", "SD up", "SD down"];
+const SOURCES = ["---", "SA", "SB", "SC", "SD"];
+const PAGES = ["modelsel", "setup", "inputs", "mixes", "outputs"];
+function fresh() {
+  const models = ["POCKET", "FPV DRONE", "DELTA", "HELI", "MODEL05", "MODEL06", "", "", "", "", "", ""];
+  return { screen: "warning", view: 0, models, active: 5, cur: 5, popup: null, page: "modelsel", seen: {},
+    setupRow: 0, edit: false, nameEdit: null, lower: false,
+    mix: {}, mixRow: 0, mixEdit: null, copyMode: false,
+    timer: { start: 0, remain: true, mode: "OFF", sw: "---" },
+    sw: { SA: 1, SB: 1, SC: 1, SD: 1 }, thr: 0, done: 0 };
+}
+let S = fresh();
+try { const s = JSON.parse(localStorage.getItem("practice-radio-v1") || "null"); if (s && s.models) S = { ...fresh(), ...s, popup: null }; } catch (e) {}
+const save = () => { try { localStorage.setItem("practice-radio-v1", JSON.stringify(S)); } catch (e) {} };
+const say = (t, good) => { $("msg").textContent = t || ""; $("msg").className = good ? "good" : ""; };
+const setupRows = () => ["name", "mode", ...(S.timer.mode !== "OFF" ? ["switch", "start", ...(S.timer.start > 0 ? ["remain"] : [])] : [])];
+const mm = s => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+const chVal = ch => { const src = S.mix[ch]; if (!src) return 0; const v = S.sw[src]; return src === "SB" || src === "SC" ? v * 100 : (v > 0 ? 100 : -100); };
+
+function act(k) {
+  say("");
+  if (S.screen === "warning") {
+    if (["RTN", "PAGEN", "PAGEP", "TELE", "SYS", "MDL", "PUSH", "LONG", "UP", "DOWN"].includes(k)) { S.screen = "home"; say("You skipped the warning. Next time, push the left stick all the way down instead: that's the real fix."); }
+    return;
+  }
+  const inMenu = S.screen === "menu";
+  if (k === "SYS") { say("SYS opens the radio's own settings and tools. You don't need it today: press RTN to come back if you open it on the real radio."); return; }
+  if (k === "TELE") { say("TELE shows information sent back by the drone. Nothing to see without a drone: not needed today."); return; }
+  if (S.screen === "home") {
+    if (k === "MDL") { S.screen = "menu"; S.page = "modelsel"; S.cur = S.active; S.seen.modelsel = true; return; }
+    if (k === "PAGEN") { S.view = S.view === 0 ? 4 : S.view - 1; return; }
+    if (k === "PAGEP") { S.view = (S.view + 1) % 5; return; }
+    if (k === "RTN" && S.view === 4) { say("This screen doesn't change with RTN. Press PAGE< once to get back to the main screen."); return; }
+    return;
+  }
+  if (!inMenu) return;
+  // popups first
+  if (S.popup) {
+    const P = S.popup;
+    if (k === "UP" || k === "DOWN") { P.hi = Math.max(0, Math.min(P.items.length - 1, P.hi + (k === "DOWN" ? 1 : -1))); return; }
+    if (k === "RTN") { S.popup = null; return; }
+    if (k === "PUSH") {
+      const it = P.items[P.hi]; S.popup = null;
+      if (it === "Create model") { S.models[S.cur] = "MODEL" + String(S.cur + 1).padStart(2, "0"); S.active = S.cur; say("New model made, and the star moved to it.", true); }
+      else if (it === "Delete model") { S.models[S.cur] = ""; say("Deleted. The starred model is untouched.", true); }
+      else if (it === "Select model") { S.active = S.cur; say("The star moved: that model is now in use."); }
+      else say(`"${it}" isn't needed today. Nothing changed.`);
+      return;
+    }
+    return;
+  }
+  const page = S.page;
+  // PAGE> / PAGE< move between the model's pages (not while editing)
+  const editing = S.edit || S.nameEdit !== null || (S.mixEdit && S.mixEdit.editing);
+  if ((k === "PAGEN" || k === "PAGEP") && editing) { say("PAGE buttons do nothing while you're changing a value. Push the wheel or press RTN first."); return; }
+  if ((k === "PAGEN" || k === "PAGEP") && !S.mixEdit) {
+    const i = PAGES.indexOf(page), j = Math.max(0, Math.min(PAGES.length - 1, i + (k === "PAGEN" ? 1 : -1)));
+    S.page = PAGES[j]; S.seen[S.page] = true; S.copyMode = false; return;
+  }
+  if (k === "MDL") return;
+  if (page === "modelsel") {
+    if (k === "UP" || k === "DOWN") { S.cur = Math.max(0, Math.min(11, S.cur + (k === "DOWN" ? 1 : -1))); return; }
+    if (k === "RTN") { S.screen = "home"; return; }
+    if (k === "PUSH") {
+      if (!S.models[S.cur]) S.popup = { items: ["Create model", "Restore model"], hi: 0 };
+      else if (S.cur === S.active) S.popup = { items: ["Move model", "Copy model", "Backup model"], hi: 0 };
+      else S.popup = { items: ["Select model", "Backup model", "Copy model", "Move model", "Delete model"], hi: 0 };
+      return;
+    }
+    return;
+  }
+  if (page === "setup") {
+    const rows = setupRows(), row = rows[Math.min(S.setupRow, rows.length - 1)];
+    if (S.nameEdit !== null) {
+      const name = (S.models[S.active] + "          ").slice(0, 10).split("");
+      if (k === "UP" || k === "DOWN") {
+        const c = name[S.nameEdit].toUpperCase(); let i = LETTERS.indexOf(c); if (i < 0) i = 0;
+        i = (i + (k === "DOWN" ? 1 : -1) + LETTERS.length) % LETTERS.length;
+        name[S.nameEdit] = S.lower ? LETTERS[i].toLowerCase() : LETTERS[i];
+        S.models[S.active] = name.join("").replace(/\s+$/, ""); return;
+      }
+      if (k === "PUSH") { if (S.nameEdit < 9) S.nameEdit++; else say("That's the 10th letter: the most a name can have. Press RTN to finish."); return; }
+      if (k === "LONG") { S.lower = !S.lower; const ch = name[S.nameEdit]; name[S.nameEdit] = S.lower ? ch.toLowerCase() : ch.toUpperCase(); S.models[S.active] = name.join("").replace(/\s+$/, ""); say(S.lower ? "Small letters now." : "Capital letters now."); return; }
+      if (k === "RTN") { S.nameEdit = null; S.lower = false; say("Name finished. The radio saves by itself after a few seconds."); return; }
+      return;
+    }
+    if (S.edit) {
+      if (k === "UP" || k === "DOWN") {
+        const d = k === "DOWN" ? 1 : -1;
+        if (row === "start") S.timer.start = Math.max(0, Math.min(3600, S.timer.start + d * 15));
+        if (row === "remain") S.timer.remain = !S.timer.remain;
+        if (row === "mode") S.timer.mode = MODES[(MODES.indexOf(S.timer.mode) + d + MODES.length) % MODES.length];
+        if (row === "switch") S.timer.sw = TSW[(TSW.indexOf(S.timer.sw) + d + TSW.length) % TSW.length];
+        return;
+      }
+      if (k === "PUSH" || k === "RTN") { S.edit = false; return; }
+      return;
+    }
+    if (k === "UP" || k === "DOWN") { S.setupRow = Math.max(0, Math.min(rows.length - 1, S.setupRow + (k === "DOWN" ? 1 : -1))); return; }
+    if (k === "PUSH") { if (row === "name") { S.nameEdit = 0; S.lower = false; } else S.edit = true; return; }
+    if (k === "RTN") { S.screen = "home"; return; }
+    return;
+  }
+  if (page === "mixes") {
+    if (S.mixEdit) {
+      const M = S.mixEdit;
+      if (M.editing) {
+        if (k === "UP" || k === "DOWN") { const d = k === "DOWN" ? 1 : -1; const src = S.mix[M.ch] || "---"; const n = SOURCES[(SOURCES.indexOf(src) + d + SOURCES.length) % SOURCES.length]; if (n === "---") delete S.mix[M.ch]; else S.mix[M.ch] = n; return; }
+        if (k === "PUSH" || k === "RTN") { M.editing = false; if (k === "PUSH" && S.mix[M.ch]) say(`Source set to ${S.mix[M.ch]}.`, true); return; }
+        return;
+      }
+      if (k === "UP" || k === "DOWN") { M.row = Math.max(0, Math.min(3, M.row + (k === "DOWN" ? 1 : -1))); return; }
+      if (k === "PUSH") { if (M.row === 1) { M.editing = true; say("Source is ready to change: flick a switch (or roll), then push again."); } else if (M.row === 0) say("Mix name is only a label. Leave it empty today."); else say("Leave this one as it is today."); return; }
+      if (k === "RTN") { S.mixEdit = null; return; }
+      return;
+    }
+    if (S.copyMode) { if (k === "RTN") { S.copyMode = false; say("Copy/move cancelled."); } else say("You're in copy/move mode. Press RTN to cancel it."); return; }
+    if (k === "UP" || k === "DOWN") { S.mixRow = Math.max(0, Math.min(7, S.mixRow + (k === "DOWN" ? 1 : -1))); return; }
+    if (k === "PUSH") {
+      if (S.mixRow < 4) { S.copyMode = true; say("That line already has a stick on it, so pushing starts copy/move mode. Press RTN to cancel."); }
+      else S.mixEdit = { ch: S.mixRow, row: 0, editing: false };
+      return;
+    }
+    if (k === "RTN") { S.screen = "home"; return; }
+    return;
+  }
+  if (k === "RTN") { S.screen = "home"; return; }
+}
+function flick(name) {
+  if (S.screen === "warning") { /* switches don't clear the throttle warning */ }
+  if (name === "SB" || name === "SC") S.sw[name] = S.sw[name] === 1 ? 0 : S.sw[name] === 0 ? -1 : 1;
+  else S.sw[name] = -S.sw[name];
+  if (S.screen === "menu" && S.page === "mixes" && S.mixEdit && S.mixEdit.editing && S.mixEdit.row === 1) S.mix[S.mixEdit.ch] = name;
+  update();
+}
+
+/* ---------------- missions ---------------- */
+const MISSIONS = [
+  { t: "Clear the throttle warning", d: "The radio just switched on and shows THROTTLE WARNING.", why: "The radio won't start with the power stick up, so a drone can't take off by surprise.",
+    h: "Drag the <b>left stick (throttle)</b> slider all the way to the left (down).", ok: () => S.screen !== "warning" && S.thr <= -95 },
+  { t: "Open Model Select", d: "Open the list of saved models.", why: "Each aircraft gets its own saved settings: a model.", h: "Press <b>MDL</b> once.", ok: () => S.seen.modelsel },
+  { t: "Delete the spare model", d: "You have MODEL05 and MODEL06 (with the star). Keep the starred one, delete MODEL05.", why: "One drone, one model: a spare is easy to pick by mistake.",
+    h: "On Model Select: <b>Roll up</b> to 05 MODEL05, <b>Push</b>, roll down to <b>Delete model</b>, <b>Push</b>.", ok: () => !S.models[4] && S.active === 5 && !!S.models[5] },
+  { t: "Go to SETUP", d: "Open the settings page of the starred model.", why: "Setup holds the name and the timer.", h: "From Model Select, press <b>PAGE&gt;</b> once.", ok: () => S.seen.setup },
+  { t: "Name it FIREWATCH", d: "Change the name to FIREWATCH.", why: "So the main screen shows at a glance that your drone's model is loaded.",
+    h: "On SETUP, the dark bar on Name: <b>Push</b>. Then for each letter: <b>Roll</b> until it shows, <b>Push</b> for the next. Spare letters at the end: roll to the blank (just before A). Then <b>RTN</b>.",
+    ok: () => (S.models[S.active] || "").trim().toUpperCase() === "FIREWATCH" && S.nameEdit === null },
+  { t: "Get to MIXES", d: "Find the Mixes page.", why: "Mixes is where switches get their channels.", h: "Press <b>PAGE&gt;</b> until the top says MIXES (from SETUP: twice here).", ok: () => S.seen.mixes },
+  { t: "Arm switch: CH5 = SA", d: "Give channel 5 the switch SA.", why: "The radio link sends channel 5 in every message, so 'motors off' always gets through.",
+    h: "On MIXES: <b>Roll down</b> to CH5, <b>Push</b>. <b>Roll down</b> once to Source, <b>Push</b>, click <b>SA</b> (flick it), <b>Push</b>. Then <b>RTN</b>.", ok: () => S.mix[4] === "SA" && !S.mixEdit },
+  { t: "Angle switch: CH6 = SD", d: "Give channel 6 the switch SD.", why: "SD will turn on self-levelling (Angle mode).", h: "Same as CH5, on the CH6 line, flicking <b>SD</b>.", ok: () => S.mix[5] === "SD" && !S.mixEdit },
+  { t: "Find 'motors off' on CHANNELS MONITOR", d: "Go to the main screen, open CHANNELS MONITOR, and set SA so CH5 shows -100.", why: "-100 is LOW, and LOW = disarmed. Your hand must know where 'off' is.",
+    h: "<b>RTN</b> until the main screen, then <b>PAGE&gt;</b> once. Click <b>SA</b> until CH5 shows -100. (On this practice radio that's SA down; check yours.)", ok: () => S.screen === "home" && S.view === 4 && chVal(4) === -100 },
+  { t: "3-minute countdown timer", d: "Timer 1: Mode THs, Switch SA up (armed here), then Start 3:00, Remain.", why: "A countdown tells you when to land, and THs only counts while you're flying.",
+    h: "<b>PAGE&lt;</b> back to the main screen, <b>MDL</b>, <b>PAGE&gt;</b> to SETUP. Roll to Timer1, <b>Push</b>, roll to THs, <b>Push</b> (more lines appear). Switch: Push, roll to SA up, Push. Start: Push, roll to 03:00, Push. Remain: leave it.",
+    ok: () => S.timer.start === 180 && S.timer.remain && S.timer.mode === "THs" && S.timer.sw === "SA up" && !S.edit },
+];
+function missions() {
+  // missions are done in order and stay done (mission 9 stays ticked after you leave CHANNELS MONITOR)
+  const was = S.done;
+  while (S.done < MISSIONS.length && MISSIONS[S.done].ok()) S.done++;
+  if (S.done > was) say(S.done >= MISSIONS.length ? "All 10 done! You've set up the whole radio on the practice copy." : `Done: ${MISSIONS[S.done - 1].t}. Next mission below.`, true);
+  const d = S.done;
+  $("prog").textContent = `${Math.min(S.done, 10)} of ${MISSIONS.length} done`;
+  $("bar").firstElementChild.style.width = (100 * Math.min(S.done, 10) / MISSIONS.length) + "%";
+  const m = MISSIONS[Math.min(d, MISSIONS.length - 1)];
+  $("mNum").textContent = d >= MISSIONS.length ? "All missions done ✓" : `Mission ${d + 1} of ${MISSIONS.length}`;
+  $("mTitle").textContent = m.t; $("mDo").textContent = m.d; $("mWhy").innerHTML = "<b>Why:</b> " + m.why; $("mHint").innerHTML = m.h;
+  $("list").innerHTML = MISSIONS.map((x, i) => `<li class="${i < d ? "done" : i === d ? "now" : ""}">${x.t}</li>`).join("");
+  return d;
+}
+
+/* ---------------- drawing ---------------- */
+const stageEl = $("stage");
+const ST = E.createStage(stageEl);
+const { renderer, scene, camera } = ST;
+const root = new E.THREE.Group(); scene.add(root);
+E.makeBench(root, { wall: false });
+const p = makePocket(E, root, E.V(0, 6.2, 0));
+p.group.updateMatrixWorld(true);
+$("lcd").appendChild(p.screenCanvas);
+const scr = p.at("screen");
+camera.position.copy(scr.clone().add(E.V(0, 7, 21))); camera.lookAt(p.world(0, 0.5));
+function resize() { const w = stageEl.clientWidth, h = stageEl.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+addEventListener("resize", resize); resize();
+function draw() {
+  p.redraw();
+  if (S.screen === "warning") return p.throttleWarning();
+  if (S.screen === "home") {
+    if (S.view === 4) return p.screen("CHANNELS MONITOR", [5, 6, 7, 8].map(c => `CH${c}  ${String(chVal(c - 1)).padStart(4)}`).concat([]), -1);
+    return p.home(S.models[S.active] || "MODEL");
+  }
+  const pg = S.page;
+  if (pg === "modelsel") {
+    p.modelList(S.models.map((n, i) => [String(i + 1).padStart(2, "0"), n]), S.cur, S.active);
+  } else if (pg === "setup") {
+    const rows = setupRows(); const nm = S.models[S.active] || "";
+    const shownName = S.nameEdit === null ? nm : (nm + "          ").slice(0, 10).split("").map((c, i) => i === S.nameEdit ? `[${c === " " ? "_" : c}]` : c).join("").replace(/\s+$/, "");
+    const text = { name: "Name " + shownName, mode: "Timer1 " + S.timer.mode, switch: "  Switch " + S.timer.sw, start: "  Start " + mm(S.timer.start), remain: "  " + (S.timer.remain ? "Remain" : "Elaps.") };
+    const hi = Math.min(S.setupRow, rows.length - 1);
+    const lines = rows.map((r, i) => text[r] + (S.edit && i === hi ? " <" : ""));
+    const top = Math.max(0, Math.min(lines.length - 5, hi - 2));
+    p.screen("SETUP", lines.slice(top, top + 5), hi - top);
+  } else if (pg === "inputs") p.screen("INPUTS", ["(not this page:", " keep pressing", " PAGE>)"], -1);
+  else if (pg === "outputs") p.screen("OUTPUTS", ["(not needed today:", " PAGE< to go", " back to MIXES)"], -1);
+  else if (pg === "mixes") {
+    if (S.mixEdit) {
+      const M = S.mixEdit, src = S.mix[M.ch] || "---";
+      p.screen(`MIXES CH${M.ch + 1}`, ["Mix name  ---", "Source    " + src + (M.editing ? " <" : ""), "Weight    100", "Offset    0"], M.row);
+    } else {
+      const lines = Array.from({ length: 8 }, (_, i) => `CH${i + 1}  ` + (i < 4 ? "stick" : (S.mix[i] || ""))).map((l, i) => S.copyMode && i === S.mixRow ? l + " (copy/move)" : l);
+      const top = Math.max(0, Math.min(3, S.mixRow - 2));
+      p.screen("MIXES", lines.slice(top, top + 5), S.mixRow - top);
+    }
+  }
+  if (S.popup) p.popup(S.popup.items, S.popup.hi);
+}
+function update() {
+  draw();
+  for (const n of ["SA", "SB", "SC", "SD"]) { p.flick(n, S.sw[n] === 0 ? 0.01 : S.sw[n]); $("sw-" + n).textContent = `${n} ${S.sw[n] === 1 ? "↑" : S.sw[n] === 0 ? "–" : "↓"}`; }
+  p.throttle(S.thr / 100);
+  const before = S.done; missions(); if (S.done !== before) {} save();
+}
+let wheel = 0, pressT = {};
+function press(k) {
+  const map = { RTN: "RTN", PAGEN: "PAGE>", PAGEP: "PAGE<", TELE: "TELE", SYS: "SYS", MDL: "MDL", PUSH: "wheel", LONG: "wheel" };
+  if (k === "UP" || k === "DOWN") wheel += k === "DOWN" ? 0.05 : -0.05;
+  if (map[k]) pressT[map[k]] = performance.now();
+  act(k); update();
+}
+document.querySelectorAll("button.k[data-k]").forEach(b => b.onclick = () => press(b.dataset.k));
+for (const n of ["SA", "SB", "SC", "SD"]) $("sw-" + n).onclick = () => flick(n);
+$("thr").oninput = e => { S.thr = +e.target.value; if (S.screen === "warning" && S.thr <= -95) { S.screen = "home"; say("Warning cleared: the throttle is at zero.", true); } update(); };
+$("thr").value = S.thr;
+$("hintBtn").onclick = () => $("mission").classList.toggle("showhint");
+$("resetBtn").onclick = () => { S = fresh(); $("thr").value = 0; $("mission").classList.remove("showhint"); say("Started over: the radio just switched on."); update(); };
+addEventListener("keydown", e => {
+  const m = { ArrowUp: "UP", ArrowDown: "DOWN", Enter: "PUSH", Escape: "RTN", Backspace: "RTN", m: "MDL", M: "MDL", "]": "PAGEN", "[": "PAGEP" };
+  if (e.target.tagName === "INPUT" && (e.key === "ArrowUp" || e.key === "ArrowDown")) return;
+  if (m[e.key]) { e.preventDefault(); press(m[e.key]); }
+});
+function loop(now) {
+  for (const b of ["RTN", "PAGE>", "PAGE<", "TELE", "SYS", "MDL", "wheel"]) p.press(b, pressT[b] && now - pressT[b] < 180 ? 1 : 0);
+  p.roll(wheel);
+  renderer.render(scene, camera);
+  requestAnimationFrame(loop);
+}
+update(); requestAnimationFrame(loop);
+// for automated checks
+window.__pr = { act: k => { press(k); return S; }, flick: n => { flick(n); return S; }, thr: v => { $("thr").value = v; $("thr").dispatchEvent(new Event("input")); return S; }, state: () => JSON.parse(JSON.stringify(S)), mission: () => missions(), reset: () => $("resetBtn").click(), shown: () => p.shown() };
+</script>
+</body>
+</html>

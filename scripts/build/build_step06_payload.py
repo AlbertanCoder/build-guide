@@ -4,7 +4,9 @@ build_step06_payload.py - Step 6 "Wire the Pi payload", on the bench.
 Text (STEP-TRUTH S6, approved wording incl. items 12-15): card flashed and I2C on; straight male 1x5 header
 on each sensor; Qwiic HAT pressed onto the Pi; each sensor cabled with one CAB-17261: red 3V3 to pin 1, blue
 SDA to pin 2, yellow SCL to pin 3, pin 4 (INT) empty, black GND to pin 5; bench power from the kit supply;
-addresses 0x33 and 0x10; thermal lens down, GPS antenna up. The micro-USB pigtail waits for step 7.
+addresses 0x33 and 0x10. On the bench both boards lie FACE UP (thermal lens up, GPS antenna up), so the pin order in
+the picture is the order the words give for a board held face up (11 Nov 2026 audit: the thermal camera was drawn lens
+down with the same pin order, a mirror image of the real board). An arrow shows the lens goes down later, on the drone. The micro-USB pigtail waits for step 7.
 Pin order on the board follows Pimoroni's drawing (INT is the 4th pin).
 Run:  blender -b --factory-startup -P scripts/build/build_step06_payload.py
 """
@@ -62,7 +64,7 @@ def build():
     P = C.palette()
 
     _, ports = Q.pi_bench(P, (0.0, 0.040, 0.004))
-    mlx, mlx_pins = Q.sensor_board(P, "mlx", (-0.070, -0.040, 0.016), lens_down=True)
+    mlx, mlx_pins = Q.sensor_board(P, "mlx", (-0.070, -0.040, 0.012), lens_down=False)
     gps, gps_pins = Q.sensor_board(P, "gps", (0.070, -0.040, 0.012))
     cable(P, "cab17261_thermal", ports[0], mlx_pins)
     cable(P, "cab17261_gps", ports[1], gps_pins, extend=True)
@@ -80,7 +82,7 @@ def build():
 
     C.label("PI ZERO 2 WH", (0.0, 0.040, 0.010), detail="card flashed, I2C on")
     C.label("QWIIC HAT", (0.0, 0.055, 0.020), detail="pressed onto the 40 pins")
-    C.label("MLX90640 THERMAL CAMERA (0x33) - LENS DOWN", (-0.070, -0.040, 0.050))
+    C.label("MLX90640 THERMAL CAMERA (0x33) - FACE UP HERE; LENS DOWN ON THE DRONE", (-0.070, -0.040, 0.050))
     C.label("PA1010D GPS (0x10) - ANTENNA UP", (0.070, -0.040, 0.054))
     C.label("CAB-17261 CABLE x2", (0.0, -0.010, 0.012), detail="red 3V3, blue SDA, yellow SCL, black GND")
     C.label("GPS CABLE + 12 CM PER WIRE", (0.045, -0.020, 0.016), detail="one wire at a time, joints in 3 mm heat shrink")

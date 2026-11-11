@@ -125,9 +125,12 @@ try:
         check("bans: an AI buying answer with an undated price is blocked, then the guide's own Buy-today answer follows",
               "Buy" in last_card(), last_card()[:160])
 
-        # from here on he has bought Stages 1 to 4, so the chat is at a build step, as the Home card would be
+        # from here on he has bought Stages 1 to 4 and ticked both practices done, so the chat is at a build step, as the
+        # Home card would be. (Final audit, 11 Nov 2026, NEW-1: buying Stage 4 no longer skips the Stage 1 and Stage 3
+        # practice; each stays "next" until it is ticked done. This set-up ticks them, as check-fresh-eyes.py does.)
         lp.evaluate("""() => { const s = JSON.parse(localStorage.getItem('shad-drone-guide-v1') || '{}');
           const lines = JSON.parse(document.getElementById('buy-data').textContent).lines;
+          s.ticks = s.ticks || {}; s.ticks['stg-1-done'] = true; s.ticks['stg-3-done'] = true;
           s.owned = s.owned || {}; lines.filter(l => l.stage >= 1 && l.stage <= 4).forEach(l => { s.owned[l.id] = true; });
           localStorage.setItem('shad-drone-guide-v1', JSON.stringify(s)); }""")
         lp.reload()

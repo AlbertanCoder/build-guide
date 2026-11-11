@@ -21,7 +21,8 @@
 /* v3 (4 Nov 2026): scripts are now network first too. Under v2 an old cached assistant.js ran next to a newer page,
    and Shad's bought ticks did not show. Change CACHE for every release, and index.html asks for assistant.js with
    this same name (?v=...), so a page and its script always come together (check-chat-memory.py checks the two match). */
-const CACHE = "build-guide-v6";
+/* v7 (11 Nov 2026): the final audit's release: seven step drawings corrected, the Step 6 and Step 7 models rebuilt. */
+const CACHE = "build-guide-v7";
 
 const PRECACHE = [
   "./",
@@ -92,14 +93,24 @@ self.addEventListener("fetch", (event) => {
   const request = event.request;
   if (!sameSiteGet(request)) return;
 
-  /* the page: network first, last copy when offline */
+  /* the page: network first, last copy when offline.
+     Final audit, 11 Nov 2026: every page opened here was saved as "index.html", so opening a 3D lesson
+     (docs/walkthrough/index.html) replaced the guide's offline copy with the lesson player's page. Now only the guide
+     itself is kept under "index.html"; any other page of this site is kept under its own address. A page that failed
+     to load (a 404 or a server error) is no longer kept at all. */
   if (request.mode === "navigate") {
+    const path = new URL(request.url).pathname, home = new URL("./", self.location).pathname;
+    const isGuide = path === home || path === home + "index.html";
     event.respondWith(
       fetch(request).then((response) => {
-        const copy = response.clone();
-        caches.open(CACHE).then((cache) => cache.put("index.html", copy));
+        if (response && response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE).then((cache) => cache.put(isGuide ? "index.html" : request, copy));
+        }
         return response;
-      }).catch(() => caches.match("index.html").then((hit) => hit || caches.match("./")))
+      }).catch(() => (isGuide
+        ? caches.match("index.html").then((hit) => hit || caches.match("./"))
+        : caches.match(request, { ignoreSearch: true })).then((hit) => hit || Response.error()))
     );
     return;
   }
