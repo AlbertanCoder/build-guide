@@ -19,7 +19,6 @@ DEP-S3.1,dependencies,S3.1,PASS,S3.1 Cut the motor wires: everything it needs is
 DEP-S3.2,dependencies,S3.2,PASS,S3.2 Tin and solder the motor wires: everything it needs is there,,,,0,,,,needs wires_cut
 DEP-S3.3,dependencies,S3.3,PASS,S3.3 XT60 lead + capacitor: everything it needs is there,,,,0,,,,needs esc_on
 DEP-S3.4,dependencies,S3.4,PASS,"S3.4 8-wire cable, then the FC: everything it needs is there",,,,0,,,,"needs esc_on, motors_soldered, power_lead"
-DEP-S3.5,dependencies,S3.5,PASS,"S3.5 First power-up through the smoke stopper, props off: everything it needs is there",,,,0,,,,"needs fc_on, packs_charged"
 DEP-S4.1,dependencies,S4.1,PASS,S4.1 Receiver on UART2 with the stack box 4-wire cable: everything it needs is there,,,,0,,,,needs fc_on
 DEP-S4.2,dependencies,S4.2,PASS,S4.2 Receiver antenna: everything it needs is there,,,,0,,,,needs rx_wired
 DEP-S4.3,dependencies,S4.3,PASS,S4.3 Camera and VTX wires: everything it needs is there,,,,0,,,,needs fc_on
@@ -30,6 +29,7 @@ DEP-S4.6,dependencies,S4.6,PASS,S4.6 Betaflight on USB only: everything it needs
 DEP-S4.7,dependencies,S4.7,PASS,S4.7 VTX at 25 mW: everything it needs is there,,,,0,,,,needs vtx_antenna
 DEP-S4.9,dependencies,S4.9,PASS,S4.9 Finder beeper in the front bay: everything it needs is there,,,,0,,,,needs fc_on
 DEP-S4.8,dependencies,S4.8,PASS,S4.8 Fit the top plate: everything it needs is there,,,,0,,,,"needs standoffs_on, vtx_antenna, bf_setup, finder_on"
+DEP-S5.4b,dependencies,S5.4b,PASS,"S5.4b First power-up through the smoke stopper, props off: everything it needs is there",,,,0,,,,"needs fc_on, packs_charged"
 DEP-S6.0,dependencies,S6.0,PASS,"S6.0 Card flashed, I2C on: everything it needs is there",,,,0,,,,needs only bought parts
 DEP-S6.1,dependencies,S6.1,PASS,S6.1 Straight male headers: everything it needs is there,,,,0,,,,needs only bought parts
 DEP-S6.2,dependencies,S6.2,PASS,S6.2 HAT onto the Pi: everything it needs is there,,,,0,,,,needs pi_ready
@@ -52,7 +52,7 @@ DEP-S8.7,dependencies,S8.7,PASS,"S8.7 Payload on, heat test, props off: everythi
 DEP-S8.6,dependencies,S8.6,PASS,S8.6 Hover again with the payload: everything it needs is there,,,,0,,,,"needs payload_heat_ok, hovered"
 SAFE-1,dependencies,S8.4,PASS,Props stay off until 'Fit the props' (S8.4),,,,0,,,,props first go on at S8.4
 SAFE-2,dependencies,S8.7,PASS,Props are off again for the heat test (S8.7),,,,0,,,,S8.7 sets props off
-SAFE-3,dependencies,S3.5,PASS,The first battery plug-in goes through the smoke stopper,,,,0,,,,first plug-in at S3.5
+SAFE-3,dependencies,S5.4b,PASS,The first battery plug-in goes through the smoke stopper,,,,0,,,,first plug-in at S5.4b
 SAFE-4,dependencies,S8.2,PASS,The video antenna is on before the VTX is first powered,,,,0,,,,"antenna fitted at S4.4, VTX first powered at S8.2"
 SAFE-5,dependencies,S8.4,PASS,Battery out while the props go on,,,,0,,,,S8.4 has the battery disconnected; the page's step 8 safety line says 'Battery out whenever your hands are on props or motors'
 SAFE-6,dependencies,S7.3,PASS,Payload goes on only after the bare quad has hovered,,,,0,,,,S8.5 (first hover) comes before S7.3 in the real order (S7.1 says so)
@@ -96,12 +96,12 @@ TOOL-motor-sliders-prop-tool,cross-checks,S8.3,NEEDS REAL PARTS,Betaflight's Mot
 TOOL-heat-source,access,S6.2b,NEEDS REAL PARTS,Something on the list can shrink the heat shrink (the iron's side),,mm,,0,,,Heat source for the heat shrink,The kit has a 65 W iron but no heat gun; a lighter is not on the list. Whether the iron's side shrinks the 3 mm tube cleanly is not stated anywhere.
 TOOL-meter-beep,access,S6.2b,NEEDS REAL PARTS,The kit's multimeter has a beep (continuity) setting for the cable check,,mm,,0,,,Multimeter basics,"The tool kit listing names a multimeter, not its settings; the page tags this 'Check on arrival'."
 FIT-cam-tilt,fit,S4.3b,NEEDS REAL PARTS,Camera mount lets the camera tilt to about 10 degrees,,mm,,0,,,Camera tilt adjust,The TPU mount's adjustment is not described on the listing.
-ACCESS-iron-fc5v,access,S7.4b,NEEDS REAL PARTS,Iron tip (5.5 mm) fits between the FC and the fitted top plate to solder the pigtail,3.3,mm,86.38,10000,-4.44,"pcb_t (r=-0.78), fc_gap (r=-0.44)",Iron reaches the flight controller pad with the top plate on," Passes in 86.38% of 10,000 tolerance runs (more than 0.1% fail)."
+ACCESS-iron-fc5v,access,S3.4,PASS,"Iron reaches the FC's GND and 5V pads for the Pi lead: they are soldered on the bench, before the FC is mounted",,,,0,,,,"replay order: the FC's pad wires go on at S3.4, before the 8-wire cable and the mounting"
 ACCESS-usbc,access,S8.3,NEEDS REAL PARTS,"USB-C plug fits between the FC and the top plate (Motors tab, top plate on)",3.95,mm,90.39,10000,-4.39,"pcb_t (r=-0.77), fc_gap (r=-0.43)",USB-C plug with the top plate on," Passes in 90.39% of 10,000 tolerance runs (more than 0.1% fail)."
 ACCESS-open-S3.2,access,S3.2,PASS,Iron reaches the ESC motor pads: nothing is fitted above them yet,,,,0,,,,replay order: the FC goes on at S3.4
 ACCESS-open-S3.3,access,S3.3,PASS,Iron reaches the ESC battery pads: nothing is fitted above them yet,,,,0,,,,replay order: the FC goes on at S3.4
-ACCESS-open-S4.1,access,S4.1,PASS,Iron reaches the FC UART2 pads: nothing is fitted above them yet,,,,0,,,,replay order: the top plate goes on at S4.8
-ACCESS-open-S4.3,access,S4.3,PASS,Iron reaches the FC camera/VTX pads: nothing is fitted above them yet,,,,0,,,,replay order: the top plate goes on at S4.8
+ACCESS-open-S4.1,access,S4.1,PASS,"Iron reaches the receiver's pads, not the FC's: the cable's plug goes into the FC's 4-pin socket and its other end is soldered to the receiver",,,,0,,,,replay order: the top plate goes on at S4.8
+ACCESS-open-S4.3,access,S4.3,PASS,No iron at S4.3: the camera and VTX plug into cables whose FC ends were soldered at S3.4,,,,0,,,,replay order: the top plate goes on at S4.8
 ACCESS-front-legs,access,S7.8,PASS,Fingers can turn the front legs: open space round the middle-plate holes,8.82,mm,100.0,10000,8.82,,,nearest arm edge 19.3 mm from a front leg hole; needs leg radius 2.5 + 8 mm finger room (my choice)
 ACCESS-motor-screws,access,S2.3,PASS,Hex driver reaches the motor screws from under the arms,,,,0,,,,the motor ends of the arms stick out past the plates (TBS drawing)
 CLEAR-prop-prop,clearance,S8.4,PASS,Neighbouring props do not touch,40.17,mm,100.0,10000,39.53,"prop_d (r=-0.96), wheelbase (r=+0.28)",,
@@ -120,9 +120,9 @@ CLEAR-level,clearance,S7.8,NEEDS REAL PARTS,Front and rear feet within 3 mm of l
 CLEAR-legs-pad,clearance,S7.8,PASS,Rear legs clear the Pi pad by at least 2 mm,4.75,mm,100.0,10000,1.75,"pi_x (r=+1.00), usb_plug (r=+0.02)",,
 CLEAR-xt60,clearance,S8.2,NEEDS REAL PARTS,Quad's XT60 lead reaches the pack's 85 mm lead,,mm,,0,,,Quad battery lead reaches the pack,The stack box's XT60 lead length is not published. Pack lead 85 mm (R12).
 CLEAR-cam-cable,wiring,S4.3,NEEDS REAL PARTS,Camera cable reaches the FC's CAM socket,,mm,,0,,,Camera cable length,The stack box's camera cable length is not published.
-WEIGHT-forward-stop,weight,S7.7,PASS,Battery slid forward to about 2 mm from the GPS (change request 43) leaves the balance point within 5 mm of centre,2.81,mm,100.0,10000,0.92,"gps_x (r=+0.88), pi_x (r=+0.15)",,
+WEIGHT-forward-stop,weight,S7.7,PASS,Battery slid forward to about 2 mm from the GPS (change request 43) leaves the balance point within 5 mm of centre,3.72,mm,100.0,10000,1.79,"gps_x (r=+0.88), pi_x (r=+0.15)",,
 WEIGHT-feet,weight,S7.8,PASS,Centre of gravity sits inside the four feet,10.92,mm,100.0,10000,10.78,"pi_y (r=-0.94), motor_lead (r=+0.02)",,
-WEIGHT-forward-stop-liion,weight,S7.7,PASS,"With the Li-ion pack slid forward to about 2 mm from the GPS, the balance point stays within 5 mm of centre",3.83,mm,100.0,10000,1.07,"gps_x (r=+0.89), gps_w (r=-0.10)",,
+WEIGHT-forward-stop-liion,weight,S7.7,PASS,"With the Li-ion pack slid forward to about 2 mm from the GPS, the balance point stays within 5 mm of centre",4.53,mm,100.0,10000,1.74,"gps_x (r=+0.87), gps_w (r=-0.09)",,
 WEIGHT-feet-liion,weight,S7.8,PASS,"With the Li-ion pack, the centre of gravity sits inside the four feet",10.94,mm,100.0,10000,10.83,"pi_y (r=-0.94), motor_lead (r=+0.02)",,
 FIT-strap,clearance,S7.7,PASS,"The 245 mm strap goes round the LiPo pack and the top plate, with 40 mm to fasten",73.0,mm,,0,,,,2 x (38 + 26 + 2 plate) + 40 overlap (ASSUMPTION) = 172.0 mm; strap 245 mm (R18)
 FIT-strap-liion,clearance,S7.7,PASS,"The 245 mm strap goes round the Li-ion pack and the top plate, with 40 mm to fasten",24.0,mm,,0,,,,2 x (44.25 + 44.25 + 2 plate) + 40 overlap (ASSUMPTION) = 221.0 mm; strap 245 mm (R18)
@@ -160,7 +160,7 @@ POWER-9v-load,power,S4.7,PASS,9 V rail load (VTX at 25 mW) within its 2.5 A,2.25
 POWER-5v-load,power,S8.6,NEEDS REAL PARTS,"5 V rail (3 A) carries the Pi, receiver, camera and sensors",,,,0,,,"5 V rail carries the Pi, camera and receiver","no published current for: Pi Zero 2 W, receiver, camera, MLX90640 + PA1010D"
 POWER-iron,power,S3.2,PASS,Iron (65 W) on the 24 V 5 A adapter,2.29,A,,0,,,,"65 W / 24 V = 2.71 A of 5 A (buy list (live page, iron-psu): 'SHNITPWR 24 V DC 5 A 120 W power supply for the iron (5.5 x 2.5 mm plug)')"
 POWER-charge,power,S5.3b,PASS,Charge current 1.0 A is within 1C for the 1500 mAh packs,0.5,A,,0,,,,"1C = 1.5 A (R12 1500 mAh); charger: ToolkitRC M7 manual V1.0 (the M7AC's own manual not read) 'set the charging rate of 1-2C', 'step by 0.1A' (2026-11-04: the M7AC replaced the M4AC)"
-WEIGHT-total,weight,S8.6,PASS,All-up weight: 510 g from the page's sourced weights + 46 g estimated = about 556 g,,g,,0,,,,"estimates: legs: 8 aluminium standoffs (ESTIMATED 1.0 g each); legs: 4 rubber feet (ESTIMATED 1.0 g each; the listing's weight line is a typo); Pi pad, 6 nylon standoffs, screws, zip ties (ESTIMATED 6 g); Qwiic HAT + 2 cables (ESTIMATED 6 g; not weighed on the page); micro-USB pigtail (ESTIMATED 5 g); wires, XT60, solder, capacitor (ESTIMATED 15 g); GPS cable extension: 4 x 120 mm 26 AWG, 8 joints, heat shrink (ESTIMATED 2 g)"
+WEIGHT-total,weight,S8.6,PASS,All-up weight: 512 g from the page's sourced weights + 46 g estimated = about 558 g,,g,,0,,,,"estimates: legs: 8 aluminium standoffs (ESTIMATED 1.0 g each); legs: 4 rubber feet (ESTIMATED 1.0 g each; the listing's weight line is a typo); Pi pad, 6 nylon standoffs, screws, zip ties (ESTIMATED 6 g); Qwiic HAT + 2 cables (ESTIMATED 6 g; not weighed on the page); micro-USB pigtail (ESTIMATED 5 g); wires, XT60, solder, capacitor (ESTIMATED 15 g); GPS cable extension: 4 x 120 mm 26 AWG, 8 joints, heat shrink (ESTIMATED 2 g)"
 X-ids-truth,cross-checks,,PASS,Every replayed action id is in STEP-TRUTH.md,,,,0,,,,51 ids
 X-ids-model,cross-checks,,PASS,Every replayed action has a button in the 3D models,,,,0,,,,55 model actions
 X-model-truth,cross-checks,,PASS,Every 3D action id is in STEP-TRUTH.md,,,,0,,,,all found
@@ -176,7 +176,7 @@ X-prop-directions,cross-checks,S8.4,PASS,"The page and the 3D chip put CW props 
 BUY-used-radio,cross-checks,,PASS,"Buy list 'RadioMaster Pocket ELRS radio, charcoal' is used by a step",,,,0,,,,"used in S4.5, S5.1"
 BUY-used-radio-cells,cross-checks,,PASS,Buy list 'RadioMaster Pocket 18650 battery pair' is used by a step,,,,0,,,,used in S5.1; also Stage 3 checklist (charge the cells in the radio) and S5.1
 BUY-used-tools,cross-checks,,PASS,Buy list 'Flywoo tool kit with iron and multimeter' is used by a step,,,,0,,,,"used in S2.1, S2.2, S2.3, S3.0, S3.1, S3.2, S3.3, S3.4, S4.1, S4.3, S4.3b, S4.8, S4.9, S6.1, S6.2b, S7.4b"
-BUY-used-smoke-stopper,cross-checks,,PASS,"Buy list 'iFlight smoke stopper, XT30/XT60' is used by a step",,,,0,,,,"used in S3.5, S8.2"
+BUY-used-smoke-stopper,cross-checks,,PASS,"Buy list 'iFlight smoke stopper, XT30/XT60' is used by a step",,,,0,,,,"used in S5.4b, S8.2"
 BUY-used-lipo-bag,cross-checks,,PASS,Buy list 'RVS LiPo storage bag' is used by a step,,,,0,,,,used in S5.3c
 BUY-used-heat-shrink,cross-checks,,PASS,"Buy list 'Heat shrink 6 mm x 150 mm, black' is used by a step",,,,0,,,,"used in S3.3, S7.4b; also Stage 2 checklist (insulate the pigtail), S3.3, S7.4b"
 BUY-used-heat-shrink-3mm,cross-checks,,PASS,"Buy list 'Heat shrink 3 mm x 150 mm, clear' is used by a step",,,,0,,,,used in S6.2b
@@ -222,7 +222,7 @@ BUY-used-legs-25,cross-checks,,PASS,"Buy list 'M3 x 25 mm knurled aluminium stan
 BUY-used-legs-28,cross-checks,,PASS,"Buy list 'M3 x 28 mm knurled aluminium standoffs, 10 pack (front legs)' is used by a step",,,,0,,,,used in S7.8
 BUY-used-legs-feet,cross-checks,,PASS,"Buy list 'Lumenier M3 rubber landing feet, 8 pack (US shop)' is used by a step",,,,0,,,,used in S7.8
 BUY-used-legs-setscrews,cross-checks,,PASS,"Buy list 'M3 set screw assortment, 200 pieces (includes 20 x M3 x 10 m' is used by a step",,,,0,,,,used in S7.8
-BUY-used-legs-footscrews,cross-checks,,PASS,"Buy list 'M3 x 10 mm black steel button-head screws, 10 pack (for the ' is used by a step",,,,0,,,,used in S7.8
+BUY-used-legs-footscrews,cross-checks,,PASS,"Buy list 'M3 x 10 mm steel button-head screws, 10 pack (for the 4 rubb' is used by a step",,,,0,,,,used in S7.8
 BUY-required-all-used,cross-checks,,PASS,Every buy line in a required stage is used by a step or a stage checklist (optional stages 8 exempt),,,,0,,,,"50 lines checked, from index.html #buy-data"
 BUY-qty-foam-tape,cross-checks,,PASS,"Enough foam-tape: steps use 1, the list gives 1",0.0,pieces,,0,,,,
 BUY-qty-heat-shrink,cross-checks,,PASS,"Enough heat-shrink: steps use 4, the list gives 10",6.0,pieces,,0,,,,

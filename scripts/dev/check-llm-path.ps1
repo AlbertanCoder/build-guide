@@ -84,7 +84,8 @@ try {
   } else {
     Check 'the page reported a rendered answer' $true
     Check 'the answer came from the AI endpoint' ($probe.endpoint -match 'api/(ask|probe)') $probe.endpoint
-    Check 'retrieval supplied passages before the model call' ($probe.text -match 'Passages received: [1-6]')
+    # 10 Nov 2026 (Fable audit S4): the server now takes up to 12 passages (it was 6), so 1 to 12 is the valid count
+    Check 'retrieval supplied passages before the model call' ($probe.text -match 'Passages received: ([1-9]|1[0-2])\.')
     Check 'answer text streamed into the page' ($probe.chars -gt 120) "chars=$($probe.chars)"
     Check 'markdown list rendered as real list items' ($probe.renderedListItems -ge 3) "li=$($probe.renderedListItems)"
     Check 'NAV directive became a working button' ($probe.renderedLinks -ge 1) "links=$($probe.renderedLinks)"

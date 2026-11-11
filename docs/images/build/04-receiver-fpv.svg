@@ -1,17 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
 <title id="title">Step 4: Wire the RP1 receiver and analog FPV</title>
-<desc id="desc">RP1 TX crosses to FC R2 and RX crosses to FC T2 with 5V and ground. Separate analog camera, HV VTX, SMA antenna and monitor powered from 4S.</desc>
+<desc id="desc">RP1 TX crosses to FC R2 and RX crosses to FC T2 with 5V and ground. Separate analog camera, HV VTX (powered from the flight controller's 9V pad), SMA antenna and monitor.</desc>
 <rect width="960" height="540" fill="#f7f2e8"/>
 <style>.t{font:700 22px 'Segoe UI',sans-serif;fill:#123a2e}.s{font:17px 'Segoe UI',sans-serif;fill:#21332b}.b{fill:#fff;stroke:#1b5e4f;stroke-width:3;rx:12}.a{fill:#e4f0ea;stroke:#1b5e4f;stroke-width:3;rx:12}.w{fill:#fbe9dc;stroke:#c2571b;stroke-width:3;rx:12}.g{stroke:#1b5e4f;stroke-width:4;fill:none}.r{stroke:#c2571b;stroke-width:4;fill:none}.u{stroke:#2d6a8e;stroke-width:4;fill:none}</style>
 <text x="32" y="40" class="t">4 · Receiver first, then the separate analog video chain</text>
-<rect x="55" y="70" width="245" height="150" class="a"/><text x="178" y="103" text-anchor="middle" class="t">RP1 V2 RECEIVER</text><text x="80" y="137" class="s">5V + GND</text><text x="80" y="167" class="s">TX → FC R2</text><text x="80" y="197" class="s">RX → FC T2</text>
-<rect x="390" y="70" width="245" height="150" class="b"/><text x="513" y="103" text-anchor="middle" class="t">GEPRC F405</text><text x="415" y="137" class="s">5V + GND</text><text x="415" y="167" class="s">R2 ← RP1 TX</text><text x="415" y="197" class="s">T2 ← RP1 RX</text>
+<rect x="55" y="70" width="245" height="150" class="a"/><text x="178" y="103" text-anchor="middle" class="t">RP1 V2 RECEIVER</text><text x="80" y="137" class="s">5V + GND</text><text x="80" y="167" class="s">TX → FC R2</text><text x="80" y="197" class="s">RX ← FC T2</text>
+<rect x="390" y="70" width="245" height="150" class="b"/><text x="513" y="103" text-anchor="middle" class="t">GEPRC F405</text><text x="415" y="137" class="s">5V + GND</text><text x="415" y="167" class="s">R2 ← RP1 TX</text><text x="415" y="197" class="s">T2 → RP1 RX</text>
 <path d="M300 145 H390 M300 175 H390" class="g"/><path d="M300 195 H390" class="u"/>
-<rect x="700" y="70" width="205" height="150" class="w"/><text x="803" y="103" text-anchor="middle" class="t">BIND + TEST</text><text x="722" y="137" class="s">UART serial RX</text><text x="722" y="167" class="s">Protocol = CRSF</text><text x="722" y="197" class="s">Channels + failsafe</text>
-<rect x="50" y="275" width="185" height="100" class="b"/><text x="143" y="310" text-anchor="middle" class="t">PHOENIX 2</text><text x="143" y="342" text-anchor="middle" class="s">analog camera</text>
-<rect x="285" y="275" width="185" height="100" class="b"/><text x="378" y="310" text-anchor="middle" class="t">UNIFY HV</text><text x="378" y="342" text-anchor="middle" class="s">2–6S, not Pi 5V</text>
-<rect x="520" y="275" width="185" height="100" class="b"/><text x="613" y="310" text-anchor="middle" class="t">SMA ANTENNA</text><text x="613" y="342" text-anchor="middle" class="s">TBS Triumph PRO</text>
-<rect x="755" y="275" width="155" height="100" class="a"/><text x="833" y="310" text-anchor="middle" class="t">M5 MONITOR</text><text x="833" y="342" text-anchor="middle" class="s">analog 5.8GHz</text>
-<path d="M235 325 H285 M470 325 H520 M705 325 H755" class="u"/>
-<rect x="130" y="420" width="700" height="70" class="w"/><text x="480" y="450" text-anchor="middle" class="t">Never power the VTX without its antenna attached</text><text x="480" y="478" text-anchor="middle" class="s">Use a legal channel/power level; confirm the FC pinout before connecting</text>
+<rect x="700" y="70" width="205" height="150" class="w"/><text x="803" y="103" text-anchor="middle" class="t">BIND + TEST</text><text x="722" y="137" class="s">UART2 serial RX</text><text x="722" y="167" class="s">Protocol = CRSF</text><text x="722" y="197" class="s">Same bind phrase</text>
+<rect x="40" y="275" width="190" height="100" class="b"/><text x="135" y="310" text-anchor="middle" class="t">PHOENIX 2</text><text x="135" y="342" text-anchor="middle" class="s">analog camera</text>
+<rect x="270" y="275" width="190" height="100" class="b"/><text x="365" y="310" text-anchor="middle" class="t">UNIFY HV</text><text x="365" y="342" text-anchor="middle" class="s">power: FC 9V pad</text>
+<rect x="500" y="275" width="190" height="100" class="b"/><text x="595" y="310" text-anchor="middle" class="t">SMA ANTENNA</text><text x="595" y="342" text-anchor="middle" class="s">TBS Triumph PRO</text>
+<rect x="730" y="275" width="190" height="100" class="a"/><text x="825" y="310" text-anchor="middle" class="t">M5F MONITOR</text><text x="825" y="342" text-anchor="middle" class="s">analog 5.8GHz</text>
+<path d="M230 325 H270 M460 325 H500 M690 325 H730" class="u"/>
+<rect x="130" y="420" width="700" height="70" class="w"/><text x="480" y="450" text-anchor="middle" class="t">Never power the VTX without its antenna attached</text><text x="480" y="478" text-anchor="middle" class="s">Any power needs the amateur radio certificate (Basic) · props stay off</text>
 </svg>

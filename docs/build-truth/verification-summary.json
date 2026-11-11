@@ -1,11 +1,11 @@
 {
- "date": "2026-11-04",
+ "date": "2026-11-10",
  "command": "python -I scripts/build/verify_build.py",
  "totals": {
   "checks": 243,
-  "passed": 205,
+  "passed": 206,
   "failed": 0,
-  "need_real_parts": 38,
+  "need_real_parts": 37,
   "page_fixes": 0
  },
  "per_category": {
@@ -34,9 +34,9 @@
    "PAGE FIX": 0
   },
   "access": {
-   "PASS": 7,
+   "PASS": 8,
    "FAIL": 0,
-   "NEEDS REAL PARTS": 4,
+   "NEEDS REAL PARTS": 3,
    "PAGE FIX": 0
   },
   "power": {
@@ -60,7 +60,7 @@
  },
  "tolerance_runs": 10000,
  "seed": 20261103,
- "measured_checks_varied": 36,
+ "measured_checks_varied": 35,
  "tolerances": {
   "CAD": "+-0.2 mm",
   "datasheet": "+-0.5 mm",
@@ -73,9 +73,9 @@
  "weakest_margins": [
   "speed controller, flight controller and frame stack holes line up (30.5 mm, with the soft grommets): 0.5 mm as designed, 0.3 mm in the worst of 10,000 runs",
   "M3 x 10 set screw: at least 3 mm of thread on each side of the plate: 1.0 mm as designed, 0.5 mm in the worst of 10,000 runs",
-  "Battery slid forward to about 2 mm from the GPS leaves the balance point within 5 mm of centre: 2.81 mm as designed, 0.92 mm in the worst of 10,000 runs",
   "Stack screw tip stays below the top plate: 2.0 mm as designed, 1.03 mm in the worst of 10,000 runs",
-  "With the Li-ion pack slid forward to about 2 mm from the GPS, the balance point stays within 5 mm of centre: 3.83 mm as designed, 1.07 mm in the worst of 10,000 runs"
+  "Motor M1's 120 mm leads, measured from the motor's edge, reach the speed controller pad farthest from the motor, with the climb up to the speed controller board, 10 % extra for bends and 10 mm to spare: 6.09 mm as designed, 1.25 mm in the worst of 10,000 runs",
+  "Motor M2's 120 mm leads, measured from the motor's edge, reach the speed controller pad farthest from the motor, with the climb up to the speed controller board, 10 % extra for bends and 10 mm to spare: 6.09 mm as designed, 1.25 mm in the worst of 10,000 runs"
  ],
  "failures": [],
  "page_fixes": [],
@@ -83,9 +83,9 @@
   {
    "item": "Landing-leg standoffs + set screws",
    "parcel": "Rotor Village (legs) + set-screw assortment",
-   "test": "Screw two leg standoffs together with one M3 x 10 set screw, then screw that onto a frame standoff.",
+   "test": "Count the M3 x 10 mm set screws in the kit first (you need 8; the listing says it has 20). Then screw two leg standoffs together with one M3 x 10 set screw, then screw that onto a frame standoff.",
    "pass": "Both ends take the set screw and the joint feels tight with no wobble.",
-   "fail": "If an end is not threaded inside, use M3 x 25 + M3 x 28 male-female standoffs instead, or one long M3 screw through both.",
+   "fail": "If an end is not threaded inside, use M3 x 25 + M3 x 28 male-female standoffs instead, or one long M3 screw through both. Fewer than 8 M3 x 10 mm in the kit: ask the seller for the missing ones before Step 7 (this kit is the only set-screw source on the list).",
    "needs_buy": [
     "legs-25",
     "legs-28",
@@ -143,9 +143,9 @@
   {
    "item": "Drone stands level on its legs",
    "parcel": "Rotor Village (legs) + feet",
-   "test": "After fitting the legs, stand the drone on a flat table and look from the side.",
-   "pass": "All four feet touch and it does not rock.",
-   "fail": "Swap leg pieces between corners until it stands steady.",
+   "test": "Before fitting, measure a foot's height (the guide assumes 6.3 mm) and check the foot screw length against a foot. After fitting the legs, stand the drone on a flat table and look from the side.",
+   "pass": "The foot screw holds the foot; all four feet touch and it does not rock.",
+   "fail": "Swap leg pieces between corners until it stands steady. Foot screw wrong: buy the right length (Stage 4 list).",
    "needs_buy": [
     "legs-feet",
     "legs-25",
@@ -260,9 +260,9 @@
   {
    "item": "Foam tape and boards",
    "parcel": "Canadian Tire (foam tape) + PiShop (thermal camera, GPS)",
-   "test": "Measure the foam tape's thickness and stick two layers on scrap; press the thermal camera's back and the GPS board's back onto a tape square; wrap a string round the Pi on its standoffs and measure the loop; check the foot screw length against a foot.",
-   "pass": "Two layers stay put, both boards sit flat on the tape, the loop is shorter than two joined 100 mm zip ties (about 168 mm usable), and the foot screw holds the foot.",
-   "fail": "Boards do not sit flat: add a second layer of tape so parts sit in the foam. Loop too long: join a third tie or buy longer ties. Foot screw wrong: buy the right length (Stage 4 list).",
+   "test": "Measure the foam tape's thickness and stick two layers on scrap; press the thermal camera's back and the GPS board's back onto a tape square; wrap a string round the Pi on its standoffs and measure the loop.",
+   "pass": "Two layers stay put, both boards sit flat on the tape, and the loop is shorter than two joined 100 mm zip ties (about 168 mm usable).",
+   "fail": "Boards do not sit flat: add a second layer of tape so parts sit in the foam. Loop too long: join a third tie or buy longer ties.",
    "needs_buy": [
     "foam-tape",
     "thermal",
@@ -299,7 +299,7 @@
   {
    "item": "Receiver, video transmitter and smoke stopper",
    "parcel": "Rotor Village (receiver, video transmitter, smoke stopper)",
-   "test": "Step 4: plug only USB into the flight controller and look at the receiver's light; note the Wi-Fi name it shows in Wi-Fi mode. Step 3 (step 3), the first battery power-up through the smoke stopper: find the smoke stopper's light. Step 8 (step 8): watch the video transmitter's light at start-up.",
+   "test": "Step 4: plug only USB into the flight controller and look at the receiver's light; note the Wi-Fi name it shows in Wi-Fi mode. Step 5 (step 5), the first battery power-up through the smoke stopper: find the smoke stopper's light. Step 8 (step 8): watch the video transmitter's light at start-up.",
    "pass": "The receiver light is on with USB alone; the smoke stopper shows solid green; the video transmitter's start-up flashes end with the power group, 3 red then 1 blue (25 mW, its lowest power), then a steady blue light (locked to the legal channels).",
    "fail": "No receiver light on USB: do the channel check on a battery through the smoke stopper (props off). Smoke stopper light off and beeping: unplug at once. Other video transmitter flashes: check the manual's table before flying.",
    "needs_buy": [
@@ -361,9 +361,9 @@
   {
    "item": "Quad battery lead reaches the pack",
    "parcel": "Stack (XT60 lead) + pack",
-   "test": "With the pack strapped on, plug the pack's XT60 into the quad's lead.",
-   "pass": "They meet without stretching and stay clear of the props.",
-   "fail": "Solder a longer XT60 lead (same wire size) or move the pack within its balance range.",
+   "test": "Before you solder the XT60 lead in Step 3, hold it from the speed controller's battery pads to where the pack will sit, on top of the standoffs where the top plate will go, with the pack held there, and hold the pack's XT60 next to the lead's plug, without plugging them together (plugging in would power the drone). Look again with the pack strapped on (Step 7).",
+   "pass": "They would meet without stretching and stay clear of the props.",
+   "fail": "Before soldering: use a longer XT60 lead (same wire size). Once soldered: move the pack within its balance range.",
    "needs_buy": [
     "stack",
     "batteries"
@@ -397,8 +397,8 @@
   {
    "item": "Multimeter basics",
    "parcel": "Rotor Village (tool kit) + two 1.5 V batteries you have at home",
-   "test": "Find the meter's battery cover (and whether it needs the kit's small screwdriver); put in two 1.5 V batteries. Find the dial position for DC volts that covers about 24 V, the two sockets the leads use for volts, and the beep (continuity) symbol. Touch the probes together on beep.",
-   "pass": "You know the battery cover, the DC volts position, the two sockets, and it beeps when the probes touch.",
+   "test": "Find the meter's battery cover (and whether it needs the kit's small screwdriver); put in two 1.5 V batteries. Find the dial position for DC volts that covers about 24 V, and the beep (continuity) symbol. Touch the probes together on beep.",
+   "pass": "You know the battery cover and the DC volts position, and it beeps when the probes touch.",
    "fail": "No beep symbol: use the lowest resistance (ohms) setting instead; touching probes should read close to 0.",
    "needs_buy": [
     "tools"
@@ -516,25 +516,6 @@
    ]
   },
   {
-   "item": "Iron reaches the flight controller pad with the top plate on",
-   "parcel": "Frame + stack (after step 4)",
-   "test": "With the top plate fitted, slide the cold iron tip in from the side to the flight controller's 5V and GND pads.",
-   "pass": "The tip touches the pads without touching the top plate or other parts.",
-   "fail": "Take the top plate off (4 screws) to solder the pigtail, then put it back.",
-   "needs_buy": [
-    "stack",
-    "frame",
-    "tools"
-   ],
-   "shop": "Rotor Village",
-   "shops": [
-    "Rotor Village"
-   ],
-   "needed_by": [
-    "ACCESS-iron-fc5v"
-   ]
-  },
-  {
    "item": "USB-C plug with the top plate on",
    "parcel": "Stack + USB-C cable",
    "test": "With the top plate fitted, plug the USB-C cable into the flight controller.",
@@ -607,13 +588,14 @@
    "needed_by": []
   },
   {
-   "item": "Radio on USB power alone",
+   "item": "Radio runs on its cells",
    "parcel": "Rotor Village (radio)",
-   "test": "Does the radio work on USB power alone? With its 18650 cells out, plug its USB-C cord into a USB charger and switch the radio on.",
-   "pass": "You know whether it switches on and its screen works on USB alone (useful for setup at the desk).",
-   "fail": "It does not switch on without cells: put the charged cells back in. Either way, fly on its cells.",
+   "test": "Rotor Village says: \"Controller will NOT function on USB alone, it still needs batteries.\" So do not test it with the cells out. Put the two 18650 cells in, plug its USB-C cord into a USB charger and switch the radio on.",
+   "pass": "It switches on with its cells in, and its screen works while the cord is plugged in (useful for setup at the desk).",
+   "fail": "It does not switch on: check that the cells are in the right way round, then charge them with the cord.",
    "needs_buy": [
-    "radio"
+    "radio",
+    "radio-cells"
    ],
    "shop": "Rotor Village",
    "shops": [
@@ -642,6 +624,23 @@
    "needed_by": [
     "WIRE-qwiic-gps"
    ]
+  },
+  {
+   "item": "Pi lead reaches the Pi under the bottom plate",
+   "parcel": "Frame + stack (Step 3, once the flight controller is mounted)",
+   "test": "With the flight controller mounted, lead the Pi power lead (soldered to the flight controller in Step 3) down to where the Pi will sit under the bottom plate, centred 36 mm behind the stack centre.",
+   "pass": "The micro-USB plug reaches the Pi's PWR IN socket without pulling tight.",
+   "fail": "Too short: stop and ask before you cut or extend anything.",
+   "needs_buy": [
+    "frame",
+    "stack",
+    "tools"
+   ],
+   "shop": "Rotor Village",
+   "shops": [
+    "Rotor Village"
+   ],
+   "needed_by": []
   }
  ],
  "wording": "Reader-facing text is in plain words (speed controller, flight controller; no change-request numbers). Each result keeps its short id; 'name_plain' is the page wording.",
@@ -973,22 +972,6 @@
    "name_plain": "step 3 8-wire cable, then the flight controller: everything it needs is there"
   },
   {
-   "id": "DEP-S3.5",
-   "category": "dependencies",
-   "action": "S3.5",
-   "name": "S3.5 First power-up through the smoke stopper, props off: everything it needs is there",
-   "status": "PASS",
-   "detail": "needs fc_on, packs_charged",
-   "margin": null,
-   "unit": "",
-   "arrival": null,
-   "pass_rate": null,
-   "runs": 0,
-   "driver": "",
-   "worst": null,
-   "name_plain": "step 3 First power-up through the smoke stopper, props off: everything it needs is there"
-  },
-  {
    "id": "DEP-S4.1",
    "category": "dependencies",
    "action": "S4.1",
@@ -1147,6 +1130,22 @@
    "driver": "",
    "worst": null,
    "name_plain": "step 4 Fit the top plate: everything it needs is there"
+  },
+  {
+   "id": "DEP-S5.4b",
+   "category": "dependencies",
+   "action": "S5.4b",
+   "name": "S5.4b First power-up through the smoke stopper, props off: everything it needs is there",
+   "status": "PASS",
+   "detail": "needs fc_on, packs_charged",
+   "margin": null,
+   "unit": "",
+   "arrival": null,
+   "pass_rate": null,
+   "runs": 0,
+   "driver": "",
+   "worst": null,
+   "name_plain": "step 5 First power-up through the smoke stopper, props off: everything it needs is there"
   },
   {
    "id": "DEP-S6.0",
@@ -1503,10 +1502,10 @@
   {
    "id": "SAFE-3",
    "category": "dependencies",
-   "action": "S3.5",
+   "action": "S5.4b",
    "name": "The first battery plug-in goes through the smoke stopper",
    "status": "PASS",
-   "detail": "first plug-in at S3.5",
+   "detail": "first plug-in at S5.4b",
    "margin": null,
    "unit": "",
    "arrival": null,
@@ -2210,18 +2209,18 @@
   {
    "id": "ACCESS-iron-fc5v",
    "category": "access",
-   "action": "S7.4b",
-   "name": "Iron tip (5.5 mm) fits between the FC and the fitted top plate to solder the pigtail",
-   "status": "NEEDS REAL PARTS",
-   "detail": " Passes in 86.38% of 10,000 tolerance runs (more than 0.1% fail).",
-   "margin": 3.3,
-   "unit": "mm",
-   "arrival": "Iron reaches the flight controller pad with the top plate on",
-   "pass_rate": 86.38,
-   "runs": 10000,
-   "driver": "pcb_t (r=-0.78), fc_gap (r=-0.44)",
-   "worst": -4.44,
-   "name_plain": "Iron tip (5.5 mm) fits between the flight controller and the fitted top plate to solder the pigtail"
+   "action": "S3.4",
+   "name": "Iron reaches the FC's GND and 5V pads for the Pi lead: they are soldered on the bench, before the FC is mounted",
+   "status": "PASS",
+   "detail": "replay order: the FC's pad wires go on at S3.4, before the 8-wire cable and the mounting",
+   "margin": null,
+   "unit": "",
+   "arrival": null,
+   "pass_rate": null,
+   "runs": 0,
+   "driver": "",
+   "worst": null,
+   "name_plain": "Iron reaches the flight controller's GND and 5V pads for the Pi lead: they are soldered on the bench, before the flight controller is mounted"
   },
   {
    "id": "ACCESS-usbc",
@@ -2275,7 +2274,7 @@
    "id": "ACCESS-open-S4.1",
    "category": "access",
    "action": "S4.1",
-   "name": "Iron reaches the FC UART2 pads: nothing is fitted above them yet",
+   "name": "Iron reaches the receiver's pads, not the FC's: the cable's plug goes into the FC's 4-pin socket and its other end is soldered to the receiver",
    "status": "PASS",
    "detail": "replay order: the top plate goes on at S4.8",
    "margin": null,
@@ -2285,13 +2284,13 @@
    "runs": 0,
    "driver": "",
    "worst": null,
-   "name_plain": "Iron reaches the flight controller UART2 pads: nothing is fitted above them yet"
+   "name_plain": "Iron reaches the receiver's pads, not the flight controller's: the cable's plug goes into the flight controller's 4-pin socket and its other end is soldered to the receiver"
   },
   {
    "id": "ACCESS-open-S4.3",
    "category": "access",
    "action": "S4.3",
-   "name": "Iron reaches the FC camera/VTX pads: nothing is fitted above them yet",
+   "name": "No iron at S4.3: the camera and VTX plug into cables whose FC ends were soldered at S3.4",
    "status": "PASS",
    "detail": "replay order: the top plate goes on at S4.8",
    "margin": null,
@@ -2301,7 +2300,7 @@
    "runs": 0,
    "driver": "",
    "worst": null,
-   "name_plain": "Iron reaches the flight controller camera/video transmitter pads: nothing is fitted above them yet"
+   "name_plain": "No iron at step 4: the camera and video transmitter plug into cables whose flight controller ends were soldered at step 3"
   },
   {
    "id": "ACCESS-front-legs",
@@ -2599,14 +2598,14 @@
    "name": "Battery slid forward to about 2 mm from the GPS (change request 43) leaves the balance point within 5 mm of centre",
    "status": "PASS",
    "detail": "",
-   "margin": 2.81,
+   "margin": 3.72,
    "unit": "mm",
    "arrival": null,
    "pass_rate": 100.0,
    "runs": 10000,
    "driver": "gps_x (r=+0.88), pi_x (r=+0.15)",
-   "worst": 0.92,
-   "detail_extra": "Includes about 46 g of parts the page does not weigh yet (legs, HAT, pad, pigtail, wires, GPS cable extension: my estimates). The exact balance point is about 10 mm ahead of centre, past the GPS, so the drone stays a little tail-heavy.",
+   "worst": 1.79,
+   "detail_extra": "Includes about 46 g of parts the page does not weigh yet (legs, HAT, pad, pigtail, wires, GPS cable extension: my estimates). The exact balance point is about 7 mm ahead of centre, past the GPS, so the drone stays a little tail-heavy.",
    "name_plain": "Battery slid forward to about 2 mm from the GPS leaves the balance point within 5 mm of centre"
   },
   {
@@ -2632,13 +2631,13 @@
    "name": "With the Li-ion pack slid forward to about 2 mm from the GPS, the balance point stays within 5 mm of centre",
    "status": "PASS",
    "detail": "",
-   "margin": 3.83,
+   "margin": 4.53,
    "unit": "mm",
    "arrival": null,
    "pass_rate": 100.0,
    "runs": 10000,
-   "driver": "gps_x (r=+0.89), gps_w (r=-0.10)",
-   "worst": 1.07,
+   "driver": "gps_x (r=+0.87), gps_w (r=-0.09)",
+   "worst": 1.74,
    "name_plain": "With the Li-ion pack slid forward to about 2 mm from the GPS, the balance point stays within 5 mm of centre"
   },
   {
@@ -3237,7 +3236,7 @@
    "id": "WEIGHT-total",
    "category": "weight",
    "action": "S8.6",
-   "name": "All-up weight: 510 g from the page's sourced weights + 46 g estimated = about 556 g",
+   "name": "All-up weight: 512 g from the page's sourced weights + 46 g estimated = about 558 g",
    "status": "PASS",
    "detail": "estimates: legs: 8 aluminium standoffs (ESTIMATED 1.0 g each); legs: 4 rubber feet (ESTIMATED 1.0 g each; the listing's weight line is a typo); Pi pad, 6 nylon standoffs, screws, zip ties (ESTIMATED 6 g); Qwiic HAT + 2 cables (ESTIMATED 6 g; not weighed on the page); micro-USB pigtail (ESTIMATED 5 g); wires, XT60, solder, capacitor (ESTIMATED 15 g); GPS cable extension: 4 x 120 mm 26 AWG, 8 joints, heat shrink (ESTIMATED 2 g)",
    "margin": null,
@@ -3247,7 +3246,7 @@
    "runs": 0,
    "driver": "",
    "worst": null,
-   "name_plain": "All-up weight: 510 g from the page's sourced weights + 46 g estimated = about 556 g"
+   "name_plain": "All-up weight: 512 g from the page's sourced weights + 46 g estimated = about 558 g"
   },
   {
    "id": "X-ids-truth",
@@ -3495,7 +3494,7 @@
    "action": "",
    "name": "Buy list 'iFlight smoke stopper, XT30/XT60' is used by a step",
    "status": "PASS",
-   "detail": "used in S3.5, S8.2",
+   "detail": "used in S5.4b, S8.2",
    "margin": null,
    "unit": "",
    "arrival": null,
@@ -4229,7 +4228,7 @@
    "id": "BUY-used-legs-footscrews",
    "category": "cross-checks",
    "action": "",
-   "name": "Buy list 'M3 x 10 mm black steel button-head screws, 10 pack (for the ' is used by a step",
+   "name": "Buy list 'M3 x 10 mm steel button-head screws, 10 pack (for the 4 rubb' is used by a step",
    "status": "PASS",
    "detail": "used in S7.8",
    "margin": null,
@@ -4239,7 +4238,7 @@
    "runs": 0,
    "driver": "",
    "worst": null,
-   "name_plain": "Buy list 'M3 x 10 mm black steel button-head screws, 10 pack (for the ' is used by a step"
+   "name_plain": "Buy list 'M3 x 10 mm steel button-head screws, 10 pack (for the 4 rubb' is used by a step"
   },
   {
    "id": "BUY-required-all-used",

@@ -1,17 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
-<title id="title">Step 3: Solder the flight stack and first-power safety</title>
-<desc id="desc">Four motor wire groups to ESC, flight controller above, battery lead and capacitor to XT60 through a smoke stopper. Red positive, black negative.</desc>
+<title id="title">Step 3: Solder the stack. No battery in this step</title>
+<desc id="desc">Four motor wire groups to the ESC; the flight controller above, its pad-side wires soldered on the bench before it is mounted; the XT60 lead and the capacitor on the battery pads. Red positive, black negative. No battery: the first power-up is in Step 5.</desc>
 <rect width="960" height="540" fill="#f7f2e8"/>
 <style>.t{font:700 23px 'Segoe UI',sans-serif;fill:#123a2e}.s{font:18px 'Segoe UI',sans-serif;fill:#21332b}.b{fill:#fff;stroke:#1b5e4f;stroke-width:3;rx:12}.a{fill:#e4f0ea;stroke:#1b5e4f;stroke-width:3;rx:12}.w{fill:#fbe9dc;stroke:#c2571b;stroke-width:3;rx:12}.r{stroke:#c2571b;stroke-width:5}.k{stroke:#21332b;stroke-width:5}.g{stroke:#1b5e4f;stroke-width:4}</style>
-<text x="32" y="42" class="t">3 · Solder, inspect, then use a smoke stopper</text>
-<rect x="350" y="85" width="260" height="100" class="a"/><text x="480" y="123" text-anchor="middle" class="t">F405 FLIGHT CONTROLLER</text><text x="480" y="154" text-anchor="middle" class="s">Type-C to your laptop</text>
-<rect x="350" y="220" width="260" height="130" class="b"/><text x="480" y="260" text-anchor="middle" class="t">50A 4-IN-1 ESC</text><text x="480" y="292" text-anchor="middle" class="s">Motor order per manual</text><text x="480" y="322" text-anchor="middle" class="s">Capacitor + battery pads</text>
-<path d="M350 130 H180 V240 H350 M350 155 H205 V270 H350 M610 130 H780 V240 H610 M610 155 H755 V270 H610" class="g" fill="none"/>
-<text x="62" y="120" class="t">M1–M4</text><text x="62" y="148" class="s">motor wires</text><text x="778" y="120" class="t">M1–M4</text><text x="778" y="148" class="s">motor wires</text>
-<path d="M480 220 V65 H480" class="r"/><path d="M480 350 V405" class="k"/>
-<rect x="360" y="400" width="240" height="58" class="w"/><text x="480" y="438" text-anchor="middle" class="t">SMOKE STOPPER</text>
+<text x="32" y="42" class="t">3 · Solder the stack — no battery in this step</text>
+<rect x="315" y="85" width="330" height="100" class="a"/><text x="480" y="123" text-anchor="middle" class="t">F405 FLIGHT CONTROLLER</text><text x="480" y="154" text-anchor="middle" class="s">Pad wires first, then mount</text>
+<rect x="350" y="220" width="260" height="130" class="b"/><text x="480" y="260" text-anchor="middle" class="t">50A 4-IN-1 ESC</text><text x="480" y="292" text-anchor="middle" class="s">3 wires a motor, any order</text><text x="480" y="322" text-anchor="middle" class="s">Battery pads face the tail</text>
+<path d="M190 262 H350 M190 300 H350 M610 262 H770 M610 300 H770" class="g" fill="none"/>
+<text x="62" y="272" class="t">M3 · M4</text><text x="62" y="300" class="s">motor wires</text><text x="790" y="272" class="t">M1 · M2</text><text x="790" y="300" class="s">motor wires</text><text x="492" y="209" class="s">8-wire cable</text>
+<path d="M480 185 V220" class="g"/><path d="M480 350 V405" class="k"/>
+<rect x="320" y="400" width="320" height="58" class="b"/><text x="480" y="438" text-anchor="middle" class="t">XT60 LEAD + CAPACITOR</text>
 <path d="M480 458 V482" class="r"/>
-<rect x="390" y="480" width="180" height="44" class="b"/><text x="480" y="510" text-anchor="middle" class="t">XT60 → 4S</text>
-<rect x="40" y="390" width="255" height="105" class="b"/><text x="58" y="422" class="t">BEFORE POWER</text><text x="58" y="452" class="s">Red = positive (+)</text><text x="58" y="480" class="s">Black = negative (−)</text>
-<rect x="665" y="390" width="255" height="105" class="w"/><text x="683" y="422" class="t">PROPS OFF</text><text x="683" y="452" class="s">Check polarity + continuity</text><text x="683" y="480" class="s">No bridges / no loose wire</text>
+<rect x="380" y="480" width="200" height="44" class="b"/><text x="480" y="510" text-anchor="middle" class="t">+ to +, − to −</text>
+<rect x="40" y="390" width="255" height="105" class="b"/><text x="58" y="422" class="t">POLARITY</text><text x="58" y="452" class="s">Red = positive (+)</text><text x="58" y="480" class="s">Black = negative (−)</text>
+<rect x="665" y="390" width="255" height="105" class="w"/><text x="683" y="422" class="t">BEFORE YOU GO ON</text><text x="683" y="452" class="s">Meter: no short at the XT60</text><text x="683" y="480" class="s">No bridges · tug each wire</text>
 </svg>

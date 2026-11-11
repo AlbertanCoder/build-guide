@@ -41,8 +41,9 @@ act("S2.1", 2, "Arms on the bottom plate", needs=["buy:frame", "checked"], produ
 act("S2.2", 2, "Standoffs", needs=["arms_on"], produces=["standoffs_on"], tools=["buy:tools"])
 act("S2.3", 2, "Motors M1-M4", needs=["arms_on", "buy:motors"], produces=["motors_on"], uses={"buy:motors": 4}, tools=["buy:tools"])
 act("S2.4", 2, "Motor screws clear the windings", needs=["motors_on"], produces=["motor_screws_ok"])
-# Step 3 says "You need a charged flight battery for the first power-up in this step. If you have not charged one
-# yet, do Step 5 first." So the replay charges the packs (Step 5) before Step 3.
+# Step 4's bind (S4.5) needs the radio charged (S5.1/S5.1b), so the replay runs Step 5's charging before Step 3.
+# The stack's first power-up is S5.4b at the end of Step 5 on the page (audit row B3, 10 Nov 2026: it was S3.5);
+# the replay runs it after Step 4, the page order, because it needs the mounted flight controller.
 act("S5.1", 5, "Cells into the radio", needs=["buy:radio", "buy:radio-cells"], produces=["radio_cells"])
 act("S5.1b", 5, "Charge the radio", needs=["radio_cells"], produces=["radio_ready"])
 act("S5.2", 5, "Fireproof surface, charger mains cable in", needs=["buy:charger"], produces=["charger_on"])
@@ -60,9 +61,6 @@ act("S3.3", 3, "XT60 lead + capacitor", needs=["esc_on"], produces=["power_lead"
     uses={"buy:heat-shrink": 2})
 act("S3.4", 3, "8-wire cable, then the FC", needs=["esc_on", "motors_soldered", "power_lead"], produces=["fc_on"],
     tools=["buy:tools"])
-act("S3.5", 3, "First power-up through the smoke stopper, props off", needs=["fc_on", "packs_charged", "buy:smoke-stopper"],
-    produces=["first_power_ok"], set_={"smoke_stopper_first": True, "battery_connected": True},
-    notes="page: 'Its light must stay solid green: that means no short. Then unplug.' The first battery plug-in is here now, not S8.2")
 act("S4.1", 4, "Receiver on UART2 with the stack box 4-wire cable", needs=["fc_on", "buy:receiver", "buy:stack"], produces=["rx_wired"],
     tools=["buy:tools", "buy:strippers"])
 act("S4.2", 4, "Receiver antenna", needs=["rx_wired"], produces=["rx_antenna"])
@@ -81,6 +79,9 @@ act("S4.9", 4, "Finder beeper in the front bay", needs=["fc_on", "buy:finder"], 
     notes="before the top plate (page order since 2026-11-04): its cable is soldered to the FC; buzzer pads per arrival test")
 act("S4.8", 4, "Fit the top plate", needs=["standoffs_on", "vtx_antenna", "bf_setup", "finder_on"], produces=["top_plate"],
     tools=["buy:tools"])
+act("S5.4b", 5, "First power-up through the smoke stopper, props off", needs=["fc_on", "packs_charged", "buy:smoke-stopper"],
+    produces=["first_power_ok"], set_={"smoke_stopper_first": True, "battery_connected": True},
+    notes="page: 'Its light must stay solid green: that means no short.' The first battery plug-in; was S3.5 until audit row B3 (10 Nov 2026)")
 act("S6.0", 6, "Card flashed, I2C on", needs=["buy:pi"], produces=["pi_ready"], tools=["your laptop"],
     uses={"buy:spare-sd": 1}, notes="its last line sets up the spare card the same way (Stage 2 buy line, 2026-11-04)")
 act("S6.1", 6, "Straight male headers", needs=["buy:thermal", "buy:gps"], produces=["headers"], tools=["buy:tools", "buy:iron-psu"])
@@ -325,9 +326,9 @@ TOLERANCES = {
 
 ARRIVAL = [
     {"item": "Landing-leg standoffs + set screws", "parcel": "Rotor Village (legs) + set-screw assortment",
-     "test": "Screw two leg standoffs together with one M3 x 10 set screw, then screw that onto a frame standoff.",
+     "test": "Count the M3 x 10 mm set screws in the kit first (you need 8; the listing says it has 20). Then screw two leg standoffs together with one M3 x 10 set screw, then screw that onto a frame standoff.",
      "pass": "Both ends take the set screw and the joint feels tight with no wobble.",
-     "fail": "If an end is not threaded inside, use M3 x 25 + M3 x 28 male-female standoffs instead, or one long M3 screw through both."},
+     "fail": "If an end is not threaded inside, use M3 x 25 + M3 x 28 male-female standoffs instead, or one long M3 screw through both. Fewer than 8 M3 x 10 mm in the kit: ask the seller for the missing ones before Step 7 (this kit is the only set-screw source on the list)."},
     {"item": "Stack", "parcel": "Rotor Village (GEPRC stack)",
      "test": "Fit the ESC and FC on the four stack screws and check each nut is fully on; feel under the bottom plate where the pad goes. Find the + and - marks beside the ESC's battery pads, any arrow or FRONT mark on the FC, whether the camera cable plugs straight in or the camera goes on pads, and (battery in, props off) that the GND/5V/LED pad group reads about 5 V.",
      "pass": "Nuts fully on, nothing sticks out more than about 1 mm under the plate, the marks are found, the camera connection is known, and the LED group reads about 5 V.",
@@ -337,9 +338,9 @@ ARRIVAL = [
      "pass": "It sits flat and does not rock.",
      "fail": "Swap standoffs between corners until it sits flat; if one is clearly short, ask Rotor Village or TBS for a spare."},
     {"item": "Drone stands level on its legs", "parcel": "Rotor Village (legs) + feet",
-     "test": "After fitting the legs, stand the drone on a flat table and look from the side.",
-     "pass": "All four feet touch and it does not rock.",
-     "fail": "Swap leg pieces between corners until it stands steady."},
+     "test": "Before fitting, measure a foot's height (the guide assumes 6.3 mm) and check the foot screw length against a foot. After fitting the legs, stand the drone on a flat table and look from the side.",
+     "pass": "The foot screw holds the foot; all four feet touch and it does not rock.",
+     "fail": "Swap leg pieces between corners until it stands steady. Foot screw wrong: buy the right length (Stage 4 list)."},
     {"item": "Battery and GPS do not touch", "parcel": "Battery + GPS (after balancing)",
      "test": "Measure the pack: the design assumes 79 mm; a pack over 81 mm closes the 2 mm gap. After balancing (S7.7), look at the gap between the front of the battery and the GPS board.",
      "pass": "The pack is 81 mm long or less, and the battery and the GPS do not touch.",
@@ -361,15 +362,15 @@ ARRIVAL = [
      "pass": "It goes through and sits flat.",
      "fail": "If the hole is too small, use the M2.5 screws from the nylon set, not a bigger size."},
     {"item": "Foam tape and boards", "parcel": "Canadian Tire (foam tape) + PiShop (thermal camera, GPS)",
-     "test": "Measure the foam tape's thickness and stick two layers on scrap; press the thermal camera's back and the GPS board's back onto a tape square; wrap a string round the Pi on its standoffs and measure the loop; check the foot screw length against a foot.",
-     "pass": "Two layers stay put, both boards sit flat on the tape, the loop is shorter than two joined 100 mm zip ties (about 168 mm usable), and the foot screw holds the foot.",
-     "fail": "Boards do not sit flat: add a second layer of tape so parts sit in the foam. Loop too long: join a third tie or buy longer ties. Foot screw wrong: buy the right length (Stage 4 list)."},
+     "test": "Measure the foam tape's thickness and stick two layers on scrap; press the thermal camera's back and the GPS board's back onto a tape square; wrap a string round the Pi on its standoffs and measure the loop.",
+     "pass": "Two layers stay put, both boards sit flat on the tape, and the loop is shorter than two joined 100 mm zip ties (about 168 mm usable).",
+     "fail": "Boards do not sit flat: add a second layer of tape so parts sit in the foam. Loop too long: join a third tie or buy longer ties."},
     {"item": "Camera tilt adjust", "parcel": "Frame (TPU camera mount) + camera",
      "test": "Fit the camera and look for side screws that let it tilt.",
      "pass": "It tilts to about 10 degrees up and locks.",
      "fail": "If it is fixed, check the frame's other camera plates or ask on the TBS page; do not print a part."},
     {"item": "Receiver, video transmitter and smoke stopper", "parcel": "Rotor Village (receiver, VTX, smoke stopper)",
-     "test": "Step 4: plug only USB into the FC and look at the receiver's light; note the Wi-Fi name it shows in Wi-Fi mode. Step 3 (S3.5), the first battery power-up through the smoke stopper: find the smoke stopper's light. Step 8 (S8.2): watch the VTX's light at start-up.",
+     "test": "Step 4: plug only USB into the FC and look at the receiver's light; note the Wi-Fi name it shows in Wi-Fi mode. Step 5 (S5.4b), the first battery power-up through the smoke stopper: find the smoke stopper's light. Step 8 (S8.2): watch the VTX's light at start-up.",
      "pass": "The receiver light is on with USB alone; the smoke stopper shows solid green; the VTX's start-up flashes end with the power group, 3 red then 1 blue (25 mW, its lowest power), then a steady blue light (locked to the legal channels).",
      "fail": "No receiver light on USB: do the channel check on a battery through the smoke stopper (props off). Smoke stopper light off and beeping: unplug at once. Other VTX flashes: check the manual's table before flying."},
     {"item": "5 V rail carries the Pi, camera and receiver", "parcel": "Everything on the drone",
@@ -384,25 +385,25 @@ ARRIVAL = [
      "test": "After you write the card (S6.0), turn on the iPhone's Personal Hotspot with Maximize Compatibility on (2.4 GHz). Power the Pi from the kit's supply in PWR IN, join the laptop to the same hotspot, and type ssh username@raspberrypi.local.",
      "pass": "The Pi joins the hotspot and the laptop logs in over ssh.",
      "fail": "Check Maximize Compatibility is on (the Pi Zero 2 W has 2.4 GHz Wi-Fi only), and that the hotspot name and password in Imager are exact; write the card again."},
-    {"item": "Radio on USB power alone", "parcel": "Rotor Village (radio)",
-     "test": "Does the radio work on USB power alone? With its 18650 cells out, plug its USB-C cord into a USB charger and switch the radio on.",
-     "pass": "You know whether it switches on and its screen works on USB alone (useful for setup at the desk).",
-     "fail": "It does not switch on without cells: put the charged cells back in. Either way, fly on its cells."},
+    {"item": "Radio runs on its cells", "parcel": "Rotor Village (radio)",
+     "test": "Rotor Village says: \"Controller will NOT function on USB alone, it still needs batteries.\" So do not test it with the cells out. Put the two 18650 cells in, plug its USB-C cord into a USB charger and switch the radio on.",
+     "pass": "It switches on with its cells in, and its screen works while the cord is plugged in (useful for setup at the desk).",
+     "fail": "It does not switch on: check that the cells are in the right way round, then charge them with the cord."},
     {"item": "Software and props", "parcel": "Rotor Village (props) + your laptop",
      "test": "In Betaflight's Motors tab, see whether there is a slider for each motor or only the Master slider. Try the kit's prop tool on a prop nut. Read the props' CW/CCW marking.",
      "pass": "You know how the Motors tab spins one motor, the prop tool fits the nut, and you can tell CW from CCW props.",
      "fail": "Only a Master slider: spin one motor at a time with the others' sliders at zero as the tab allows, or ask. No letters on a prop: hold it flat, the leading edge is the higher edge; match it to the motor's spin."},
     {"item": "Quad battery lead reaches the pack", "parcel": "Stack (XT60 lead) + pack",
-     "test": "With the pack strapped on, plug the pack's XT60 into the quad's lead.",
-     "pass": "They meet without stretching and stay clear of the props.",
-     "fail": "Solder a longer XT60 lead (same wire size) or move the pack within its balance range."},
+     "test": "Before you solder the XT60 lead in Step 3, hold it from the ESC's battery pads to where the pack will sit, on top of the standoffs where the top plate will go, with the pack held there, and hold the pack's XT60 next to the lead's plug, without plugging them together (plugging in would power the drone). Look again with the pack strapped on (Step 7).",
+     "pass": "They would meet without stretching and stay clear of the props.",
+     "fail": "Before soldering: use a longer XT60 lead (same wire size). Once soldered: move the pack within its balance range."},
     {"item": "Camera cable length", "parcel": "Stack (camera cable) + camera",
      "test": "Hold the camera in its mount and run its cable to the FC's CAM socket.",
      "pass": "It reaches with a little slack.",
      "fail": "Use the camera's own 6-pin cable or splice in silicone wire."},
     {"item": "Multimeter basics", "parcel": "Rotor Village (tool kit) + two 1.5 V batteries you have at home",
-     "test": "Find the meter's battery cover (and whether it needs the kit's small screwdriver); put in two 1.5 V batteries. Find the dial position for DC volts that covers about 24 V, the two sockets the leads use for volts, and the beep (continuity) symbol. Touch the probes together on beep.",
-     "pass": "You know the battery cover, the DC volts position, the two sockets, and it beeps when the probes touch.",
+     "test": "Find the meter's battery cover (and whether it needs the kit's small screwdriver); put in two 1.5 V batteries. Find the dial position for DC volts that covers about 24 V, and the beep (continuity) symbol. Touch the probes together on beep.",
+     "pass": "You know the battery cover and the DC volts position, and it beeps when the probes touch.",
      "fail": "No beep symbol: use the lowest resistance (ohms) setting instead; touching probes should read close to 0."},
     {"item": "Heat source for the heat shrink", "parcel": "Rotor Village (tool kit + 3 mm heat shrink)",
      "test": "Slide a spare 1 cm piece of the 3 mm heat shrink onto a scrap of wire, heat the iron, and stroke the tube with the side of the iron (not the tip).",
@@ -432,10 +433,10 @@ ARRIVAL = [
      "test": "Sit one motor on an arm and look through the arm's four slots from below.",
      "pass": "All four motor screw holes show through a slot.",
      "fail": "If one hole sits just past a slot's end, try the motor turned a quarter turn; if it still misses, ask TBS or Rotor Village before forcing a screw."},
-    {"item": "Iron reaches the flight controller pad with the top plate on", "parcel": "Frame + stack (after step 4)",
-     "test": "With the top plate fitted, slide the cold iron tip in from the side to the FC's 5V and GND pads.",
-     "pass": "The tip touches the pads without touching the top plate or other parts.",
-     "fail": "Take the top plate off (4 screws) to solder the pigtail, then put it back."},
+    {"item": "Pi lead reaches the Pi under the bottom plate", "parcel": "Frame + stack (Step 3, once the flight controller is mounted)",
+     "test": "With the flight controller mounted, lead the Pi power lead (soldered to the flight controller in Step 3) down to where the Pi will sit under the bottom plate, centred 36 mm behind the stack centre.",
+     "pass": "The micro-USB plug reaches the Pi's PWR IN socket without pulling tight.",
+     "fail": "Too short: stop and ask before you cut or extend anything."},
     {"item": "USB-C plug with the top plate on", "parcel": "Stack + USB-C cable",
      "test": "With the top plate fitted, plug the USB-C cable into the FC.",
      "pass": "It goes fully in without pushing on the top plate.",
@@ -464,7 +465,7 @@ ARRIVAL_NEEDS = {   # buy-list ids each test needs in hand; the first one is the
     "Software and props": ["props", "tools"],
     "Practice boards": ["practice-board"],
     "Pi joins the iPhone hotspot": ["pi"],
-    "Radio on USB power alone": ["radio"],
+    "Radio runs on its cells": ["radio", "radio-cells"],
     "Quad battery lead reaches the pack": ["stack", "batteries"],
     "Camera cable length": ["fpv-camera", "stack"],
     "Multimeter basics": ["tools"],
@@ -475,7 +476,7 @@ ARRIVAL_NEEDS = {   # buy-list ids each test needs in hand; the first one is the
     "Frame": ["frame"],
     "GPS cable route": ["qwiic", "gps", "pi", "frame"],
     "Motor screws line up with the arm slots": ["motors", "frame"],
-    "Iron reaches the flight controller pad with the top plate on": ["stack", "frame", "tools"],
+    "Pi lead reaches the Pi under the bottom plate": ["frame", "stack", "tools"],
     "USB-C plug with the top plate on": ["usbc-cable", "stack", "frame"],
     "Payload fit under the plate": ["pi", "thermal", "foam-tape", "frame"],
 }

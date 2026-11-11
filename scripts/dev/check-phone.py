@@ -52,7 +52,6 @@ def b64url(t):
 
 
 # the visible step 3D view (not the finished drone at the top of Build)
-STEP_VIEW = "[...document.querySelectorAll('#p-steps .viewer3d')].find(v => v.offsetParent !== null && v.getAttribute('data-title') !== 'The finished build' && v.classList.contains('is-ready'))"
 TOP_VIEW = "document.querySelector('#p-steps .viewer3d[data-title=\"The finished build\"]')"
 SHOWN = "(e => !!e && e.offsetParent !== null && getComputedStyle(e).display !== 'none')"
 
@@ -82,9 +81,14 @@ try:
             pg.wait_for_function("document.getElementById('here-step') && !/Loading/.test(document.getElementById('here-step').textContent)", timeout=15000)
             return ctx, pg
 
-        def step_view(pg):
-            pg.evaluate("[...document.querySelectorAll('#p-steps .viewer3d')].find(v => v.offsetParent !== null && v.getAttribute('data-title') !== 'The finished build').scrollIntoView({ block: 'center' })")
-            pg.wait_for_function("!!(" + STEP_VIEW + ")", timeout=40000)
+        def top_view(pg, tap=False):
+            """Since 8 Nov 2026 the Build page has one 3D view, the finished drone (the per-step viewers were removed and
+            the steps link to the 3D lessons instead). It loads only when it is near the screen, and since 10 Nov Build can
+            open at the practice box, so scroll to it first. On a phone it is a picture until tapped (tap=True taps it)."""
+            pg.evaluate(TOP_VIEW + ".scrollIntoView({ block: 'center' })")
+            if tap:
+                pg.evaluate("(() => { const b = %s.querySelector('.v3d-poster'); if (b && !b.hidden) b.click(); })()" % TOP_VIEW)
+            pg.wait_for_function(TOP_VIEW + ".classList.contains('is-ready')", timeout=40000)
 
         def store(pg):
             s_ = pg.evaluate("JSON.parse(localStorage.getItem(%s) || '{}')" % json.dumps(STORE))
@@ -92,17 +96,18 @@ try:
 
         # ---------------- the laptop (1280 px): nothing changes ----------------
         ctx, pg = page_with(OWNED, TICKS, 1280, hash_="#steps")
-        pg.wait_for_function(TOP_VIEW + ".classList.contains('is-ready')", timeout=40000)
-        step_view(pg); pg.wait_for_timeout(800)
-        lap = pg.evaluate("""(() => { const S = %s, top = %s, v = %s;
+        top_view(pg); pg.wait_for_timeout(800)
+        lap = pg.evaluate("""(() => { const S = %s, top = %s;
           return { topModel: top.getAttribute('data-model'), topPoster: top.classList.contains('v3d-poster-on'), posterShown: S(top.querySelector('.v3d-poster')),
                    moreShown: [...document.querySelectorAll('.v3d-more')].some(S), more: document.querySelectorAll('.v3d-more').length,
-                   play: S(v.querySelector('.viewer3d-anim > [data-anim="play"]')), range: S(v.querySelector('.viewer3d-anim > input[type="range"]')),
-                   views: S(v.querySelector('.viewer3d-views')), bar: S(v.querySelector('.viewer3d-bar:not(.viewer3d-anim)')), chips: S(v.querySelector('.viewer3d-chips')) }; })()"""
-                          % (SHOWN, TOP_VIEW, STEP_VIEW))
-        check("laptop (1280 px): the 3D views keep every control (timeline, Focus, camera views, the bar); no 'More 3D options' button; the finished drone is a live 3D view",
-              lap["topModel"] == "docs/models/final-product.glb" and not lap["topPoster"] and not lap["posterShown"] and not lap["moreShown"] and lap["more"] >= 2
-              and lap["play"] and lap["range"] and lap["views"] and lap["bar"] and lap["chips"], lap)
+                   views: S(top.querySelector('.viewer3d-views')), bar: S(top.querySelector('.viewer3d-bar:not(.viewer3d-anim)')),
+                   stepViews: [...document.querySelectorAll('#p-steps .viewer3d')].filter(v => v !== top).length }; })()"""
+                          % (SHOWN, TOP_VIEW))
+        # 10 Nov 2026: was "the 3D views keep every control (timeline, Focus, ...)", measured on a step's own viewer. Those
+        # viewers left the page on 8 Nov (the steps link to the 3D lessons), so this checks the one view that is left.
+        check("laptop (1280 px): the finished drone is a live 3D view with its camera views and its bar showing; no 'More 3D options' button; the steps have no viewers of their own",
+              lap["topModel"] == "docs/models/final-product.glb" and not lap["topPoster"] and not lap["posterShown"] and not lap["moreShown"] and lap["more"] >= 1
+              and lap["views"] and lap["bar"] and lap["stepViews"] == 0, lap)
         pg.screenshot(path=os.path.join(SHOTS, "laptop-build.png"))
         lap_hints = pg.evaluate("[...new Set([...document.querySelectorAll('.viewer3d-hint')].map(h => h.textContent.trim()))]")
         nav = pg.evaluate("""(() => { const n = [...document.querySelectorAll('#p-steps .asm-nav')].find(x => x.offsetParent !== null);
@@ -136,37 +141,17 @@ try:
         # ---------------- the phone (390 px) ----------------
         ctx, pg = page_with(OWNED, TICKS, 390, hash_="#steps")
         pg.wait_for_timeout(1500)
-        step_view(pg); pg.wait_for_timeout(2500)                           # time for any other view to start, if one were going to
+        pg.evaluate(TOP_VIEW + ".scrollIntoView({ block: 'center' })"); pg.wait_for_timeout(2500)   # time for any view to start, if one were going to
         ph = pg.evaluate("""(() => { const S = %s, top = %s, btn = top.querySelector('.v3d-poster'), img = btn && btn.querySelector('img');
           const live = [...document.querySelectorAll('.viewer3d')].filter(v => v.querySelector('canvas'));
           return { model: top.getAttribute('data-model'), poster: top.classList.contains('v3d-poster-on'), shown: S(btn), img: !!img && img.complete && img.naturalWidth > 0,
                    topCanvas: !!top.querySelector('canvas'), live: live.length }; })()""" % (SHOWN, TOP_VIEW))
-        check("phone (390 px): the finished drone at the top of Build is a picture until tapped, so one 3D view is live",
-              ph["model"] is None and ph["poster"] and ph["shown"] and ph["img"] and not ph["topCanvas"] and ph["live"] == 1, ph)
+        check("phone (390 px): the finished drone at the top of Build is a picture until tapped, so no 3D view is live",
+              ph["model"] is None and ph["poster"] and ph["shown"] and ph["img"] and not ph["topCanvas"] and ph["live"] == 0, ph)
         pg.screenshot(path=os.path.join(SHOTS, "phone-build-top.png"))
-        V = "(" + STEP_VIEW + ")"
-        state = lambda: pg.evaluate("""(() => { const S = %s, v = %s, m = v.querySelector('.v3d-more');
-          return { canvas: S(v.querySelector('canvas')), chips: S(v.querySelector('.viewer3d-chips')) && v.querySelectorAll('.viewer3d-chips button').length > 0,
-                   play: S(v.querySelector('.viewer3d-anim > [data-anim="play"]')), range: S(v.querySelector('.viewer3d-anim > input[type="range"]')),
-                   time: S(v.querySelector('.viewer3d-anim > .viewer3d-time')), views: S(v.querySelector('.viewer3d-views')), tilt: S(v.querySelector('.viewer3d-tilt')),
-                   bar: S(v.querySelector('.viewer3d-bar:not(.viewer3d-anim)')), more: S(m), moreText: m ? m.textContent : '', expanded: m ? m.getAttribute('aria-expanded') : '',
-                   closeup: v.getAttribute('data-closeup') }; })()""" % (SHOWN, V))
-        s0 = state()
-        check("phone: the step's 3D view shows the model, its step chips and one 'More 3D options' button, nothing else",
-              s0["canvas"] and s0["chips"] and s0["more"] and s0["moreText"] == "More 3D options"
-              and not any(s0[k] for k in ("play", "range", "time", "views", "tilt", "bar")) and s0["closeup"] is None, s0)
-        el = pg.evaluate_handle(V)
-        el.as_element().scroll_into_view_if_needed(); pg.wait_for_timeout(300)
-        el.as_element().screenshot(path=os.path.join(SHOTS, "phone-step-view.png"))
-        el.as_element().query_selector(".v3d-more").click(); pg.wait_for_timeout(400)
-        s1 = state()
-        el.as_element().screenshot(path=os.path.join(SHOTS, "phone-step-view-more.png"))
-        nox_more = pg.evaluate("document.documentElement.scrollWidth <= innerWidth")
-        el.as_element().query_selector(".v3d-more").click(); pg.wait_for_timeout(300)
-        s2 = state()
-        check("phone: 'More 3D options' shows the timeline, Focus, the camera views and the bar and asks the viewer for its close-up box; 'Fewer 3D options' folds them away",
-              s1["play"] and s1["range"] and s1["views"] and s1["bar"] and s1["chips"] and s1["closeup"] == "on" and s1["moreText"] == "Fewer 3D options" and s1["expanded"] == "true"
-              and nox_more and not any(s2[k] for k in ("play", "range", "views", "bar")) and s2["closeup"] is None and s2["moreText"] == "More 3D options", [s1, s2])
+        # 10 Nov 2026: two checks stood here on a step's own 3D viewer ("shows the model, its step chips and one 'More 3D
+        # options' button" and "'More 3D options' shows the timeline, Focus ... 'Fewer 3D options' folds them away").
+        # Those viewers left the page on 8 Nov. The fold is checked on the finished drone below, opened and closed.
         nav = pg.evaluate("""(() => { const n = [...document.querySelectorAll('#p-steps .asm-nav')].find(x => x.offsetParent !== null);
           const r = e => e.getBoundingClientRect(), nr = r(n), a = r(n.querySelector('[data-asm-prev]')), c = r(n.querySelector('.asm-count')), z = r(n.querySelector('.asm-count').nextElementSibling);
           const fit = [...n.querySelectorAll('button')].every(x => x.scrollWidth <= x.clientWidth + 1);
@@ -199,6 +184,14 @@ try:
         top_el.screenshot(path=os.path.join(SHOTS, "phone-top-more.png"))
         check("phone: the opened finished drone folds its controls under 'More 3D options'; opened, they all fit 390 px with no sideways scroll (Shad's shots 11-12)",
               fold["more"] and not fold["bar"] and not fold["views"] and not fold["tilt"] and fit["bar"] and fit["views"] and fit["shown"] >= 5 and not fit["out"] and not fit["wide"], [fold, fit])
+        more_state = lambda: pg.evaluate("""(() => { const S = %s, top = %s, m = top.querySelector('.v3d-more');
+          return { bar: S(top.querySelector('.viewer3d-bar:not(.viewer3d-anim)')), views: S(top.querySelector('.viewer3d-views')), text: m ? m.textContent : '', expanded: m ? m.getAttribute('aria-expanded') : '' }; })()""" % (SHOWN, TOP_VIEW))
+        m1 = more_state()
+        top_el.query_selector(".v3d-more").click(); pg.wait_for_timeout(300)
+        m2 = more_state()
+        check("phone: the button reads 'Fewer 3D options' while the controls are open, and pressing it folds them away again",
+              m1["bar"] and m1["views"] and m1["text"] == "Fewer 3D options" and m1["expanded"] == "true"
+              and not m2["bar"] and not m2["views"] and m2["text"] == "More 3D options", [m1, m2])
         ph_hints = pg.evaluate("[...new Set([...document.querySelectorAll('.viewer3d-hint')].map(h => h.textContent.trim()))]")
         check("touch screens: the 3D hint says 'Drag to rotate · pinch to zoom · two-finger drag to pan'; the laptop keeps its mouse wording (Shad's shot 13)",
               # a playing step shows its action's line in the hint (viewer3d.js), so only the gesture lines are compared
@@ -356,14 +349,15 @@ try:
         ctx.close()
 
         ctx, pg = page_with(OWNED, TICKS, 390, hash_="#steps"); pg.wait_for_timeout(1000)
-        step_view(pg); pg.wait_for_timeout(800)
-        el13 = pg.evaluate_handle(STEP_VIEW).as_element()
+        top_view(pg, tap=True); pg.wait_for_timeout(800)
+        el13 = pg.evaluate_handle(TOP_VIEW).as_element()
         el13.query_selector(".v3d-more").click(); pg.wait_for_timeout(400)
         bar = pg.evaluate("""(() => { const S = %s, v = %s, bar = v.querySelector('.viewer3d-bar:not(.viewer3d-anim)'), h = bar.querySelector('.viewer3d-hint'), r = bar.querySelector('[data-action="reset"]');
           const resets = [...v.querySelectorAll('button')].filter(b => S(b) && b.textContent.trim() === 'Reset view').length;
           const hb = h.getBoundingClientRect(), bb = bar.getBoundingClientRect(), rb = r.getBoundingClientRect();
-          return { resets: resets, full: hb.width >= bb.width - 40, below: rb.top >= hb.bottom - 1 }; })()""" % (SHOWN, STEP_VIEW))
-        check("phone, 'More 3D options' open (Shad's shot 6): one Reset view, and the step's line (e.g. the safety line) has its own full-width row", bar["resets"] == 1 and bar["full"] and bar["below"], bar)
+          return { resets: resets, full: hb.width >= bb.width - 40, below: rb.top >= hb.bottom - 1 }; })()""" % (SHOWN, TOP_VIEW))
+        # 10 Nov 2026: measured on the finished drone's view (the step viewers this was written for left the page on 8 Nov)
+        check("phone, 'More 3D options' open (Shad's shot 6): one Reset view, and the hint line has its own full-width row", bar["resets"] == 1 and bar["full"] and bar["below"], bar)
         dg = pg.evaluate("""(() => { const pic = [...document.querySelectorAll('#p-steps .asm-picture')].find(p => p.offsetParent !== null), img = pic && pic.querySelector('img');
           return { w: img ? Math.round(img.getBoundingClientRect().width) : 0, scrolls: pic ? pic.scrollWidth > pic.clientWidth : false, wide: document.documentElement.scrollWidth > innerWidth }; })()""")
         check("phone (Shad's shot 7): the step's paper diagram is wide enough to read (760 px) and scrolls sideways in its own box; the page does not",
@@ -383,8 +377,8 @@ try:
             p2 = c2.new_page()
             p2.on("pageerror", lambda e: errs.append("%s: %s" % (label, e.message)))
             p2.goto(URL + "#steps"); p2.wait_for_timeout(1500)
-            step_view(p2); p2.wait_for_timeout(800)
-            v2 = p2.evaluate_handle(STEP_VIEW).as_element()
+            top_view(p2, tap=True); p2.wait_for_timeout(800)
+            v2 = p2.evaluate_handle(TOP_VIEW).as_element()
             v2.query_selector(".v3d-more").click(); p2.wait_for_timeout(300)
             v2.query_selector('[data-action="fullscreen"]').click(); p2.wait_for_timeout(700)
             on = p2.evaluate("""(() => { const v = document.querySelector('.viewer3d.v3d-overlay'); if (!v) return { on: false };
@@ -458,8 +452,17 @@ try:
         st13 = {l["id"]: True for l in buy13["lines"] if int(l["stage"]) in (1, 3)}
         ctx, pg = page_with(st13, {}, 390, hash_="#steps"); pg.wait_for_timeout(600)
         pr = pg.evaluate("document.getElementById('practice-now').textContent")
+        # what the page should say about Stage 2, worked out from its buy list the way the page does: a part counts as
+        # out of stock when its main shop is out and no Canadian shop has the same item; the date is the latest check
+        def _ca_alt(l):
+            bk = l.get("backup") or {}
+            return bk.get("same") is True and bk.get("country") == "CA" and bk.get("status") in ("in_stock", "low")
+        out2 = [l for l in buy13["lines"] if int(l["stage"]) == 2 and l.get("status") == "out" and not _ca_alt(l)]
+        when = max([l.get("checkedOn") or "" for l in out2] or [""])
+        day = "%d %s" % (int(when[8:10]), ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][int(when[5:7]) - 1]) if when else ""
+        want2 = ("Stage 2 waits: part of it is out of stock (checked %s)." % day) if out2 and day else "Stage 2 waits until its parts are bought and arrive."
         check("Build, Before Step 1 (Shad's shot 23): the practice line says what he can practise now (Stages 1 and 3 bought) and that Stage 2 waits, out of stock with its latest check date",
-              pr.startswith("You can practise now: Stage 1 and Stage 3.") and "Stage 2 waits: part of it is out of stock (checked 5 Nov)." in pr, pr)   # the latest check of its out-of-stock parts (the Pi kit, 5 Nov)
+              pr.startswith("You can practise now: Stage 1 and Stage 3.") and want2 in pr, [pr, want2])   # the date is read from the page's own buy list (10 Nov 2026: it was typed in as "5 Nov" and went stale at the next stock check)
         ctx.close()
         check("no page errors on the laptop or the phone", not errs, errs[:3])
         b.close()

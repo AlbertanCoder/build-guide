@@ -479,14 +479,20 @@ class AnswerCache {
     }
   }
 
-  get(question) {
+  /* scope (optional; Fable audit S4, 10 Nov 2026): a string that must be the same for an entry to count. The server
+     passes where the user is, the step on screen, the memory version and the guide's fingerprint. Before, those were
+     glued onto the question itself, their words outnumbered the question's, and two different questions scored as
+     near-duplicates. With no scope given, the cache behaves exactly as before. */
+  get(question, scope) {
     const sig = signature(question);
     if (!sig) return null;
+    const sc = scope == null ? "" : String(scope);
     const toks = sig.split(" ");
     let best = null;
     let bestScore = 0;
     for (const e of this.entries) {
       if (!this._fresh(e)) continue;
+      if ((e.scope || "") !== sc) continue;
       const score = e.sig === sig ? 1 : jaccard(toks, e.tokens || e.sig.split(" "));
       if (score > bestScore) { bestScore = score; best = e; }
     }
@@ -508,12 +514,14 @@ class AnswerCache {
     };
   }
 
-  set(question, payload) {
+  set(question, payload, scope) {
     const sig = signature(question);
     if (!sig || !payload || !payload.answer) return false;
-    const existing = this.entries.findIndex((e) => e.sig === sig);
+    const sc = scope == null ? "" : String(scope);
+    const existing = this.entries.findIndex((e) => e.sig === sig && (e.scope || "") === sc);
     const entry = {
       sig: sig,
+      scope: sc,
       tokens: sig.split(" "),
       question: String(question).slice(0, 300),
       payload: {

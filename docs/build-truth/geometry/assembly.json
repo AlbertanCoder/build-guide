@@ -332,26 +332,6 @@
    "notes": ""
   },
   {
-   "id": "S3.5",
-   "step": 3,
-   "short": "First power-up through the smoke stopper, props off",
-   "needs": [
-    "fc_on",
-    "packs_charged",
-    "buy:smoke-stopper"
-   ],
-   "produces": [
-    "first_power_ok"
-   ],
-   "set": {
-    "smoke_stopper_first": true,
-    "battery_connected": true
-   },
-   "uses": {},
-   "tools": [],
-   "notes": "page: 'Its light must stay solid green: that means no short. Then unplug.' The first battery plug-in is here now, not S8.2"
-  },
-  {
    "id": "S4.1",
    "step": 4,
    "short": "Receiver on UART2 with the stack box 4-wire cable",
@@ -533,6 +513,26 @@
     "buy:tools"
    ],
    "notes": ""
+  },
+  {
+   "id": "S5.4b",
+   "step": 5,
+   "short": "First power-up through the smoke stopper, props off",
+   "needs": [
+    "fc_on",
+    "packs_charged",
+    "buy:smoke-stopper"
+   ],
+   "produces": [
+    "first_power_ok"
+   ],
+   "set": {
+    "smoke_stopper_first": true,
+    "battery_connected": true
+   },
+   "uses": {},
+   "tools": [],
+   "notes": "page: 'Its light must stay solid green: that means no short.' The first battery plug-in; was S3.5 until audit row B3 (10 Nov 2026)"
   },
   {
    "id": "S6.0",

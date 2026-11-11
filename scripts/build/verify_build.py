@@ -570,13 +570,20 @@ def measured():
         "The TPU mount's adjustment is not described on the listing.", arrival="Camera tilt adjust")
 
     # --- tool access
-    add("ACCESS-iron-fc5v", "access", "S7.4b", "Iron tip (5.5 mm) fits between the FC and the fitted top plate to solder the pigtail", "",
-        mc=lambda d: z_top_under(d) - (z_fc_top(d) + d["iron_tip"]), arrival="Iron reaches the flight controller pad with the top plate on")
+    # A1 (10 Nov 2026 audit): the Pi lead is soldered to the FC's GND/5V pads on the bench in S3.4, before the FC is
+    # mounted, so the old "iron between the FC and the fitted top plate" clearance no longer applies.
+    add("ACCESS-iron-fc5v", "access", "S3.4", "Iron reaches the FC's GND and 5V pads for the Pi lead: they are soldered on the bench, before the FC is mounted", "PASS",
+        "replay order: the FC's pad wires go on at S3.4, before the 8-wire cable and the mounting", unit="")
     add("ACCESS-usbc", "access", "S8.3", "USB-C plug fits between the FC and the top plate (Motors tab, top plate on)", "",
         mc=lambda d: z_top_under(d) - (z_fc_top(d) + 1.6 + d["usb_plug"] / 2.0), arrival="USB-C plug with the top plate on")
-    for aid, what in (("S3.2", "ESC motor pads"), ("S3.3", "ESC battery pads"), ("S4.1", "FC UART2 pads"), ("S4.3", "FC camera/VTX pads")):
+    for aid, what in (("S3.2", "ESC motor pads"), ("S3.3", "ESC battery pads")):
         add(f"ACCESS-open-{aid}", "access", aid, f"Iron reaches the {what}: nothing is fitted above them yet", "PASS",
-            "replay order: " + ("the FC goes on at S3.4" if aid in ("S3.2", "S3.3") else "the top plate goes on at S4.8"), unit="")
+            "replay order: the FC goes on at S3.4", unit="")
+    # D25b (10 Nov 2026 audit, after A1): Step 4 no longer solders to the FC's pads.
+    add("ACCESS-open-S4.1", "access", "S4.1", "Iron reaches the receiver's pads, not the FC's: the cable's plug goes into the FC's 4-pin socket and its other end is soldered to the receiver", "PASS",
+        "replay order: the top plate goes on at S4.8", unit="")
+    add("ACCESS-open-S4.3", "access", "S4.3", "No iron at S4.3: the camera and VTX plug into cables whose FC ends were soldered at S3.4", "PASS",
+        "replay order: the top plate goes on at S4.8", unit="")
     front_room = min(SIM.dist_to_edge(p, a) for p in FRONT_LEGS for a in SIM.ARMS)
     add("ACCESS-front-legs", "access", "S7.8", "Fingers can turn the front legs: open space round the middle-plate holes", "",
         mc=lambda d: np.full(len(d["pi_x"]), front_room) - 2.5 - 8.0 - 0.2 * 0)

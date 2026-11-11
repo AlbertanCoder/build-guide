@@ -303,9 +303,9 @@ window.GUIDE_DOMAIN = {
         "legal",
         "vlos"
       ],
-      "text": "Register, mark, and carry the certificate. Register and mark the drone (250 g to 25 kg) and carry proof plus a Pilot Certificate — Basic Operations. The Small Basic exam and registration have fees (exam CA$10.17 plus registration CA$10.17, per TC's fee schedule, checked 2026-11-03); age 14+ applies to Basic. The certificate does not expire, but skills must stay current.",
-      "source": "Guide: Buy, Stage 7 (fees checked 2026-11-03); Transport Canada fee schedule, via the order list",
-      "verified": "2026-11-03",
+      "text": "Register, mark, and carry the certificate. Register and mark the drone (250 g to 25 kg) and carry proof plus a Pilot Certificate — Basic Operations. The Small Basic exam and registration have fees (exam CA$10.17 plus registration CA$10.17, per TC's fee schedule, checked 2026-11-03); age 14+ applies to Basic. The certificate does not expire, but you may fly only if, within the last 24 months, you got the certificate, passed a Transport Canada drone exam again, passed a flight review, or completed recurrent training; carry the certificate and proof of that whenever you fly (CAR 901.56(1), 901.57).",
+      "source": "Guide: Buy, Stage 7 (fees checked 2026-11-03); Transport Canada fee schedule, via the order list; recency: CAR 901.56(1) and 901.57 (Guide, Fly safely, Papers first)",
+      "verified": "2026-11-10",
       "correction": false,
       "unverified": false
     },
@@ -521,9 +521,9 @@ window.GUIDE_DOMAIN = {
         "build",
         "battery"
       ],
-      "text": "The parts are a chosen set, not a mood board. The airframe is a TBS Source One V6 5-inch frame with four Emax ECO III 2207 1900KV motors, Gemfan 51499 tri-blade props, and two GNB 1500mAh 4S 120C HV packs (CA$48.99 frame, CA$87.96 motors, CA$67.98 batteries, checked 2026-11-03).",
-      "source": "Guide, Buy (buy list checked 2026-11-03)",
-      "verified": "2026-11-03",
+      "text": "The parts are a chosen set, not a mood board. The airframe is a TBS Source One V6 5-inch frame with four Emax ECO III 2207 1900KV motors, Gemfan 51499 tri-blade props, and two different packs: a GNB 1500mAh 4S 120C HV LiPo and a More Volts 4S 5000mAh Li-ion (CA$48.99 frame and CA$87.96 motors, checked 2026-11-03; CA$33.99 GNB and CA$63.99 More Volts, checked 2026-11-04).",
+      "source": "Guide, Buy (buy list checked 2026-11-03 and 2026-11-04)",
+      "verified": "2026-11-10",
       "correction": false,
       "unverified": false
     },
@@ -544,9 +544,9 @@ window.GUIDE_DOMAIN = {
         "build",
         "battery"
       ],
-      "text": "The motor wind is a known trade-off. 1900 KV is a 6S-class wind, kept deliberately on 4S at roughly 550–570 g AUW with restrained current — an efficiency-style build that still carries the payload. Audit pass 2 recorded the trade-off and chose not to change it.",
-      "source": "Shad-Drone-Audit-Report.md, audit pass 2 (2026-10-31)",
-      "verified": "2026-11-01",
+      "text": "The motor wind is a known trade-off. Retailers pitch the 1900 KV for 6S builds (Emax's own pages could not be opened to confirm), and it is kept deliberately on 4S at roughly 550–570 g AUW with restrained current — an efficiency-style build that still carries the payload. Audit pass 2 recorded the trade-off and chose not to change it.",
+      "source": "Shad-Drone-Audit-Report.md, audit pass 2 (2026-10-31); retailer attribution per the guide's motor note (audit row E9)",
+      "verified": "2026-11-10",
       "correction": false,
       "unverified": false
     },
@@ -567,9 +567,9 @@ window.GUIDE_DOMAIN = {
         "build",
         "battery"
       ],
-      "text": "Power is split on purpose. The GEPRC TAKER F405 BLS 50A combo stack (CA$85.99, checked 2026-11-03, out of stock at Rotor Village that day) feeds the Pi through a regulated 5V/3A output; the analog video transmitter runs from the flight controller's 9V pad (Step 4). Sensor boards take 3.3 V from the Qwiic HAT and nothing in that chain takes 5 V.",
-      "source": "Order list; payload README wiring and power; Guide Step 4",
-      "verified": "2026-11-03",
+      "text": "Power is split on purpose. The GEPRC TAKER F405 BLS 50A combo stack (CA$85.99, checked 2026-11-03, out of stock at Rotor Village that day; check stock again at checkout) feeds the Pi through a regulated 5V/3A output; the analog video transmitter runs from the flight controller's 9V pad (its cable is soldered there in Step 3). Sensor boards take 3.3 V from the Qwiic HAT and nothing in that chain takes 5 V.",
+      "source": "Order list; payload README wiring and power; Guide Step 3 (S3.4)",
+      "verified": "2026-11-10",
       "correction": false,
       "unverified": false
     },

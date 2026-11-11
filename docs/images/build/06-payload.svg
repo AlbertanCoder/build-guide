@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
 <title id="title">Step 6: Connect the Pi, thermal camera and GPS</title>
-<desc id="desc">Pi Zero 2 WH with Qwiic HAT, two PRT-17912 jumper cables to 1x5 headers on MLX90640 and PA1010D. Cable colors and sensor orientation are labelled.</desc>
+<desc id="desc">Pi Zero 2 WH with Qwiic HAT, two CAB-17261 female-jumper cables to 1x5 headers on MLX90640 and PA1010D. Cable colors and sensor orientation are labelled.</desc>
 <rect width="960" height="540" fill="#f7f2e8"/>
 <style>.t{font:700 22px 'Segoe UI',sans-serif;fill:#123a2e}.s{font:17px 'Segoe UI',sans-serif;fill:#21332b}.b{fill:#fff;stroke:#1b5e4f;stroke-width:3;rx:12}.a{fill:#e4f0ea;stroke:#1b5e4f;stroke-width:3;rx:12}.w{fill:#fbe9dc;stroke:#c2571b;stroke-width:3;rx:12}.g{stroke:#1b5e4f;stroke-width:4;fill:none}.r{stroke:#c2571b;stroke-width:4;fill:none}.k{stroke:#21332b;stroke-width:4;fill:none}.u{stroke:#2d6a8e;stroke-width:4;fill:none}.y{stroke:#9a700a;stroke-width:4;fill:none}</style>
 <text x="32" y="40" class="t">6 · Two sensors, one shared 3.3V I2C bus</text>
@@ -8,7 +8,7 @@
 <rect x="45" y="260" width="260" height="145" class="b"/><text x="175" y="295" text-anchor="middle" class="t">MLX90640 · 0x33</text><text x="175" y="327" text-anchor="middle" class="s">Solder 1×5 male header</text><text x="175" y="359" text-anchor="middle" class="s">Thermal lens points DOWN ↓</text>
 <rect x="655" y="260" width="260" height="145" class="b"/><text x="785" y="295" text-anchor="middle" class="t">PA1010D GPS · 0x10</text><text x="785" y="327" text-anchor="middle" class="s">Solder 1×5 male header</text><text x="785" y="359" text-anchor="middle" class="s">Ceramic antenna points UP ↑</text>
 <path d="M390 195 C300 220 260 230 220 260 M570 195 C660 220 700 230 740 260" class="g"/>
-<text x="150" y="230" class="s">PRT-17912 ×1</text><text x="660" y="230" class="s">PRT-17912 ×1</text>
-<rect x="230" y="430" width="500" height="80" class="w"/><text x="480" y="459" text-anchor="middle" class="t">Match labels — do not count pins by colour alone</text><text x="480" y="489" text-anchor="middle" class="s">Red 3.3V · Black GND · Blue SDA · Yellow SCL</text>
-<path d="M480 195 V240" class="r"/><text x="495" y="230" class="s">GEPRC regulated 5V/3A → micro-USB power-only pigtail</text>
+<text x="150" y="230" class="s">CAB-17261 ×1</text><text x="765" y="230" class="s">CAB-17261 ×1</text>
+<rect x="150" y="420" width="660" height="110" class="w"/><text x="480" y="449" text-anchor="middle" class="t">Wire by cable colour, in the Pimoroni order</text><text x="480" y="479" text-anchor="middle" class="s">Ignore the HAT's SDA/SCL letters (swapped)</text><text x="480" y="509" text-anchor="middle" class="s">Red 3.3V · Black GND · Blue SDA · Yellow SCL</text>
+<path d="M480 195 V214" class="r"/><text x="480" y="234" text-anchor="middle" class="s" style="paint-order:stroke;stroke:#f7f2e8;stroke-width:6px">Bench power: the kit's</text><text x="480" y="256" text-anchor="middle" class="s" style="paint-order:stroke;stroke:#f7f2e8;stroke-width:6px">supply in PWR IN</text>
 </svg>

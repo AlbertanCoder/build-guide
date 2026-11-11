@@ -203,8 +203,11 @@ let BASE_URL = (SETTINGS.baseUrl || ENV.BASE_URL || (PROVIDER === "anthropic"
    truth once it has been used. */
 let API_KEY = SETTINGS.apiKey || ENV.API_KEY || ENV.OPENAI_API_KEY || ENV.ANTHROPIC_API_KEY || "";
 const MAX_QUESTION = 500;
-const MAX_PASSAGES = 6;
-const MAX_TOKENS = 700;
+/* Fable audit S4 (10 Nov 2026): 6 -> 12 passages and 700 -> 1500 answer tokens. With 6 x 1,400 offered, 3 x 600 kept
+   and 700 tokens (which this model also spends on thinking), the chat said "That is not in this guide" for facts
+   written on the open step and stopped answers mid-sentence (5 of 14 page-fact questions right). */
+const MAX_PASSAGES = 12;
+const MAX_TOKENS = 1500;
 const EMPTY_RETRY_TOKENS = 2000;      /* the second try after an empty answer (4 Nov 2026) */
 
 /* The guide's fingerprint, part of every answer-cache key: when the page or the domain pack changes, answers saved
@@ -222,11 +225,14 @@ function guideStamp() {
     return guideStampMemo.stamp;
   } catch (e) { return "no-guide"; }
 }
-/* Passage budget after compression. The browser sends up to 6 x 1,400 chars;
-   these caps are what actually decides how many tokens get paid for. */
-const PASSAGE_CHARS = Number(ENV.PASSAGE_CHARS || 600);
-const PASSAGE_TOTAL = Number(ENV.PASSAGE_TOTAL || 2600);
-const PASSAGE_COUNT = Number(ENV.PASSAGE_COUNT || 3);
+/* Passage budget after compression. The browser sends up to 12 x 1,400 chars;
+   these caps are what actually decides how many tokens get paid for.
+   Fable audit S4 (10 Nov 2026): 600 / 2,600 / 3 -> 1,400 / 16,000 / 12. The old caps left the model about 1,800
+   characters of the guide per question: a long step's facts never reached it. About 3,000 tokens of context costs a
+   small fraction of a cent on the cheap tier; set the three numbers in server/.env to pay less. */
+const PASSAGE_CHARS = Number(ENV.PASSAGE_CHARS || 1400);
+const PASSAGE_TOTAL = Number(ENV.PASSAGE_TOTAL || 16000);
+const PASSAGE_COUNT = Number(ENV.PASSAGE_COUNT || 12);
 const HISTORY_TURNS = Number(ENV.HISTORY_TURNS || 2);
 
 /* Cost control. DAILY_USD_MAX=0 means no cap; set it and the server degrades to
@@ -376,10 +382,18 @@ function systemPrompt() {
     "8. WHERE SHAD IS and WHAT SHAD HAS TOLD YOU, when given, describe this user's own build. Answer for",
     "   his current step and his parts, and say which step you mean. Do not repeat advice he has already",
     "   acted on. A generic, FAQ-style answer is a failure when you know his step.",
+    "   Say where he is in the build only when he asks what to do next or where he is, or when the answer",
+    "   really depends on it. Do not end other answers with a reminder of his stage.",
+    "   THE STEP OPEN ON HIS SCREEN, when given, is the step he is reading: \"this step\" means that step.",
+    "   Passages labelled as that step, or as where he is, come in parts: read every part before you say",
+    "   something is not in the guide.",
     "9. Memory: when the user tells you a lasting fact about his build (a part arrived or is missing, a tool",
     "   he has or lacks, a problem he hit, a preference), add at most two lines at the very end, each exactly",
     "   [[REMEMBER the fact in plain words]]. Never remember keys, passwords, addresses, emails, phone",
-    "   numbers or other people's names. Do not mention these lines."
+    "   numbers or other people's names. Do not mention these lines.",
+    "   Remember only what he clearly said, not what you infer from it: \"I have stage 1 and 3\" means those",
+    "   parcels arrived, not that their practice is done. If a message could mean two things, ask him instead",
+    "   of remembering it, and do not tell him to tick anything he has not said he finished."
   ].join("\n");
 }
 
@@ -392,6 +406,9 @@ function userPrompt(question, passages, history, extra) {
     ? ["WHERE SHAD IS IN THE BUILD:",
       "Step " + c.step + (c.stepTitle ? ": " + c.stepTitle : "") + " (" + (c.done && c.done.length ? "steps done: " + c.done.join(", ") : "no steps ticked yet") + ")",
       c.next && c.next.length ? "Next on this step: " + c.next.join("; ") : ""].filter(Boolean).join("\n")
+    : "";
+  const onScreen = c.openStep
+    ? "THE STEP OPEN ON HIS SCREEN: Step " + c.openStep + (c.openTitle ? ": " + c.openTitle : "") + " (when he says \"this step\", he means this one)"
     : "";
   const told = extra.facts && extra.facts.length
     ? "WHAT SHAD HAS TOLD YOU (remembered on his laptop):\n" + extra.facts.map(function (f) { return "- " + f.text; }).join("\n")
@@ -412,6 +429,7 @@ function userPrompt(question, passages, history, extra) {
     blocks,
     "",
     where ? where + "\n" : "",
+    onScreen ? onScreen + "\n" : "",
     told ? told + "\n" : "",
     convo ? "CONVERSATION SO FAR:\n" + convo + "\n" : "",
     extra.detail ? "The user asked for more detail this time." : "",
@@ -1287,7 +1305,10 @@ async function handleAsk(req, res) {
     done: (Array.isArray(c.done) ? c.done : []).map(Number).filter((n) => Number.isInteger(n) && n >= 1 && n <= 8).slice(0, 8),
     next: (Array.isArray(c.next) ? c.next : []).map((s) => String(s).replace(/\s+/g, " ").slice(0, 160)).filter(Boolean).slice(0, 3),
     /* the Home card's where-you-are (stages before steps, 4 Nov 2026), e.g. "Stage 1 practice · Workshop and safety" */
-    stageText: String(c.stageText || "").replace(/\s+/g, " ").slice(0, 160)
+    stageText: String(c.stageText || "").replace(/\s+/g, " ").slice(0, 160),
+    /* Fable audit S4 (10 Nov 2026): the step open in the Build walker, when Build is on screen */
+    openStep: Number.isInteger(Number(c.openStep)) && Number(c.openStep) >= 1 && Number(c.openStep) <= 8 ? Number(c.openStep) : null,
+    openTitle: String(c.openTitle || "").replace(/\s+/g, " ").slice(0, 120)
   };
   const facts = MEM.facts.relevant(question, 10);
   const detail = body.detail === true;
@@ -1313,7 +1334,7 @@ async function handleAsk(req, res) {
     return;
   }
 
-  /* Layer 4, compression. The browser sends up to 6 x 1,400 chars; this is what
+  /* Layer 4, compression. The browser sends up to 12 x 1,400 chars; this is what
      decides how many of those characters are actually paid for. */
   const packed = ENGINE.compressPassages(rawPassages, question, {
     perPassageChars: PASSAGE_CHARS,
@@ -1342,8 +1363,13 @@ async function handleAsk(req, res) {
     { role: "user", content: userPrompt(question, passages, history, { context: context, facts: facts, detail: detail }) }
   ];
   /* the same words at another step, or after he told it something new, are a different question */
-  const cacheKey = question + " §where" + (context.stageText || "step" + (context.step || 0)) + " §mem" + MEM.facts.version() +
-    " §guide" + guideStamp() + (detail ? " §detail" : "");
+  /* Fable audit S4 (10 Nov 2026): the question alone is compared for near-duplicates; where he is, the step on screen,
+     his memory and the guide's fingerprint must match exactly (the "scope"). They used to be glued onto the question,
+     so two different short questions shared most of their words and one got the other's saved answer
+     ("Where does motor 1 go?" was given the saved answer to "Which props go on which motors?"). */
+  const cacheKey = question;
+  const cacheScope = "where:" + (context.stageText || "step" + (context.step || 0)) + "|open:" + (context.openStep || 0) + "|mem:" + MEM.facts.version() +
+    "|guide:" + guideStamp() + (detail ? "|detail" : "");
 
   res.writeHead(200, {
     "content-type": "text/event-stream; charset=utf-8",
@@ -1356,7 +1382,7 @@ async function handleAsk(req, res) {
   /* Layer 1, the cache. A question already answered is replayed, not re-bought.
      Checked after the 422 tripwire so a cached answer cannot dodge the rule that
      no evidence means no answer. */
-  const cached = cache.get(cacheKey);
+  const cached = cache.get(cacheKey, cacheScope);
   if (cached) {
     meter.count("cacheHits");
     /* A cached answer passes the five bans like any other: an old cache entry
@@ -1447,11 +1473,15 @@ async function handleAsk(req, res) {
       } catch (e) { /* the cheap answer stands; the escalation was a bonus */ }
     }
 
+    /* Fable audit S4 (10 Nov 2026): the model stopped because it ran out of answer tokens. Say so, and do not save it:
+       cut-off answers used to be shown as finished and then replayed from the saved answers. */
+    const cutOff = first.finish === "length" && full === first.text;
+    if (cutOff) { full = full.replace(/\s+$/, "") + "\n\n(This answer was cut short. Ask again, or open the step itself.)"; }
     const nav0 = extractNav(full);
     /* job 8: [[REMEMBER ...]] lines come out of the answer and into the laptop's memory (at most two) */
     const rem = MEMORY.extractRemember(nav0.text);
     const nav = { text: rem.text, see: nav0.see };
-    if (nav.text !== full) { send({ type: "replace", text: nav.text }); }
+    if (nav.text !== full || cutOff) { send({ type: "replace", text: nav.text }); }
     const remembered = [];
     rem.facts.forEach(function (f) {
       const r = MEM.facts.add(f, { from: req.fromPhone ? "phone" : "laptop" });
@@ -1488,14 +1518,16 @@ async function handleAsk(req, res) {
        deserves a second opinion next time, not a stored verdict. And never
        cache a banned answer - the check must run again next time. Nor an answer
        that remembered something: it was about that moment. */
-    if (bans.ok && !REFUSAL.test(nav.text) && !rem.facts.length) {
+    /* Fable audit S4 (10 Nov 2026): also not an answer that says "not in this guide" and then adds general knowledge
+       (it was saved, so a miss was repeated for a month), and not a cut-off answer. */
+    if (bans.ok && !REFUSAL.test(nav.text) && !BARE_REFUSAL.test(nav.text) && !cutOff && !rem.facts.length) {
       cache.set(cacheKey, {
         answer: nav.text,
         model: model,
         sources: ["AI answer (" + model + "), grounded in this guide's passages"],
         see: nav.see,
         usd: spent
-      });
+      }, cacheScope);
     }
   } catch (err) {
     send({ type: "error", error: String(err && err.message ? err.message : err).slice(0, 300) });

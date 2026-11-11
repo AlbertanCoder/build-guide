@@ -533,7 +533,7 @@ async function runSuite() {
       suggestBlock.indexOf("if (!settingsAvailable())") < suggestBlock.indexOf('fetch("/api/suggest"') &&
       /no suggestion request was sent/.test(suggestBlock) && /s\.status === "accepting"\) \{ s\.status = "ready"/.test(client));
 
-    let r = run("git", ["clone", "--quiet", "--branch", "main", ROOT, CLONE], TMP);
+    let r = run("git", ["clone", "--quiet", "-c", "core.autocrlf=false", "--branch", "main", ROOT, CLONE], TMP);
     check("an isolated main clone is created for all live proposal tests", r.status === 0, r.out.slice(0, 180));
     if (r.status !== 0) { throw new Error("clone failed"); }
     /* server/memory.js and server/cost-engine.js (job 8): the server under test needs the memory module and the prices it reads */

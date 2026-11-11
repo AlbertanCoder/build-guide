@@ -39,7 +39,7 @@ SPEC = {
     "step-03-stack": {"labels": ["ESC", "FLIGHT CONTROLLER", "XT60", "CAPACITOR", "8-WIRE", "SMOKE STOPPER",
                                  "MULTIMETER", "MOTOR WIRES"],
                       "absent": ["prop_", "cam_", "vtx_", "rx_"],
-                      # S3.5 (first power-up) puts a charged pack on the BENCH; none may sit on the drone in Step 3
+                      # the first power-up lesson (page: S5.4b) keeps a charged pack on the BENCH; none may sit on the drone in Step 3
                       "bench_only": ["battery_pack"]},
     "step-04-receiver-fpv": {"labels": ["RP1 V2", "UART2", "PHOENIX 2", "UNIFY", "TRIUMPH", "9V", "MONITOR", "USB", "FINDER",
                                        "TX -> R2  /  RX -> T2 (Crossed on purpose)"],
@@ -233,10 +233,12 @@ def main():
             for a in acts:
                 for pre in a.get("shows", []):
                     check(any(x.startswith(pre) for x in mesh_names), f"{name}: {a['id']} names part '{pre}' and the model has it")
-            # the page: this model sits in its own step's section; action ids on the page must match if present
+            # the page: the OLD step viewer was removed from every Build step (Shad, 8 Nov 2026: "Remove from all
+            # steps"; it showed the pre-A1 solder order). The step models live on in the 3D lessons
+            # (docs/walkthrough). Action ids on the page must still match the model's if present.
             step_no = int(name[5:7])
             blk = PAGE_STEPS.get(step_no, "")
-            check(f'docs/models/{name}.glb' in blk, f"{name}: index.html step {step_no} section shows this model")
+            check(f'docs/models/{name}.glb' not in blk, f"{name}: index.html step {step_no} section no longer shows the old 3D viewer")
             page_ids = set(_re.findall(r'data-action-id="(S\d\.[0-9A-Za-z]+)"', blk))
             if page_ids:
                 for a in acts:

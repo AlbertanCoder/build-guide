@@ -85,10 +85,10 @@
   {
    "name": "Video antenna, TBS Triumph PRO",
    "qty": 1,
-   "g": 11.5,
-   "source": "Rotor Village listing",
-   "url": "https://rotorvillage.ca/tbs-triumph-pro-sma-rhcp/",
-   "note": "",
+   "g": 6,
+   "source": "TBS maker page",
+   "url": "https://www.team-blacksheep.com/products/prod:triumph_pro_sma",
+   "note": "Rotor Village lists 11.5 g; the maker's 6 g is used.",
    "opus_flag": ""
   },
   {
@@ -120,11 +120,11 @@
   },
   {
    "name": "Battery strap, Rotor Village Kevlar",
-   "qty": 1,
+   "qty": 2,
    "g": 7.2,
    "source": "Rotor Village listing",
    "url": "https://rotorvillage.ca/rvs-kevlar-battery-strap-2pk/",
-   "note": "7.2 g is printed next to a 2-strap pack, so one strap may be lighter.",
+   "note": "The listing's spec lines (length 245 mm, width 20 mm, weight 7.2 g) appear to describe one strap; the pack holds 2, and Step 7 uses both (one on the pack, one round the Pi).",
    "opus_flag": ""
   }
  ],

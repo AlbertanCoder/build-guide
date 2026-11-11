@@ -11,8 +11,8 @@
    "url": "https://rotorvillage.ca/radiomaster-pocket-transmitter-elrs-charcoal-edition/",
    "stage": 3,
    "status": "in_stock",
-   "stockNote": "71 in stock",
-   "checkedOn": "2026-11-03",
+   "stockNote": "57 in stock",
+   "checkedOn": "2026-11-10",
    "today": true,
    "backup": {
     "shop": "EpicFPV (Canada)",
@@ -34,8 +34,8 @@
    "url": "https://rotorvillage.ca/radiomaster-pocket-18650-3200mah-3-7v-battery-2pcs/",
    "stage": 3,
    "status": "in_stock",
-   "stockNote": "220 in stock",
-   "checkedOn": "2026-11-03",
+   "stockNote": "187 in stock",
+   "checkedOn": "2026-11-10",
    "today": true,
    "backup": null,
    "backupNote": "No like-for-like backup found."
@@ -49,8 +49,8 @@
    "url": "https://rotorvillage.ca/flywoo-fpv-quad-tool-kit-w-multimeter-and-soldering-iron/",
    "stage": 1,
    "status": "low",
-   "stockNote": "Only 3 left",
-   "checkedOn": "2026-11-03",
+   "stockNote": "Only 1 left",
+   "checkedOn": "2026-11-10",
    "today": true,
    "backup": {
     "shop": "EpicFPV (Canada)",
@@ -72,8 +72,8 @@
    "url": "https://rotorvillage.ca/iflight-smart-smoke-stopper-xt30-xt60/",
    "stage": 1,
    "status": "in_stock",
-   "stockNote": "23 in stock",
-   "checkedOn": "2026-11-03",
+   "stockNote": "20 in stock",
+   "checkedOn": "2026-11-10",
    "today": true,
    "backup": {
     "shop": "EpicFPV (Canada)",
@@ -95,8 +95,8 @@
    "url": "https://rotorvillage.ca/rvs-lipo-storage-bag/",
    "stage": 1,
    "status": "in_stock",
-   "stockNote": "14 in stock",
-   "checkedOn": "2026-11-03",
+   "stockNote": "10 in stock",
+   "checkedOn": "2026-11-10",
    "today": true,
    "backup": {
     "shop": "EpicFPV (Canada)",
@@ -118,8 +118,8 @@
    "url": "https://rotorvillage.ca/heat-shrink-6mm-x-150mm-black/",
    "stage": 1,
    "status": "in_stock",
-   "stockNote": "71 in stock",
-   "checkedOn": "2026-11-03",
+   "stockNote": "56 in stock",
+   "checkedOn": "2026-11-10",
    "today": true,
    "backup": null,
    "backupNote": "No like-for-like backup found."
@@ -133,8 +133,8 @@
    "url": "https://rotorvillage.ca/heat-shrink-3mm-x-150mm-clear/",
    "stage": 1,
    "status": "in_stock",
-   "stockNote": "96 in stock",
-   "checkedOn": "2026-11-03",
+   "stockNote": "94 in stock",
+   "checkedOn": "2026-11-10",
    "today": true,
    "backup": null,
    "backupNote": "No like-for-like backup found. EpicFPV sells a mixed heat shrink set, not this size on its own.",
@@ -148,9 +148,9 @@
    "shop": "Rotor Village",
    "url": "https://rotorvillage.ca/zip-ties-100pcs-3mm-x-100mm/",
    "stage": 1,
-   "status": "low",
-   "stockNote": "Only 1 left",
-   "checkedOn": "2026-11-03",
+   "status": "in_stock",
+   "stockNote": "16 in stock",
+   "checkedOn": "2026-11-10",
    "today": true,
    "backup": {
     "shop": "EpicFPV (Canada)",
@@ -173,7 +173,7 @@
    "stage": 1,
    "status": "in_stock",
    "stockNote": "In stock",
-   "checkedOn": "2026-11-03",
+   "checkedOn": "2026-11-10",
    "today": true,
    "backup": {
     "shop": "Abra Electronics (Canada)",
@@ -196,7 +196,7 @@
    "stage": 1,
    "status": "in_stock",
    "stockNote": "In stock",
-   "checkedOn": "2026-11-03",
+   "checkedOn": "2026-11-10",
    "today": true,
    "backup": {
     "shop": "Fleet Network (Canada)",
@@ -268,7 +268,7 @@
    "stage": 2,
    "status": "out",
    "stockNote": "Out of stock",
-   "checkedOn": "2026-11-05",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": {
     "shop": "CanaKit",
@@ -278,7 +278,7 @@
     "currency": "USD",
     "same": true,
     "checkedOn": "2026-11-05",
-    "note": "Pi Zero 2 W Starter Kit with Pre-Soldered Header (PI-Z2WH-STR32-C4-BLK): Pi Zero 2 W board, 32 GB microSD, 2.5 A power supply, case, heat sink, USB OTG cable, mini-HDMI adapter. Price shown in USD; check the CAD total at checkout. No card reader included: use your laptop's microSD slot if it has one, or buy a reader. Shipping origin not stated."
+    "note": "Pi Zero 2 W Starter Kit with Pre-Soldered Header (PI-Z2WH-STR32-C4-BLK): Pi Zero 2 W board, 32 GB microSD, 2.5 A power supply, case, heat sink, USB OTG cable, mini-HDMI adapter (CanaKit lists these for its Starter Kit family; count the box). Price shown in USD; check the CAD total at checkout (with Canada chosen on its page it showed CA$129.95 on 10 Nov). No card reader included: use your laptop's microSD slot if it has one, or buy a reader. Shipping origin not stated."
    },
    "backupNote": null
   },
@@ -292,7 +292,7 @@
    "stage": 2,
    "status": "in_stock",
    "stockNote": "In stock",
-   "checkedOn": "2026-11-04",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": null,
    "backupNote": "Not looked for yet (added 4 Nov 2026)."
@@ -307,7 +307,7 @@
    "stage": 2,
    "status": "out",
    "stockNote": "Out of stock",
-   "checkedOn": "2026-11-03",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": {
     "shop": "Adafruit",
@@ -331,7 +331,7 @@
    "stage": 2,
    "status": "in_stock",
    "stockNote": "In stock",
-   "checkedOn": "2026-11-03",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": {
     "shop": "Adafruit",
@@ -374,7 +374,7 @@
    "stage": 4,
    "status": "out",
    "stockNote": "Out of stock",
-   "checkedOn": "2026-11-03",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": {
     "shop": "EpicFPV (Canada)",
@@ -395,9 +395,9 @@
    "shop": "Rotor Village",
    "url": "https://rotorvillage.ca/emax-eco-iii-series-2207-1900kv-motor/",
    "stage": 4,
-   "status": "in_stock",
-   "stockNote": "8 in stock",
-   "checkedOn": "2026-11-03",
+   "status": "low",
+   "stockNote": "Only 3 left",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": {
     "shop": "EpicFPV (Canada)",
@@ -409,7 +409,7 @@
     "checkedOn": "2026-11-03",
     "country": "CA"
    },
-   "note": "Emax rates this motor for 3S to 6S and pitches the 1900KV for 6S builds. On our 4S pack it is gentler, at an estimated 800 g of thrust per motor (our estimate from Emax's tables, not an Emax figure)."
+   "note": "The motor is listed for 3S to 6S (RaceDayQuads listing), and retailers pitch the 1900KV for 6S builds; Emax's own pages could not be opened to confirm either. On our 4S pack it is gentler, at an estimated 800 g of thrust per motor (this guide's own estimate, not an Emax figure)."
   },
   {
    "id": "props",
@@ -421,7 +421,7 @@
    "stage": 4,
    "status": "in_stock",
    "stockNote": "In stock",
-   "checkedOn": "2026-11-03",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": {
     "shop": "RaceDayQuads",
@@ -443,8 +443,8 @@
    "url": "https://rotorvillage.ca/rvs-kevlar-battery-strap-2pk/",
    "stage": 4,
    "status": "in_stock",
-   "stockNote": "347 in stock",
-   "checkedOn": "2026-11-03",
+   "stockNote": "345 in stock",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": {
     "shop": "EpicFPV (Canada)",
@@ -466,8 +466,8 @@
    "url": "https://rotorvillage.ca/flywoo-ultra-grip-super-sticky-battery-pad/",
    "stage": 4,
    "status": "in_stock",
-   "stockNote": "259 in stock",
-   "checkedOn": "2026-11-03",
+   "stockNote": "255 in stock",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": null,
    "backupNote": "No like-for-like backup found."
@@ -482,7 +482,7 @@
    "stage": 4,
    "status": "in_stock",
    "stockNote": "10 in stock",
-   "checkedOn": "2026-11-04",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": null,
    "backupNote": "Not looked for yet (added 4 Nov 2026)."
@@ -497,7 +497,7 @@
    "stage": 8,
    "status": "in_stock",
    "stockNote": "In stock",
-   "checkedOn": "2026-11-03",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": null,
    "backupNote": "No like-for-like backup found."
@@ -512,7 +512,7 @@
    "stage": 5,
    "status": "out",
    "stockNote": "Out of stock",
-   "checkedOn": "2026-11-03",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": {
     "shop": "Pyrodrone",
@@ -535,8 +535,8 @@
    "url": "https://rotorvillage.ca/radiomaster-rp1-v2-tcxo-expresslrs-2-4ghz-receiver/",
    "stage": 5,
    "status": "in_stock",
-   "stockNote": "17 in stock",
-   "checkedOn": "2026-11-03",
+   "stockNote": "11 in stock",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": {
     "shop": "EpicFPV (Canada)",
@@ -559,7 +559,7 @@
    "stage": 5,
    "status": "in_stock",
    "stockNote": "21 in stock",
-   "checkedOn": "2026-11-04",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": {
     "shop": "EpicFPV (Canada)",
@@ -581,8 +581,8 @@
    "url": "https://rotorvillage.ca/more-volts-4s-5000mah-li-ion-battery/",
    "stage": 5,
    "status": "in_stock",
-   "stockNote": "50 in stock",
-   "checkedOn": "2026-11-04",
+   "stockNote": "47 in stock",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": null,
    "backupNote": "Not looked for yet (added 4 Nov 2026)."
@@ -595,9 +595,9 @@
    "shop": "Rotor Village",
    "url": "https://rotorvillage.ca/toolkitrc-m7ac-charger-300w-15a/",
    "stage": 5,
-   "status": "in_stock",
-   "stockNote": "6 in stock",
-   "checkedOn": "2026-11-04",
+   "status": "low",
+   "stockNote": "Only 4 left",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": null,
    "backupNote": "Not looked for yet (the M7AC replaced the M4AC on 4 Nov 2026)."
@@ -628,8 +628,8 @@
    "url": "https://rotorvillage.ca/runcam-phoenix-2-special-edition/",
    "stage": 6,
    "status": "in_stock",
-   "stockNote": "7 in stock",
-   "checkedOn": "2026-11-03",
+   "stockNote": "13 in stock",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": null,
    "backupNote": "No in-stock backup found. RaceDayQuads (US) shows it as sold out."
@@ -644,7 +644,7 @@
    "stage": 6,
    "status": "in_stock",
    "stockNote": "7 in stock",
-   "checkedOn": "2026-11-03",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": {
     "shop": "EpicFPV (Canada)",
@@ -667,7 +667,7 @@
    "stage": 6,
    "status": "low",
    "stockNote": "Only 3 left",
-   "checkedOn": "2026-11-03",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": {
     "shop": "EpicFPV (Canada)",
@@ -675,7 +675,7 @@
     "status": "in_stock",
     "price": 29.99,
     "same": false,
-    "note": "TBS Triumph Pro SMA \"Long Range\". Its page says circular but not which hand (RHCP or LHCP). Check that before buying.",
+    "note": "TBS Triumph Pro SMA \"Long Range\". Its page says RHCP, the same hand as the main antenna.",
     "checkedOn": "2026-11-03",
     "country": "CA"
    }
@@ -690,7 +690,7 @@
    "stage": 6,
    "status": "low",
    "stockNote": "Only 1 left",
-   "checkedOn": "2026-11-03",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": {
     "shop": "EpicFPV (Canada)",
@@ -701,11 +701,13 @@
     "note": "Same M5F monitor. CA$10 cheaper.",
     "checkedOn": "2026-11-03",
     "country": "CA"
-   }
+   },
+   "note": "Ask the shop before you order: which antennas are in the box? Rotor Village's page says \"Antenna: Linear Included\"; the maker's picture on EpicFPV's page says LHCP (read 10 Nov). The drone's video antenna is RHCP. Linear antennas work with it (some range is lost). LHCP antennas do not match it."
   },
   {
    "id": "dvr-card",
    "item": "32 GB microSD card for the monitor recorder",
+   "note": "The Skyzone M5F manual says only \"SD card slot\": check the monitor's slot takes microSD (Stage 6 arrival test \"Monitor on the power bank\") before you buy this card.",
    "qty": 1,
    "unit": 27.95,
    "shop": "PiShop",
@@ -713,7 +715,7 @@
    "stage": 8,
    "status": "in_stock",
    "stockNote": "In stock",
-   "checkedOn": "2026-11-03",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": null,
    "backupNote": "No backup found."
@@ -762,7 +764,7 @@
    "stage": 1,
    "status": "in_stock",
    "stockNote": "In stock",
-   "checkedOn": "2026-11-03",
+   "checkedOn": "2026-11-10",
    "today": true,
    "backup": null,
    "backupNote": "No like-for-like backup found. Canadian Tire's strippers cover 10 to 24 AWG, too thick for 26 to 28 AWG wire.",
@@ -802,7 +804,7 @@
    "stage": 1,
    "status": "in_stock",
    "stockNote": "In stock",
-   "checkedOn": "2026-11-03",
+   "checkedOn": "2026-11-10",
    "today": true,
    "backup": {
     "shop": "PiShop (Canada)",
@@ -826,7 +828,7 @@
    "stage": 2,
    "status": "in_stock",
    "stockNote": "In stock",
-   "checkedOn": "2026-11-03",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": {
     "shop": "Abra Electronics (Canada)",
@@ -867,7 +869,7 @@
    "stage": 5,
    "status": "in_stock",
    "stockNote": "In stock",
-   "checkedOn": "2026-11-03",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": null,
    "backupNote": "No backup checked. Any USB data cable with the right plugs works; avoid charge-only cables.",
@@ -883,7 +885,7 @@
    "stage": 8,
    "status": "in_stock",
    "stockNote": "In stock",
-   "checkedOn": "2026-11-03",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": {
     "shop": "RaceDayQuads",
@@ -906,8 +908,8 @@
    "url": "https://rotorvillage.ca/flywoo-x30-pcba-waterproof-superhydrophobic-invisible-spray/",
    "stage": 8,
    "status": "in_stock",
-   "stockNote": "10 in stock",
-   "checkedOn": "2026-11-03",
+   "stockNote": "6 in stock",
+   "checkedOn": "2026-11-10",
    "checkedBy": "page read",
    "today": false,
    "backup": null,
@@ -919,7 +921,7 @@
    "stage": 4,
    "status": "in_stock",
    "stockNote": "68 in stock",
-   "checkedOn": "2026-11-03",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": null,
    "backupNote": "No like-for-like backup found.",
@@ -935,7 +937,7 @@
    "stage": 4,
    "status": "in_stock",
    "stockNote": "59 in stock",
-   "checkedOn": "2026-11-03",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": null,
    "backupNote": "No like-for-like backup found.",
@@ -983,15 +985,15 @@
   },
   {
    "id": "legs-footscrews",
-   "item": "M3 x 10 mm black steel button-head screws, 10 pack (for the 4 rubber feet)",
+   "item": "M3 x 10 mm steel button-head screws, 10 pack (for the 4 rubber feet)",
    "qty": 1,
    "unit": 2.89,
    "shop": "EpicFPV",
    "url": "https://epicfpv.ca/products/flyfishrc-m3-button-head-screws-pack-10-pack?variant=50167765303582",
    "stage": 4,
    "status": "in_stock",
-   "stockNote": "In stock (M3x10 option)",
-   "checkedOn": "2026-11-03",
+   "stockNote": "In stock",
+   "checkedOn": "2026-11-10",
    "today": false,
    "backup": {
     "shop": "Rotor Village",
@@ -1018,6 +1020,12 @@
   "8": "Optional extras"
  },
  "stageNotes": {
+  "2": [
+   "Out of stock on 10 Nov: the Pi kit and the thermal camera. The camera is out at the backup shop too. You can buy the rest of this stage now: the GPS board, the Qwiic HAT and cables, the spare card and the M2.5 set. Steps 1 to 5 do not need this stage. Step 6 and the payload part of Step 7 wait for the Pi kit and the camera."
+  ],
+  "5": [
+   "Out of stock on 10 Nov: the flight stack at Rotor Village. The backup, Pyrodrone, is a US shop: US$74.99 plus freight and duty. Step 3 cannot start without the stack. The rest of this stage was in stock on 10 Nov."
+  ],
   "4": [
    "When they arrive, check: (a) the knurled standoffs are threaded at both ends (female); (b) the M3 x 10 mm foot screws hold the feet (6.3 mm foot + about 3.7 mm of thread)."
   ]

@@ -26,4 +26,5 @@ if errorlevel 1 (
     exit /b 1
   )
 )
-start "" "http://localhost:8790/"
+rem Open in Google Chrome (Shad's choice); if Chrome is missing, fall back to the default browser.
+start "" chrome "http://localhost:8790/" 2>nul || start "" "http://localhost:8790/"

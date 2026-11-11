@@ -97,14 +97,14 @@
     ["Stop. Do not charge it, do not fly it, do not 'test it once more'.",
      "Move it away from anything flammable — outdoors on concrete or gravel is right, a bag on a wooden bench is not.",
      "Do not puncture it or put it in household garbage. Take it to a battery recycling depot.",
-     "For packs you are keeping: storage-charge them (LipoStorage, 3.85 V per cell) when you are not flying for a while.",
-     "Charge only inside a closed LiPo bag, on a non-flammable surface, with you in the room the whole time."],
+     "For packs you are keeping: put them to storage with the charger's Storage mode when you are not flying for a while. Check the storage voltage the M7AC shows when it arrives (Step 5); this guide does not fix a number.",
+     "Charge only inside the LiPo bag with its leads out through the opening, on a non-flammable surface, with you in the room the whole time."],
     { note: "LiPo fires are the genuine hazard in this hobby. Everything else in this build fails safely; a pack does not.", why: "The charger pack here is a 4S HV LiPo and a damaged cell can vent flame with no warning, so the rule is dispose first, investigate never.", src: "Guide step 5 and the airframe quiz", see: [STEP(5), ["LiPo safety lines", "steps"]] })
     .next = "charger-setup";
 
   kb("vtx-no-antenna", "I powered the VTX without its antenna", "vtx,antenna,burn,burnt,no antenna,unify,tbs,hot,video dead,sma,rp-sma,transmitter,damage",
     ["Power down now and fit the antenna. Never power a VTX with nothing connected to the SMA.",
-     "Check whether it survived: antenna on, battery connected, monitor on the right channel. A few seconds unloaded often survives; a minute usually does not.",
+     "Check whether it survived: antenna on, battery connected, monitor on the right channel (only once you hold the amateur radio certificate: before that, the video transmitter stays unplugged from its cable). A few seconds unloaded often survives; a minute usually does not.",
      "Feel the VTX body — it should be warm, not painful to hold. A cooked one runs scalding hot and drops power or goes silent.",
      "Confirm the connector: the TBS Unify Pro 5G8 HV and the TBS Triumph PRO antenna in this plan are both SMA. Forcing an RP-SMA wrecks the centre pin and gives a link that works at 2 m and dies at 50 m."],
     { note: "The guide's step 4 warning: never power the VTX without its antenna screwed on.", src: "Guide step 4", see: [STEP(4, "Step 4 — control and video")] })
@@ -146,7 +146,7 @@
      "Inspect in this order: battery-lead polarity, capacitor orientation, solder bridges on the ESC pads, motor wires shorting to carbon, a damaged motor winding.",
      "Use the meter: continuity across the XT60 should not read shorted, and neither should neighbouring motor pads.",
      "First power always goes through the iFlight smoke stopper in this plan. Direct connection is how you turn an $86 stack into a story."],
-    { note: "Glasses on, window open, and never leave a LiPo connected unattended while you work.", src: "Guide step 3 — solder the stack", see: [STEP(3, "Step 3 — solder the stack"), ["Weekend 1 checklist", "plan"]] })
+    { note: "Glasses on, window open, and never leave a LiPo connected unattended while you work.", src: "Guide step 5 (S5.4b, the first power-up) and step 3 (the soldering it checks)", see: [STEP(5, "Step 5 — the first power-up"), STEP(3, "Step 3 — solder the stack"), ["Weekend 1 checklist", "plan"]] })
     .next = "esc-desync";
 
   /* ======================================================================
@@ -165,7 +165,7 @@
   kb("no-channels", "Sticks do nothing in Betaflight's Receiver tab", "channels,sticks,no input,no movement,receiver tab,uart,uart2,serial rx,crsf,rp1,sbus,protocol,mode",
     ["Wiring first, because this is where it usually breaks: receiver TX → flight controller R2 and receiver RX → flight controller T2. The guide is explicit that you do not use the PWM-only ER4 example.",
      "Ports tab: turn on Serial RX for UART2 only (not UART1, not both).",
-     "Configuration tab: Receiver protocol = CRSF, and make sure telemetry is on if you want link data.",
+     "Receiver tab: pick Serial (via UART) and CRSF, then Save (Step 4). Make sure telemetry is on if you want link data.",
      "Check the receiver is actually bound (solid LED) and that the radio's model is the one with the ELRS module active.",
      "Then check channel map — AETR is the usual default — and confirm the arm switch is on a channel you can see moving.",
      "If channels move but nothing arms, that is a different problem: look at the arming-disable flags."],
@@ -174,17 +174,18 @@
 
   kb("failsafe", "Setting up failsafe (do this before the first hover)", "failsafe,fail safe,signal loss,lost signal,drop,disarm,throttle cut,safety,stage 2",
     ["Betaflight → Failsafe: set Stage 2 to Drop (or to a deliberate, tested behaviour). Do not leave the default without knowing what it does.",
-     "Test it on the bench with props off: arm, throttle up slightly, then switch the radio off. The motors must stop.",
+     "Test it on the bench with props off (and, until you hold the amateur radio certificate, with the video transmitter unplugged from its cable): arm, throttle up slightly, then switch the radio off. The motors keep turning for about 1 to 1.5 seconds (Betaflight's failsafe guard time), then they must stop.",
      "Confirm the radio's own failsafe does not fight Betaflight's — in CRSF the flight controller decides.",
      "Only then go outside. The guide's step 8 checklist puts radio and failsafe checks before the first hover for this reason."],
     { note: "An untested failsafe is the same as no failsafe. The test takes two minutes on the bench.", src: "Guide step 4 and step 8", see: [STEP(8, "Step 8 — test in this order"), STEP(4, "Step 4 — control and video")] })
     .next = "arm-wont-arm";
 
   kb("arm-wont-arm", "It won't arm — arming disabled", "arm,arming,disabled,wont arm,flags,beep,doesnt spin,turtle,switch,throttle",
-    ["Betaflight → Setup: read the Arming Disable flags. They name the reason instead of making you guess.",
+    ["If the laptop is connected to Betaflight, press Disconnect first: Betaflight will not arm while it is connected (Step 8).",
+     "Betaflight → Setup: read the Arming Disable flags. They name the reason instead of making you guess.",
      "The usual ones: throttle not at zero, arm switch assigned to the wrong range, accelerometer needs calibration, the quad is not level (some modes), or the model is still in a pre-arm state.",
      "Check the Modes tab actually saves: press Save, not just Add Range.",
-     "USB-only power can also block arming on some setups — arm from a battery with props off when you are testing."],
+     "USB-only power can also block arming on some setups — arm from a battery with props off when you are testing (until you hold the amateur radio certificate, with the video transmitter unplugged from its cable)."],
     { src: "Guide weekend 1 task 5 — Betaflight setup, props off", see: [["Weekend 1 checklist", "plan"], STEP(8)] })
     .next = "motor-order";
 
@@ -192,7 +193,7 @@
     ["Props off. Always props off for this.",
      "Betaflight → Motors tab: spin each motor with the slider and match the number on screen to the physical motor for this frame (the guide's step 2 picture shows the M1–M4 order).",
      "If numbering is wrong, fix the motor resource mapping rather than rewiring.",
-     "If direction is wrong, either reverse that motor in the ESC config (DShot bidirectional/reversed motor setting) or swap any two of its three wires at the ESC — not both.",
+     "If direction is wrong, reverse it in Betaflight: Motors tab, the Motor direction button, props off (Step 8). The guide fixes direction there, not with the iron (Step 3).",
      "Then recheck hover: 1 m up, land, feel the motors. An instaflip on takeoff is almost always motor order or direction."],
     { note: "An instaflip with props on, indoors, is how people get hurt. Verify direction with props off, at low slider values, on the bench.", src: "Guide step 2 (motor order) and step 8", see: [STEP(2, "Step 2 — build the frame"), STEP(8, "Step 8 — test in this order")] })
     .next = "motors-hot";
@@ -213,10 +214,10 @@
     ["Antenna on the VTX before you power it — every time. That is the rule most likely to have already cost you a VTX.",
      "Lens cap. It is embarrassing and it is the most common cause.",
      "Match band and channel exactly: the Unify's channel has to equal the M5F's band+channel, not just 'channel 3'. Use the monitor's scan/auto-search once to find the signal, then lock it in.",
-     "Check the camera has power and video out: power comes from the VTX's 5V/9V pad in a typical analog chain, video goes to the VTX's video-in.",
-     "Check the VTX is fed from the flight controller's 9V pad, as in Step 4, not from the 5V rail.",
+     "Check the camera has power and video out: in this build its cable goes to the flight controller's CAM, G, 5V socket (or the CAM pads), as in Step 3, and Step 4 plugs the camera into it.",
+     "Check the VTX is fed from the flight controller's 9V pad (its cable is soldered there in Step 3), not from the 5V rail.",
      "If the picture is there but tearing, suspect the camera's video ground or a loose JST/solder joint before you replace anything."],
-    { note: "The VTX is powered from the flight controller's 9V pad (Step 4), not from the 5V rail that feeds the Pi.", why: "Analog video fails in boring ways: no antenna, lens cap, wrong band, no power. Work down that list before buying parts.", src: "Guide step 4", see: [STEP(4, "Step 4 — control and video")] })
+    { note: "The VTX is powered from the flight controller's 9V pad (soldered in Step 3), not from the 5V rail that feeds the Pi.", why: "Analog video fails in boring ways: no antenna, lens cap, wrong band, no power. Work down that list before buying parts.", src: "Guide step 3 (S3.4) and step 4", see: [STEP(3, "Step 3 — solder the stack"), STEP(4, "Step 4 — control and video")] })
     .next = "bad-range";
 
   kb("bad-range", "Picture breaks up as soon as I move away", "breakup,range,interference,static,snow,distance,flicker,antenna,polarization,power,channel overlap",
@@ -235,7 +236,7 @@
     ["On the bench use the kit's own 5.1V/2.5A supply first — if it misbehaves on a good bench supply, the problem is the Pi or the SD card, not your wiring.",
      "In the air the Pi runs from the stack's regulated 5V/3A output through the meter-checked 24AWG micro-USB pigtail. The GEPRC stack provides that rail; the 4S battery does not get connected to the Pi directly.",
      "Measure it under load, not at idle: a multimeter on the Pi's 5V and GND while everything is running. A rail that sags below about 4.7 V causes exactly these random reboots and SD-card corruption.",
-     "Beware the Zero family's silence: on the Zero models there is no low-voltage warning circuitry like the bigger Pis have, so a starving Pi often just reboots instead of telling you.",
+     "Check for under-voltage instead of guessing: the guide's \"5 V rail\" arrival test runs vcgencmd get_throttled on this Pi, and it must print throttled=0x0.",
      "Do not feed another 5V source into the same rail (no backfeed from a second BEC or a USB power bank while the flight pack is connected).",
      "Keep the pigtail short, and keep the payload wiring away from the ESC's motor current paths.",
      "If it still browns out on throttle punches, suspect the stack's 5V regulator before the Pi: a servo/ESC spike is a normal cause."],
@@ -243,9 +244,9 @@
     .next = "bec-current";
 
   kb("bec-current", "Will the 5V rail power the Pi and both sensors?", "current,amps,bec,3a,power budget,rail,how much current,overload,lights,led",
-    ["The F405 stack supplies a regulated 5V/3A output in this plan, and the Pi Zero 2 W plus two Qwiic sensors sit comfortably inside that with headroom.",
-     "The half that catches people: the stack's rail is shared. Do not hang the LED strip or anything else hungry off the same 5V pad as the Pi.",
-     "The 4S COB LED strip in this plan runs from the flight battery, not the Pi's 5V rail — that is deliberate.",
+    ["The F405 stack supplies a regulated 5V/3A output in this plan. Whether the Pi Zero 2 W, both sensors, the camera and the receiver stay within it is checked, not assumed: the guide's \"5 V rail\" arrival test runs vcgencmd get_throttled on the Pi, and it must print throttled=0x0.",
+     "The half that catches people: the stack's 5 V rail is shared. Do not add anything else hungry to it.",
+     "The LED strip is optional and not used in any step: the GND and 5V pads of its group carry the Pi lead.",
      "Measure instead of assuming: current clamp or inline meter on the 5V feed with the payload running full tilt (camera streaming, WiFi active).",
      "If you add anything later, re-measure. The guides' numbers are a design budget, not a guarantee about your exact build."],
     { src: "Guide step 6, step 7 and the parts list", see: [STEP(6), ["Parts & budget", "parts"]] })
@@ -287,7 +288,7 @@
   kb("thermal-valueerror", "getFrame keeps raising ValueError (or Errno 121 remote I/O)", "valueerror,error,exception,read fail,i2c error,errno 121,remote i/o,nack,crash,cant read frame,traceback",
     ["ValueError out of getFrame means the I2C read did not complete — the sensor did not deliver both halves of a frame. It is a bus problem, not a Python bug.",
      "Copy the guide's handling pattern: catch it and continue. One failed frame at 2 Hz is invisible; letting it kill the process is not.",
-     "Slow the bus to 400000 Hz and shorten the Qwiic run. Re-seat both ends of the PRT-17912 cable until they click.",
+     "Check the bus is at 400 kHz: the line dtparam=i2c_arm_baudrate=400000 in /boot/firmware/config.txt, then a reboot (Step 6). Shorten the Qwiic run. Re-seat the CAB-17261 cable at both ends: its Qwiic plug clicks into the HAT, and each female jumper must sit fully on its own sensor pin.",
      "Errno 121 / remote I/O error is the same story one layer down: the device did not acknowledge. Check 3.3 V power at the sensor, and that the Qwiic HAT is fully pushed onto the Pi's header.",
      "If it fails only when the motors run, you have electromagnetic noise on the bus: move the payload wiring away from the ESC and re-test on the bench with the stack powered.",
      "After repeated failures, re-initialise the sensor object rather than hammering a wedged one."],
@@ -309,15 +310,15 @@
      "Scan the bus: sudo i2cdetect -y 1. You want 33 (thermal camera) and 10 (GPS) in the grid. Anything else means you are looking at the wrong bus.",
      "Push the Qwiic HAT fully down onto the Pi's 40-pin header — 'looks seated' is not seated. One row of pins off gives you exactly this symptom.",
      "Check the header itself if you soldered it: a cold joint on SDA or SCL kills the whole bus, and both sensors disappear together.",
-     "Re-seat each PRT-17912 cable at both ends until it clicks, and match the labels on the board: 3V3, GND, SDA, SCL. The Qwiic connector is keyed, but the board silkscreen is what you verify against.",
+     "Re-seat each CAB-17261 cable: its Qwiic plug clicks into the HAT, and each female jumper must sit fully on its own sensor pin. Wire by cable colour (black GND, red 3.3 V, blue SDA, yellow SCL) in the sensor's pin order, and ignore the HAT's SDA and SCL letters: SparkFun says they are swapped (Step 6).",
      "Measure 3.3 V at the sensor with the meter. No 3.3 V means the problem is upstream of the sensor, not the sensor.",
      "If only one address is missing, swap that cable to a known-good port on the HAT to separate a bad cable from a dead board."],
     { note: "Never probe a Qwiic connector with the Pi powered and the sensor connected — shorting 3V3 to SDA is how sensors die.", why: "The guide's step 6 makes this an explicit gate: both addresses must answer before you mount the payload. Everything downstream assumes the bus works.", src: "Guide step 6 and weekend 2 task 8", see: [STEP(6, "Step 6 — wire the Pi payload"), ["Weekend 2 checklist", "plan"]] })
     .next = "shared-bus";
 
-  kb("shared-bus", "Two sensors on one Qwiic HAT — will they conflict?", "share,shared,bus,address,conflict,two sensors,both sensors,qwiic hat,dev-14459,prt-17912,cable,same bus,3.3v",
+  kb("shared-bus", "Two sensors on one Qwiic HAT — will they conflict?", "share,shared,bus,address,conflict,two sensors,both sensors,qwiic hat,dev-14459,cab-17261,cable,same bus,3.3v",
     ["No conflict: the MLX90640 answers at 0x33 and the PA1010D at 0x10, so both can live on the same I2C bus at the same time. That is why the plan uses the four-port Qwiic HAT.",
-     "Wiring: Pi header → Qwiic HAT (DEV-14459) → one PRT-17912 cable per sensor. Each sensor gets its own port; they are all electrically the same bus.",
+     "Wiring: Pi header → Qwiic HAT (DEV-14459) → one CAB-17261 female-jumper cable per sensor (Qwiic plug at the HAT, female jumpers on the sensor's 1x5 header). Each sensor gets its own port; they are all electrically the same bus.",
      "Both sensors are 3.3 V devices on the Pi's 3.3 V I2C bus. Nothing in this chain takes 5 V.",
      "Keep each cable short. Two devices on a marginal bus is still a marginal bus — the noise guidance is the same as for one sensor.",
      "Verify with sudo i2cdetect -y 1 and expect both 33 and 10, every boot."],
@@ -331,7 +332,7 @@
      "Test the change against a controlled warm target among cold controls, not against your imagination. Recording detection rate and false positives is the whole point of weekend 4.",
      "Keep the logic separate from the flight code — the included hotspots.py is pure and covered by the package's synthetic tests, so you can change a threshold and re-run the suite in seconds.",
      "Never describe the result as accuracy. The guide is explicit that ideal geometry is sampling, not detection performance."],
-    { note: "Every threshold change invalidates your previous measurements. Re-run the same controlled test after each change or the numbers mean nothing.", why: "A 32×24 sensor and a 1 m target at 30 m are the same size in pixels; the threshold is doing most of the work, so it has to be tuned against measurements rather than vibes.", src: "Guide weekend 2 task 9, weekend 4 tasks 14–16, 'Detection & mapping' quiz", see: [["Weekend 4 checklist", "plan"], ["Detection & mapping quiz", "quiz"], ["Honest limits & sources", "limits"]] })
+    { note: "Every threshold change invalidates your previous measurements. Re-run the same controlled test after each change or the numbers mean nothing.", why: "A 32×24 sensor and a 1 m target at 30 m are the same size in pixels; the threshold is doing most of the work, so it has to be tuned against measurements rather than vibes.", src: "Guide weekend 2 task 9, weekend 4–5 tasks 14–16, 'Detection & mapping' quiz", see: [["Weekend 4 checklist", "plan"], ["Detection & mapping quiz", "quiz"], ["Honest limits & sources", "limits"]] })
     .next = "detect-reality";
 
   kb("thermal-mount", "Image smears or blurs while the drone is moving", "smear,blur,vibration,motion,mount,jelly,wobbly,shaky,standoff,loose,cable,moving",
@@ -370,7 +371,7 @@
      "Altitude sets the scale: ground width = 2 × altitude × tan(FOV/2), and a 10 % altitude error is a 10 % position error, neatly.",
      "Altitude, tilt, terrain and lens distortion are all excluded from the included geo.py model. Over uneven ground or with the aircraft tilted, expect the error you were warned about.",
      "Measure it: put surveyed targets at measured positions, fly repeated passes, and record the error. That measured number is the only honest one."],
-    { note: "Do not quote a 2 m accuracy figure. The guide says explicitly that repeated surveyed-target results are what count.", src: "Guide weekend 3 task 12 · 'Detection & mapping' quiz", see: [["Weekend 3 checklist", "plan"], ["Detection & mapping quiz", "quiz"]] })
+    { note: "Do not quote a 2 m accuracy figure. The guide measures the real error in flight, over repeated passes, in step 14 (step 12 checks geo.py on the ground).", src: "Guide weekend 3 task 12, weekend 4–5 task 14 · 'Detection & mapping' quiz", see: [["Weekend 3 checklist", "plan"], ["Detection & mapping quiz", "quiz"]] })
     .next = "detect-reality";
 
   kb("detect-reality", "Will this actually detect a fire from 30 m?", "detect,detection,works,really,accuracy,30 m,30m,1 metre,pixel,resolution,honest,limit,can it see,small target",
@@ -391,7 +392,7 @@
      "110°: a much wider swath but each pixel covers far more ground, so small targets disappear.",
      "For finding small hot spots, narrower wins every time. For covering a field fast, wider wins — and you pay for it in detection.",
      "The calculator in How it works (in Learn) does the arithmetic for both, including the 55°×35° vertical coverage. Move the altitude slider rather than trusting a table.",
-     "The 55° version is the one in this order plan (CA$86.95 at PiShop, checked 2026-11-03: out of stock that day)."],
+     "The 55° version is the one in this order plan (CA$86.95 at PiShop, checked 2026-11-03: out of stock that day; check the Buy page's latest stock date, and stock again at checkout)."],
     { src: "Guide: How it works calculator · parts list", see: [["Altitude & coverage calculator", "build"], ["Parts & budget", "parts"]] })
     .next = "detect-reality";
 
@@ -438,12 +439,13 @@
 
   kb("certification", "Do I need a licence or registration to fly this?", "licence,license,certificate,basic,advanced,registration,tc,canada,law,legal,pilot,exam,fees",
     ["Yes. A drone between 250 g and 25 kg needs a Pilot Certificate — Basic Operations and registration/marking, with the proof of registration on you when you fly.",
+     "The certificate does not expire, but you may fly only if, within the last 24 months, you got it, passed a Transport Canada drone exam again, passed a flight review, or completed recurrent training. Carry the certificate and proof of that whenever you fly (CAR 901.56(1), 901.57).",
      "Basic conditions the guide lists: VLOS, ≤25 kg, more than 30 m horizontally from any person, uncontrolled airspace, more than 5.6 km from certified airports and 1.9 km from heliports.",
      "Fees: the plan allows CA$20.34 (checked 2026-11-03) — exam CA$10.17 plus registration CA$10.17 on the Transport Canada pages. Confirm the live portal fees before you pay, because they change.",
      "Night flying needs lights sufficient for you or a visual observer to see the aircraft (CAR 901.39) — and that does not waive any other rule.",
      "Beyond Visual Line of Sight, over people, or in controlled airspace puts you in Advanced operations, which is a different certificate and a different project.",
      "This build is 5-inch class and well over 250 g, so assume you are in scope and get the certificate before the first hover."],
-    { note: "The guide's footer says it plainly: a prototype builder's roadmap, not career or legal advice. Check the current Transport Canada rules yourself.", src: "Transport Canada Basic operations · CAR 901.39 · Guide rules quiz", see: [["Rules quiz", "quiz"], ["Honest limits & sources", "limits"]] })
+    { note: "The guide's footer says it plainly: a prototype builder's roadmap, not career or legal advice. Check the current Transport Canada rules yourself.", src: "Transport Canada Basic operations · CAR 901.39 · CAR 901.56 and 901.57 · Guide rules quiz", see: [["Rules quiz", "quiz"], ["Honest limits & sources", "limits"]] })
     .next = "career";
 
   kb("career", "Is any of this a career? What does it pay?", "job,career,salary,wage,pay,systems analyst,resume,work,employer,hiring,43.27,21211,pitch",
@@ -481,10 +483,10 @@
     { note: "Eye protection and an open window. Solder splatter and flux fumes are the cheap hazards in this build.", src: "Guide step 3", see: [STEP(3, "Step 3 — solder the stack")] })
     .next = "first-power-smoke";
 
-  kb("charger-setup", "How do I set up the M7AC charger for these packs?", "charger,m7ac,m4ac,toolkitrc,lihv,lion,li-ion,4s,balance,balance lead,amps,charge rate,storage charge,how to charge",
+  kb("charger-setup", "How do I set up the M7AC charger for these packs?", "charger,charge,lipo,m7ac,m4ac,toolkitrc,lihv,lion,li-ion,4s,balance,balance lead,amps,charge rate,storage charge,how to charge,how should i charge,charge the batteries,charge my batteries,charge the packs,charge a pack,charging the batteries,charge the lipo,charge my lipo,charge a lipo",
     ["Before you connect a pack, open the charge settings (short-press OK) and set Battery Type: LiHv for the GNB 1500 pack, Lion for the More Volts 5000 Li-ion pack. A wrong type can damage the pack and become a fire hazard (the M7AC manual).",
      "Cells: Auto, Mode: Charge, Charge Current 1.0 A for the GNB and 2.5 A for the More Volts (the guide's cautious settings). Then plug in the main XT60 lead AND the balance lead, scroll to Start and press OK.",
-     "Charge inside the closed LiPo bag, on something that will not burn, with you in the room. The guide repeats this because it is the one that matters.",
+     "Charge inside the LiPo bag with its leads out through the opening, on something that will not burn, with you in the room. The guide repeats this because it is the one that matters.",
      "If you are not flying within a day or two, choose Mode: Storage instead of Charge.",
      "Also put the two 18650 cells in the RadioMaster Pocket — that is a separate power system from the flight battery."],
     { src: "Guide step 5", see: [STEP(5, "Step 5 — charge the batteries safely")] })
@@ -492,10 +494,10 @@
 
   /* Fable Part 2, N3: two questions that used to land on the wrong card. Worded from the page's own lines. */
   kb("vtx-power", "Where does the video transmitter get its power?", "video transmitter,vtx power,power the vtx,get its power,9v pad,9v,vtx wiring,vtx wires,orange wire,green wire",
-    ["From the flight controller's 9V pad (Step 4): red to the FC's 9V pad, both black wires to GND, yellow (video) to the FC's VTX pad, white (control) to T1.",
+    ["From the flight controller's 9V pad. You solder its cable to the flight controller in Step 3 (S3.4), before the board is mounted: red to the FC's 9V pad, both black wires to GND, yellow (video) to the FC's VTX pad, white (control) to T1. In Step 4 (S4.3) you plug that cable into the VTX.",
      "The VTX also has an orange wire (5 V out) and a green wire (audio). You do not use them. Cut each one short and cover it with heat shrink, so it touches nothing.",
-     "Never power the VTX without its antenna screwed on."],
-    { src: "Guide Step 4 (S4.3)", see: [STEP(4, "Step 4 — control and video")] });
+     "Never power the VTX without its antenna screwed on. Until you hold the amateur radio certificate, keep it unplugged from its cable whenever a battery is in."],
+    { src: "Guide Step 3 (S3.4) and Step 4 (S4.3)", see: [STEP(3, "Step 3 — solder the stack"), STEP(4, "Step 4 — control and video")] });
 
   kb("weight", "How much does the drone weigh?", "weigh,weight,how heavy,heavy,grams,drone weigh,how much does it weigh,how much does the drone weigh,250 g,mass",
     ["Weigh it: when the drone is finished, put it on a kitchen scale with the battery fitted and write the number down. That figure, not this estimate, is the one that counts.",
@@ -535,7 +537,7 @@
      "The packs charge to 4.35 V per cell; at 4.35, Betaflight would count a full pack as 5 cells."],
     { src: "Guide Step 4 and Stage 3", see: [STEP(4, "Step 4 — control and video")] });
 
-  kb("quiz", "How do the quizzes and flashcards work?", "quiz,quizzes,test,score,flashcard,flashcards,practice,pass,75,questions,exam",
+  kb("quiz", "How do the quizzes and flashcards work?", "quiz,quizzes,score,flashcard,flashcards,pass,75,questions,exam",
     ["Five topic quizzes plus a final exam: airframe, power, batteries & safety, payload, detection & mapping, flight rules, then the final exam (8 questions).",
      "You pass a topic at 75 % or better; the overview counts how many of the six you have passed.",
      "Every answer explains why it is right, with the source — that explanation is worth more than the score.",
@@ -593,6 +595,13 @@
   function clip(s, n) {
     const t = String(s || "").replace(/\s+/g, " ").trim();
     return t.length > n ? t.slice(0, n - 1).replace(/[ ,.;:]$/, "") + "…" : t;
+  }
+  /* ASSISTANT-LEDGER G20 (10 Nov 2026): the "where you are" passage is only the start of a long stage or step.
+     Cut silently, the model read it as the whole stage ("That is all the Stage 1 text gives") although the
+     missing lines were in other passages. Say plainly that it is cut. (The server keeps 1,400 characters.) */
+  function clipMarked(s, n) {
+    const t = String(s || "").replace(/\s+/g, " ").trim();
+    return t.length > n ? clip(t, n) + " [Only the start of this section; the rest of it is in the other passages.]" : t;
   }
 
   /* ======================================================================
@@ -1353,7 +1362,9 @@
   function buildContext(question) {
     const out = [];
     const hit = matchEntry(norm(question));
-    if (hit) {
+    /* ASSISTANT-LEDGER G30 (10 Nov 2026): only a confident match goes in; a weak one (a shared word) put the quiz
+       card, then the stock card, into a Stage 1 meter question. The other callers already gate on confident. */
+    if (hit && hit.confident) {
       const e = hit.entry;
       const first = (e.see && e.see[0]) || null;
       let text = e.steps.join(" ");
@@ -1367,13 +1378,91 @@
         text: text
       });
     }
-    searchPassages(question, 4).forEach(function (h) {
+    searchPassages(question, 5).forEach(function (h) {
       out.push({
         label: h.p.label || TABS[h.p.tab] || h.p.tab,
         tab: h.p.tab, step: h.p.step || null, text: h.p.text
       });
     });
     return out.slice(0, 6);
+  }
+
+  /* ---------- Fable audit S4 (10 Nov 2026): the whole of where he is, and of the step on screen ----------
+     The model used to get the first 1,300 characters of his stage or step (and the server cut that to 600), so a
+     fact lower down a long step ("M1 rear right ...", "No battery in this step", "CW props go on M1 and M4") was
+     "not in this guide". Now the stage or step he is at AND the step open in the Build walker are cut into pieces,
+     and the pieces that share words with the question go along, in page order, with the first piece of each. */
+  function chunkText(t, size) {
+    const out = [];
+    let rest = String(t || "").replace(/\s+/g, " ").trim();
+    while (rest.length > size) {
+      let cut = rest.lastIndexOf(". ", size);
+      if (cut < size * 0.5) { cut = rest.lastIndexOf(" ", size); }
+      if (cut < 1) { cut = size - 1; }
+      out.push(rest.slice(0, cut + 1).trim());
+      rest = rest.slice(cut + 1).trim();
+    }
+    if (rest) { out.push(rest); }
+    return out;
+  }
+  /* The step shown in the Build walker, when Build is the page on screen (null otherwise). */
+  function openStep() {
+    try {
+      const panel = document.getElementById("p-steps");
+      if (!panel || panel.hidden) { return null; }
+      const dot = document.querySelector("[data-asm-dot][aria-current='step']");
+      const n = dot ? Number(dot.getAttribute("data-asm-dot")) : NaN;
+      if (!(n >= 1 && n <= 8)) { return null; }
+      const sec = document.querySelectorAll(".asm-step")[n - 1];
+      if (!sec) { return null; }
+      return { step: n, title: String(dot.getAttribute("title") || "").replace(/^Step\s*\d+\s*:\s*/i, "").slice(0, 120), el: sec };
+    } catch (e) { return null; }
+  }
+  /* sc = stepContext(); returns { passages: [...], open: {step, title} | null } */
+  function wherePassages(question, sc) {
+    const out = { passages: [], open: null };
+    const groups = [];
+    try {
+      if (sc && sc.passage && sc.whereEl) {
+        groups.push({ label: sc.passage.label, tab: sc.passage.tab, step: sc.passage.step, el: sc.whereEl });
+      }
+      const os = openStep();
+      if (os) {
+        out.open = { step: os.step, title: os.title };
+        if (!groups.length || groups[0].el !== os.el) {
+          groups.push({ label: "The step open on his screen: Step " + os.step + (os.title ? ": " + os.title : ""), tab: "steps", step: os.step, el: os.el });
+        }
+      }
+    } catch (e) { return out; }
+    const q = uniq(tokens(question));
+    const cands = [];
+    groups.forEach(function (g, gi) {
+      const parts = chunkText(plain(g.el), 1300);
+      parts.forEach(function (text, i) {
+        const tf = {};
+        tokens(text).forEach(function (t) { tf[t] = (tf[t] || 0) + 1; });
+        cands.push({ gi: gi, i: i, n: parts.length, text: text, tf: tf, score: 0, first: i === 0,
+          label: g.label + (parts.length > 1 ? " (part " + (i + 1) + " of " + parts.length + ")" : ""), tab: g.tab, step: g.step });
+      });
+    });
+    /* a piece scores by the question's words in it: a word found in few pieces counts for more, and a word said
+       several times counts for more than a word said once (the same idea as the page search) */
+    const N = cands.length || 1;
+    q.forEach(function (t) {
+      let df = 0;
+      cands.forEach(function (c) { if (c.tf[t]) { df += 1; } });
+      if (!df) { return; }
+      const idf = Math.log(1 + (N - df + 0.5) / (df + 0.5));
+      cands.forEach(function (c) { const f = c.tf[t] || 0; if (f) { c.score += idf * (f * 2.2) / (f + 1.2); } });
+    });
+    const keep = cands.filter(function (c) { return c.first; });
+    cands.filter(function (c) { return !c.first && c.score > 0; })
+      .sort(function (a, b) { return b.score - a.score || b.gi - a.gi || a.i - b.i; })
+      .slice(0, Math.max(0, 8 - keep.length))
+      .forEach(function (c) { keep.push(c); });
+    keep.sort(function (a, b) { return a.gi - b.gi || a.i - b.i; });
+    out.passages = keep.map(function (c) { return { label: c.label, tab: c.tab, step: c.step || null, text: c.text }; });
+    return out;
   }
 
   function historyText(msg) {
@@ -2520,7 +2609,13 @@
     let passages = buildContext(question);
     /* job 8: the step he is on goes first, so the answer is about HIS build, not the FAQ */
     const sc = stepContext();
-    if (sc.passage && !passages.some(function (p) { return p.label === sc.passage.label; })) {
+    /* Fable audit S4 (10 Nov 2026): where he is and the step open on screen, whole (see wherePassages) */
+    const wp = wherePassages(question, sc);
+    if (wp.passages.length) {
+      const seen = {};
+      wp.passages.forEach(function (p) { seen[p.text] = 1; });
+      passages = wp.passages.concat(passages.filter(function (p) { return !seen[p.text]; }));
+    } else if (sc.passage && !passages.some(function (p) { return p.label === sc.passage.label; })) {
       passages.unshift(sc.passage);
     }
     /* a buying question: the live Buy-today lines, each with its price, shop and checked date, so an answer can cite
@@ -2528,6 +2623,8 @@
     if (BUY_Q.test(question)) {
       const bt = buyTodayPassage();
       if (bt) { passages.unshift(bt); }
+      const bn = buyNextPassage();
+      if (bn) { passages.unshift(bn); }
     }
     /* Nothing retrieved ("can you help me?", a general how-to): send the guide's
        overview so the model can say what it covers or label a general answer. */
@@ -2542,9 +2639,9 @@
       signal: signal,
       body: JSON.stringify({
         question: question,
-        passages: passages.slice(0, 6),
+        passages: passages.slice(0, 12),
         history: ctx.history.slice(-6),
-        context: sc.context,
+        context: wp.open ? Object.assign({}, sc.context || {}, { openStep: wp.open.step, openTitle: wp.open.title }) : sc.context,
         detail: opts.detail === true,
         /* Routing hints for the server: a confident curated answer is the
            cheapest and most reliable case, and the retrieval score says whether
@@ -2987,6 +3084,19 @@
         " (checked " + l.checkedOn + ")" + (owned[l.id] ? ", already bought" : "");
     });
     return { label: "Buy today, read live from the Buy page", tab: "parts", step: null, text: rows.join("; ") };
+  }
+  /* Fable audit S4 (10 Nov 2026): "what do I buy next?" has an answer on the Home page ("Next to buy: Stage 4 ...",
+     "Best buy for this week ...", "Waiting on stock ..."); the chat said "That is not in this guide". These are the
+     page's own live lines. The amounts are left out on purpose: a price needs its checked date, and the dated
+     prices are on the Buy page. */
+  function buyNextPassage() {
+    try {
+      const line = plain(document.getElementById("buy-line"));
+      const advice = plain(document.getElementById("money-advice"));
+      const text = [line, advice].filter(Boolean).join(" ").replace(/,?\s*\(?CA\$[\d,]+(?:\.\d+)?\)?/g, "").replace(/\s*=\s*\./g, ".").replace(/\s+left over\./g, "").replace(/\s+/g, " ").trim();
+      if (text.length < 40) { return null; }
+      return { label: "What to buy next, read live from the Home page (prices and stock dates are on the Buy page)", tab: "parts", step: null, text: text };
+    } catch (e) { return null; }
   }
   function quickAnswer(t) {
     const where = stepContext().label;
@@ -3514,8 +3624,8 @@
         out.context = { stageText: txt };
         /* a stage's practice is in Build, Before Step 1 (guide audit page 2); buying is on the Buy card */
         const box = sn.practice ? document.getElementById("practice-stage-" + sn.stage) : document.querySelector('.stage-fold[data-stage="' + sn.stage + '"]');
-        const text = box ? clip(plain(box), 1300) : "";
-        if (text.length > 40) { out.passage = { label: "Where you are: " + txt, tab: sn.practice ? "steps" : "parts", step: null, text: text }; }
+        const text = box ? clipMarked(plain(box), 1300) : "";
+        if (text.length > 40) { out.passage = { label: "Where you are: " + txt, tab: sn.practice ? "steps" : "parts", step: null, text: text }; out.whereEl = box; }
         return out;
       }
     } catch (e) { /* no Home logic on this page: fall back to the step walker */ }
@@ -3539,8 +3649,8 @@
       out.step = step;
       out.label = "Step " + step;
       out.context = { step: step, stepTitle: title, done: done, next: done.indexOf(step) === -1 ? next : [] };
-      const text = sec ? clip(plain(sec), 1300) : "";
-      if (text.length > 40) { out.passage = { label: "Your step " + step + (title ? ": " + title : ""), tab: "steps", step: step, text: text }; }
+      const text = sec ? clipMarked(plain(sec), 1300) : "";
+      if (text.length > 40) { out.passage = { label: "Your step " + step + (title ? ": " + title : ""), tab: "steps", step: step, text: text }; out.whereEl = sec; }
     } catch (e) { /* no walker on this page: no step context */ }
     return out;
   }

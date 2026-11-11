@@ -20,11 +20,14 @@ verified:: 2026-11-03
 Register and mark the drone (250 g to 25 kg) and carry proof plus a Pilot
 Certificate — Basic Operations. The Small Basic exam and registration have fees
 (exam CA$10.17 plus registration CA$10.17, per TC's fee schedule, checked
-2026-11-03); age 14+ applies to Basic. The certificate does not expire, but
-skills must stay current.
+2026-11-03); age 14+ applies to Basic. The certificate does not expire, but you
+may fly only if, within the last 24 months, you got the certificate, passed a
+Transport Canada drone exam again, passed a flight review, or completed
+recurrent training; carry the certificate and proof of that whenever you fly
+(CAR 901.56(1), 901.57).
 
-source:: Guide: Buy, Stage 7 (fees checked 2026-11-03); Transport Canada fee schedule, via the order list
-verified:: 2026-11-03
+source:: Guide: Buy, Stage 7 (fees checked 2026-11-03); Transport Canada fee schedule, via the order list; recency: CAR 901.56(1) and 901.57 (Guide, Fly safely, Papers first)
+verified:: 2026-11-10
 
 ## Altitude, proximity and weight
 
