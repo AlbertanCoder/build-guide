@@ -464,6 +464,43 @@
   .wt-fold[open] > summary { margin-bottom: 8px; }
   .wt-soon { background:#9aa6b1 !important; cursor:default; }
   .wt-link:hover { filter:brightness(1.1); }
+  /* Final audit, 11 Nov 2026 (VISITOR): one line for a first-time visitor, on the public site only; one tap closes it. */
+  .visitor-note { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; padding: 10px 12px 10px 14px;
+                  border: 1px solid var(--line); border-radius: 12px; background: #fffdf8; font-size: 14.5px; }
+  .visitor-note[hidden] { display: none; }
+  .visitor-note p { margin: 0; flex: 1; }
+  .visitor-note button { flex: none; width: 44px; height: 44px; border: 0; border-radius: 50%; background: transparent;
+                         color: var(--soft); font-size: 22px; line-height: 1; cursor: pointer; }
+  /* Final audit, 11 Nov 2026 (NICE): the way back from an arrival check; the chat button no longer sits on "Next step";
+     on a phone the wide step drawing says it can be swiped, and the footer keeps off the screen edges. */
+  .arr-back { margin: 0 0 10px; }
+  .arr-back[hidden] { display: none; }
+  @media (min-width: 761px) { .asm-nav { padding-right: 190px; } }
+  @media (max-width: 600px) {
+    .asm-cap::after { content: " Swipe it sideways to see all of it."; }
+    footer { padding-left: 14px; padding-right: 14px; }
+  }
+  /* Final audit, 11 Nov 2026 (S13): the note that takes a 3D-lesson button's place when the page is opened as a file. */
+  .wt-off { display:inline-block; margin:6px 0 10px; padding:8px 14px; border-radius:999px; background:var(--line); color:var(--ink); font-size:14px; }
+  /* Final audit, 11 Nov 2026 (S22): Steps 2 to 8 keep their drawing in a closed fold, so the two-column card had an
+     empty left half. With the fold as the card's first child it is one column: the fold on top, the written steps at
+     full width. (Step 1 shows its drawing open, so it keeps two columns.) */
+  @media (min-width: 761px) {
+    .asm-body:has(> details.wt-fold) { grid-template-columns: minmax(0, 1fr); }
+    .asm-body > details.wt-fold { margin: 12px 18px 0; }
+    .asm-body > details.wt-fold .asm-visual { position: static; max-height: none; overflow: visible; border-left: 0; max-width: 760px; }
+  }
+  /* Final audit, 11 Nov 2026 (S21): finger-sized targets on a touch screen, and a Career table that fits a phone. */
+  @media (pointer: coarse) {
+    .buy-row { grid-template-columns: 44px 1fr auto; }
+    .buy-row input[type="checkbox"] { width: 30px; height: 30px; margin: 4px 7px 7px; }
+    details.buy-backup > summary { padding: 11px 0; }
+    .stage-by-shop { min-height: 44px; }
+  }
+  @media (max-width: 600px) {
+    #p-career table { font-size: 13.5px; table-layout: fixed; }
+    #p-career th, #p-career td { padding: 8px 6px; overflow-wrap: anywhere; }
+  }
 </style>
 <!-- Interactive 3D build models: three.js is vendored in docs/vendor/three, so
      this works offline with no CDN calls. Rendering is on-demand and lazy. -->
@@ -911,6 +948,10 @@
 <main class="wrap">
 <div class="learn-nav" id="learn-tabs" role="tablist" aria-label="Learn" hidden></div>
 <section role="tabpanel" id="p-home" aria-labelledby="t-home">
+<div class="visitor-note" id="visitor-note" hidden>
+  <p>Visiting? This is Shad's own drone build guide. <a href="#p-steps" id="visitor-go">See how it's built</a>.</p>
+  <button type="button" id="visitor-close" aria-label="Close this note">&times;</button>
+</div>
 <div class="here-wrap">
   <section class="here-card" id="where-you-are" aria-labelledby="here-title">
     <div class="here-main">
@@ -1041,9 +1082,9 @@
   <details class="acc" id="verify-card">
     <summary><strong>How this was checked</strong> <span class="fly-first" id="verify-first"></span></summary>
     <div class="acc-body" id="verify-out"></div>
-    <details class="tp-more" id="open-facts"><summary>Open facts: what is still to be checked or found</summary><p class="muted">Every fact this guide could not yet confirm, by step. Most are checked with the real part in hand: see "When a parcel arrives". None is hidden.</p><p><strong>Stage 1</strong></p><ul><li>where the cover is, and whether you need a screwdriver (the kit has a hexagon screwdriver set).</li><li>the exact dial position for about 24 V: from the meter's manual or the real meter.</li><li>how close to 24 counts as "about"; the adapter's label or manual should say.</li><li>which end of the XT60 to DC cable is which (inferred from its name), the iron's polarity marking, and how long the iron takes to heat. No listing gives these.</li><li>how long, and how to set the temperature, from the iron's manual. The shop listing says the iron works from 220 to 400 C.</li><li>the wire colours inside this cable (the guide does not rely on them), and how to see pin 1 and pin 5 inside the real plug. An arrival check is added.</li><li>what the beep symbol looks like on this meter.</li></ul><p><strong>Stage 3 and Steps 1, 2</strong></p><ul><li>the switch names on the Pocket (its manual).</li><li>that your laptop meets the simulator's stated needs (a GTX 650 with 2 GB or better), or that the low graphics settings work; the exact words of the EdgeTX prompt on the Pocket.</li><li>no V6 build manual was found (drawings only), and no RadioMaster PDF was opened.</li><li>the bit sizes in the set, and whether the frame box has a sheet.</li><li>which screw length goes in which hole, and where the press nuts sit (no V6 manual found).</li></ul><p><strong>Step 3</strong></p><ul><li>which way the screws go in and where the nuts go (arrival check "Stack").</li><li>the + mark beside the pad can be read only as "-" on the manufacturer's diagram. "Can destroy the ESC" is general knowledge, not quoted from GEPRC.</li><li>an arrow or "front" mark on the flight controller (none is readable on the diagram).</li></ul><p><strong>Step 4</strong></p><ul><li>the box cable's wire colours (not published) and that its plug fits that socket (named sh1.0 4-pin).</li><li>whether the flight controller has a camera socket that the stack box's camera cable fits, or only pads. The wiring diagram shows three pads.</li><li>whether the V6 frame has a hole for the SMA nut (arrival check).</li><li>that USB alone powers the receiver (an arrival check exists), and the exact name of the receiver's Wi-Fi network.</li><li>that USB does not power the VTX (its 9 V supply is fed by the battery). Opus's "3 red then 1 blue = 25 mW" is its reading of the manual's table: check it at the first power-up.</li><li>the screw size the TBS manual names, and whether it wants threadlock.</li></ul><p><strong>Step 5</strong></p><ul><li>how long it takes and how you see it is full: from the radio's manual.</li><li>the label on the real pack.</li></ul><p><strong>Step 6</strong></p><ul><li>the exact SSH command on Windows. The Pi docs link a separate page for it that Opus has not opened yet.</li><li>which side of the board the pins go through, and how the headers are supplied (loose strips or with the boards). Neither is stated in the listings.</li><li>which way round the HAT faces.</li><li>the GPS board's left-to-right pin order (its drawing was not opened; look for the printed INT), and which HAT socket each cable goes into.</li><li>the exact look of the i2cdetect table. Check against a screenshot from the real Pi.</li></ul><p><strong>Step 7</strong></p><ul><li>the tape's thickness (measure on arrival), and whether two layers stay put under the zip ties.</li><li>that the board's back is flat enough for tape (arrival check).</li><li>that the board's back is flat enough for tape. The maker lists only its size, about 28 x 21 x 9 mm.</li><li>the real loop length. Wrap a string round the Pi on its standoffs and measure it.</li><li>that the LED group's 5V pad shares the 5V 3A supply. The diagram labels it 5V; the "5 V rail" arrival test covers the load.</li><li>the right length: 10 mm is chosen from the 6.3 mm foot height; check it on the real foot</li></ul><p><strong>Step 8</strong></p><ul><li>where the light is.</li><li>confirm at the first power-up.</li><li>whether this version of Configurator has a slider for each motor as well as the Master slider. The docs name the Master slider; check on the laptop.</li><li>confirm that the prop tool fits the Gemfan prop nut.</li><li>what to do if the prop has no letters</li></ul><p><strong>Still open after the research pass</strong></p><ul><li>How long the radio takes to charge and what shows when it is full: the quick-start manual gives neither.</li><li>Whether the XT60 plug is marked + and -: look at the plug.</li><li>How long the GPS takes to get its first fix: about half a minute, from a distributor&rsquo;s listing (&ldquo;TTFF 1s/35s&rdquo;); the maker&rsquo;s datasheet was not opened.</li></ul></details>
+    <details class="tp-more" id="open-facts"><summary>Open facts: what is still to be checked or found</summary><p class="muted">Every fact this guide could not yet confirm, by step. Most are checked with the real part in hand: see "When a parcel arrives". None is hidden.</p><p><strong>Stage 1</strong></p><ul><li>where the cover is, and whether you need a screwdriver (the kit has a hexagon screwdriver set).</li><li>the exact dial position for about 24 V: from the meter's manual or the real meter.</li><li>how close to 24 counts as "about"; the adapter's label or manual should say.</li><li>which end of the XT60 to DC cable is which (inferred from its name), the iron's polarity marking, and how long the iron takes to heat. No listing gives these.</li><li>how long, and how to set the temperature, from the iron's manual. The shop listing says the iron works from 220 to 400 C.</li><li>the wire colours inside this cable (the guide does not rely on them), and how to see pin 1 and pin 5 inside the real plug. An arrival check is added.</li><li>what the beep symbol looks like on this meter.</li></ul><p><strong>Stage 3 and Steps 1, 2</strong></p><ul><li>the switch names on the Pocket (its manual).</li><li>that your laptop meets the simulator's stated needs (a GTX 650 with 2 GB or better), or that the low graphics settings work; the exact words of the EdgeTX prompt on the Pocket.</li><li>no V6 build manual was found (drawings only), and no RadioMaster PDF was opened.</li><li>the bit sizes in the set, and whether the frame box has a sheet.</li><li>which screw length goes in which hole, and where the press nuts sit (no V6 manual found).</li></ul><p><strong>Step 3</strong></p><ul><li>which way the screws go in and where the nuts go (arrival check "Stack").</li><li>the + mark beside the pad can be read only as "-" on the manufacturer's diagram. "Can destroy the ESC" is general knowledge, not quoted from GEPRC.</li><li>an arrow or "front" mark on the flight controller (none is readable on the diagram).</li></ul><p><strong>Step 4</strong></p><ul><li>the box cable's wire colours (not published) and that its plug fits that socket (named sh1.0 4-pin).</li><li>whether the flight controller has a camera socket that the stack box's camera cable fits, or only pads. The wiring diagram shows three pads.</li><li>whether the V6 frame has a hole for the SMA nut (arrival check).</li><li>that USB alone powers the receiver (an arrival check exists), and the exact name of the receiver's Wi-Fi network.</li><li>that USB does not power the VTX (its 9 V supply is fed by the battery). Opus's "3 red then 1 blue = 25 mW" is its reading of the manual's table: check it at the first power-up.</li><li>the screw size the TBS manual names, and whether it wants threadlock.</li></ul><p><strong>Step 5</strong></p><ul><li>how long it takes and how you see it is full: from the radio's manual.</li><li>the label on the real pack.</li></ul><p><strong>Step 6</strong></p><ul><li>the exact SSH command on Windows. The Pi docs link a separate page for it that Opus has not opened yet.</li><li>which side of the board the pins go through, and how the headers are supplied (loose strips or with the boards). Neither is stated in the listings.</li><li>which way round the HAT faces.</li><li>the sensor boards' left-to-right pin order as printed (Pimoroni's photos show 3-6V or 3-5V, SDA, SCL, a crossed circle, GND), and which HAT socket each cable goes into.</li><li>the exact look of the i2cdetect table. Check against a screenshot from the real Pi.</li></ul><p><strong>Step 7</strong></p><ul><li>the tape's thickness (measure on arrival), and whether two layers stay put under the zip ties.</li><li>that the board's back is flat enough for tape (arrival check).</li><li>that the board's back is flat enough for tape. The maker lists only its size, about 28 x 21 x 9 mm.</li><li>the real loop length. Wrap a string round the Pi on its standoffs and measure it.</li><li>that the LED group's 5V pad shares the 5V 3A supply. The diagram labels it 5V; the "5 V rail" arrival test covers the load.</li><li>the right length: 10 mm is chosen from the 6.3 mm foot height; check it on the real foot</li></ul><p><strong>Step 8</strong></p><ul><li>where the light is.</li><li>confirm at the first power-up.</li><li>whether this version of Configurator has a slider for each motor as well as the Master slider. The docs name the Master slider; check on the laptop.</li><li>confirm that the prop tool fits the Gemfan prop nut.</li><li>what to do if the prop has no letters</li></ul><p><strong>Still open after the research pass</strong></p><ul><li>How long the radio takes to charge and what shows when it is full: the quick-start manual gives neither.</li><li>Whether the XT60 plug is marked + and -: look at the plug.</li><li>How long the GPS takes to get its first fix: about half a minute, from a distributor&rsquo;s listing (&ldquo;TTFF 1s/35s&rdquo;); the maker&rsquo;s datasheet was not opened.</li></ul></details>
     <script type="application/json" id="verify-data">
-{"date":"2026-11-04","totals":{"checks":243,"passed":205,"failed":0,"need_real_parts":38,"page_fixes":0},"tolerance_runs":10000,"measured_checks_varied":36,"weakest_margins":["speed controller, flight controller and frame stack holes line up (30.5 mm, with the soft grommets): 0.5 mm as designed, 0.3 mm in the worst of 10,000 runs","M3 x 10 set screw: at least 3 mm of thread on each side of the plate: 1.0 mm as designed, 0.5 mm in the worst of 10,000 runs","Battery slid forward to about 2 mm from the GPS leaves the balance point within 5 mm of centre: 2.81 mm as designed, 0.92 mm in the worst of 10,000 runs","Stack screw tip stays below the top plate: 2.0 mm as designed, 1.03 mm in the worst of 10,000 runs","With the Li-ion pack slid forward to about 2 mm from the GPS, the balance point stays within 5 mm of centre: 3.83 mm as designed, 1.07 mm in the worst of 10,000 runs"]}
+{"date":"2026-11-11","totals":{"checks":243,"passed":206,"failed":0,"need_real_parts":37,"page_fixes":0},"tolerance_runs":10000,"measured_checks_varied":35,"weakest_margins":["speed controller, flight controller and frame stack holes line up (30.5 mm, with the soft grommets): 0.5 mm as designed, 0.3 mm in the worst of 10,000 runs","M3 x 10 set screw: at least 3 mm of thread on each side of the plate: 1.0 mm as designed, 0.5 mm in the worst of 10,000 runs","Stack screw tip stays below the top plate: 2.0 mm as designed, 1.03 mm in the worst of 10,000 runs","Motor M1's 120 mm leads, measured from the motor's edge, reach the speed controller pad farthest from the motor, with the climb up to the speed controller board, 10 % extra for bends and 10 mm to spare: 6.09 mm as designed, 1.25 mm in the worst of 10,000 runs","Motor M2's 120 mm leads, measured from the motor's edge, reach the speed controller pad farthest from the motor, with the climb up to the speed controller board, 10 % extra for bends and 10 mm to spare: 6.09 mm as designed, 1.25 mm in the worst of 10,000 runs"]}
     </script>
     <script>
     (function () {
@@ -1311,8 +1352,8 @@
    "url": "https://rotorvillage.ca/radiomaster-pocket-transmitter-elrs-charcoal-edition/",
    "stage": 3,
    "status": "in_stock",
-   "stockNote": "57 in stock",
-   "checkedOn": "2026-11-10",
+   "stockNote": "56 in stock",
+   "checkedOn": "2026-11-11",
    "today": true,
    "backup": {
     "shop": "EpicFPV (Canada)",
@@ -1321,7 +1362,7 @@
     "price": 104.99,
     "same": true,
     "note": "Same radio. Pick the Charcoal option.",
-    "checkedOn": "2026-11-03",
+    "checkedOn": "2026-11-11",
     "country": "CA"
    }
   },
@@ -1334,8 +1375,8 @@
    "url": "https://rotorvillage.ca/radiomaster-pocket-18650-3200mah-3-7v-battery-2pcs/",
    "stage": 3,
    "status": "in_stock",
-   "stockNote": "187 in stock",
-   "checkedOn": "2026-11-10",
+   "stockNote": "185 in stock",
+   "checkedOn": "2026-11-11",
    "today": true,
    "backup": null,
    "backupNote": "No like-for-like backup found."
@@ -1350,7 +1391,7 @@
    "stage": 1,
    "status": "low",
    "stockNote": "Only 1 left",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": true,
    "backup": {
     "shop": "EpicFPV (Canada)",
@@ -1359,7 +1400,7 @@
     "price": 104.99,
     "same": true,
     "note": "Same kit contents on its page: 65 W iron, DC 12-24 V, 5.5 x 2.5 mm. Checked in a browser: its page shows 10 in stock and Add to cart.",
-    "checkedOn": "2026-11-03",
+    "checkedOn": "2026-11-11",
     "country": "CA"
    }
   },
@@ -1373,7 +1414,7 @@
    "stage": 1,
    "status": "in_stock",
    "stockNote": "20 in stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": true,
    "backup": {
     "shop": "EpicFPV (Canada)",
@@ -1382,7 +1423,7 @@
     "price": 9.99,
     "same": false,
     "note": "TBS make, not iFlight. Fits XT30 and XT60.",
-    "checkedOn": "2026-11-03",
+    "checkedOn": "2026-11-11",
     "country": "CA"
    }
   },
@@ -1396,7 +1437,7 @@
    "stage": 1,
    "status": "in_stock",
    "stockNote": "10 in stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": true,
    "backup": {
     "shop": "EpicFPV (Canada)",
@@ -1405,7 +1446,7 @@
     "price": 13.99,
     "same": false,
     "note": "Emax make, not RVS.",
-    "checkedOn": "2026-11-03",
+    "checkedOn": "2026-11-11",
     "country": "CA"
    }
   },
@@ -1419,7 +1460,7 @@
    "stage": 1,
    "status": "in_stock",
    "stockNote": "56 in stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": true,
    "backup": null,
    "backupNote": "No like-for-like backup found."
@@ -1434,7 +1475,7 @@
    "stage": 1,
    "status": "in_stock",
    "stockNote": "94 in stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": true,
    "backup": null,
    "backupNote": "No like-for-like backup found. EpicFPV sells a mixed heat shrink set, not this size on its own.",
@@ -1450,7 +1491,7 @@
    "stage": 1,
    "status": "in_stock",
    "stockNote": "16 in stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": true,
    "backup": {
     "shop": "EpicFPV (Canada)",
@@ -1459,7 +1500,7 @@
     "price": 6.99,
     "same": true,
     "note": "Same size and count.",
-    "checkedOn": "2026-11-03",
+    "checkedOn": "2026-11-11",
     "country": "CA"
    }
   },
@@ -1471,9 +1512,9 @@
    "shop": "PiShop",
    "url": "https://www.pishop.ca/product/nylon-11mm-m2-5-standoff-set-pack-of-4/",
    "stage": 1,
-   "status": "in_stock",
-   "stockNote": "In stock",
-   "checkedOn": "2026-11-10",
+   "status": "low",
+   "stockNote": "Only 4 left",
+   "checkedOn": "2026-11-11",
    "today": true,
    "backup": {
     "shop": "Abra Electronics (Canada)",
@@ -1482,7 +1523,7 @@
     "price": 19.95,
     "same": false,
     "note": "A 120-piece M2.5 nylon kit with spacers, screws and nuts. More than you need, but it covers the screws and nuts too.",
-    "checkedOn": "2026-11-03",
+    "checkedOn": "2026-11-11",
     "country": "CA"
    }
   },
@@ -1496,7 +1537,7 @@
    "stage": 1,
    "status": "in_stock",
    "stockNote": "In stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": true,
    "backup": {
     "shop": "Fleet Network (Canada)",
@@ -1505,7 +1546,7 @@
     "price": 8.95,
     "same": false,
     "note": "StarTech 1 m right-angle USB-A to micro-B. Cut and meter-check it the same way.",
-    "checkedOn": "2026-11-03",
+    "checkedOn": "2026-11-11",
     "country": "CA"
    }
   },
@@ -1518,8 +1559,8 @@
    "url": "https://www.amazon.ca/dp/B07PWZQ4MB",
    "stage": 1,
    "status": "in_stock",
-   "stockNote": "Ordered on 3 Nov",
-   "checkedOn": "2026-11-03",
+   "stockNote": "In stock",
+   "checkedOn": "2026-11-11",
    "check": "Set the kit's multimeter to DC volts. Red probe on the centre pin of the plug, black on the outer barrel, adapter in the wall. About +24 V means centre-positive; a minus sign means reversed. The iron's own polarity is not confirmed: if it is marked differently, do not plug it in. The box label should say 5 A.",
    "today": true,
    "backup": {
@@ -1529,7 +1570,7 @@
     "price": 16.43,
     "same": false,
     "note": "24 V 3 A, 5.5 x 2.5 mm. Not bought: Abra's freight was CA$28.75 on 3 Nov.",
-    "checkedOn": "2026-11-03",
+    "checkedOn": "2026-11-11",
     "country": "CA"
    },
    "note": "Centre positive per the listing (the meter check below still decides). No cUL or CSA mark is claimed, the same as the adapter it replaces. A CA$1.50 coupon was offered on 3 Nov."
@@ -1543,8 +1584,8 @@
    "url": "https://www.canadiantire.ca/en/pdp/permatex-24209-medium-strength-242-threadlocker-blue-6-ml-0383770p.html",
    "stage": 1,
    "status": "in_stock",
-   "stockNote": "47 in stock, pickup at Edmonton South",
-   "checkedOn": "2026-11-03",
+   "stockNote": "44 in stock, pickup at Edmonton South",
+   "checkedOn": "2026-11-11",
    "today": true,
    "backup": {
     "shop": "Walmart",
@@ -1553,7 +1594,7 @@
     "price": 10.28,
     "same": true,
     "note": "Same Permatex Blue 242. Add to cart shown.",
-    "checkedOn": "2026-11-03",
+    "checkedOn": "2026-11-11",
     "country": "CA"
    },
    "checkedBy": "browser"
@@ -1568,7 +1609,7 @@
    "stage": 2,
    "status": "out",
    "stockNote": "Out of stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": {
     "shop": "CanaKit",
@@ -1577,10 +1618,20 @@
     "price": 89.95,
     "currency": "USD",
     "same": true,
-    "checkedOn": "2026-11-05",
-    "note": "Pi Zero 2 W Starter Kit with Pre-Soldered Header (PI-Z2WH-STR32-C4-BLK): Pi Zero 2 W board, 32 GB microSD, 2.5 A power supply, case, heat sink, USB OTG cable, mini-HDMI adapter (CanaKit lists these for its Starter Kit family; count the box). Price shown in USD; check the CAD total at checkout (with Canada chosen on its page it showed CA$129.95 on 10 Nov). No card reader included: use your laptop's microSD slot if it has one, or buy a reader. Shipping origin not stated."
+    "checkedOn": "2026-11-11",
+    "note": "Pi Zero 2 W Starter Kit with Pre-Soldered Header (PI-Z2WH-STR32-C4-BLK): Pi Zero 2 W board, 32 GB microSD, 2.5 A power supply, case, heat sink, USB OTG cable, mini-HDMI adapter (CanaKit lists these for its Starter Kit family; count the box). Price shown in USD; check the CAD total at checkout (with Canada chosen on its page it showed CA$129.95 on 11 Nov). No card reader included: use your laptop's microSD slot if it has one, or buy a reader. Shipping origin not stated."
    },
-   "backupNote": null
+   "backupNote": null,
+   "backup2": {
+    "shop": "Abra Electronics (Canada)",
+    "url": "https://abra-electronics.com/robotics-embedded-electronics/raspberry-pi-zero/pi-zero-2wh-kit-raspberry-pi-zero-2wh-starter-kit.html",
+    "status": "in_stock",
+    "price": 109.95,
+    "same": false,
+    "country": "CA",
+    "checkedOn": "2026-11-11",
+    "note": "Raspberry Pi Zero 2WH Starter Kit (PI-ZERO-2WH-KIT). Not the same kit, but it has what Step 6 uses: the Pi Zero 2 WH with its pins already soldered, a blank 32 GB card, a card reader and a 5.1 V 2.5 A power supply. Its page said \"Availability: In stock\" with no count on 11 Nov. The bare board was out of stock at every other Canadian shop read that day, so ask Abra to confirm before you pay. Ships from Montreal, to Canada only."
+   }
   },
   {
    "id": "spare-sd",
@@ -1592,7 +1643,7 @@
    "stage": 2,
    "status": "in_stock",
    "stockNote": "In stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": null,
    "backupNote": "Not looked for yet (added 4 Nov 2026)."
@@ -1607,7 +1658,7 @@
    "stage": 2,
    "status": "out",
    "stockNote": "Out of stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": {
     "shop": "Adafruit",
@@ -1617,9 +1668,10 @@
     "currency": "USD",
     "same": false,
     "country": "US",
-    "checkedOn": "2026-11-03",
+    "checkedOn": "2026-11-11",
     "note": "Out of stock too. Pimoroni's own 55 degree board is also out of stock; its 110 degree version is in stock but changes the guide's coverage numbers."
-   }
+   },
+   "note": "Not found in stock anywhere in Canada on 11 Nov: PiShop, Pimoroni's own Canadian-dollar shop (CA$97.00, with a notify-me button) and DigiKey.ca were all out. In stock abroad that day: Kiwi Electronics in the Netherlands (7 in stock, EUR 61.99, and about EUR 63 more to ship to Canada). Mouser.ca would not open for this check: look there yourself."
   },
   {
    "id": "gps",
@@ -1629,9 +1681,9 @@
    "shop": "PiShop",
    "url": "https://www.pishop.ca/product/pa1010d-gps-breakout/",
    "stage": 2,
-   "status": "in_stock",
-   "stockNote": "In stock",
-   "checkedOn": "2026-11-10",
+   "status": "low",
+   "stockNote": "Only 5 left",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": {
     "shop": "Adafruit",
@@ -1641,8 +1693,8 @@
     "currency": "USD",
     "same": false,
     "country": "US",
-    "checkedOn": "2026-11-03",
-    "note": "80 in stock. Adafruit's board with the same PA1010D module."
+    "checkedOn": "2026-11-11",
+    "note": "In stock (no count shown on 11 Nov). Adafruit's board with the same PA1010D module."
    }
   },
   {
@@ -1655,7 +1707,7 @@
    "stage": 2,
    "status": "in_stock",
    "stockNote": "In stock",
-   "checkedOn": "2026-11-03",
+   "checkedOn": "2026-11-11",
    "priceFrom": "2026-10-30",
    "usd": true,
    "today": false,
@@ -1674,7 +1726,7 @@
    "stage": 4,
    "status": "out",
    "stockNote": "Out of stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": {
     "shop": "EpicFPV (Canada)",
@@ -1683,9 +1735,10 @@
     "price": 44.99,
     "same": true,
     "note": "In stock here while Rotor Village is out. CA$4 cheaper.",
-    "checkedOn": "2026-11-03",
+    "checkedOn": "2026-11-11",
     "country": "CA"
-   }
+   },
+   "note": "Rotor Village's page says: \"More on the way, roughly mid-November\" (read 11 Nov)."
   },
   {
    "id": "motors",
@@ -1697,7 +1750,7 @@
    "stage": 4,
    "status": "low",
    "stockNote": "Only 3 left",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": {
     "shop": "EpicFPV (Canada)",
@@ -1706,10 +1759,10 @@
     "price": 22.99,
     "same": true,
     "note": "Each. Pick the 1900KV option; you need 4.",
-    "checkedOn": "2026-11-03",
+    "checkedOn": "2026-11-11",
     "country": "CA"
    },
-   "note": "The motor is listed for 3S to 6S (RaceDayQuads listing), and retailers pitch the 1900KV for 6S builds; Emax's own pages could not be opened to confirm either. On our 4S pack it is gentler, at an estimated 800 g of thrust per motor (this guide's own estimate, not an Emax figure)."
+   "note": "The motor is listed for 3S to 6S (RaceDayQuads listing), and retailers pitch the 1900KV for 6S builds; Emax's own pages could not be opened to confirm either. On our 4S pack it is gentler, at an estimated 800 g of thrust per motor (this guide's own estimate, not an Emax figure). Rotor Village's page says \"KV: 1700\" in its Specifications tab; its title and the motor's photo say 1900KV (read 11 Nov)."
   },
   {
    "id": "props",
@@ -1720,8 +1773,8 @@
    "url": "https://rotorvillage.ca/gemfan-51499-hurricane-tri-blade-prop-2cw-2ccw/",
    "stage": 4,
    "status": "in_stock",
-   "stockNote": "In stock",
-   "checkedOn": "2026-11-10",
+   "stockNote": "In stock (blue and purple only)",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": {
     "shop": "RaceDayQuads",
@@ -1730,8 +1783,8 @@
     "price": null,
     "same": true,
     "country": "US",
-    "checkedOn": "2026-11-03",
-    "note": "A 4-pack costs US$2.99 to 4.99 depending on colour; some colours in stock. Buy two packs."
+    "checkedOn": "2026-11-11",
+    "note": "On 11 Nov a 4-pack was US$3.49 in Whisky and US$4.99 in Clear Blue, Clear Yellow or Clear Red; plain Clear and Clear Purple were sold out. Buy two packs."
    }
   },
   {
@@ -1743,8 +1796,8 @@
    "url": "https://rotorvillage.ca/rvs-kevlar-battery-strap-2pk/",
    "stage": 4,
    "status": "in_stock",
-   "stockNote": "345 in stock",
-   "checkedOn": "2026-11-10",
+   "stockNote": "344 in stock",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": {
     "shop": "EpicFPV (Canada)",
@@ -1753,7 +1806,7 @@
     "price": 6.99,
     "same": false,
     "note": "Flywoo make, 2 straps, 20 x 250 mm option.",
-    "checkedOn": "2026-11-03",
+    "checkedOn": "2026-11-11",
     "country": "CA"
    }
   },
@@ -1767,7 +1820,7 @@
    "stage": 4,
    "status": "in_stock",
    "stockNote": "255 in stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": null,
    "backupNote": "No like-for-like backup found."
@@ -1782,7 +1835,7 @@
    "stage": 4,
    "status": "in_stock",
    "stockNote": "10 in stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": null,
    "backupNote": "Not looked for yet (added 4 Nov 2026)."
@@ -1797,7 +1850,7 @@
    "stage": 8,
    "status": "in_stock",
    "stockNote": "In stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": null,
    "backupNote": "No like-for-like backup found."
@@ -1812,7 +1865,7 @@
    "stage": 5,
    "status": "out",
    "stockNote": "Out of stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": {
     "shop": "Pyrodrone",
@@ -1822,8 +1875,20 @@
     "currency": "USD",
     "same": true,
     "country": "US",
-    "checkedOn": "2026-11-03",
+    "checkedOn": "2026-11-11",
     "note": "The exact GEPRC stack, in stock. A Canadian seller was not found."
+   },
+   "note": "Rotor Village's page says: \"On its way to us, expected around Nov 12–19\" (read 11 Nov). That is the shop's own estimate.",
+   "backup2": {
+    "shop": "GEPRC (the maker's own shop)",
+    "url": "https://geprc.com/product/geprc-taker-f405-bls-50a-stack/",
+    "status": "page_ok",
+    "price": 66.99,
+    "currency": "USD",
+    "same": true,
+    "country": "CN",
+    "checkedOn": "2026-11-11",
+    "note": "Pick the option STACK (the same page also sells each board alone). Ships from China: its page says 15 to 40 business days by standard post, and does not name Canada, so check at checkout. Freight, duty and tax are extra. The page prints no stock sentence."
    }
   },
   {
@@ -1836,7 +1901,7 @@
    "stage": 5,
    "status": "in_stock",
    "stockNote": "11 in stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": {
     "shop": "EpicFPV (Canada)",
@@ -1845,7 +1910,7 @@
     "price": 27.99,
     "same": false,
     "note": "RP2 V2, a different model with a built-in antenna. Not checked for this build.",
-    "checkedOn": "2026-11-03",
+    "checkedOn": "2026-11-11",
     "country": "CA"
    }
   },
@@ -1859,7 +1924,7 @@
    "stage": 5,
    "status": "in_stock",
    "stockNote": "21 in stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": {
     "shop": "EpicFPV (Canada)",
@@ -1868,7 +1933,7 @@
     "price": 33.89,
     "same": true,
     "note": "Each; you need 1. Same 4S LiHV 1500 mAh 120C XT60 pack.",
-    "checkedOn": "2026-11-03",
+    "checkedOn": "2026-11-11",
     "country": "CA"
    }
   },
@@ -1882,7 +1947,7 @@
    "stage": 5,
    "status": "in_stock",
    "stockNote": "47 in stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": null,
    "backupNote": "Not looked for yet (added 4 Nov 2026)."
@@ -1897,7 +1962,7 @@
    "stage": 5,
    "status": "low",
    "stockNote": "Only 4 left",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": null,
    "backupNote": "Not looked for yet (the M7AC replaced the M4AC on 4 Nov 2026)."
@@ -1911,8 +1976,8 @@
    "url": "https://www.canadiantire.ca/en/pdp/garrison-1a10bc-heavy-duty-rechargeable-fire-extinguisher-with-wall-mounting-brackets-2-5-lb-red-0460078p.html",
    "stage": 5,
    "status": "in_stock",
-   "stockNote": "34 in stock for pickup at Edmonton South",
-   "checkedOn": "2026-11-03",
+   "stockNote": "33 in stock for pickup at Edmonton South",
+   "checkedOn": "2026-11-11",
    "checkedBy": "browser",
    "today": false,
    "backup": null,
@@ -1929,7 +1994,7 @@
    "stage": 6,
    "status": "in_stock",
    "stockNote": "13 in stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": null,
    "backupNote": "No in-stock backup found. RaceDayQuads (US) shows it as sold out."
@@ -1944,16 +2009,16 @@
    "stage": 6,
    "status": "in_stock",
    "stockNote": "7 in stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": {
     "shop": "EpicFPV (Canada)",
     "url": "https://epicfpv.ca/products/tbs-unify-pro-5g8-hv-sma",
-    "status": "in_stock",
+    "status": "low",
     "price": 77.99,
     "same": true,
-    "note": "",
-    "checkedOn": "2026-11-03",
+    "note": "1 in stock on 11 Nov.",
+    "checkedOn": "2026-11-11",
     "country": "CA"
    }
   },
@@ -1967,7 +2032,7 @@
    "stage": 6,
    "status": "low",
    "stockNote": "Only 3 left",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": {
     "shop": "EpicFPV (Canada)",
@@ -1976,7 +2041,7 @@
     "price": 29.99,
     "same": false,
     "note": "TBS Triumph Pro SMA \"Long Range\". Its page says RHCP, the same hand as the main antenna.",
-    "checkedOn": "2026-11-03",
+    "checkedOn": "2026-11-11",
     "country": "CA"
    }
   },
@@ -1990,19 +2055,19 @@
    "stage": 6,
    "status": "low",
    "stockNote": "Only 1 left",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": {
     "shop": "EpicFPV (Canada)",
     "url": "https://epicfpv.ca/products/skyzone-m5-diversity-fpv-monitor",
-    "status": "in_stock",
+    "status": "low",
     "price": 239.99,
     "same": true,
-    "note": "Same M5F monitor. CA$10 cheaper.",
-    "checkedOn": "2026-11-03",
+    "note": "Same M5F monitor. CA$10 cheaper. 2 in stock on 11 Nov.",
+    "checkedOn": "2026-11-11",
     "country": "CA"
    },
-   "note": "Ask the shop before you order: which antennas are in the box? Rotor Village's page says \"Antenna: Linear Included\"; the maker's picture on EpicFPV's page says LHCP (read 10 Nov). The drone's video antenna is RHCP. Linear antennas work with it (some range is lost). LHCP antennas do not match it."
+   "note": "Ask the shop before you order: which antennas are in the box? Rotor Village's page says \"Antenna: Linear Included\"; EpicFPV's page says \"2x Linear antenna\" in its box list, but the maker's picture on that same page says LHCP (both read 11 Nov). The drone's video antenna is RHCP. Linear antennas work with it (some range is lost). LHCP antennas do not match it."
   },
   {
    "id": "dvr-card",
@@ -2015,7 +2080,7 @@
    "stage": 8,
    "status": "in_stock",
    "stockNote": "In stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": null,
    "backupNote": "No backup found."
@@ -2026,11 +2091,11 @@
    "qty": 1,
    "unit": 10.17,
    "shop": "Transport Canada",
-   "url": "https://tc.canada.ca/en/aviation/drone-safety/drone-pilot-licensing/take-drone-pilot-online-exam",
+   "url": "https://tc.canada.ca/en/aviation/drone-safety/drone-pilot-licensing/take-drone-pilot-online-exam/small-basic",
    "stage": 7,
    "status": "in_stock",
-   "stockNote": "Fee CA$10.17 on the Transport Canada page",
-   "checkedOn": "2026-11-03",
+   "stockNote": "Fee CA$10.17 on this Transport Canada page",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": null,
    "noGst": true,
@@ -2047,7 +2112,7 @@
    "stage": 7,
    "status": "in_stock",
    "stockNote": "Fee CA$10.17 on the Transport Canada page",
-   "checkedOn": "2026-11-03",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": null,
    "noGst": true,
@@ -2064,7 +2129,7 @@
    "stage": 1,
    "status": "in_stock",
    "stockNote": "In stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": true,
    "backup": null,
    "backupNote": "No like-for-like backup found. Canadian Tire's strippers cover 10 to 24 AWG, too thick for 26 to 28 AWG wire.",
@@ -2079,8 +2144,8 @@
    "url": "https://www.amazon.ca/dp/B07MTBNX8F",
    "stage": 1,
    "status": "in_stock",
-   "stockNote": "Ordered on 3 Nov",
-   "checkedOn": "2026-11-03",
+   "stockNote": "In stock",
+   "checkedOn": "2026-11-11",
    "today": true,
    "backup": {
     "shop": "PiShop (Canada)",
@@ -2089,7 +2154,7 @@
     "price": 7.95,
     "same": false,
     "note": "A bigger board (133 x 85 mm) at 2.54 mm hole spacing; any plain perfboard works for practice.",
-    "checkedOn": "2026-11-03",
+    "checkedOn": "2026-11-11",
     "country": "CA"
    },
    "note": "Sizes and \"Double Side\" are from the listing title. Pad size and hole spacing were not in the part of the listing read on 3 Nov: check on arrival. Replaces the Abra BRD-160 (not bought: Abra's freight)."
@@ -2103,8 +2168,8 @@
    "url": "https://rotorvillage.ca/26awg-silicone-wire-1-foot/",
    "stage": 1,
    "status": "in_stock",
-   "stockNote": "In stock",
-   "checkedOn": "2026-11-10",
+   "stockNote": "In stock (red only)",
+   "checkedOn": "2026-11-11",
    "today": true,
    "backup": {
     "shop": "PiShop (Canada)",
@@ -2113,7 +2178,7 @@
     "price": 7.95,
     "same": false,
     "note": "A 25 ft spool in one colour (black). More than you need; cheaper per foot.",
-    "checkedOn": "2026-11-03",
+    "checkedOn": "2026-11-11",
     "country": "CA"
    },
    "note": "For the receiver wires, the 8 joints that lengthen the GPS cable, and practice. Five feet, not three: the build check found 3 feet about 15 cm short. Still a starting amount, not a measured need."
@@ -2128,7 +2193,7 @@
    "stage": 2,
    "status": "in_stock",
    "stockNote": "In stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": {
     "shop": "Abra Electronics (Canada)",
@@ -2137,10 +2202,10 @@
     "price": 19.95,
     "same": false,
     "note": "120-piece M2.5 nylon kit with spacers, screws and nuts.",
-    "checkedOn": "2026-11-03",
+    "checkedOn": "2026-11-11",
     "country": "CA"
    },
-   "note": "The standoff packs in Stage 1 have no screws or nuts."
+   "note": "The standoff packs in Stage 1 may come without screws or nuts: the shop's text lists none, though its photo shows some. Check your packs."
   },
   {
    "id": "foam-tape",
@@ -2151,13 +2216,13 @@
    "url": "https://www.canadiantire.ca/en/pdp/3m-scotch-heavy-duty-double-sided-tape-foam-mounting-tape-holds-up-to-15-lbs-1-2-cm-x-1-9-m-0676146p.html",
    "stage": 4,
    "status": "in_stock",
-   "stockNote": "103 in stock (Edmonton South pickup)",
-   "checkedOn": "2026-11-03",
+   "stockNote": "91 in stock (Edmonton South pickup)",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": null,
    "checkedBy": "browser",
    "backupNote": "No like-for-like backup found.",
-   "note": "Listed as missing in the audit. Check it suits the part you stick before relying on it."
+   "note": "The shop sells it as indoor mounting tape, and this drone uses it outdoors: check it holds in the cold before you rely on it. If it lets go, use an outdoor mounting tape of the same thickness."
   },
   {
    "id": "usbc-cable",
@@ -2169,7 +2234,7 @@
    "stage": 5,
    "status": "in_stock",
    "stockNote": "In stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": null,
    "backupNote": "No backup checked. Any USB data cable with the right plugs works; avoid charge-only cables.",
@@ -2184,8 +2249,8 @@
    "url": "https://rotorvillage.ca/gemfan-51499-hurricane-tri-blade-prop-2cw-2ccw/",
    "stage": 8,
    "status": "in_stock",
-   "stockNote": "In stock",
-   "checkedOn": "2026-11-10",
+   "stockNote": "In stock (blue and purple only)",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": {
     "shop": "RaceDayQuads",
@@ -2194,8 +2259,8 @@
     "price": null,
     "same": true,
     "country": "US",
-    "checkedOn": "2026-11-03",
-    "note": "A 4-pack costs US$2.99 to 4.99 depending on colour; some colours in stock."
+    "checkedOn": "2026-11-11",
+    "note": "On 11 Nov a 4-pack was US$3.49 in Whisky and US$4.99 in Clear Blue, Clear Yellow or Clear Red; plain Clear and Clear Purple were sold out."
    },
    "note": "Optional: buy these after the first flight, for the first crash."
   },
@@ -2207,9 +2272,9 @@
    "shop": "Rotor Village",
    "url": "https://rotorvillage.ca/flywoo-x30-pcba-waterproof-superhydrophobic-invisible-spray/",
    "stage": 8,
-   "status": "in_stock",
-   "stockNote": "6 in stock",
-   "checkedOn": "2026-11-10",
+   "status": "low",
+   "stockNote": "Only 5 left",
+   "checkedOn": "2026-11-11",
    "checkedBy": "page read",
    "today": false,
    "backup": null,
@@ -2221,7 +2286,7 @@
    "stage": 4,
    "status": "in_stock",
    "stockNote": "68 in stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": null,
    "backupNote": "No like-for-like backup found.",
@@ -2237,7 +2302,7 @@
    "stage": 4,
    "status": "in_stock",
    "stockNote": "59 in stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": null,
    "backupNote": "No like-for-like backup found.",
@@ -2257,7 +2322,7 @@
    "stage": 4,
    "status": "in_stock",
    "stockNote": "In stock",
-   "checkedOn": "2026-11-03",
+   "checkedOn": "2026-11-11",
    "checkedBy": "browser",
    "today": false,
    "backup": null,
@@ -2275,8 +2340,8 @@
    "url": "https://www.amazon.ca/Glarks-200-Piece-Socket-Assortment-Stainless/dp/B01G0E4NTS",
    "stage": 4,
    "status": "in_stock",
-   "stockNote": "In stock, delivery tomorrow to Edmonton",
-   "checkedOn": "2026-11-03",
+   "stockNote": "In stock",
+   "checkedOn": "2026-11-11",
    "checkedBy": "browser",
    "today": false,
    "backup": null,
@@ -2293,7 +2358,7 @@
    "stage": 4,
    "status": "in_stock",
    "stockNote": "In stock",
-   "checkedOn": "2026-11-10",
+   "checkedOn": "2026-11-11",
    "today": false,
    "backup": {
     "shop": "Rotor Village",
@@ -2302,7 +2367,7 @@
     "price": 2.49,
     "same": false,
     "note": "M3 x 10 8-pack, out of stock on 3 Nov. Its description says 12 mm while the title says 10 mm: check before ordering.",
-    "checkedOn": "2026-11-03",
+    "checkedOn": "2026-11-11",
     "country": "CA"
    },
    "note": "M3 x 10 (Shad, 3 Nov; Fable N8): the rubber foot is 6.3 mm tall, so a 10 mm screw leaves about 3.7 mm of thread in the standoff. FlyFishRC 12.9-grade steel, choose the M3x10 option.",
@@ -2321,13 +2386,13 @@
  },
  "stageNotes": {
   "2": [
-   "Out of stock on 10 Nov: the Pi kit and the thermal camera. The camera is out at the backup shop too. You can buy the rest of this stage now: the GPS board, the Qwiic HAT and cables, the spare card and the M2.5 set. Steps 1 to 5 do not need this stage. Step 6 and the payload part of Step 7 wait for the Pi kit and the camera."
-  ],
-  "5": [
-   "Out of stock on 10 Nov: the flight stack at Rotor Village. The backup, Pyrodrone, is a US shop: US$74.99 plus freight and duty. Step 3 cannot start without the stack. The rest of this stage was in stock on 10 Nov."
+   "Out of stock on 11 Nov: the Pi kit and the thermal camera. The kit has two backup shops on its line. The camera is out at its backup shop too, and no Canadian shop had it. You can buy the rest of this stage now: the GPS board (only 5 left), the Qwiic HAT and cables, the spare card and the M2.5 set. Steps 1 to 5 do not need this stage. Step 6 and the payload part of Step 7 wait for the Pi kit and the camera."
   ],
   "4": [
    "When they arrive, check: (a) the knurled standoffs are threaded at both ends (female); (b) the M3 x 10 mm foot screws hold the feet (6.3 mm foot + about 3.7 mm of thread)."
+  ],
+  "5": [
+   "Out of stock on 11 Nov: the flight stack at Rotor Village. Its page says more is on its way, \"expected around Nov 12–19\". The first backup, Pyrodrone, is a US shop: US$74.99 plus freight and duty. Step 3 cannot start without the stack. The rest of this stage was in stock on 11 Nov."
   ]
  },
  "optionalStages": [
@@ -2447,6 +2512,7 @@
   <details class="acc" id="arrival-card">
     <summary><span class="emoji">&#128230;</span> <strong>When a parcel arrives</strong> <span class="fly-first" id="arr-first"></span></summary>
     <div class="acc-body">
+      <p class="arr-back" id="arr-back" hidden><button type="button" class="ga-link" id="arr-back-btn">&larr; Back to where you were</button></p>
       <p>Each parcel gets a few short tests before you build with it. Tick a test when it passes. Your ticks save in this browser.</p>
       <div class="arr-controls">
         <label for="arr-shop">I just received a parcel from:</label>
@@ -2505,9 +2571,9 @@
       <p><strong>Where you can fly:</strong></p>
       <ul>
         <li>On private land, with the owner's permission: your own, or someone else's. The City of Edmonton says a drone of any size may take off and land from private property with the owner's permission. The federal rules still apply. (<a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use" target="_blank" rel="noopener">City of Edmonton, recreational microdrone use</a>)</li>
-        <li>At a model-aircraft club field, as a member. The Northern Alberta FPV League flies 5-inch drones in summer at Ministik Park, about 22 km east of Edmonton on Highway 14, under a Strathcona County exemption. You need a MAAC membership (see Licences and courses in Learn). Ask the club when the field is in use and whether this drone suits it. (<a href="https://www.maac.ca/clubs/view/928" target="_blank" rel="noopener">MAAC, club 928</a>; <a href="https://northernalbertafpv.ca/getting-started-in-fpv/" target="_blank" rel="noopener">the league says absolute beginners are welcome</a>)</li>
+        <li>At a model-aircraft club field, on the club's own flying days. The Northern Alberta FPV League flew outdoors at Ministik Park, about 22 km east of Edmonton on Highway 14, on ten event days in summer 2026. Strathcona County approved those days only (the last was 13 Sep 2026); on any other day the County's drone ban applies there. Outdoors the league flies drones under 800 g (its Open class). For 2027, ask the league first, and ask whether this drone suits it. You need a MAAC membership (see Licences and courses in Learn) and to be a league member or its invited guest. (<a href="https://www.maac.ca/clubs/view/928" target="_blank" rel="noopener">MAAC, club 928</a>; <a href="https://northernalbertafpv.ca/getting-started-in-fpv/" target="_blank" rel="noopener">the league says absolute beginners are welcome</a>; its site did not open on 11 Nov 2026)</li>
         <li>At other model-aircraft club fields near Edmonton, as a MAAC member. Most club pages do not say whether drones are allowed, so ask the club first. (<a href="https://www.maac.ca/clubs/list?zoneCode=A" target="_blank" rel="noopener">MAAC, Zone A club list</a>)</li>
-        <li id="fly-indoors"><strong>Indoors, with the building owner's permission.</strong> Transport Canada's drone rules (Part IX of the Canadian Aviation Regulations) do not apply indoors, but you must still fly safely and respect all other laws, and Transport Canada recommends getting permission from the building owner and/or occupants before you fly indoors (in an apartment, ask your landlord). This drone weighs <span data-weight-min>at least 512 g</span> and spins four 5-inch props: it is not an indoor drone. To practise indoors, use the simulator (Stage 3 practice); the Northern Alberta FPV League flies small "whoop" drones, with ducts around the props, indoors in winter. (<a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/where-fly-your-drone" target="_blank" rel="noopener">Transport Canada, Where to fly your drone</a>; <a href="https://northernalbertafpv.ca/getting-started-in-fpv/" target="_blank" rel="noopener">the league's getting-started page</a>)</li>
+        <li id="fly-indoors"><strong>Indoors, with the building owner's permission.</strong> Transport Canada's drone rules (Part IX of the Canadian Aviation Regulations) do not apply indoors, but you must still fly safely and respect all other laws, and Transport Canada recommends getting permission from the building owner and/or occupants before you fly indoors (in an apartment, ask your landlord). This drone weighs <span data-weight-min>at least 512 g</span> and spins four 5-inch props: it is not an indoor drone. To practise indoors, use the simulator (Stage 3 practice); the Northern Alberta FPV League flies small "whoop" drones, with ducts around the props, indoors in winter. (<a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/where-fly-your-drone" target="_blank" rel="noopener">Transport Canada, Where to fly your drone</a>; <a href="https://northernalbertafpv.ca/getting-started-in-fpv/" target="_blank" rel="noopener">the league's getting-started page</a>, which did not open on 11 Nov 2026)</li>
       </ul>
       <p id="fly-basic">This drone flies under Transport Canada's Basic operations (TC page updated 19 Mar 2026). Every spot must also pass the airspace check: look up the exact take-off point on one of the free maps at the bottom, every time. The 5.6 km airport, 1.9 km heliport and uncontrolled-airspace rules rule out a lot of Edmonton: an empty park is not a legal site.</p>
       <p><strong>Where you can't fly:</strong></p>
@@ -2832,12 +2898,12 @@
 <div class="asm-do">
             <span class="asm-label">What you can do with it</span>
             <ol class="asm-actions">
-              <li class="s1-rich"><p>Open the battery cover on the multimeter. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Multimeter basics">When the meter arrives, check:</a></strong> where the battery cover is, and whether it needs a screwdriver. (The kit has a hexagon screwdriver set.)</span></p><p>Put in two 1.5 V batteries (AA or AAA, whichever fits). Match the + and - marks inside. The kit does not include them. You already have these.</p><p>Turn the dial. The screen should light up.</p></li><li class="s1-rich"><p>Learn three things the multimeter does. Try each once, and write down what you see.</p><ol><li>Volts: turn the dial to DC volts. Touch the red probe to the + end of one of your 1.5 V AA or AAA batteries (not the radio's 3.7 V 18650 cells) and the black probe to the - end. It should read close to 1.5.</li><li>Continuity (the beep): turn the dial to the beep symbol. Touch the two probes together: it should beep. Then strip about 3 mm off both ends of a short piece of the thin wire with the Hakko stripper, and touch the probes to the two bare ends: it should beep. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Multimeter basics">When the meter arrives, check:</a></strong> what the beep symbol looks like on it.</span></li><li>Resistance (ohms): you will use it for the pigtail below, and in Step 6 if the meter has no beep setting. Try it: turn the dial to the &Omega; symbol. With the probes apart it shows OL (no connection). Touch the probes together: it reads close to 0. Touch them to the two bare ends of the stripped wire: close to 0 too. </li></ol></li>
-              <li class="s1-rich"><p>Before the iron is ever plugged in, test the power adapter. The adapter is the box that plugs into the wall.</p><ol><li>Turn the multimeter dial to DC volts (the V with a straight line). <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Multimeter basics">When the meter arrives, check:</a></strong> which dial position is DC volts for about 24 V. The meter's manual shows it.</span></li><li>The red and black leads are built into this meter (ZOYI VC921), so there are no sockets to choose.</li><li>Touch the red probe to the metal post in the middle of the adapter's round plug. Touch the black probe to the metal ring on the outside of the plug. Keep the two probes apart from each other.</li><li>Plug the adapter into the wall. Read the screen.</li><li>About 24 with no minus sign: the middle post is plus (+). A minus sign (about -24): the middle post is minus (-). <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Iron adapter">When the adapter arrives, check:</a></strong> how close to 24 counts as normal. Its label may say.</span></li><li>If the screen shows 0, 1 or OL, or a number far from 24: unplug the adapter and stop.</li><li>Unplug the adapter from the wall.</li></ol>
+              <li class="s1-rich"><p>Open the battery cover on the multimeter. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Multimeter basics">On your meter, check:</a></strong> where the battery cover is, and whether it needs a screwdriver. (The kit has a hexagon screwdriver set.)</span></p><p>Put in two 1.5 V batteries (AA or AAA, whichever fits). Match the + and - marks inside. The kit does not include them. You already have these.</p><p>Turn the dial. The screen should light up.</p></li><li class="s1-rich"><p>Learn three things the multimeter does. Try each once, and write down what you see.</p><ol><li>Volts: turn the dial to DC volts. Touch the red probe to the + end of one of your 1.5 V AA or AAA batteries (not the radio's 3.7 V 18650 cells) and the black probe to the - end. It should read close to 1.5.</li><li>Continuity (the beep): turn the dial to the beep symbol. Touch the two probes together: it should beep. Then strip about 3 mm off both ends of a short piece of the thin wire with the Hakko stripper, and touch the probes to the two bare ends: it should beep. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Multimeter basics">On your meter, check:</a></strong> what the beep symbol looks like on it.</span></li><li>Resistance (ohms): you will use it for the pigtail below, and in Step 6 if the meter has no beep setting. Try it: turn the dial to the &Omega; symbol. With the probes apart it shows OL (no connection). Touch the probes together: it reads close to 0. Touch them to the two bare ends of the stripped wire: close to 0 too. </li></ol></li>
+              <li class="s1-rich"><p>Before the iron is ever plugged in, test the power adapter. The adapter is the box that plugs into the wall.</p><ol><li>Turn the multimeter dial to DC volts (the V with a straight line). <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Multimeter basics">On your meter, check:</a></strong> which dial position is DC volts for about 24 V. The meter's manual shows it.</span></li><li>The red and black leads are built into this meter (ZOYI VC921), so there are no sockets to choose.</li><li>Look at the adapter's round plug: a metal ring on the outside, and a small hole with metal inside it. Put the red probe's tip into the hole, touching the metal inside. Touch the black probe to the outside ring. Keep the two probes apart from each other.</li><li>Plug the adapter into the wall. Read the screen.</li><li>About 24 with no minus sign: the middle is plus (+). A minus sign (about -24): the middle is minus (-). <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Iron adapter">On your adapter, check:</a></strong> how close to 24 counts as normal. Its label may say.</span></li><li>If the screen shows 0, 1 or OL, or a number far from 24: unplug the adapter and stop.</li><li>Unplug the adapter from the wall.</li></ol>
             <div class="s1-box"><span class="asm-label">What each part is for</span><p class="s1-bullet">&bull; Smoke stopper: the first power-up in Step 5 and the bench power test in Step 8.</p><p class="s1-bullet">&bull; LiPo storage bag: charging the flight batteries in Step 5.</p><p class="s1-bullet">&bull; Threadlocker (Permatex Blue 242): a small drop on each of the 16 motor screws (4 per motor, Step 2) and on the eight M3 x 10 set screws that join the leg pieces.</p><p class="s1-bullet">&bull; Zip ties: holding the Raspberry Pi in Step 7.</p><p class="s1-bullet">&bull; Nylon M2.5 standoffs: mounting the Pi in Step 7.</p><p class="s1-bullet">&bull; Hakko wire stripper and the thin silicone wire: the receiver and video wires in Step 4 and the GPS cable in Step 6.</p><p class="s1-bullet">&bull; Micro-USB cable: becomes the pigtail (the action below).</p><p class="s1-bullet">&bull; Heat shrink: covers bare joints. </p></div></li>
-              <li class="s1-rich"><p><strong>Check the iron's polarity before you plug it in.</strong> Now look at the iron and its cable for a small drawing that shows which part is plus (+) and which is minus (-). The middle must be plus, the same as your adapter.</p><p>If you cannot find the drawing, or it shows the opposite: do not plug the iron in. Message the shop with a photo of the marking (Rotor Village for the iron kit, Amazon.ca for the adapter). Wait for the shop's answer before you solder. If it cannot confirm the polarity, ask for a replacement or a refund; the soldering practice waits until then. Later, once you have charged flight packs (Stage 5), the kit's XT60 cable is a second way to power the iron (see the next paragraph).</p><p>What plugs into what: the adapter's round plug goes straight into the iron's power socket. Both are 5.5 x 2.5 mm. The kit's short "XT60 to DC" cable is a second way to power the iron away from a wall socket: its XT60 end goes into a charged 4S flight pack and its round end goes into the iron. The iron runs on 12 to 24 V, and a 4S pack gives about 13 to 17 V, so it heats a little more slowly on a pack. The first time you switch it on, time how long it takes to melt solder, so you know how long to wait.</p><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Iron and its cables">When the kit arrives, check:</a></strong> which end of the XT60 to DC cable is which, where the iron's polarity drawing is, and how long the iron takes to heat. Write the time down.</span></p></li>
-              <li class="s1-rich"><p>Set up the iron and practise on one of the practice boards (the Eiechip set).</p><ol><li>Put on your safety glasses.</li><li>Open a window and switch a fan on. Put the iron in its stand on a heat-proof surface. Use your ceramic tile or metal baking tray. A damp kitchen sponge wipes the tip.</li><li>Plug the iron in and wait for it to heat. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Iron and its cables">When the iron arrives, check:</a></strong> how long it takes to heat and how to set its temperature. (The listing says 220 to 400 C.) Write it down.</span></li><li>Temperature: none of the part pages this guide links gives a soldering temperature for the boards you solder. The only limit found is TBS's, for its video transmitter's own tabs (which this build does not solder): &ldquo;do not solder with temperatures higher than 350&deg;C for more than 3-5sec.&rdquo;</li><li>Touch a little solder to the tip. It should melt at once.</li><li>Tinning means melting a small bead of solder onto a bare copper pad. Tin a few pads on the practice board. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Practice boards">When the boards arrive, check:</a></strong> that the pads take solder on the side you use (the listing says double-sided; pad size and hole spacing are not stated).</span></li><li>Strip 3 mm off the end of short pieces of the thin silicone wire with the Hakko stripper, then solder them to the pads. Tug each one gently.</li><li>Repeat until the joints look smooth and shiny, like small hills.</li><li>When you stop, put the iron in its stand. Unplug it before you leave the room.</li></ol></li>
-              <li class="s1-rich"><p>Build the micro-USB power pigtail: a short cable with a plug on one end and bare wires on the other. You will solder it to the flight controller in Step 3, and plug it into the Pi in Step 7.</p><ol><li>Keep the small right-angle micro-USB plug (it goes into the Pi). Cut off the big flat USB-A plug, leaving about 20 cm of cable on the micro-USB side.</li><li>Strip 3 cm of the outer jacket. Inside are four wires: two thicker ones carry power, two thinner ones carry data.</li><li>Find which thick wire is +, with a USB phone charger. On the cut-off USB-A piece (the big plug and its short bit of cable), strip back its outer cover, then strip 3 mm off its two thick wires and keep the two bare ends apart. If both thick wires are the same colour, stop and ask. Plug it into any USB phone charger. Meter on DC volts (the V with a straight line): red probe on one thick wire, black on the other. About 5 with no minus sign: the wire under the red probe is +. A minus sign: the other wire is +. Unplug the charger. It is the same cable, so the same colour is + on your pigtail.</li><li>Check where that + wire goes: set the multimeter to its lowest resistance (ohms) setting. Press one probe on the copper of the + wire's cut end and touch the other to the outermost pin at each end of the micro-USB plug. Close to 0 ohms on one end pin means that end is pin 1 (the + pin); pin 5 (the - pin) is at the other end. Write down the + wire's colour and what the meter read. Wrap a small piece of tape round the + wire.</li><li>Cut the two thin data wires short and cover each end with a piece of 3 mm heat shrink.</li><li>Strip 3 mm off each power wire with the Hakko stripper and tin it. Leave them loose until Step 3.</li></ol><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Micro-USB cable for the pigtail">When the cable arrives, check:</a></strong> the wire colours inside, and which pin is pin 1 and pin 5 inside the plug.</span></p></li>
+              <li class="s1-rich"><p><strong>Check the iron's polarity before you plug it in.</strong> Now look at the iron and its cable for a small drawing that shows which part is plus (+) and which is minus (-). The middle must be plus, the same as your adapter.</p><p>If you cannot find the drawing, or it shows the opposite: do not plug the iron in. Message the shop with a photo of the marking (Rotor Village for the iron kit, Amazon.ca for the adapter). Wait for the shop's answer before you solder. If it cannot confirm the polarity, ask for a replacement or a refund; the soldering practice waits until then. Later, once you have charged flight packs (Stage 5), the kit's XT60 cable is a second way to power the iron (see the next paragraph).</p><p>What plugs into what: the adapter's round plug goes straight into the iron's power socket. Both are 5.5 x 2.5 mm. The kit's short "XT60 to DC" cable is a second way to power the iron away from a wall socket: its XT60 end goes into a charged 4S flight pack and its round end goes into the iron. The iron runs on 12 to 24 V, and a 4S pack gives about 13 to 17 V, so it heats a little more slowly on a pack. The first time you switch it on, time how long it takes to melt solder, so you know how long to wait.</p><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Iron and its cables">In your kit, check:</a></strong> which end of the XT60 to DC cable is which, where the iron's polarity drawing is, and how long the iron takes to heat. Write the time down.</span></p></li>
+              <li class="s1-rich"><p>Set up the iron and practise on one of the practice boards (the Eiechip set).</p><ol><li>Put on your safety glasses.</li><li>Open a window and switch a fan on. Put the iron in its stand on a heat-proof surface. Use your ceramic tile or metal baking tray. A damp kitchen sponge wipes the tip.</li><li>Check the tip is in all the way: unscrew the silver front nose, push the tip in past the little lip until it stops, then screw the nose back on. If the tip is not all the way in, the iron stays cold.</li><li>Plug the iron in. Turn its small wheel to 350 to start, and wait for it to heat. If solder will not melt at 350, go to 400. (350 is a common starting point, not a number from the iron's manual.) <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Iron and its cables">On your iron, check:</a></strong> how long it takes to heat. Write it down.</span></li><li>Temperature: none of the part pages this guide links gives a soldering temperature for the boards you solder. The only limit found is TBS's, for its video transmitter's own tabs (which this build does not solder): &ldquo;do not solder with temperatures higher than 350&deg;C for more than 3-5sec.&rdquo;</li><li>Touch a little solder to the tip. It should melt at once.</li><li>Tinning means melting a small bead of solder onto a bare copper pad. Tin a few pads on the practice board. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Practice boards">On your practice boards, check:</a></strong> that the pads take solder on the side you use (the listing says double-sided; pad size and hole spacing are not stated).</span></li><li>Strip 3 mm off the end of short pieces of the thin silicone wire with the Hakko stripper, then solder them to the pads. Tug each one gently.</li><li>Repeat until the joints look smooth and shiny, like small hills.</li><li>When you stop, put the iron in its stand. Unplug it before you leave the room.</li></ol></li>
+              <li class="s1-rich"><p>Build the micro-USB power pigtail: a short cable with a plug on one end and bare wires on the other. You will solder it to the flight controller in Step 3, and plug it into the Pi in Step 7.</p><ol><li>Keep the small right-angle micro-USB plug (it goes into the Pi). Cut off the big flat USB-A plug, leaving about 20 cm of cable on the micro-USB side.</li><li>Strip 3 cm of the outer jacket. Inside are four wires: two thicker ones carry power, two thinner ones carry data.</li><li>Find which thick wire is +, with a USB phone charger. On the cut-off USB-A piece (the big plug and its short bit of cable), strip back its outer cover, then strip 3 mm off its two thick wires and keep the two bare ends apart. If both thick wires are the same colour, stop and ask. Plug it into any USB phone charger. Meter on DC volts (the V with a straight line): red probe on one thick wire, black on the other. About 5 with no minus sign: the wire under the red probe is +. A minus sign: the other wire is +. Unplug the charger. It is the same cable, so the same colour is + on your pigtail.</li><li>Check where that + wire goes: set the multimeter to its lowest resistance (ohms) setting. Press one probe on the copper of the + wire's cut end and touch the other to the outermost pin at each end of the micro-USB plug. Close to 0 ohms on one end pin means that end is pin 1 (the + pin); pin 5 (the - pin) is at the other end. Write down the + wire's colour and what the meter read. Wrap a small piece of tape round the + wire.</li><li>Cut the two thin data wires short and cover each end with a piece of 3 mm heat shrink.</li><li>Strip 3 mm off each power wire with the Hakko stripper and tin it. Leave them loose until Step 3.</li></ol><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Micro-USB cable for the pigtail">On your cable, check:</a></strong> the wire colours inside, and which pin is pin 1 and pin 5 inside the plug.</span></p></li>
               
             </ol>
           </div>
@@ -2857,7 +2923,7 @@
           <div class="asm-do">
             <span class="asm-label">What you can do with it</span>
             <ol class="asm-actions">
-              <li class="s1-rich"><p>Put the two cells in the radio and charge them with the radio's own USB-C cord. The radio does not work on USB alone; it needs its cells (arrival test "Radio runs on its cells").</p><p>Then set up EdgeTX (manual.edgetx.org, black-and-white radios): press MDL to open Model Select, scroll to an empty slot, press Enter and choose Create Model. On its Setup page, set Name (up to 10 letters) to the drone's name.</p><p>Then open the Mixes page. A new model sends no switch channels, so add two mixes: on CH5, flick a 2-position switch to make it the source: that is your arm switch (down = disarmed). On CH6, flick the switch you will use for Angle mode. (Step 4 adds CH7, the pack switch.)</p><p>Back on the Setup page, set Timer 1's Start to 3:00 and the option next to it to Remain, so it counts down; set its Mode to THs and its Switch to your arm switch, so it runs once you arm and raise the throttle.</p><p>You tell Betaflight which switch arms in Step 4.</p><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival>When the radio arrives, check:</a></strong> the switch names and the button names (MDL, Enter) on the Pocket (its manual).</span></p></li>
+              <li class="s1-rich"><p>Put the two cells in the radio and charge them with the radio's own USB-C cord. The radio does not work on USB alone; it needs its cells (arrival test "Radio runs on its cells").</p><p>Then set up EdgeTX (manual.edgetx.org, black-and-white radios): press MDL to open Model Select, scroll to an empty slot, press Enter and choose Create Model. On its Setup page, set Name (up to 10 letters) to the drone's name.</p><p>Then open the Mixes page. A new model sends no switch channels, so add two mixes: on CH5, flick a 2-position switch to make it the source: that is your arm switch (down = disarmed). On CH6, flick the switch you will use for Angle mode. (Step 4 adds CH7, the pack switch.)</p><p>Back on the Setup page, set Timer 1's Mode to THs and its Switch to your arm switch, so it runs once you arm and raise the throttle. (The timer's other lines show only once Mode is no longer OFF.) Then set its Start to 3:00, and the option that appears next to it to Remain, so it counts down. If your screen looks different, tell the guide chat.</p><p>You tell Betaflight which switch arms in Step 4.</p><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival>When the radio arrives, check:</a></strong> the switch names and the button names (MDL, Enter) on the Pocket (its manual).</span></p></li>
               <li class="s1-rich"><p>Practise in FPV SkyDive, a free simulator on Steam (store.steampowered.com/app/1278060; Windows 64-bit).</p><p>With the radio's cells in, plug the radio into the laptop by USB and choose USB Joystick (HID) on the radio's screen. Then pick it as the controller in the simulator. Crash as much as you like: it costs nothing.</p><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival>When you start the simulator, check:</a></strong> that your laptop meets its stated needs (a GTX 650 with 2 GB or better), or that the low graphics settings work, the exact words of the EdgeTX prompt on the Pocket, and which of the simulator's modes levels itself (Angle).</span></p></li>
             </ol>
           </div>
@@ -3040,7 +3106,7 @@
                 <ol class="asm-actions">
                   <li class="s1-rich" data-action-id="S2.1"><p>Lay the four arms on the bottom plate, root ends in the middle, with the small arm spacer in the centre. Put the middle plate on top, so each arm is sandwiched between the two plates. Fit two screws through each arm's two root holes. Tighten snug, not forced.</p></li>
                   <li class="s1-rich" data-action-id="S2.2"><p>Screw the four 30 mm standoffs onto the bottom plate (two beside the stack's rear corners, two at the very back) and the four 22 mm standoffs onto the middle plate at the front. All eight end at the same height, ready for the top plate in Step 4.</p><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Frame">When the frame arrives, check:</a></strong> which screw length goes in which hole, and where the press nuts sit. (No V6 manual was found.)</span></p></li>
-                  <li class="s1-rich" data-action-id="S2.3"><p>The front is the end where the camera will sit. Put a strip of tape on the front end of the bottom plate and write FRONT on it now, before any motor goes on. Look at the drone from behind, toward the front.</p><p>Before you screw a motor on, put a flag of packing tape on its wire and write its number, 1 to 4, on it with a marker.</p><p>Before the first motor goes on, do the arrival test "Motor screw length": hold a motor screw against the arm and the motor. Use a shorter screw if it would reach the windings.</p><p>Then put a small drop of the blue threadlocker on each motor screw's thread, then screw the 4 motors onto the arms (4 screws each, 16 in all): M1 rear right, M2 front right, M3 rear left, M4 front left (the order Betaflight uses).</p></li>
+                  <li class="s1-rich" data-action-id="S2.3"><p>The front is the end where the camera will sit. Put a strip of tape on the frame's front end and write FRONT on it now, before any motor goes on. Look at the drone from behind, toward the front.</p><p>Before you screw a motor on, put a flag of packing tape on its wire and write its number, 1 to 4, on it with a marker.</p><p>Before the first motor goes on, do the arrival test "Motor screw length": hold a motor screw against the arm and the motor. Use a shorter screw if it would reach the windings.</p><p>Then put a small drop of the blue threadlocker on each motor screw's thread, then screw the 4 motors onto the arms (4 screws each, 16 in all): M1 rear right, M2 front right, M3 rear left, M4 front left (the order Betaflight uses).</p></li>
                   <li class="s1-rich" data-action-id="S2.4"><p>After fitting, look again from underneath: no screw may poke up into the motor far enough to touch the windings (the thin copper coils). If one does, take it out and use a shorter screw with the same thread.</p></li>
                 </ol>
               </div>
@@ -3073,7 +3139,7 @@
             <details class="wt-fold"><summary>Show the drawing</summary>
 <div class="asm-visual">
               <div class="asm-picture">
-                <a href="docs/images/build/03-stack.svg" target="_blank" rel="noopener"><img src="docs/images/build/03-stack.svg" alt="Flat picture: motor wiring, ESC, capacitor, battery lead and smoke stopper"></a>
+                <a href="docs/images/build/03-stack.svg" target="_blank" rel="noopener"><img src="docs/images/build/03-stack.svg" alt="Flat picture: motor wires to the ESC, the flight controller, the battery lead and the capacitor; no battery in this step"></a>
               </div>
               <p class="asm-cap">The same step on paper. Click for full size.</p>
             </div>
@@ -3145,7 +3211,7 @@
                   <li class="s1-rich" data-action-id="S4.3"><p>Camera: plug the camera into its cable (the one you plugged into the CAM socket, or soldered to the CAM pads, in Step 3). (The camera runs on 5 to 36 V.)</p><p>VTX (video transmitter): plug the cable you soldered to the flight controller in Step 3 into the video transmitter. The plug fits one way only; never force it. (Red goes to 9V, both blacks to GND, yellow to VTX, white to T1; the orange and green wires are cut short and covered.)</p><p>This way the OSD (the numbers on your video: pack voltage, timer, warnings) reaches your screen.</p></li>
                   <li data-action-id="S4.3b">Tilt the flying camera up about 10&deg;. Loosen the two side screws on the camera mount, tilt the camera, then tighten the screws again. Use a free phone level app to read the angle. Once you are hovering and the controls feel easy, raise it 5&deg; at a time. The beginner range is 10 to 15&deg;. <span class="muted"><strong><a href="#arrival-card" data-open-arrival>When the frame arrives, check:</a></strong> does the camera mount (the plastic holder that comes with the frame) tilt by loosening two side screws? If it works another way, follow the frame&rsquo;s manual.</span></li>
                   <li class="s1-rich" data-action-id="S4.4"><p>Stick the VTX to the bottom plate behind the stack with a strip of the foam mounting tape.</p><p>Screw the 5.8 GHz antenna onto its gold SMA socket, finger tight, before any power.</p><p>Hold the antenna's base with two zip ties to the two rear standoffs, so it points up and back, out of the props. If the drone lands upside down, the antenna takes the hit first: check its nut and the two zip ties.</p><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Frame">When the frame arrives, check:</a></strong> does it have a hole for the antenna's SMA nut?</span></p></li>
-                  <li class="s1-rich" data-action-id="S4.5"><ol><li>Radio charged, with its cells in (you did this in Stage 3; if not, do Step 5's first two items now).</li><li>Open Betaflight Configurator on the laptop and connect the flight controller by USB (no battery). If you do not have it yet, download it from github.com/betaflight/betaflight-configurator/releases/latest, or use app.betaflight.com in Chrome. In Betaflight's Ports tab, turn on Serial RX for UART2, then Save. In the Receiver tab, pick Serial (via UART) and CRSF, then Save.</li><li>On the radio, press SYS (the EdgeTX manual says press, the Pocket manual says long-press: if a short press does not open the Tools menu, hold it), open ExpressLRS in the Tools menu and scroll to the bottom. Note the version shown.</li><li>Install the ExpressLRS Configurator on the laptop (github.com/ExpressLRS/ExpressLRS-Configurator/releases). Build the receiver's firmware (its name in the Configurator's list is "RadioMaster RP1 2.4GHz RX"; no entry says "V2") for the same version as the radio, with regulatory domain ISM 2400 and a bind phrase of your own. (ExpressLRS has no separate Canada option. Do not pick EU CE/LBT.) Write the phrase down. The receiver's version: the shop says it ships on v2.4 and RadioMaster's RP1 manual says v3.0, so do not assume either: you flash it to the radio's version anyway.</li><li>Flash the receiver through the flight controller: keep the receiver wired to UART2 and the flight controller on USB, and close Betaflight. In the Configurator pick the "RadioMaster RP1 2.4GHz RX" target, set Flashing Method to BetaflightPassthrough, and press Flash. (If you use the receiver's own Wi-Fi instead: on firmware v2.4 there is no Update tab; scroll down to the Firmware Update section.)</li><li>Put the same bind phrase and ISM 2400 on the radio. Do this part before you join the radio's Wi-Fi (the laptop has no internet while it is on it): in the Configurator pick the "RadioMaster Pocket Internal 2.4GHz TX" target, Flashing Method WiFi, the same version, ISM 2400 and the same bind phrase, and press Build, not Flash. (Flash works only after the radio has been set up to join your home Wi-Fi.) A folder opens with the file firmware.bin: leave it open. Then on the radio press SYS, open ExpressLRS, choose WiFi Connectivity, then Enable WiFi. On the laptop, join the Wi-Fi network "ExpressLRS TX" (password expresslrs). Open a browser, go to 10.0.0.1, open the Update tab (on older firmware there is no Update tab: scroll down to Firmware Update), choose firmware.bin and press Update. Wait for the success message; it takes a minute or two. With a bind phrase on both, they connect on their own.</li></ol><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Receiver, video transmitter and smoke stopper">When the receiver arrives, check:</a></strong> it powers from USB alone (arrival test "Receiver, video transmitter and smoke stopper"), what Wi-Fi name it shows, and, on its Wi-Fi page, which ExpressLRS version it runs (do not assume 2.4).</span></p></li>
+                  <li class="s1-rich" data-action-id="S4.5"><ol><li>Radio charged, with its cells in (you did this in Stage 3; if not, do Step 5's first two items now).</li><li>Open Betaflight Configurator on the laptop and connect the flight controller by USB (no battery). If you do not have it yet, download it from github.com/betaflight/betaflight-configurator/releases/latest, or use app.betaflight.com in Chrome. In Betaflight's Ports tab, turn on Serial RX for UART2, then Save. In the Receiver tab, pick Serial (via UART) and CRSF, then Save.</li><li>On the radio, press SYS (the EdgeTX manual says press, the Pocket manual says long-press: if a short press does not open the Tools menu, hold it), open ExpressLRS in the Tools menu and scroll to the bottom. Note the version shown.</li><li>Install the ExpressLRS Configurator on the laptop (github.com/ExpressLRS/ExpressLRS-Configurator/releases). Build the receiver's firmware (its name in the Configurator's list is "RadioMaster RP1 2.4GHz RX"; no entry says "V2") for the same version as the radio, with regulatory domain ISM 2400 and a bind phrase of your own. (ExpressLRS has no separate Canada option. Do not pick EU CE/LBT.) Write the phrase down. The receiver's version: the shop says it ships on v2.4 and RadioMaster's RP1 manual says v3.0, so do not assume either: you flash it to the radio's version anyway.</li><li>Flash the receiver through the flight controller: keep the receiver wired to UART2, close Betaflight, then unplug the flight controller's USB cable and plug it back in. In the Configurator pick the "RadioMaster RP1 2.4GHz RX" target, set Flashing Method to BetaflightPassthrough, and press Flash. (If you use the receiver's own Wi-Fi instead: ExpressLRS says a receiver on 2.x firmware must first be flashed to version 2.5.2, and only then to the radio's version. On that old firmware there is no Update tab: scroll down to the Firmware Update section.)</li><li>Put the same bind phrase and ISM 2400 on the radio. Do this part before you join the radio's Wi-Fi (the laptop has no internet while it is on it): in the Configurator pick the "RadioMaster Pocket Internal 2.4GHz TX" target, Flashing Method WiFi, the same version, ISM 2400 and the same bind phrase, and press Build, not Flash. (Flash works only after the radio has been set up to join your home Wi-Fi.) A folder opens with the file firmware.bin: leave it open. Then on the radio press SYS, open ExpressLRS, choose WiFi Connectivity, then Enable WiFi. On the laptop, join the Wi-Fi network "ExpressLRS TX" (password expresslrs). Open a browser, go to 10.0.0.1, open the Update tab (on older firmware there is no Update tab: scroll down to Firmware Update), choose firmware.bin and press Update. Wait for the success message; it takes a minute or two. With a bind phrase on both, they connect on their own.</li></ol><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Receiver, video transmitter and smoke stopper">When the receiver arrives, check:</a></strong> it powers from USB alone (arrival test "Receiver, video transmitter and smoke stopper"), what Wi-Fi name it shows, and, on its Wi-Fi page, which ExpressLRS version it runs (do not assume 2.4).</span></p></li>
                   <li class="s1-rich" data-action-id="S4.6"><p>Set up Betaflight with the flight controller on USB only: no battery, no propellers. Press Save on each tab before you leave it.</p><ul><li>Setup tab: check the board says GEPRCF405. Calibrate Accelerometer with the frame level.</li><li>Configuration tab: ESC protocol DShot (as the ESC manual names).</li><li>Receiver tab: Serial (via UART), CRSF. Move the sticks and check the bars move.</li><li>Modes tab: Add Range for ARM on the switch you choose.</li><li>Failsafe tab: Stage 2 = Drop, so the motors stop if the radio link is lost.</li><li>Power &amp; Battery tab: maximum cell voltage 4.40 V. (The GNB is LiHV and charges to 4.35 V per cell. At 4.35, Betaflight would count a full pack as 5 cells.) Then open the CLI tab once, paste these lines and press Enter: <code>set vbat_warning_cell_voltage = 330</code>, <code>set vbat_min_cell_voltage = 280</code>, <code>rateprofile 1</code>, <code>set throttle_limit_type = SCALE</code>, <code>set throttle_limit_percent = 65</code>, <code>rateprofile 2</code>, <code>set throttle_limit_type = SCALE</code>, <code>set throttle_limit_percent = 65</code>, <code>rateprofile 0</code>, <code>set throttle_limit_type = OFF</code>, <code>set throttle_limit_percent = 100</code>, <code>adjrange 0 0 2 900 2100 12 2 0 0</code>, <code>save</code>. That gives one low-battery warning at 3.3 V per cell for both packs. On the GNB, the radio's 3-minute timer is your main land-now signal. It also puts a 65 % throttle limit in rate profiles 2 and 3, for the Li-ion pack only (the CLI counts rate profiles from 0, so rate profile 2 is <code>rateprofile 1</code>). Why: on a full punch this drone draws more than the Li-ion pack's recommended 30 to 50 A; at 65 % it stays near 41 A (the game's flight model, an ESTIMATE).</li><li>The pack switch, so you never type a profile in the field. On the radio, put a 3-position switch that is not your ARM or ANGLE switch on a free channel: channel 7, if ARM is on 5 and ANGLE on 6 (EdgeTX: Model, Mixes, add a mix on CH7 with that switch as its source). Channel 7 is AUX 3 in Betaflight, and the <code>adjrange</code> line above makes AUX 3 choose the rate profile. Check it on the bench, USB only: in the Receiver tab, flick the switch; AUX 3 sits near 1000, 1500 and 2000. Near 1000 is rate profile 1 (the GNB, no limit); near 1500 and near 2000 are rate profiles 2 and 3 (both the Li-ion's 65 % limit). Put a strip of tape by the switch: the position near 1000 is GNB, the other two are Li-ion.</li></ul></li>
                   <li class="s1-rich" data-action-id="S4.7"><p>The VTX comes locked to 25 mW, its lowest power. (Running the VTX at any power needs the ISED Amateur Radio Operator Certificate (Basic): see Fly safely. Higher powers also need a long button press.)</p><p>Check it the first time the VTX gets power: the bench power test in Step 8 (item 2), with the antenna on. (Step 5's first power-up is done with the VTX unplugged.) At start-up its light flashes three groups (channel, band, power). The last group, 3 red then 1 blue, means power level 1: 25 mW.</p><p>To change the channel or the power from Betaflight later, set UART1 to SmartAudio in the Ports tab.</p><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Receiver, video transmitter and smoke stopper">At the VTX's first power-up (Step 8, item 2), check:</a></strong> the last group of flashes is 3 red, then 1 blue (25 mW). The VTX does not power from USB.</span></p></li>
                   <li class="s1-rich" data-action-id="S4.9"><p>Plug the Finder's 3-pin cable (soldered to the flight controller in Step 3: BZ to BP, GND and 5V to the pads just below it) into the Finder. Stick the Finder with foam tape on the middle plate in the front bay, between the four 22 mm standoffs and just ahead of the stack (leave about 2 mm), long side pointing forward and the cable end toward the stack, clear of the GPS cable. Betaflight needs no setting for it.</p></li>
@@ -3217,7 +3283,7 @@
                 </ol>
               </div>
 </details>
-              <p class="asm-warn" data-action-id="S5.S"><strong>&#9888; Safety:</strong> never charge unattended. Never charge a swollen or damaged pack: one that is puffed up like a balloon, dented from a crash, or has a torn wrapper or damaged leads. Let a pack cool completely after flying before you charge it, until it feels no warmer than your hand. Keep the fire extinguisher and a bucket of water within reach. The bag slows a fire but does not stop it. If a pack smokes or catches fire: unplug the charger at the wall if you can do it safely, use the fire extinguisher, then pour plenty of water on the pack to cool it. Do not cover it with sand or anything else: covering keeps the heat in and the other cells can catch. Keep away from the smoke. If you cannot put it out at once, or you are in any doubt: get everyone out and call 911. (Calgary Fire and Strathcona County both say to leave and call 911 for a battery fire.)</p>
+              <p class="asm-warn" data-action-id="S5.S"><strong>&#9888; Safety:</strong> never charge unattended. Never charge a swollen or damaged pack: one that is puffed up like a balloon, dented from a crash, or has a torn wrapper or damaged leads. Let a pack cool completely after flying before you charge it, until it feels no warmer than your hand. Keep the fire extinguisher and a bucket of water within reach. The bag slows a fire but does not stop it. If a pack smokes or catches fire: unplug the charger at the wall if you can do it safely, use the fire extinguisher, then pour plenty of water on the pack to cool it. Do not cover it with sand or anything else: covering keeps the heat in and the other cells can catch. Keep away from the smoke. If you cannot put it out at once, or you are in any doubt: get everyone out and call 911. (Calgary Fire and Strathcona County go further: they say leave, call 911, and do not try to put a battery fire out yourself.)</p>
               <details class="wt-fold"><summary>Before you go on</summary>
 <div class="asm-check">
                 <span class="asm-label">&#10003; Before you go on</span>
@@ -3262,7 +3328,7 @@
                 <div class="asm-part" data-asm-part-box="6A">
                 <h4 class="asm-part-h">6A &middot; Get the Pi ready</h4>
                 <ol class="asm-actions">
-                  <li class="s1-rich" data-action-id="S6.0"><p>Get the Pi ready:</p><ol><li>On your laptop, install Raspberry Pi Imager from raspberrypi.com/software.</li><li>Put the kit's card in the kit's card reader and plug it into the laptop.</li><li>In Imager: Device = Raspberry Pi Zero 2 W; OS = the recommended one at the top of the list; Storage = the card. Take care to pick the card and not another drive, or you will erase that drive.</li><li>In the settings, set a username (lowercase letters and numbers), a password, and turn on SSH. For Wi-Fi, enter your iPhone&rsquo;s hotspot name and password. On the iPhone, open Settings &gt; Personal Hotspot and turn on Maximize Compatibility: that puts the hotspot on 2.4 GHz, and the Pi Zero 2 W has 2.4 GHz Wi-Fi only. Your laptop joins the same hotspot, at home and at the field. Write the card.</li><li>Put the card in the Pi, power it from the kit's supply in the socket marked PWR IN, and connect from your laptop over SSH: in a terminal, type ssh username@raspberrypi.local (use the username you set in Imager).</li><li>Turn on I2C: type sudo raspi-config, choose 3 Interface Options, then I5 I2C, answer Yes, then Finish. Set the I2C bus to 400 kHz, as the payload README says: type sudo nano /boot/firmware/config.txt, add the line dtparam=i2c_arm_baudrate=400000 at the end, save with Ctrl+O, Enter, then Ctrl+X, then type sudo reboot and connect over SSH again.</li><li>Copy the payload code to the Pi. On the laptop, in the folder that holds Shad-Drone-Payload, type scp -r Shad-Drone-Payload username@raspberrypi.local: (with the colon at the end).</li><li>On the Pi, in the SSH window: cd Shad-Drone-Payload, then install the drivers as the payload README shows: python3 -m venv --system-site-packages .venv, then source .venv/bin/activate, then python -m pip install -r requirements.txt.</li><li>Spare card: when this whole step works, do it again on the spare card (Stage 2): the same Imager settings, then the same payload set-up. Label it SPARE and keep it with the drone. If a crash or a pulled pack leaves the Pi unable to start, swap cards.</li></ol><p><span class="open-note">On Windows, the Raspberry Pi documentation has a separate page on how to connect over SSH.</span></p><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Pi joins the iPhone hotspot">When the Pi arrives, check:</a></strong> after you write the card, the Pi joins your iPhone&rsquo;s hotspot (Maximize Compatibility on) and the laptop reaches it with ssh username@raspberrypi.local.</span></p></li>
+                  <li class="s1-rich" data-action-id="S6.0"><p>Get the Pi ready:</p><ol><li>On your laptop, install Raspberry Pi Imager from raspberrypi.com/software.</li><li>Put the kit's card in the kit's card reader and plug it into the laptop.</li><li>In Imager: Device = Raspberry Pi Zero 2 W; OS = the recommended one at the top of the list; Storage = the card. Take care to pick the card and not another drive, or you will erase that drive.</li><li>Imager then asks a few things, one screen at a time (older versions ask them all in one settings box). Hostname: type raspberrypi. Localisation: pick Canada; this also sets the Wi-Fi country. User: a username (lowercase letters and numbers) and a password. Wi-Fi: your iPhone&rsquo;s hotspot name and password (if Imager has filled in your home network, replace it). Remote access: turn on SSH. On the iPhone, open Settings &gt; Personal Hotspot and turn on Maximize Compatibility: that puts the hotspot on 2.4 GHz, and the Pi Zero 2 W has 2.4 GHz Wi-Fi only. Your laptop joins the same hotspot, at home and at the field. Write the card.</li><li>Put the card in the Pi, power it from the kit's supply in the socket marked PWR IN, and connect from your laptop over SSH: in a terminal, type ssh username@raspberrypi.local (use the username you set in Imager).</li><li>Turn on I2C: type sudo raspi-config, choose 3 Interface Options, then I5 I2C, answer Yes, then Finish. Set the I2C bus to 400 kHz, as the payload README says: type sudo nano /boot/firmware/config.txt, add the line dtparam=i2c_arm_baudrate=400000 at the end, save with Ctrl+O, Enter, then Ctrl+X, then type sudo reboot and connect over SSH again.</li><li>Copy the payload code to the Pi. On the laptop, in the folder that holds Shad-Drone-Payload, type scp -r Shad-Drone-Payload username@raspberrypi.local: (with the colon at the end).</li><li>On the Pi, in the SSH window: cd Shad-Drone-Payload, then install the drivers as the payload README shows: python3 -m venv --system-site-packages .venv, then source .venv/bin/activate, then python -m pip install -r requirements.txt.</li><li>Spare card: when this whole step works, do it again on the spare card (Stage 2): the same Imager settings, then the same payload set-up. Label it SPARE and keep it with the drone. If a crash or a pulled pack leaves the Pi unable to start, swap cards.</li></ol><p><span class="open-note">On Windows 10 or 11, the same ssh command works in PowerShell or Terminal.</span></p><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Pi joins the iPhone hotspot">When the Pi arrives, check:</a></strong> after you write the card, the Pi joins your iPhone&rsquo;s hotspot (Maximize Compatibility on) and the laptop reaches it with ssh username@raspberrypi.local.</span></p></li>
                 </ol>
                 <p class="asm-stop"><strong>Stopping point:</strong> the Pi starts and you can log in from your laptop. You can stop here for the day.</p>
                 <label class="asm-done asm-part-done"><input type="checkbox" data-asm-part="6A"> 6A is done</label>
@@ -3280,7 +3346,7 @@
               <div class="asm-part" data-asm-part-box="6C">
                 <h4 class="asm-part-h">6C &middot; Connect and test</h4>
                 <ol class="asm-actions">
-                  <li class="s1-rich" data-action-id="S6.3"><p>Connect each sensor to the HAT with one cable.</p><p>Hold each sensor board face up with its five pins along the bottom edge. From the left, the pins are 3.3 V, SDA, SCL, INT, GND. The printed label for the 4th pin should read INT (this order is from Pimoroni's pin list; check the printed labels on your boards).</p><p>Push each of the cable's four separate ends onto its own pin in that order. Leave the 4th pin (INT) empty.</p><p>Ignore the letters printed on the HAT: SparkFun confirms its SDA and SCL labels are swapped. Trust the cable colours: black GND, red 3.3 V, blue SDA, yellow SCL.</p><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival>When each sensor board arrives, check:</a></strong> its left-to-right pin order as printed (look for the printed INT), and which HAT socket each cable goes into.</span></p></li>
+                  <li class="s1-rich" data-action-id="S6.3"><p>Connect each sensor to the HAT with one cable.</p><p>Hold each sensor board face up with its five pins along the bottom edge. From the left, the pins are 3.3 V, SDA, SCL, a pin you do not use, GND. The boards print 3-6V (thermal camera) or 3-5V (GPS) at the 1st pin, and a crossed circle or INT at the 4th (this order is from Pimoroni's photos; check the printed labels on your boards).</p><p>Push each of the cable's four separate ends onto its own pin in that order. Leave the 4th pin empty.</p><p>Ignore the letters printed on the HAT: SparkFun confirms its SDA and SCL labels are swapped. Trust the cable colours: black GND, red 3.3 V, blue SDA, yellow SCL.</p><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival>When each sensor board arrives, check:</a></strong> its left-to-right pin order as printed (look for the crossed circle or INT between SCL and GND), and which HAT socket each cable goes into. A newer thermal camera board also has a small white socket marked QW/ST: this build does not use it.</span></p></li>
                   <li class="s1-rich" data-action-id="S6.4"><p>Power the Pi on the bench from the kit's supply, in the socket marked PWR IN.</p><p>Over SSH, type sudo i2cdetect -y 1. In the table it prints, you should see 33 (the thermal camera) and 10 (the GPS).</p><p>The GPS needs to be outdoors with a clear view of the sky to get a position, but it answers at 10 indoors too.</p><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival>When the Pi is running, check:</a></strong> the i2cdetect table against a screenshot from the real Pi.</span></p></li>
                 </ol>
                 <p class="asm-stop"><strong>Stopping point:</strong> Step 6 is done when both sensors answer.</p>
@@ -3315,7 +3381,7 @@
             <details class="wt-fold"><summary>Show the drawing</summary>
 <div class="asm-visual">
               <div class="asm-picture">
-                <a href="docs/images/build/07-mount.svg" target="_blank" rel="noopener"><img src="docs/images/build/07-mount.svg" alt="Flat picture: payload secured over frame centre with camera down, GPS up and clear propeller zones"></a>
+                <a href="docs/images/build/07-mount.svg" target="_blank" rel="noopener"><img src="docs/images/build/07-mount.svg" alt="Flat picture: the GPS and the battery on the top plate, the thermal camera and the Pi under the bottom plate, and clear propeller zones"></a>
               </div>
               <p class="asm-cap">The same step on paper. Click for full size.</p>
             </div>
@@ -3324,7 +3390,7 @@
               <details class="wt-fold"><summary>You will need</summary>
 <div class="asm-parts">
                 <span class="asm-label">You will need</span>
-                <ul><li>Nylon M2.5 standoffs (12 mm) and zip ties (100 mm)</li><li>Kevlar straps and the battery grip pad</li><li>The foam mounting tape (pad, camera and GPS)</li><li>The micro-USB pigtail from Stage 1, and the leg parts from the Stage 4 list</li><li>From the tool kit: the metal ruler, cutters, hexagon screwdriver set</li></ul>
+                <ul><li>Nylon M2.5 standoffs (12 mm) and zip ties (100 mm)</li><li>Kevlar straps and the battery grip pad</li><li>The foam mounting tape (pad, camera and GPS)</li><li>The payload from Step 6: the Pi with its HAT, the thermal camera and the GPS</li><li>The leg parts from the Stage 4 list, and the blue threadlocker</li><li>From the tool kit: the metal ruler, cutters, hexagon screwdriver set</li><li>A marker, the multimeter, the smoke stopper and a charged pack</li></ul>
               </div>
 </details>
               <details class="wt-fold"><summary>Show the written steps</summary>
@@ -3339,7 +3405,7 @@
                   <li class="s1-rich" data-action-id="S7.4b"><span class="ph-tag ph-after">AFTER THE FIRST HOVER</span><p>Battery unplugged.</p><ol><li>Find the Pi power lead you soldered to the flight controller's GND and 5V pads in Step 3 (+ to 5V, - to GND).</li><li>Measure it once more before it goes into the Pi: it has been through Steps 6 to 8 and the first hover. Props off. Plug a charged pack into the smoke stopper, then the smoke stopper into the drone. Meter on DC volts, red probe on pin 1 of the micro-USB plug, black probe on pin 5 (pins only, not the metal shell). It should read about 5 V. No 5 V, or a minus sign: stop and ask. Then unplug the pack.</li><li>Plug the micro-USB end into the Pi's socket marked PWR IN (not the one marked USB).</li></ol><p>That is the lead's third check: its + and - in Stage 1, about 5 V at Step 5's first power-up, and now. (The "5 V rail" arrival test covers the load.)</p></li>
                   <li data-action-id="S7.5"><span class="ph-tag ph-now">NOW</span> Nothing hanging below the bottom plate may be the lowest point of the drone: a landing on the lens or the Pi will break it. Plan for it now; you fit them later (S7.8, after the first hover): before the first flight WITH the payload, landing legs must stand lower than it. The legs must stand at least 40 mm below the bottom plate. The payload's lowest part sits about 29 mm below it (from the design check; see &ldquo;How this was checked&rdquo;).</li>
                   <li data-action-id="S7.6"><span class="ph-tag ph-now">NOW</span> Route every cable out of the prop circles. Tie the loose ends down.</li>
-                  <li class="s1-rich" data-action-id="S7.7"><p><span class="ph-tag ph-now">NOW</span> For the first hover (no payload yet): slide the battery on the grip pad until the drone balances on two fingers under the arms, about 7 mm ahead of the frame centre, then strap it down with the first Kevlar strap. The Li-ion pack is 44 mm tall and wide against the LiPo's 38 x 26 mm, so its strap goes about 177 mm round instead of 128 mm.</p> <p><span class="ph-tag ph-after">AFTER THE FIRST HOVER</span> After the payload is on: loosen the strap and slide the battery back on the grip pad until it is about 2 mm from the GPS board, then strap it down again with the first Kevlar strap. The GPS stops it from reaching the exact balance point, so the drone sits about 3 mm tail-heavy. That is inside the 5 mm the design allows. Check by lifting it on two fingers under the arms: it should tip back only gently.</p></li>
+                  <li class="s1-rich" data-action-id="S7.7"><p><span class="ph-tag ph-now">NOW</span> For the first hover (no payload yet): slide the battery on the grip pad until the drone balances on two fingers under the arms, about 3 mm ahead of the frame centre, then strap it down with the first Kevlar strap. The Li-ion pack is 44 mm tall and wide against the LiPo's 38 x 26 mm, so its strap goes about 177 mm round instead of 128 mm.</p> <p><span class="ph-tag ph-after">AFTER THE FIRST HOVER</span> After the payload is on: loosen the strap and slide the battery back on the grip pad until it is about 2 mm from the GPS board, then strap it down again with the first Kevlar strap. The GPS stops it from reaching the exact balance point, so the drone sits about 1 mm tail-heavy. That is inside the 5 mm the design allows. Check by lifting it on two fingers under the arms: it should tip back only gently.</p></li>
                   <li data-action-id="S7.8"><span class="ph-tag ph-after">AFTER THE FIRST HOVER</span> <p>Fit the landing legs, one at a time. Each leg goes on in place of the bottom screw of one of the frame's standoffs: the two at the very back of the bottom plate, and the two at the front of the middle plate, ahead of the stack.</p><ol><li>Take out that one screw.</li><li>Put a small drop of the blue threadlocker on the thread of each set screw before it goes in (two per leg, eight in all).</li><li>Screw an M3 x 10 set screw into the standoff through the plate until about 3.75 mm sticks out below (measure with the kit's metal ruler): that leaves about 3.75 mm in the standoff too, more than the 3 mm each side needs.</li><li>Screw a leg standoff onto it. Then a second set screw, the second leg standoff, and a rubber foot with its short screw.</li></ol><p>Use 25 mm standoffs at the back and 28 mm at the front. The back legs reach about 56 mm below the bottom plate (25 + 25 + the 6.3 mm foot). The front legs start 8 mm higher, on the middle plate, so they end about 54 mm below it.</p><p>The legs, not the payload, must touch the ground. The payload's lowest part is about 29 mm below the plate. The stance is narrow, so land on flat ground. </p><span class="muted"><strong><a href="#arrival-card" data-open-arrival>When the parts arrive, check:</a></strong><ol><li>Each knurled standoff has a screw thread inside at BOTH ends. (A thread on the inside is called a female thread.) Screw two together with a set screw: they should hold with no wobble.</li><li>The short screws for the rubber feet. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Drone stands level on its legs">When the feet arrive, check:</a></strong> the foot screw length. The list now has 10 mm screws (the 6.3 mm foot leaves about 3.7 mm of thread in the standoff): check that they hold the foot.</span></li></ol>The standoffs, set screws, feet and screws are on the Stage 4 list.</span></li>
                 </ol>
               </div>
@@ -3370,7 +3436,7 @@
             <details class="wt-fold"><summary>Show the drawing</summary>
 <div class="asm-visual">
               <div class="asm-picture">
-                <a href="docs/images/build/08-test.svg" target="_blank" rel="noopener"><img src="docs/images/build/08-test.svg" alt="Flat picture: testing sequence from software and bench checks to hover and hot-plate validation"></a>
+                <a href="docs/images/build/08-test.svg" target="_blank" rel="noopener"><img src="docs/images/build/08-test.svg" alt="Flat picture: the tests in order, from software and bench checks to the first hover and the heat test on a mug of hot water"></a>
               </div>
               <p class="asm-cap">The same step on paper. Click for full size.</p>
             </div>
@@ -3380,7 +3446,11 @@
 <div class="asm-parts">
                 <span class="asm-label">You will need</span>
                 <ul>
-                  <li>Your own laptop</li>
+                  <li>Your own laptop, and the flight controller's USB-C cable</li>
+                  <li>Your radio, the charged packs and the smoke stopper</li>
+                  <li>The monitor, its two antennas and your USB-C power bank</li>
+                  <li>The props and the prop tool, and your safety glasses</li>
+                  <li>A kitchen scale</li>
                   <li>The payload (the Pi, the thermal camera and the GPS from Step 7)</li>
                   <li>An open field that passes the NAV Drone check</li>
                   <li>A mug of hot water and your hand</li>
@@ -3401,7 +3471,7 @@
                   <li class="s1-rich"><p>Weigh the drone with its battery fitted. The payload is not on yet. Use your kitchen scale.</p><p>Write the number here: ____ g.</p><p>Compare it with the weight card in Fly safely. Your scale reading is the one that counts. 250 g or more must be registered.</p></li>
                   <li class="s1-rich"><p>Check the site on NAV Drone first. NAV Drone Viewer is NAV CANADA's map: <a href="https://map.navdrone.ca" target="_blank" rel="noopener">map.navdrone.ca</a> (no account needed), or the NAV Drone app for iPhone or Android.</p><p>Basic flying needs uncontrolled airspace, more than 5.6 km from an airport and 1.9 km from a heliport. See the Before you fly card.</p><p>Edmonton city parks are not allowed for this drone (it is over 250 g): use private land with the owner&rsquo;s permission. <a href="#fly-card" data-open="fly-card">See the Before you fly card.</a></p></li>
                   <li class="s1-rich" data-action-id="S8.5"><p>First hover of the bare quad (no payload yet). Fly only when all six are true: you hold the Basic drone pilot certificate; you hold the ISED amateur radio certificate (Basic), for the video transmitter; the drone is registered; its registration number is marked on it; the site is in uncontrolled airspace; nobody is within 30 m (100 ft) sideways.</p><p>Never above 122 m (400 ft) above the ground. If you fly by a screen, you need a visual observer; until then, fly looking at the drone.</p><ol><li>Use the GNB pack (the learning pack on the Buy list).</li><li>Put the drone on flat open ground, camera pointing away from you. Radio on, arm switch OFF.</li><li>Angle switch ON (the self-levelling mode you set up in item 4). Pack switch on its GNB position (Step 4).</li><li>Plug in the battery and step back at least 5 m.</li><li>Arm. Slowly raise the throttle until the drone lifts off, and hold it about 1 metre up for up to 30 seconds.</li><li>Lower the throttle gently to land. Disarm. Unplug the battery.</li><li>Touch each motor: they should all feel about the same. If one is much hotter or colder than the others, do not fly again until you have found out why.</li></ol><p><strong>Landing:</strong> The bare drone has no legs yet, so take off and land on a flat board or hard flat ground, not grass. Land straight down and slowly, then disarm as soon as it touches. After a hard landing, use the <a href="#crash-card" data-open-crash>&ldquo;After a hard landing&rdquo; checklist</a>.</p></li>
-                  <li class="s1-rich" data-action-id="S8.7"><p>Now mount the payload (Step 7).</p><p>Heat test, props OFF. This test needs no GPS fix: in the SSH window, cd Shad-Drone-Payload, then source .venv/bin/activate, then start the payload in bench mode with python payload.py --bench. It takes the camera as 50 cm above the table and prints every hot spot it finds.</p><ol><li>Fill a mug with water just poured from the kettle and set it on the table.</li><li>Hold the drone steady with the thermal camera about 50 cm above the mug. Then put your open hand next to the mug.</li><li>The payload should report the mug as a hot spot, but not your hand. (A hand is far cooler than the 60 C the detector looks for.)</li><li>Write down what it prints. If the mug is not found, refill it with fresh hot water and try again at 50 cm.</li></ol></li>
+                  <li class="s1-rich" data-action-id="S8.7"><p>Now mount the payload (Step 7).</p><p>Heat test, props OFF: take the props off first. Radio on, arm switch off, then plug in a charged pack: it powers the Pi through its lead. Turn on your iPhone&rsquo;s Personal Hotspot (Maximize Compatibility on), join it with the laptop and open the SSH window (ssh username@raspberrypi.local). This test needs no GPS fix: in the SSH window, cd Shad-Drone-Payload, then source .venv/bin/activate, then start the payload in bench mode with python payload.py --bench. It takes the camera as 50 cm above the table and prints every hot spot it finds.</p><ol><li>Fill a mug with water just poured from the kettle and set it on the table.</li><li>Hold the drone steady with the thermal camera about 50 cm above the mug. Then put your open hand next to the mug.</li><li>The payload should report the mug as a hot spot, but not your hand. (A hand is far cooler than the 60 C the detector looks for.)</li><li>Write down what it prints. If the mug is not found, refill it with fresh hot water and try again at 50 cm.</li></ol></li>
                   <li class="s1-rich" data-action-id="S8.6"><p>Battery out. Fit the props again, as in item 5.</p><p>Outdoors, with the drone on the ground: turn on your iPhone&rsquo;s Personal Hotspot (Maximize Compatibility on), power the drone, join the hotspot with the laptop and open the SSH window (ssh username@raspberrypi.local). Start the payload so it keeps running if the Wi-Fi drops: cd Shad-Drone-Payload, then source .venv/bin/activate, then <code>nohup python -u payload.py --serve --heading 0 &gt; run.txt 2&gt;&amp;1 &amp;</code>, then <code>tail -f run.txt</code> to watch what it prints. Wait until it prints: "Ground height set to ... from the first GPS fix. Fly only after this line appears." (The first line, "nohup: ignoring input", is normal. Ctrl+C stops only the watching; the payload carries on.) If the SSH window drops, log in again, then cd Shad-Drone-Payload and tail -f run.txt. Once, on the bench with props off, test it: start it this way, turn the hotspot off for 30 seconds, turn it on, log in again and type <code>pgrep -f payload.py</code>. A number means it is still running.</p><p>Three things the payload assumes, so its map is only right when they are true. Before you take the reading you want to report, turn the drone&rsquo;s nose to north. Facing any other way, the map puts the hot spot in the wrong place, and the further from north, the bigger the error. To read a hot spot&rsquo;s position, stop and hover level for a second or two first. In forward flight the positions are metres out. Take off from ground at about the same level as the area you search. (These come from a simulation that runs the payload&rsquo;s own code, not from the real drone.)</p><p><strong>Landing, now that the payload and the legs are on:</strong> Take off and land on a flat board or hard flat ground, not grass: the Pi hangs only about 2.5 cm above the ground. Land straight down and slowly, then disarm as soon as the feet touch. The feet are close together side to side, so if the drone lands leaning or sliding sideways it falls on its side and a prop and an arm hit the ground. After a hard landing, use the <a href="#crash-card" data-open-crash>&ldquo;After a hard landing&rdquo; checklist</a>.</p><p>Then hover 1 metre again: it should stay level without drifting to one side. After you land: disarm, type <code>sudo poweroff</code> in the SSH window, and wait until the Pi&rsquo;s light stays off. Only then unplug the pack. Pulling the pack while the Pi runs is a sudden power cut, and that can spoil the card. (How long the Pi takes to stop was not checked: time it the first time.)</p><p>The line appears in the SSH window on your laptop where you started the payload. Outdoors with a clear sky, the first fix takes about half a minute the first time. The GPS board's light flashes once it has a fix.</p><p>(The half-minute figure comes from a distributor&rsquo;s listing, &ldquo;TTFF 1s/35s&rdquo;. The maker&rsquo;s datasheet was not opened.)</p></li>
                 </ol>
                 <p class="muted opt-coat"><strong>Optional, after the payload works</strong> (only if you bought the spray (Optional extras)): spray the flight controller, speed controller, receiver, VTX, Pi and HAT 2 to 3 times, with everything plugged in first. Do not spray the thermal camera&rsquo;s window, the FPV camera lens, the USB sockets, the microSD slot, the buttons, the barometer or the GPS board&rsquo;s antenna. Weigh the drone before and after. If it gained more than 9 g, ask before flying: the balance may change.</p>
@@ -3474,17 +3544,17 @@
     <div class="acc-body">
       <ul class="tasks">
         <li><label><input type="checkbox" data-key="s-1"><span><strong>1 &middot; Order and inventory</strong>
-          <small>Buy in the stages on the Buy tab (each stage brings the parts its steps need), confirm stock and freight at checkout, then download the GEPRC, receiver, VTX and Pi sensor manuals. Done: each stage's parcels are present and matched to the list before the steps that use them.</small></span></label></li>
+          <small>Buy in the stages on the Buy tab. Each time a stage arrives, lay the parts out and tick them: <a href="#p-steps" data-go-step="1">Build, Step 1</a>. Done when that step's own check passes.</small></span></label></li>
         <li><label><input type="checkbox" data-key="s-2"><span><strong>2 &middot; Frame assembly</strong>
-          <small>Use the selected frame's standoffs and mounts. Verify motor-screw length and use appropriate threadlock where the manual requires it. Done: frame rigid, no screw touches a winding, motors turn freely.</small></span></label></li>
+          <small>How to do it: <a href="#p-steps" data-go-step="2">Build, Step 2</a>. Done when that step's own check passes.</small></span></label></li>
         <li><label><input type="checkbox" data-key="s-3"><span><strong>3 &middot; Solder and inspect the stack</strong>
-          <small>Follow the exact FC/ESC manual for motor order, battery lead and capacitor. Use eye protection, ventilation and a smoke stopper on first power. Done: polarity and continuity checked, no bridges or loose wires.</small></span></label></li>
+          <small>How to do it: <a href="#p-steps" data-go-step="3">Build, Step 3</a>. No battery in that step. Done when that step's own check passes.</small></span></label></li>
         <li><label><input type="checkbox" data-key="s-4"><span><strong>4 &middot; RP1 V2 serial receiver + flight controller</strong>
-          <small>Do not use the PWM-only ER4 example. Wire the RP1's 5V and GND, receiver TX to the FC's RX pad and receiver RX to the FC's TX pad on UART2 (receiver T to R2, receiver R to T2, as GEPRC's TAKER F405 BLS 50A stack manual shows); secure the included UFL antenna. Enable serial RX and CRSF on that UART. Flash the receiver to the same major ExpressLRS version as the radio (the shop says it ships on v2.4, RadioMaster's manual says v3.0), set the ISM 2400 domain on both, then bind.</small></span></label></li>
+          <small>How to do it: <a href="#p-steps" data-go-step="4">Build, Step 4</a> (wire the receiver, then bind it). Done when that step's own check passes.</small></span></label></li>
         <li><label><input type="checkbox" data-key="s-5"><span><strong>5 &middot; Betaflight setup (props OFF)</strong>
-          <small>Verify motor order/direction at a safe minimum output, channel map, arm switch and failsafe. The checks that need a battery (motor order and direction, and failsafe and disarm with the motors spinning) are done in Build Step 8, after the amateur radio certificate, because a battery also powers the video transmitter. Configure motor behaviour deliberately rather than assuming armed motors must idle. Done: correct channel response and immediate disarm/throttle-cut behaviour.</small></span></label></li>
+          <small>How to do it: <a href="#p-steps" data-go-step="4">Build, Step 4</a> (Betaflight on USB only: no battery, no props). The checks that need a battery come in <a href="#p-steps" data-go-step="8">Build, Step 8</a>, items 2 to 4.</small></span></label></li>
         <li><label><input type="checkbox" data-key="s-6"><span><strong>6 &middot; First hover &mdash; legal area, no payload</strong>
-          <small>Only after certification/registration and site/airspace/NOTAM checks. For Basic operations remain more than 30 m horizontally from any person, stay below 122 m (400 ft) AGL (CAR 901.25) and meet all aerodrome/VLOS limits. Make a brief 1 m hover, land and inspect temperatures.</small></span></label></li>
+          <small>First <a href="#p-steps" data-go-step="5">Build, Step 5</a> (charge, then the first power-up) and the NOW parts of <a href="#p-steps" data-go-step="7">Build, Step 7</a>. You need the pilot certificate, the amateur radio certificate and the registration (the card above). Then <a href="#p-steps" data-go-step="8">Build, Step 8</a>, items 1 to 8.</small></span></label></li>
       </ul>
     </div>
   </details>
@@ -3493,13 +3563,13 @@
     <div class="acc-body">
       <ul class="tasks">
         <li><label><input type="checkbox" data-key="s-7"><span><strong>7 &middot; Pi Zero 2 WH on the bench</strong>
-          <small>Flash the Pi-hole kit's blank 32GB card with Raspberry Pi OS using your laptop and the included reader. Fit the pre-soldered Pi into the Qwiic HAT, enable I2C and use the included 5.1V/2.5A micro-USB bench supply.</small></span></label></li>
+          <small>How to do it: <a href="#p-steps" data-go-step="6">Build, Step 6</a>, part 6A. Done when that step's own check passes.</small></span></label></li>
         <li><label><input type="checkbox" data-key="s-8"><span><strong>8 &middot; Connect camera and GPS through the Qwiic HAT</strong>
-          <small>Solder the included straight 1&times;5 male headers onto the Pimoroni boards. Connect each to DEV-14459 with a CAB-17261 female-jumper cable wired in the Pimoroni order 3V3/SDA/SCL/GND &mdash; that skips pin 4 &mdash; and ignore the HAT silkscreen, whose SDA/SCL labels SparkFun says are reversed. Install the payload requirements and verify camera address 0x33 and GPS address 0x10.</small></span></label></li>
+          <small>How to do it: <a href="#p-steps" data-go-step="6">Build, Step 6</a>, parts 6B and 6C. Done when that step's own check passes.</small></span></label></li>
         <li><label><input type="checkbox" data-key="s-9"><span><strong>9 &middot; Run and tune the included detection code</strong>
-          <small>Run all 31 synthetic tests in the payload package, then use the demo before hardware tests. Tune threshold and minimum pixels against a safe controlled warm target and save detection/false-positive results.</small></span></label></li>
+          <small>How to do it: <a href="#p-steps" data-go-step="8">Build, Step 8</a>: item 1 (the 31 tests and the demo), then item 9 (the heat test on a mug of hot water).</small></span></label></li>
         <li><label><input type="checkbox" data-key="s-10"><span><strong>10 &middot; Mount and power the payload</strong>
-          <small>Use nylon standoffs, zip ties and a secondary Kevlar strap. The thermal lens needs an unobstructed vertical line to the ground, so the Pi sits under the bottom plate (or over a measured cutout) with the MLX board below it and the GPS patch antenna up &mdash; measure before you drill. Keep everything off bare carbon. Connect the meter-checked 24AWG micro-USB power pigtail to the GEPRC's regulated 5V/3A output, avoid backfeed, and verify Pi voltage under load.</small></span></label></li>
+          <small>How to do it: <a href="#p-steps" data-go-step="7">Build, Step 7</a>, the parts marked AFTER THE FIRST HOVER. Done when that step's own check passes.</small></span></label></li>
       </ul>
       <h3>Payload example &mdash; included package, 31 synthetic tests passed</h3>
       <pre><code>import time, board, busio
@@ -3557,7 +3627,7 @@ while True:
         <li><label><input type="checkbox" data-key="s-15"><span><strong>15 &middot; Night pass &mdash; only if every rule is met</strong>
           <small>As built, this drone has no lights (the LED strip is optional, and the GND and 5V pads of its group carry the Pi lead), so skip this step unless you add lights that meet CAR 901.39. Use lights sufficient for VLOS and repeat the same targets. Passive longwave IR does not need LED illumination; the lights are for aircraft visibility. Compare results with day tests and report measured coordinate error.</small></span></label></li>
         <li><label><input type="checkbox" data-key="s-16"><span><strong>16 &middot; Controlled demo mission</strong>
-          <small>Run a VLOS grid over a safe warm target (a mug of hot water) among cold controls and replay the logged map. Use the selected Phoenix 2/HV VTX/M5 analog chain on a legal channel and power setting. Done only after three repeated, documented runs meet the acceptance thresholds.</small></span></label></li>
+          <small>Run a VLOS grid over a safe warm target (a mug of hot water) among cold controls and replay the logged map. Use the selected Phoenix 2/HV VTX/M5F analog chain on a legal channel and power setting. Done only after three repeated, documented runs meet the acceptance thresholds.</small></span></label></li>
       </ul>
     </div>
   </details>
@@ -3583,7 +3653,7 @@ while True:
         <tr><td>4&ndash;6</td><td>Receiver, Betaflight/failsafe and first hover</td><td>7.0</td></tr>
         <tr><td>7&ndash;10</td><td>Pi setup, camera/GPS integration, detection tests, payload mounting</td><td>10.0</td></tr>
         <tr><td>11&ndash;14</td><td>GPS feed, geolocation validation, map implementation, calibration</td><td>11.0</td></tr>
-        <tr><td>15&ndash;19</td><td>Night/demo tests, README, evidence and quizzes</td><td>10.0</td></tr>
+        <tr><td>15&ndash;19</td><td>Demo tests, README, evidence and quizzes</td><td>10.0</td></tr>
         <tr><td colspan="2"><strong>Total hands-on estimate (not six guaranteed weekends)</strong></td><td><strong>46.0</strong></td></tr>
       </table>
       <p class="muted">Per-step figures: 1, 3, 4, 2, 3, 2, 2, 2, 4, 2, 2, 3, 3, 3, 2, 3, 2, 2, 1 hours.
@@ -3641,7 +3711,7 @@ while True:
     <div class="acc-body">
       <p><strong>Drone groups</strong></p>
       <ul>
-        <li><a href="https://www.northernalbertafpv.ca/">Northern Alberta FPV League</a> (MAAC club 928): first-timers and spectators welcome. In winter it races tiny whoops (small ducted drones, not this build) indoors almost every weekend: 8, 15, 22 and 29 Nov, and 6, 13 and 20 Dec 2026. In summer it flies 5-inch drones at Ministik Park. A race costs a CA$10 donation, and you need a MAAC membership (the club says: &ldquo;If cost is an issue, let us know&rdquo;). Sign-ups are free on MultiGP.</li>
+        <li><a href="https://www.northernalbertafpv.ca/">Northern Alberta FPV League</a> (MAAC club 928): first-timers and spectators welcome. In winter it races tiny whoops (small ducted drones, not this build) indoors almost every weekend: 8, 15, 22 and 29 Nov, and 6, 13 and 20 Dec 2026. In summer it flies outdoors at Ministik Park on approved event days (drones under 800 g in its Open class). A race costs a CA$10 donation, and you need a MAAC membership (the club says: &ldquo;If cost is an issue, let us know&rdquo;). Sign-ups are free on MultiGP. Its site did not open on 11 Nov 2026: check the dates and the cost with the league.</li>
         <li><a href="https://www.ercs.ab.ca/">Edmonton Radio Control Society</a>: free ground school and flight training for members, and indoor flying at the Alberta Aviation Museum. Its outdoor field closed in Aug 2025, and its website does not say whether drones are welcome.</li>
         <li>Other model-aircraft clubs within about 100 km are on <a href="https://www.maac.ca/clubs/list?zoneCode=A">MAAC's Zone A list</a>. Most of their pages do not say whether drones are allowed: ask the club.</li>
       </ul>
@@ -3695,8 +3765,8 @@ while True:
   </div>
 
   <div class="card">
-    <p>One question at a time, instant feedback with the reason. <strong>Each build step isn't
-    done until you pass its quiz.</strong> Best scores save in this browser.</p>
+    <p>One question at a time, instant feedback with the reason. Quizzes go by topic: take each one when you
+    reach that part of the build. Best scores save in this browser.</p>
     <div class="grid2">
       <div class="stat"><div class="big" id="score-overview">&mdash;</div>
         <div class="lbl">Overall quiz mastery (best scores)</div></div>
@@ -3781,7 +3851,7 @@ while True:
         <li><a href="https://rotorvillage.ca/geprc-taker-f405-bls-50a-combo-stack/">GEPRC F405 BLS 50A stack</a>
         &middot; <a href="https://rotorvillage.ca/radiomaster-rp1-v2-tcxo-expresslrs-2-4ghz-receiver/">RadioMaster RP1 V2</a>
         &middot; <a href="https://rotorvillage.ca/tbs-source-one-v6-5/">TBS Source One V6 frame</a>
-        &middot; <a href="https://rotorvillage.ca/skyzone-m5-diversity-fpv-monitor/">Skyzone M5 monitor</a></li>
+        &middot; <a href="https://rotorvillage.ca/skyzone-m5-diversity-fpv-monitor/">Skyzone M5F monitor</a></li>
         <li><a href="https://www.pishop.ca/product/raspberry-pi-zero-2wh-pi-hole-kit/">Pi Zero 2 WH kit</a>
         &middot; <a href="https://www.pishop.ca/product/mlx90640-thermal-camera-breakout/">Pimoroni MLX90640</a>
         &middot; <a href="https://www.pishop.ca/product/pa1010d-gps-breakout/">Pimoroni PA1010D GPS</a>
@@ -4068,7 +4138,13 @@ while True:
     const waits = function (n) {
       return lines.some(function (l) { return String(l.stage) === String(n) && !saved.owned[l.id] && l.status === "out" && !canadianAlt(l); });
     };
-    if ([1, 3, 4].every(all)) { return null; }
+    if ([1, 3, 4].every(all)) {
+      /* Final audit, 11 Nov 2026 (NEW-1): a bought stage whose practice is not ticked done stays ahead of Step 1.
+         Before, ticking Stage 4 bought dropped "Stage 1 practice" (the soldering practice) without a word. Stage 2's
+         practice is Step 6 itself, so it never holds the steps back. */
+      const owes = [1, 3].filter(function (n) { return !saved.ticks["stg-" + n + "-done"]; })[0];
+      return owes ? { stage: owes, practice: true, text: "Next: Stage " + owes + " practice \u00b7 " + names[owes] } : null;
+    }
     for (const n of [1, 2, 3]) {
       const here = n === 2 ? all(n) : any(n);
       if (here && !saved.ticks["stg-" + n + "-done"]) { return { stage: n, practice: true, text: "Next: Stage " + n + " practice \u00b7 " + names[n] }; }
@@ -4735,7 +4811,10 @@ while True:
   const BUY_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const STALE_DAYS = 3;
   const US_NOTE = "US shop, freight and duty not included";
-  function foreignNote(bk) { return bk.country === "US" ? US_NOTE : bk.country === "UK" ? "UK shop, freight and duty not included" : ""; }
+  function foreignNote(bk) {
+    return bk.country === "US" ? US_NOTE : bk.country === "UK" ? "UK shop, freight and duty not included"
+      : bk.country && bk.country !== "CA" ? "shop outside Canada, freight and duty not included" : "";
+  }
 
   function lineCents(l) { return Math.round(l.unit * 100) * l.qty; }
   function sumCents(lines) { let c = 0; lines.forEach(function (l) { c += lineCents(l); }); return c; }
@@ -4805,12 +4884,13 @@ while True:
     a.href = url; a.target = "_blank"; a.rel = "noopener";
     return a;
   }
-  function backupLine(l) {
-    const bk = l.backup;
+  /* Final audit, 11 Nov 2026 (SOURCES): `second` draws the line's second backup shop (backup2), found on 11 Nov. */
+  function backupLine(l, second) {
+    const bk = second ? l.backup2 : l.backup;
     if (!bk) { return mk("div", "buy-backup", "Backup: " + (l.backupNote || "none found yet.")); }
     const det = mk("details", "buy-backup");
     const sum = mk("summary");
-    sum.appendChild(document.createTextNode("Backup: " + bk.shop));
+    sum.appendChild(document.createTextNode((second ? "Second backup: " : "Backup: ") + bk.shop));
     if (bk.price) sum.appendChild(document.createTextNode(" " + (bk.currency === "USD" ? "US$" + bk.price.toFixed(2) : cad(Math.round(bk.price * 100)))));
     det.appendChild(sum);
     const body = mk("div", "buy-backup-body");
@@ -4861,6 +4941,7 @@ while True:
     text.appendChild(meta);
     if (l.note) text.appendChild(mk("div", "buy-meta", l.note));
     text.appendChild(backupLine(l));
+    if (l.backup2) { text.appendChild(backupLine(l, true)); }
     const price = mk("div", "buy-price", cad(lineCents(l)));
     if (l.qty > 1) price.appendChild(mk("small", "", l.qty + " × " + cad(Math.round(l.unit * 100))));
     if (l.priceFrom) price.appendChild(mk("small", "", "price from " + dayLabel(l.priceFrom)));
@@ -5378,6 +5459,17 @@ while True:
       const card = document.getElementById("arrival-card");
       const panel = card.closest("[role=tabpanel]");
       const tab = panel && document.getElementById(panel.getAttribute("aria-labelledby"));
+      /* Final audit, 11 Nov 2026 (NICE): remember the tab and the place the link was pressed from, and offer the way back. */
+      const wasTab = document.querySelector('#learn-tabs:not([hidden]) [aria-selected="true"]') || document.querySelector('#tabs [aria-selected="true"]');
+      const back = document.getElementById("arr-back");
+      if (back && wasTab && wasTab !== tab) {
+        const wasY = window.scrollY;
+        back.hidden = false;
+        document.getElementById("arr-back-btn").onclick = function () {
+          back.hidden = true; wasTab.click();
+          setTimeout(function () { window.scrollTo({ top: wasY, behavior: "instant" }); }, 0);
+        };
+      }
       if (tab) { tab.click(); }
       card.open = true;
       const want = a.getAttribute("data-arrival-test");
@@ -5644,6 +5736,38 @@ while True:
         if (t.nodeType === 1 && t.matches && t.matches(".viewer3d-chips button.is-active")) mark(t);
       });
     }).observe(root, { subtree: true, attributes: true, attributeFilter: ["class"] });
+  })();
+  /* Final audit, 11 Nov 2026 (VISITOR): shown on the public site only (never on Shad's own guide server), until closed. */
+  (function () {
+    const note = document.getElementById("visitor-note");
+    if (!note || !window.GUIDE_PUBLIC_SITE) { return; }
+    let closed = false;
+    try { closed = localStorage.getItem("guide-visitor-note") === "closed"; } catch (e) { closed = false; }
+    if (closed) { return; }
+    note.hidden = false;
+    document.getElementById("visitor-close").addEventListener("click", function () {
+      note.hidden = true;
+      try { localStorage.setItem("guide-visitor-note", "closed"); } catch (e) { /* private window: it comes back next visit */ }
+    });
+    document.getElementById("visitor-go").addEventListener("click", function (ev) {
+      const tab = document.getElementById("t-steps");
+      if (tab) { ev.preventDefault(); tab.click(); }
+    });
+  })();
+  /* Final audit, 11 Nov 2026 (S13): opened as a file (the single-file copy), the 3D lessons cannot load, so each
+     lesson button gives way to a plain note. Served by the guide's server or by the public site, nothing changes. */
+  (function () {
+    if (location.protocol !== "file:") { return; }
+    Array.prototype.forEach.call(document.querySelectorAll("a.wt-link"), function (a) {
+      const next = a.nextElementSibling;
+      if (next && next.classList.contains("muted")) { next.remove(); }
+      const prev = a.previousElementSibling;
+      if (prev && prev.classList.contains("wt-off")) { a.remove(); return; }
+      const note = document.createElement("span");
+      note.className = "wt-off";
+      note.textContent = "3D lessons open from the desktop shortcut.";
+      a.replaceWith(note);
+    });
   })();
 </script>
 <script type="module" src="docs/js/viewer3d.js"></script>

@@ -571,12 +571,12 @@ Status: PARTLY
 - City parks: covered by change request 99 (City parks are for drones under 250 g; this one needs private land with the owner's permission), so not repeated here.
 - `[REQUIRES REAL INPUT]`: the airspace at Ministik Park was not checked. Check it in NAV Drone or the NRC tool before going.
 
-### Q7 Is the Orchards at Ellerslie in controlled airspace?
+### Q7 Is his home neighbourhood in controlled airspace?
 Status: PARTLY (NRC map read; the neighbourhood edge not confirmed)
-- NRC Drone Site Selection Tool 2 (https://nrc.canada.ca/en/drone-tool-2/), Basic view, read in Chrome 2026-11-03. The search "The Orchards at Ellerslie" put the pin at Ellerslie Rd SW and 50 St SW. Clicking the map there and just south of it showed no zone.
-- The big red zone a short way south-west is "Edmonton Intl, AB [CZ]", "Class C", "SFC to 4600ft (2200ft AAE)", with "Basic RPAS operations are not permitted within the zone indicated by the red filled shape." Its edge runs past Heritage Valley and the "Edmonton South Central East" label, south-west of the pin.
-- So the north-east part of the Orchards is outside controlled airspace on the NRC map. The south-west part sits closer to the Class C edge: check the exact take-off spot before each flight.
-- NAV Drone needs an account: "not read (login)". The city-land rule (change request 99) still applies to the Orchards' parks.
+- NRC Drone Site Selection Tool 2 (https://nrc.canada.ca/en/drone-tool-2/), Basic view, read in Chrome 2026-11-03. A search for the neighbourhood put a pin in it. Clicking the map there and just south of it showed no zone. (The neighbourhood's name and the pin's cross-streets were taken out of this file on 11 Nov 2026, for privacy.)
+- The big red zone a short way south-west is "Edmonton Intl, AB [CZ]", "Class C", "SFC to 4600ft (2200ft AAE)", with "Basic RPAS operations are not permitted within the zone indicated by the red filled shape." Its edge runs south-west of the pin.
+- So the north-east part of the neighbourhood is outside controlled airspace on the NRC map. The south-west part sits closer to the Class C edge: check the exact take-off spot before each flight.
+- NAV Drone needs an account: "not read (login)". The city-land rule (change request 99) still applies to the neighbourhood's parks.
 - `[REQUIRES REAL INPUT]`: the exact neighbourhood boundary (not taken from a city source).
 
 ### Q8 Edmonton-area RC and FPV clubs and meetups
