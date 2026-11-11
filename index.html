@@ -2438,7 +2438,7 @@
         <div class="stage">
           <h4>Stage 1 &middot; Workshop &amp; safety</h4>
           <p class="stg-cost" data-stage-cost="1"></p>
-          <p class="stage-uses">Its practice is in <a href="#practice" data-open="practice">Build &gt; Before Step 1</a>.</p>
+          <p class="stage-uses">Its practice is in <a href="#practice" data-open="practice">Build &gt; First: practice</a>.</p>
           <div class="asm-parts">
             <span class="asm-label">What to buy</span>
             <ul class="stage-items" data-stage-list="1"></ul>
@@ -2448,7 +2448,7 @@
         <div class="stage">
           <h4>Stage 2 &middot; The payload laboratory</h4>
           <p class="stg-cost" data-stage-cost="2"></p>
-          <p class="stage-uses">Its practice is in <a href="#practice" data-open="practice">Build &gt; Before Step 1</a>.</p>
+          <p class="stage-uses">Its practice is in <a href="#practice" data-open="practice">Build &gt; First: practice</a>.</p>
           <div class="asm-parts">
             <span class="asm-label">What to buy</span>
             <ul class="stage-items" data-stage-list="2"></ul>
@@ -2458,7 +2458,7 @@
         <div class="stage">
           <h4>Stage 3 &middot; Radio &amp; reflexes</h4>
           <p class="stg-cost" data-stage-cost="3"></p>
-          <p class="stage-uses">Its practice is in <a href="#practice" data-open="practice">Build &gt; Before Step 1</a>.</p>
+          <p class="stage-uses">Its practice is in <a href="#practice" data-open="practice">Build &gt; First: practice</a>.</p>
           <div class="asm-parts">
             <span class="asm-label">What to buy</span>
             <ul class="stage-items" data-stage-list="3"></ul>
@@ -2884,8 +2884,8 @@
     <button class="expand-btn" data-panel="p-steps">Expand all</button>
   </div>
 
-  <details class="acc practice-wrap" open id="practice">
-    <summary>Before Step 1: practice (Stages 0 to 3)</summary>
+  <details class="acc practice-wrap" id="practice">
+    <summary>First: practice</summary>
     <div class="acc-body">
       <p id="practice-now">Practise with the parts from Stages 1 to 3 while the rest ships. Tick each stage when its practice is done: the Home page then moves on.</p>
         <div class="practice-stage" id="practice-stage-0">
@@ -2944,13 +2944,9 @@
   </details>
 
 
-  <details class="acc" id="words-card">
-    <summary><strong>Words used in this guide</strong> <span class="fly-first">Plain meanings, one line each</span></summary>
-    <div class="acc-body"><ul class="gloss-list"><li><strong>Betaflight:</strong> the free program on your laptop that sets up the flight controller.</li><li><strong>ESC (speed controller):</strong> the board that drives the four motors. Here it is the 50 A four-in-one board in the stack.</li><li><strong>FC (flight controller):</strong> the board with the gyro that keeps the drone level and talks to the receiver.</li><li><strong>The stack:</strong> the flight controller and the ESC stacked on the same four screws.</li><li><strong>VTX (video transmitter):</strong> sends the camera picture to the monitor.</li><li><strong>Receiver:</strong> gets your stick commands from the radio.</li><li><strong>ELRS (ExpressLRS):</strong> the radio link system the radio and the receiver both use.</li><li><strong>UART:</strong> a numbered pair of pads (TX and RX) on the flight controller for talking to one device. This one has 6.</li><li><strong>TX / RX:</strong> send / receive. A TX pad always goes to the other device's RX.</li><li><strong>AWG:</strong> wire thickness. A bigger number is a thinner wire.</li><li><strong>4S:</strong> a battery of 4 cells in a row.</li><li><strong>LiPo / LiHV:</strong> lithium polymer battery / the high-voltage kind, charged to 4.35 V a cell.</li><li><strong>Windings:</strong> the copper wire coils inside a motor.</li><li><strong>Threadlock:</strong> liquid that stops a screw working loose. The blue kind can still be undone.</li><li><strong>Standoff:</strong> a metal or nylon post with threads that holds two plates apart.</li><li><strong>Knurled:</strong> with a gripping texture on the outside.</li><li><strong>Set screw:</strong> a screw with no head, threaded all the way.</li><li><strong>Grommets:</strong> soft rubber rings the stack sits on to soak up vibration.</li><li><strong>Tinning:</strong> putting a thin layer of solder on a pad or wire end before joining them.</li><li><strong>Polarity:</strong> which side is + and which is -.</li><li><strong>Solder bridge:</strong> solder that joins two pads that must stay separate.</li><li><strong>XT60:</strong> the yellow battery plug on the packs and the drone.</li><li><strong>Smoke stopper:</strong> a plug-in fuse for the first power-up. It cuts out at 1.2 A.</li><li><strong>OSD:</strong> the text drawn on top of the video (battery, timer). The flight controller has one.</li><li><strong>CRSF:</strong> the language the receiver uses to talk to the flight controller. You pick it in Betaflight.</li><li><strong>Bind:</strong> pairing the radio with the receiver so it only listens to your radio.</li><li><strong>Flash:</strong> writing new firmware onto a board.</li><li><strong>I2C:</strong> the two-wire link the sensors use.</li><li><strong>Qwiic:</strong> SparkFun's small 4-pin plug for I2C.</li><li><strong>HAT:</strong> a board that plugs onto the Pi's 40 pins.</li><li><strong>Header:</strong> a row of metal pins.</li><li><strong>Payload:</strong> everything the drone carries for the job: the Pi, the thermal camera and the GPS.</li><li><strong>Bare quad:</strong> the drone without the payload.</li><li><strong>Hover:</strong> staying still in the air.</li><li><strong>Arm / disarm:</strong> switching the motors live or dead with a radio switch.</li><li><strong>Throttle:</strong> the stick that sets motor speed.</li><li><strong>AGL:</strong> above ground level.</li><li><strong>Pi:</strong> the Raspberry Pi, a small computer (common usage).</li><li><strong>Props, CW and CCW:</strong> the propellers; clockwise and counter-clockwise, the two spin directions (common usage).</li><li><strong>M1 to M4:</strong> the four motor numbers (common usage).</li><li><strong>Bench:</strong> your work table (common usage).</li></ul></div>
-  </details>
 
   <details class="acc" open>
-    <summary>The 8 steps</summary>
+    <summary>Then: the 8 steps</summary>
     <div class="acc-body">
       <div class="assembly" data-assembly>
         <div class="asm-legend">
@@ -3493,6 +3489,10 @@
 
 
 
+  <details class="acc" id="words-card">
+    <summary><strong>Words used in this guide</strong> <span class="fly-first">Plain meanings, one line each</span></summary>
+    <div class="acc-body"><ul class="gloss-list"><li><strong>Betaflight:</strong> the free program on your laptop that sets up the flight controller.</li><li><strong>ESC (speed controller):</strong> the board that drives the four motors. Here it is the 50 A four-in-one board in the stack.</li><li><strong>FC (flight controller):</strong> the board with the gyro that keeps the drone level and talks to the receiver.</li><li><strong>The stack:</strong> the flight controller and the ESC stacked on the same four screws.</li><li><strong>VTX (video transmitter):</strong> sends the camera picture to the monitor.</li><li><strong>Receiver:</strong> gets your stick commands from the radio.</li><li><strong>ELRS (ExpressLRS):</strong> the radio link system the radio and the receiver both use.</li><li><strong>UART:</strong> a numbered pair of pads (TX and RX) on the flight controller for talking to one device. This one has 6.</li><li><strong>TX / RX:</strong> send / receive. A TX pad always goes to the other device's RX.</li><li><strong>AWG:</strong> wire thickness. A bigger number is a thinner wire.</li><li><strong>4S:</strong> a battery of 4 cells in a row.</li><li><strong>LiPo / LiHV:</strong> lithium polymer battery / the high-voltage kind, charged to 4.35 V a cell.</li><li><strong>Windings:</strong> the copper wire coils inside a motor.</li><li><strong>Threadlock:</strong> liquid that stops a screw working loose. The blue kind can still be undone.</li><li><strong>Standoff:</strong> a metal or nylon post with threads that holds two plates apart.</li><li><strong>Knurled:</strong> with a gripping texture on the outside.</li><li><strong>Set screw:</strong> a screw with no head, threaded all the way.</li><li><strong>Grommets:</strong> soft rubber rings the stack sits on to soak up vibration.</li><li><strong>Tinning:</strong> putting a thin layer of solder on a pad or wire end before joining them.</li><li><strong>Polarity:</strong> which side is + and which is -.</li><li><strong>Solder bridge:</strong> solder that joins two pads that must stay separate.</li><li><strong>XT60:</strong> the yellow battery plug on the packs and the drone.</li><li><strong>Smoke stopper:</strong> a plug-in fuse for the first power-up. It cuts out at 1.2 A.</li><li><strong>OSD:</strong> the text drawn on top of the video (battery, timer). The flight controller has one.</li><li><strong>CRSF:</strong> the language the receiver uses to talk to the flight controller. You pick it in Betaflight.</li><li><strong>Bind:</strong> pairing the radio with the receiver so it only listens to your radio.</li><li><strong>Flash:</strong> writing new firmware onto a board.</li><li><strong>I2C:</strong> the two-wire link the sensors use.</li><li><strong>Qwiic:</strong> SparkFun's small 4-pin plug for I2C.</li><li><strong>HAT:</strong> a board that plugs onto the Pi's 40 pins.</li><li><strong>Header:</strong> a row of metal pins.</li><li><strong>Payload:</strong> everything the drone carries for the job: the Pi, the thermal camera and the GPS.</li><li><strong>Bare quad:</strong> the drone without the payload.</li><li><strong>Hover:</strong> staying still in the air.</li><li><strong>Arm / disarm:</strong> switching the motors live or dead with a radio switch.</li><li><strong>Throttle:</strong> the stick that sets motor speed.</li><li><strong>AGL:</strong> above ground level.</li><li><strong>Pi:</strong> the Raspberry Pi, a small computer (common usage).</li><li><strong>Props, CW and CCW:</strong> the propellers; clockwise and counter-clockwise, the two spin directions (common usage).</li><li><strong>M1 to M4:</strong> the four motor numbers (common usage).</li><li><strong>Bench:</strong> your work table (common usage).</li></ul></div>
+  </details>
 </section>
 <section role="tabpanel" id="p-plan" aria-labelledby="t-plan" hidden>
   <div class="sec-head">
@@ -5881,6 +5881,6 @@ while True:
 </script>
 <script src="docs/js/domain.js"></script>
 <!-- Guide Assistant: offline-first Q&A. Remove these two lines to drop it. -->
-<script src="docs/js/assistant.js?v=build-guide-v9"></script>
+<script src="docs/js/assistant.js?v=build-guide-v10"></script>
 </body>
 </html>
