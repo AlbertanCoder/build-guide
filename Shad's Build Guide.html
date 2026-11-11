@@ -300,6 +300,7 @@
   .arr-tick { display: flex; align-items: flex-start; gap: 6px; font-size: 15px; }
   .arr-tick input { margin-top: 4px; width: 18px; height: 18px; flex: none; accent-color: var(--pine); }
   .fly-first { display: block; font-weight: 400; font-size: 14px; color: var(--soft); margin-top: 2px; }
+  #fly-card > summary .fly-first { display: none; }   /* said in rule 1 and in the top line; Home's door still reads it */
   .fly-list { margin: 0 0 12px; padding-left: 22px; }
   .fly-list li { margin: 0 0 8px; }
   details.acc[open] > summary { border-bottom: 1px solid var(--line); }
@@ -371,7 +372,6 @@
 .buy-check { margin-right: 8px; accent-color: #1b5e4f; vertical-align: -1px; cursor: pointer; }
 .asm-parts li.bought > a { text-decoration: line-through; opacity: .5; }
 .asm-parts li.bought { color: var(--soft); }
-.stg-bought { margin: 8px 0 0; font-size: 12px; font-weight: 700; color: var(--pine); }
   /* ---- Staged buying plan (tab 3) ---- */
   .stage { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
            padding: 16px 18px; margin: 0 0 12px; box-shadow: var(--shadow); }
@@ -5092,18 +5092,9 @@ while True:
       const costEl = document.querySelector('[data-stage-cost="' + n + '"]');
       if (costEl) {
         costEl.textContent = "";
-        costEl.appendChild(mk("b", "", cad(st.total)));
-        costEl.appendChild(document.createTextNode(" · running total "));
-        costEl.appendChild(mk("b", "", cad(running)));
-        costEl.appendChild(document.createTextNode(" · " + shops.join(" + ")));
-      }
-      const listEl = document.querySelector('[data-stage-list="' + n + '"]');
-      if (listEl) {
-        let cnt = listEl.parentNode.querySelector(".stg-bought");
-        if (!cnt) { cnt = mk("div", "stg-bought"); listEl.parentNode.appendChild(cnt); }
-        const ids = uniqueIds(st.lines);
-        const done = ids.filter(function (id) { return saved.owned[id]; }).length;
-        cnt.textContent = done + " of " + ids.length + " bought";
+        if (running !== st.total) {   /* the first stage's running total is its own price, already in its title line */
+          costEl.appendChild(document.createTextNode("Running total ")); costEl.appendChild(mk("b", "", cad(running))); costEl.appendChild(document.createTextNode(" · ")); }
+        costEl.appendChild(document.createTextNode(shops.join(" + ")));
       }
     });
 
@@ -5221,7 +5212,7 @@ while True:
     const gstEl = document.getElementById("parts-gst");
     if (gstEl) {
       const t = billTotals();
-      gstEl.textContent = "Required parts: 5% GST on " + cad(t.requiredTaxable) + " (the CA$20.34 Transport Canada fees carry none) is " + cad(t.requiredGst) + ": " + cad(t.requiredWithGst) + " before freight. Optional extras: " + cad(t.optional) + " + GST. SparkFun and GetFPV are US shops: freight and duty unknown.";
+      gstEl.textContent = "GST: 5% on " + cad(t.requiredTaxable) + " is " + cad(t.requiredGst) + " (the CA$20.34 Transport Canada fees carry none). SparkFun and GetFPV are US shops: freight and duty unknown.";
     }
   }
 
