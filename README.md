@@ -1,58 +1,105 @@
-# Shad's Heat-Spotting Drone Build Guide
+# Shad's Heat-Spotting Drone: a build guide you can follow
 
-## [▶ Open the Interactive HTML Guide](https://albertancoder.github.io/build-guide/)
+**[▶ Open the guide](https://albertancoder.github.io/build-guide/)** &nbsp;·&nbsp; works on a phone, a tablet and a desktop &nbsp;·&nbsp; nothing to install
 
-**Quick links:** [Live guide](https://albertancoder.github.io/build-guide/) · [HTML source file](index.html) · [Exact order list](Shad-Drone-Order-List.md) · [Audit report](Shad-Drone-Audit-Report.md) · [Payload software](Shad-Drone-Payload/)
+[![The guide's Home page](docs/images/overview.png)](https://albertancoder.github.io/build-guide/)
 
-A single-page, interactive order and build guide for a 5-inch analog FPV quadcopter with a Raspberry Pi thermal/GPS payload.
+**On this page:** [What this is](#what-this-is) · [What is in it](#what-is-in-it) · [Try it](#try-it) · [How it was checked](#how-it-was-checked) · [For technical people](#for-technical-people)
 
-This is a learning and portfolio project: the wildfire part is a simulation plus tests on safe heat targets, because the law keeps drones out of real wildfire airspace (CAR 601.15).
+## What this is
 
-## Preview
+A step-by-step guide to building a small drone that carries a thermal camera and marks hot spots on a map.
 
-### Main page and 46-hour build-time calculator
+- **Who made it:** Shad ([@AlbertanCoder](https://github.com/AlbertanCoder)), in Edmonton, working with AI coding tools.
+- **Who it is for:** someone who has never built a drone. One action per line, plain words, a check before every next step.
+- **What it is not:** a finished aircraft. The parts are bought in stages and the drone is not built yet. It is a learning and portfolio project.
+- **The wildfire part is a simulation** plus tests on safe heat targets. The law keeps drones out of real wildfire airspace in Canada (CAR 601.15), and the guide says so.
 
-[![Main guide and build-time calculator](docs/images/overview.png)](docs/images/overview.png)
+## What is in it
 
-### Parts and interactive budget
+| | |
+|---|---|
+| **Home** | Where you are, what to do next and what to buy next. |
+| **Build** | 8 build steps, and the practice stages before them. Each step has a drawing, a 3D lesson and a check before the next step. |
+| **3D lessons** | 34 short lessons you can pause and turn around, with 35 quizzes (185 questions). They show which part goes where before you touch it. |
+| **Buy** | 50 parts, each with a shop link and a dated stock check, and a backup shop where one was found. Bought in stages, so every parcel gives you something to do. |
+| **Fly safely** | The Canadian rules for this drone, each with its official source: pilot certificate, registration, where you can fly, the radio licence for the video link. |
+| **Learn** | Why it is built this way, how the heat detection works, the plan, and its limits. |
 
-The guide has five places: **Home**, **Build**, **Buy**, **Fly safely** and **Learn** (a left sidebar on a
-laptop, a bar along the bottom on a phone). **Home** shows where you are, the hours and "money I can spend
-this week" sliders, and three doors: Buy today, When a parcel arrives, Before you fly. **Buy** shows
-**Your bill** (the required parts with GST, bought so far, still to buy, a progress bar, and the optional
-extras on their own line), the **Buy today** list and every
-part by stage. Every line has a shop link, a dated stock badge and a backup place to buy it (or an honest "none
-found"). The required parts are CA$1,680.63 before GST and freight (CA$1,763.64 with GST), bought in seven small stages that each
-give you something working the day they arrive. All the money on the page comes from one list (the
-`buy-data` block in `index.html`).
+<a href="docs/images/guide-phone.png"><img src="docs/images/guide-phone.png" alt="The guide on a phone: Home, a build step and a 3D lesson" width="100%"></a>
 
-[![Parts and budget](docs/images/order-plan.png)](docs/images/order-plan.png)
+**A 3D lesson** (pause it, drag to look around):
 
-### Detection pipeline and coverage calculator
+[![A 3D lesson: which motor goes on which arm](docs/images/lesson-3d.png)](https://albertancoder.github.io/build-guide/docs/walkthrough/index.html#s2-motors)
 
-[![Detection pipeline and coverage calculator](docs/images/logic.png)](docs/images/logic.png)
+**A build step** (one action per number, and a check wherever a part has to be looked at first):
 
-### IKEA-style assembly instructions
+[![A build step](docs/images/illustrated-build.png)](https://albertancoder.github.io/build-guide/#p-steps)
 
-Open **4 Build Steps** in the guide for the assembly manual: one step at a time, each with
-its interactive 3D model and flat picture, a parts strip, numbered actions, a safety note
-and a check gate before the next step. Big Previous/Next buttons walk through the eight
-steps — inventory, frame assembly, soldering, receiver/FPV wiring, charging, Pi/sensor
-wiring, payload mounting and testing — or a toggle shows all eight at once.
+**The Buy list** (every part with a dated stock check):
 
-[![Illustrated 8-step build](docs/images/illustrated-build.png)](docs/images/illustrated-build.png)
+[![The Buy list](docs/images/order-plan.png)](https://albertancoder.github.io/build-guide/#parts)
 
-The individual SVG diagrams are also available in `docs/images/build/`.
+## Try it
 
-### Interactive 3D models
+1. Open **[albertancoder.github.io/build-guide](https://albertancoder.github.io/build-guide/)** on any phone or computer.
+2. Tap **Build** to see the steps.
+3. On any step, tap **Watch it in 3D**.
 
-Each of the eight steps — plus the finished aircraft — is an interactive 3D model you can
-orbit, zoom and pan, with HTML part labels read from the model itself. three.js is vendored in
-`docs/vendor/three` (no CDN), models are lazy-loaded on scroll, and each step also shows its
-flat picture underneath the model. Step 8's six test stages are clickable hotspots
-(A–F) that highlight the hardware each stage exercises.
+Your ticks and quiz passes stay in your own browser: the public site has no server behind it and loads nothing from other websites.
 
-Models are generated from committed Blender scripts, so they can be rebuilt at any time:
+## How it was checked
+
+Nothing in the guide is called "done" on trust. Before a release:
+
+- every shop link is opened and its price and stock read again (last full read: 11 Nov 2026, 79 links);
+- the law and "how the software works" statements are compared with their official sources as they read that day (124 statements on 11 Nov 2026);
+- the design is checked by script: 243 fit, wiring, weight and clearance checks, the measured ones repeated 10,000 times with each size varied inside its accuracy (206 pass; 37 can only be settled with the real parts in hand);
+- an automated gate runs 1749 named checks in 32 suites, in a real browser and on a phone-sized screen;
+- every 3D lesson is played from start to end, and its pictures are looked at, on a desktop and on a phone.
+
+What still needs the real parts is marked in the guide as a check to do when the part arrives. Nothing in the guide says the drone has flown.
+
+---
+
+## For technical people
+
+### How it is built
+
+- **One HTML page, no framework, no build step.** `index.html` holds the page, its styles and most of its scripts; the 3D viewer and the chat are plain script files in `docs/js/`. All the money on the page comes from one JSON block (`buy-data`); arrival tests, weights and the design-check summary are JSON blocks too.
+- **3D:** [three.js](https://threejs.org/) is vendored in `docs/vendor/three` (no CDN). Nine `.glb` models in `docs/models/` are generated by committed Blender scripts in `scripts/build/`, so they can be rebuilt at any time. Labels travel inside each model as node `extras`, so a model and its labels can never drift apart.
+- **3D lessons:** `docs/walkthrough/` is a small lesson player (`index.html`, `engine.js`) and one JavaScript module per lesson in `lessons/`. A lesson is a timeline: steps with their words, camera moves, labels and an `update(t)` function. Quizzes live in `lessons/index.js`. Progress is kept in the browser (the optional local server can hold it too, so two browsers share it).
+- **Payload software:** `Shad-Drone-Payload/` (Python): hot-spot grouping on 32×24 thermal frames, pixel-to-ground geolocation, a simulated and a real backend, a small local map server, 31 unit tests.
+- **Guide Assistant (optional, local):** `server/assistant-server.js`, a dependency-free Node server that serves the guide on `localhost:8790` and answers questions from the guide's own text through an AI provider of your choice. On the public site the chat has its built-in written answers only. Set-up is [further down](#the-guide-assistant-optional).
+- **Works offline:** a service worker (`sw.js`) and a web-app manifest; a single-file copy (`Shad's Build Guide.html`) opens by double-click with the models inlined.
+
+### Run it locally
+
+```bash
+git clone https://github.com/AlbertanCoder/build-guide.git
+cd build-guide
+python -m http.server 8000        # then open http://localhost:8000/
+```
+
+ES modules and `.glb` files need HTTP, so open it through a server, not as a file. Links that open a place directly: `#p-steps` (Build), `#parts` (Buy), `#fly`, `#plan`. The lessons are at `docs/walkthrough/index.html`; add `#<lesson-id>` to open one, for example `#s2-motors`.
+
+### Repository map
+
+| Path | What it is |
+|---|---|
+| `index.html` | the whole guide |
+| `docs/walkthrough/` | the 3D lesson player, 34 lessons, the quizzes, a pretend radio to practise on |
+| `docs/models/`, `scripts/build/` | the 3D models and the Blender scripts that build them |
+| `scripts/build/verify_build.py` | the design check (fit, wiring, weight, tolerance runs) |
+| `docs/build-truth/` | what each step's instruction is based on, and the check results |
+| `docs/images/build/` | one flat drawing per build step (SVG) |
+| `Shad-Drone-Payload/` | the payload software and its tests |
+| `server/`, `docs/js/assistant.js`, `docs/assistant/` | the optional Guide Assistant |
+| `scripts/dev/` | the test suites and `gate.js`, which runs them all |
+| `scripts/standalone/` | single-file build, stock refresh, link check, icons |
+| `Shad-Drone-Order-List.md`, `Shad-Drone-Audit-Report.md` | the earlier order plan and the first design review, as dated documents (the guide's Buy tab is the current list) |
+
+### Rebuild the 3D models
 
 ```bash
 blender -b --factory-startup -P scripts/build/build_step02_frame.py
@@ -68,12 +115,18 @@ blender -b --factory-startup -P scripts/build/build_final_product.py   # etc.
 | `docs/models/*.glb` | exported models (all under 7k triangles) |
 | `docs/js/viewer3d.js` | on-demand viewer: orbit/zoom/pan, CSS2D labels, hotspots, shadow catcher |
 
-Labels travel inside the GLB as node `extras`, so a model and its labels can never drift apart.
-To view locally, serve the repo root (ES modules and GLB fetches need HTTP):
+### The payload software
+
+See `Shad-Drone-Payload/README.md` for wiring, power, installation and acceptance checks. Run the software tests before hardware integration:
 
 ```bash
-python -m http.server 8000
+cd Shad-Drone-Payload
+python -m unittest -v test_drone_logic.py
+python payload.py --demo
+python payload.py --demo --serve
 ```
+
+The viewer defaults to `http://127.0.0.1:8000` and the append-only log is `flight-log.jsonl`.
 
 ### Opening the guide by double-click (no server)
 
@@ -93,6 +146,8 @@ esbuild docs/js/viewer3d.js --bundle --format=iife --minify --target=es2020 \
 
 node scripts/standalone/make-standalone.js bundle.js "Shad's Build Guide.html"
 ```
+
+The 3D lessons are not in the single file: it shows a plain note in their place.
 
 Every place and page is deep-linkable: `#p-steps` (or `#steps`) opens Build, `#parts` opens Buy, `#fly`
 opens Fly safely and `#plan` opens Learn > Plan. With no link, a first visit opens on Home; after that the
@@ -126,14 +181,19 @@ powershell -ExecutionPolicy Bypass -File scripts\standalone\make-shortcut.ps1   
 node scripts/standalone/check-offline-list.js        # every file the page needs is in the offline list
 ```
 
-### Guide Assistant (an AI that answers from this guide)
+### The Guide Assistant (optional)
+
+A chat panel in the bottom-right corner (**Ask the guide**). On the public site it has its built-in written answers only. Run from your own computer with an AI key, it answers questions about this build from the guide's own text, can draw a new 3D view, and can suggest an edit to a paragraph with exact quotes from the guide.
+
+<details>
+<summary><strong>Set it up and use it</strong> (about 5 minutes, Windows)</summary>
 
 A chat panel in the bottom-right corner (**Ask the guide**) answers questions about *this* build,
 streams the answer, and links straight to the tab or assembly step it used. It can also draw a new
 3D view of anything you are stuck on, and suggest an edit to a guide paragraph, with every claim
 backed by an exact quote from the guide.
 
-[![The guide with the assistant open, showing a 3D view it made](docs/images/guide-with-assistant.png)](docs/images/guide-with-assistant.png)
+[![The guide with the assistant open](docs/images/guide-with-assistant.png)](docs/images/guide-with-assistant.png)
 
 #### The localhost page
 
@@ -273,92 +333,19 @@ on spend, falling back to the offline engine rather than billing past it.
 `/api/stats` shows the real numbers. Everything is in
 [docs/assistant/README.md](docs/assistant/README.md).
 
-Run the tests:
+</details>
+
+### Run the checks
 
 ```powershell
-# Everything at once: 32 suites, 1749 named checks, one exit code.
-node scripts/dev/gate.js
-node scripts/dev/gate.js --quick    # skip the browser suite (needs Chrome)
+node scripts/dev/gate.js            # everything: 32 suites, 1749 named checks, one exit code
+node scripts/dev/gate.js --quick    # skip the browser suites (they need Chrome)
 node scripts/dev/gate.js --json     # machine-readable
-
-# Or one suite at a time:
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/dev/check-llm-path.ps1   # AI path, mock provider, no key
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/dev/check-assistant.ps1 -Target "dist/Shad's Build Guide.html"
-node scripts/dev/check-kb-prices.js          # every KB price must also appear in the guide
-node scripts/dev/check-cost-engine.js        # cache, router, meter, compression (26 checks)
-node scripts/dev/check-cost-path.js          # zero-cost repeat, cap, escalation (30 checks)
-node scripts/dev/build-domain.js --check     # domain pack is current and every claim is sourced
-node scripts/dev/check-settings.js           # key never returned, budget clamped, secrets never served (39 checks)
-node scripts/dev/check-browser.js            # real Chrome: drawer clicks, quiz pass survival (28)
-node scripts/dev/check-quiz-op.js            # the quiz-add operation: 29 checks, incl. refusals
-node scripts/dev/check-prose-op.js           # the prose-rewrite operation: 38 checks, incl. refusals
-node scripts/dev/check-bans.js              # the five code-enforced bans: 37 checks, none inert
-node scripts/dev/check-corrections.js       # the corrections memory: 22 checks, reviewed and pure
-node scripts/dev/check-write-gates.js      # the three write gates: 13 checks, each gate alone stops a write
+python -I scripts/build/verify_build.py          # the design check alone
 ```
 
-*These are previews of the HTML guide, not a completed aircraft. Click any image to view it full-size.*
+Each suite can also be run alone; they are listed at the top of `scripts/dev/gate.js`.
 
-## Open the guide
+---
 
-Open `index.html` in a browser. Tabs, build checkboxes, progress, quizzes, flashcards, the coverage calculator, editable budget and persistent 46-hour build-time calculator work locally in the browser.
-
-## Included documents
-
-- `Shad-Drone-Order-List.md` — exact parts, quantities, live retailer links, prices, compatibility and cost breakdown.
-- `Shad-Drone-Audit-Report.md` — A–G review, component substitutions, compatibility and validation results.
-- `Shad-Drone-Payload/` — thermal hotspot grouping, geolocation, real/synthetic payload backends, offline coordinate viewer and unit tests.
-- `shad-drone-icon.svg` — current favicon/header artwork.
-- `docs/js/assistant.js` + `docs/assistant/` — the offline Guide Assistant, plus the optional Cloudflare Worker that lets a model draft answers from retrieved passages.
-
-The unavailable stack, thermal camera and Pi were replaced with live alternatives, and this build uses a monitor, not goggles. Every shop page was re-checked on **3 November 2026**. Every link loads, but **a working link is not stock**: on that re-check the Pi kit, the 55° thermal camera, the frame and the GEPRC stack were out of stock at their main shop, so confirm availability and freight at checkout. The required parts cost **CA$1,680.63** (no laptop: it assumes you use your own), or **CA$1,763.64 after 5% GST**, before remaining retailer freight — roughly **CA$1,803–1,833 landed** (the same CA$40–70 freight allowance as before). Optional extras: CA$85.51 + GST.
-
-## Payload setup
-
-See `Shad-Drone-Payload/README.md` for wiring, power, installation and acceptance checks. Run the software tests before hardware integration:
-
-```bash
-cd Shad-Drone-Payload
-python -m unittest -v test_drone_logic.py
-python payload.py --demo
-python payload.py --demo --serve
-```
-
-The viewer defaults to `http://127.0.0.1:8000` and the append-only log is `flight-log.jsonl`.
-
-## Validation
-
-`node scripts/dev/gate.js` runs every suite below with one exit code; its last full run (3 November 2026) passed every
-suite. Checks per suite:
-
-- The guide in a real browser: 29/29 (`scripts/dev/check-browser.js`: the settings drawer, the quiz pass-survival rule,
-  all 10 pages render, the step prerequisite boxes are readable, no page errors).
-- Guide Assistant self-tests: 24/24 on the served page and 24/24 in the offline single-file build, including that a
-  confident curated question is answered with no model call and an unanswerable one is not.
-- Guide Assistant AI path: 11/11 end to end against a mock streaming provider (`scripts/dev/check-llm-path.ps1`): SSE
-  streaming reached the browser, markdown rendered as real lists, the `[[NAV]]` directive became a button and was
-  stripped from the prose, retrieval ran before the model call, and an empty-passage request was rejected with `422`.
-- Price guard: 4/4 (`scripts/dev/check-kb-prices.js`): every figure in the assistant's knowledge base also appears in
-  the guide, the budget arithmetic closes (CA$1,660.29 × 5% = CA$83.01; CA$1,680.63 + CA$83.01 = CA$1,763.64), and the
-  superseded CA$1,678.00 total is absent.
-- Cost engine 27/27 (`scripts/dev/check-cost-engine.js`) and cost path 30/30 (`scripts/dev/check-cost-path.js`) against
-  a mock provider: a repeat question made no upstream call, `/api/stats` accounted the spend, the daily cap returned
-  `402` without calling the provider, and a cheap-tier refusal escalated once to the strong tier.
-- Settings API 39/39, including that the server never serves its saved key or `.env`, answers only to this machine's
-  host names, and refuses cross-site posts.
-- The chat's memory and phone access (job 8): memory and phone 51/51 (`scripts/dev/check-memory.js`: what it remembers,
-  step awareness, pairing a phone and its security, the monthly cap) and chat memory in a real browser 18/18
-  (`scripts/dev/check-chat-memory.py`).
-- The fresh-eyes fixes (4 Nov 2026): stages and parcels in a real browser 13/13 (`scripts/dev/check-fresh-eyes.py`: the Home card
-  follows the stages before the steps; the parcel tests follow what was ticked bought; the threadlocker test).
-- The edit and memory suites: conversation memory 29/29, write gates 13/13, the five bans 37/37, corrections memory
-  22/22, propose loop 41/41, review API 20/20, per-item acceptance 18/18, suggest an edit 128/128, quiz operation 29/29,
-  prose operation 38/38, job spec 8/8, drafter 15/15, build sync 23/23, encoding 3/3, domain pack 1/1.
-- The 3D build: step models 493/493, 3D views 21/21, 3D viewer 178/178, design simulations 13/13, build verification
-  190/190 (`scripts/build/verify_build.py`: 190 passed, 0 failed, 35 need the real parts in hand).
-- `node --check` clean on `docs/js/assistant.js`, `server/assistant-server.js` and the mock provider.
-- Outside the gate: 31/31 payload unit tests (`Shad-Drone-Payload`); demo, map health/API and viewer responses passed.
-- Every order-document link resolves, but a working link is not stock: the frame and the GEPRC 50A
-  stack were out of stock on the 31 Oct 2026 re-check.
-
-Product availability, compatibility and performance must still be verified during assembly, bench testing and controlled flight testing. This is a prototype builder's roadmap, not career or legal advice.
+*The pictures are previews of the guide, not a completed aircraft. Product availability, compatibility and performance must still be verified during assembly, bench testing and controlled flight testing. This is a prototype builder's roadmap, not career or legal advice.*
