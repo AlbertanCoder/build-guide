@@ -1002,7 +1002,7 @@ def cross_checks():
         "charger_": ["charger"], "charge_lead": ["charger"], "balance_lead": ["batteries"],
         "bag_": ["lipo-bag"], "fire_extinguisher": ["extinguisher"], "smokestopper": ["smoke-stopper"], "monitor_": ["monitor"],
         "meter_": ["tools"], "iron_": ["tools"], "toolkit_": ["tools"],
-        "laptop_tag": "not bought: your own laptop", "glasses_": "not bought: page 'Safety glasses: you already have a pair'",
+        "laptop_tag": "not bought: your own laptop", "glasses_": "not bought: page 'you already have a pair'",
         "fireproof_surface": "not bought: page 'Use your ceramic tile or metal baking tray'",
         "order_list": "not bought: the guide's own order list", "mug_": "not bought: a mug from your kitchen (heat test)",
         "hand_": "not bought: your hand (heat test)", "clearance_": "guide mark, not a part", "cg_": "guide mark, not a part",

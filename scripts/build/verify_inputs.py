@@ -124,7 +124,7 @@ ALWAYS_HAVE = ["licence", "registration_marked"]   # Transport Canada steps outs
 BEFORE_BUILD = {
     "radio_ready": "Stage 3 checklist: 'Charge the cells in the radio; set up EdgeTX: switches, arm switch, timer, model name.'",
     "meter_batteries": "Stage 1 checklist: 'Put two 1.5 V batteries (AA or AAA, whichever fits the battery door) in the multimeter. The kit does not include them. You already have these.'",
-    "safety_glasses": "Stage 1 note (live page): 'Safety glasses: you already have a pair. Check the frame says Z87 or CSA.'",
+    "safety_glasses": "Stage 1 note (live page): 'Wear your safety glasses whenever the iron is hot (you already have a pair: check the frame says Z87 or CSA).'",
     "pigtail_built": "Stage 2 checklist: 'Build the micro-USB power pigtail: cut one end, meter-check the wires, insulate with heat shrink.'",
 }
 # Buy-list lines used outside the 8 steps (stage checklists, parts lines), or optional by the list's own note
