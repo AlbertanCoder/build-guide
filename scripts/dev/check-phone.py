@@ -110,10 +110,14 @@ try:
               and lap["views"] and lap["bar"] and lap["stepViews"] == 0, lap)
         pg.screenshot(path=os.path.join(SHOTS, "laptop-build.png"))
         lap_hints = pg.evaluate("[...new Set([...document.querySelectorAll('.viewer3d-hint')].map(h => h.textContent.trim()))]")
-        nav = pg.evaluate("""(() => { const n = [...document.querySelectorAll('#p-steps .asm-nav')].find(x => x.offsetParent !== null);
-          const r = e => e.getBoundingClientRect(), a = r(n.querySelector('[data-asm-prev]')), c = r(n.querySelector('.asm-count')), z = r(n.querySelector('.asm-count').nextElementSibling);
-          return { inRow: a.right <= c.left + 1 && c.right <= z.left + 1, sameLine: Math.abs((a.top + a.bottom) / 2 - (c.top + c.bottom) / 2) < 12 }; })()""")
-        check("laptop: 'Step 1 of 8 ...' stays between Previous and Next, on one row", nav["inRow"] and nav["sameLine"], nav)
+        # 11 Nov 2026 (Shad, looking at his own guide): Build is ONE list, Step 0 to Step 8, each row opens and closes.
+        # The Previous / "Step 1 of 8" / Next row this check measured is gone with the one-step-at-a-time walker.
+        nav = pg.evaluate("""(() => { const P = document.getElementById('p-steps'), rows = [...P.querySelectorAll('.asm-stage > details')], tb = P.querySelector('.asm-toolbar');
+          return { nums: rows.map(d => d.querySelector(':scope > summary .asm-num').textContent.trim()).join(''),
+                   heads: rows.every(d => !!d.querySelector(':scope > summary h3') && !!d.querySelector(':scope > summary .asm-meta')),
+                   circles: !!(tb && tb.offsetParent), prevNext: P.querySelectorAll('[data-asm-prev], [data-asm-next], .asm-count').length }; })()""")
+        check("laptop: Build is one list, Step 0 to Step 8, every row with its name and one line of description; the circles and Previous / Next are gone (Shad, 11 Nov)",
+              nav["nums"] == "012345678" and nav["heads"] and not nav["circles"] and nav["prevNext"] == 0, nav)
         ga = pg.evaluate("(() => { const s = getComputedStyle(document.getElementById('ga-root')), l = document.querySelector('.ga-launcher'); return { right: s.right, bottom: s.bottom, h: Math.round(l.getBoundingClientRect().height), words: getComputedStyle(document.querySelector('.ga-launcher-label')).display !== 'none' }; })()")
         check("laptop: the chat button stays where it was (18 px from the corner, with its words)", ga["right"] == "18px" and ga["bottom"] == "18px" and ga["words"], ga)
         foot = pg.evaluate("[getComputedStyle(document.querySelector('.sync-server')).display, document.querySelector('.sync-public').hidden, document.querySelector('footer') ? document.querySelector('footer').innerText : '']")
@@ -146,21 +150,22 @@ try:
           const live = [...document.querySelectorAll('.viewer3d')].filter(v => v.querySelector('canvas'));
           return { model: top.getAttribute('data-model'), poster: top.classList.contains('v3d-poster-on'), shown: S(btn), img: !!img && img.complete && img.naturalWidth > 0,
                    topCanvas: !!top.querySelector('canvas'), live: live.length }; })()""" % (SHOWN, TOP_VIEW))
-        check("phone (390 px): the finished drone at the top of Build is a picture until tapped, so no 3D view is live",
+        check("phone (390 px): the finished drone on Build (after Step 8 since 11 Nov) is a picture until tapped, so no 3D view is live",
               ph["model"] is None and ph["poster"] and ph["shown"] and ph["img"] and not ph["topCanvas"] and ph["live"] == 0, ph)
         pg.screenshot(path=os.path.join(SHOTS, "phone-build-top.png"))
         # 10 Nov 2026: two checks stood here on a step's own 3D viewer ("shows the model, its step chips and one 'More 3D
         # options' button" and "'More 3D options' shows the timeline, Focus ... 'Fewer 3D options' folds them away").
         # Those viewers left the page on 8 Nov. The fold is checked on the finished drone below, opened and closed.
-        nav = pg.evaluate("""(() => { const n = [...document.querySelectorAll('#p-steps .asm-nav')].find(x => x.offsetParent !== null);
-          const r = e => e.getBoundingClientRect(), nr = r(n), a = r(n.querySelector('[data-asm-prev]')), c = r(n.querySelector('.asm-count')), z = r(n.querySelector('.asm-count').nextElementSibling);
-          const fit = [...n.querySelectorAll('button')].every(x => x.scrollWidth <= x.clientWidth + 1);
-          const lines = x => { const g = document.createRange(); g.selectNodeContents(x); return new Set([...g.getClientRects()].map(q => Math.round(q.top))).size; };
-          const one = [...n.querySelectorAll('button')].every(x => lines(x) === 1);   /* the words' line boxes: 1 = no wrap */
-          return { above: c.bottom <= Math.min(a.top, z.top) + 1, full: c.width >= nr.width - 40, oneRow: a.top < z.bottom && z.top < a.bottom && a.right <= z.left + 1, fit: fit, oneLine: Math.abs(a.height - z.height) < 1 && one,
-                   prev: [Math.round(a.left), Math.round(a.top), Math.round(a.width), Math.round(a.height)], next: [Math.round(z.left), Math.round(z.top), Math.round(z.width), Math.round(z.height)] }; })()""")
-        check("phone: 'Step 1 of 8 ...' is on its own full-width line above Previous and Next (the two buttons side by side, each on one line, their words fit)",
-              nav["above"] and nav["full"] and nav["oneRow"] and nav["fit"] and nav["oneLine"], nav)
+        # 11 Nov 2026: the Previous / Next row is gone (see the laptop check above). In its place: a row of the list.
+        nav = pg.evaluate("""(() => { const d = document.querySelector('#p-steps .asm-step[data-step="2"]'), s = d.querySelector(':scope > summary');
+          const closedH = Math.round(s.getBoundingClientRect().height), was = d.open; d.open = true;
+          const a = d.querySelector(':scope > a.wt-thumb'), img = a && a.querySelector('img'), r = a ? a.getBoundingClientRect() : { width: 0, right: 0 };
+          const out = { closedH: closedH, opened: d.open, thumbW: Math.round(r.width), play: !!(a && a.querySelector('.wt-play') && a.querySelector('.wt-play').offsetWidth),
+                        cap: a ? a.querySelector('.wt-cap').textContent.trim() : '', fits: !!a && r.right <= innerWidth + 1, href: a ? a.getAttribute('href') : '', img: img ? img.getAttribute('src') : '' };
+          d.open = was; return out; })()""")
+        check("phone: a closed step is a short row; open, it shows its lesson picture with a play button, inside the screen (Shad, 11 Nov)",
+              nav["closedH"] <= 130 and nav["opened"] and nav["thumbW"] >= 250 and nav["play"] and nav["cap"] == "Watch it in 3D, with quizzes" and nav["fits"]
+              and nav["href"].endswith("#s2-frame") and nav["img"] == "docs/images/lessons/s2-frame.jpg", nav)
         top_el = pg.evaluate_handle(TOP_VIEW).as_element()
         top_el.scroll_into_view_if_needed(); top_el.query_selector(".v3d-poster").click()
         try:

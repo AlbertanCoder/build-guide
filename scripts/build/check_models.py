@@ -74,8 +74,9 @@ if not os.path.isfile(PAGE):
     sys.exit(1)
 with open(PAGE, encoding="utf-8") as _f:
     _page = _f.read()
-    for _m in _re.finditer(r'<section class="asm-step" data-step="(\d)"', _page):
-        _end = _page.find('<section class="asm-step"', _m.end())
+    # 11 Nov 2026: each step is a row that opens and closes (<details>), no longer a <section> (Build is one list, Step 0 to 8)
+    for _m in _re.finditer(r'<details class="asm-step" data-step="(\d)"', _page):
+        _end = _page.find('<details class="asm-step"', _m.end())
         PAGE_STEPS[int(_m.group(1))] = _page[_m.start(): _end if _end > 0 else len(_page)]
 PLANNED_REQUIRED = {}   # Phase E: the payload follows the approved simulated layout (labelled), no longer greyed
 LAYOUT_REQUIRED = {"step-07-mount": "pi_pcb", "step-08-test": "pi_pcb", "final-product": "pi_pcb"}

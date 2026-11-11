@@ -564,7 +564,7 @@
   .asm-goal { margin: 0 0 20px; }
   .asm-goal h3 { margin: 0 0 8px; color: var(--pine-deep); }
   .asm-goal > p { max-width: 720px; }
-  .asm-toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 0 0 12px; }
+  .asm-toolbar { display: none; }   /* the step list replaced the circles; they stay in the page because the chat reads the current step from them */
   .asm-dots { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
   .asm-dot { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--line);
              background: var(--card); color: var(--soft); font-weight: 700; font-size: 14px;
@@ -573,7 +573,7 @@
   .asm-dot.is-done { background: var(--pine-pale); border-color: var(--pine); color: var(--pine); }
   .asm-dot.is-current { background: var(--pine); border-color: var(--pine); color: #fff; }
   .asm-stage { display: grid; gap: 18px; }
-  .asm-step { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  .asm-step, .asm-step0 { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
               box-shadow: var(--shadow); overflow: clip; scroll-margin-top: 12px; }
   .asm-head { display: flex; align-items: center; gap: 14px; padding: 15px 18px;
               background: linear-gradient(135deg, var(--pine-deep) 0%, var(--pine) 100%);
@@ -583,6 +583,25 @@
              display: grid; place-items: center; font-size: 24px; font-weight: 800; }
   .asm-title h3 { margin: 0; font-size: 19px; color: #fff; }
   .asm-meta { margin: 2px 0 0; font-size: 13px; color: #d9ebe3; }
+  /* the step list (11 Nov 2026): Step 0 to Step 8, every row opens and closes */
+  summary.asm-head { cursor: pointer; list-style: none; position: relative; padding-right: 48px; }
+  summary.asm-head::-webkit-details-marker { display: none; }
+  summary.asm-head::after { content: ""; position: absolute; right: 20px; top: 50%; width: 9px; height: 9px;
+    border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-70%) rotate(45deg); }
+  details[open] > summary.asm-head::after { transform: translateY(-25%) rotate(225deg); }
+  details:not([open]) > summary.asm-head { background: var(--card); color: var(--pine-deep); }
+  details:not([open]) > summary.asm-head .asm-num { background: var(--pine); border-color: var(--pine); color: #fff; }
+  details:not([open]) > summary.asm-head h3 { color: var(--pine-deep); }
+  details:not([open]) > summary.asm-head .asm-meta { color: var(--soft); }
+  .asm-intro { padding: 12px 18px 0; }
+  .asm-step0 > .acc-body { padding-top: 12px; }
+  .wt-link.wt-thumb { display: block; position: relative; margin: 14px 18px 6px; padding: 0; border-radius: 12px; overflow: hidden;
+    background: #eef1f4; max-width: 620px; font-size: 14px; }
+  .wt-thumb img { display: block; width: 100%; height: auto; }
+  .wt-thumb .wt-play { position: absolute; left: 50%; top: calc(50% - 20px); transform: translate(-50%, -50%); width: 60px; height: 60px;
+    border-radius: 50%; background: #0a6cff; color: #fff; display: grid; place-items: center; font-size: 24px; box-shadow: 0 4px 14px rgba(0,0,0,.28); }
+  .wt-thumb .wt-cap { display: block; padding: 10px 14px; background: #0a6cff; color: #fff; }
+  .practice-stage .wt-link.wt-thumb { margin: 10px 0 8px; }
   .asm-body { display: grid; grid-template-columns: minmax(0, 1fr); }
   .asm-visual { padding: 14px; background: var(--bg); min-width: 0; border-bottom: 1px solid var(--line); }
   /* Laptop and wider: instructions on the left, the 3D model on the right, pinned while the text scrolls.
@@ -762,7 +781,7 @@
   .ga-settings .ga-note.ok { background: var(--pine-pale); }
   .stg-done { display: flex; gap: 8px; align-items: center; margin-top: 10px; font-weight: 600; }
   /* page 2 of the guide audit (4 Nov 2026): Stages 0-3's practice in Build, Before Step 1 */
-  .practice-wrap { margin: 0 0 18px; } .practice-wrap > summary { font-size: 1.05em; }
+  .practice-wrap { margin: 0; }
   .practice-stage { border: 1px solid var(--line); border-radius: 10px; margin: 10px 0; background: #fff; padding: 4px 14px 10px; }
   .practice-stage > h4 { margin: 10px 0 6px; }
   .stage-uses { margin: 4px 0 10px; color: var(--soft); }
@@ -2438,7 +2457,7 @@
         <div class="stage">
           <h4>Stage 1 &middot; Workshop &amp; safety</h4>
           <p class="stg-cost" data-stage-cost="1"></p>
-          <p class="stage-uses">Its practice is in <a href="#practice" data-open="practice">Build &gt; First: practice</a>.</p>
+          <p class="stage-uses">Its practice is in <a href="#practice" data-open="practice">Build &gt; Step 0</a>.</p>
           <div class="asm-parts">
             <span class="asm-label">What to buy</span>
             <ul class="stage-items" data-stage-list="1"></ul>
@@ -2448,7 +2467,7 @@
         <div class="stage">
           <h4>Stage 2 &middot; The payload laboratory</h4>
           <p class="stg-cost" data-stage-cost="2"></p>
-          <p class="stage-uses">Its practice is in <a href="#practice" data-open="practice">Build &gt; First: practice</a>.</p>
+          <p class="stage-uses">Its practice is in <a href="#practice" data-open="practice">Build &gt; Step 0</a>.</p>
           <div class="asm-parts">
             <span class="asm-label">What to buy</span>
             <ul class="stage-items" data-stage-list="2"></ul>
@@ -2458,7 +2477,7 @@
         <div class="stage">
           <h4>Stage 3 &middot; Radio &amp; reflexes</h4>
           <p class="stg-cost" data-stage-cost="3"></p>
-          <p class="stage-uses">Its practice is in <a href="#practice" data-open="practice">Build &gt; First: practice</a>.</p>
+          <p class="stage-uses">Its practice is in <a href="#practice" data-open="practice">Build &gt; Step 0</a>.</p>
           <div class="asm-parts">
             <span class="asm-label">What to buy</span>
             <ul class="stage-items" data-stage-list="3"></ul>
@@ -2884,8 +2903,44 @@
     <button class="expand-btn" data-panel="p-steps">Expand all</button>
   </div>
 
-  <details class="acc practice-wrap" id="practice">
-    <summary>First: practice</summary>
+
+
+
+      <div class="assembly" data-assembly>
+        <div class="asm-legend">
+          <span>Open a step. Watch it, do it, pass the &#10003; check, then tick it done.</span>
+          <span class="asm-key">&#9888; = safety rule</span>
+          <span class="asm-key">&#10003; = check before going on</span>
+        </div>
+        <div class="asm-toolbar">
+          <div class="asm-dots">
+            <button type="button" class="asm-dot" data-asm-dot="1" title="Step 1: Lay out all the parts" aria-label="Step 1: Lay out all the parts">1</button>
+            <button type="button" class="asm-dot" data-asm-dot="2" title="Step 2: Build the frame" aria-label="Step 2: Build the frame">2</button>
+            <button type="button" class="asm-dot" data-asm-dot="3" title="Step 3: Solder the stack" aria-label="Step 3: Solder the stack">3</button>
+            <button type="button" class="asm-dot" data-asm-dot="4" title="Step 4: Add control and video" aria-label="Step 4: Add control and video">4</button>
+            <button type="button" class="asm-dot" data-asm-dot="5" title="Step 5: Charge the batteries safely" aria-label="Step 5: Charge the batteries safely">5</button>
+            <button type="button" class="asm-dot" data-asm-dot="6" title="Step 6: Wire the Pi payload" aria-label="Step 6: Wire the Pi payload">6</button>
+            <button type="button" class="asm-dot" data-asm-dot="7" title="Step 7: Mount and balance" aria-label="Step 7: Mount and balance">7</button>
+            <button type="button" class="asm-dot" data-asm-dot="8" title="Step 8: Test, in this order" aria-label="Step 8: Test, in this order">8</button>
+          </div>
+        </div>
+
+        <div class="asm-banner" data-asm-banner role="status" hidden>
+          <span data-asm-banner-text></span>
+          <span class="asm-banner-btns">
+            <button type="button" class="asm-btn primary" data-asm-banner-go>Go back</button>
+            <button type="button" class="asm-btn" data-asm-banner-x aria-label="Dismiss this message">Dismiss</button>
+          </span>
+        </div>
+        <div class="asm-stage">
+        <details class="asm-step0 practice-wrap" id="practice" aria-label="Step 0: Practice first">
+          <summary class="asm-head">
+            <span class="asm-num" aria-hidden="true">0</span>
+            <div class="asm-title">
+              <h3>Practice first</h3>
+              <p class="asm-meta">Tools, soldering, the radio and the simulator, while the other parts ship</p>
+            </div>
+          </summary>
     <div class="acc-body">
       <p id="practice-now">Practise with the parts from Stages 1 to 3 while the rest ships. Tick each stage when its practice is done: the Home page then moves on.</p>
         <div class="practice-stage" id="practice-stage-0">
@@ -2903,7 +2958,7 @@
         </div>
         <div class="practice-stage" id="practice-stage-1">
           <h4>Stage 1 &middot; Workshop &amp; safety</h4>
-          <a class="wt-link" href="docs/walkthrough/index.html#s1-meter">&#9654; Watch it in 3D, with quizzes</a>
+          <a class="wt-link wt-thumb" href="docs/walkthrough/index.html#s1-meter"><img src="docs/images/lessons/s1-meter.jpg" alt="" width="720" height="255"><span class="wt-play" aria-hidden="true">&#9654;</span><span class="wt-cap">Watch it in 3D, with quizzes</span></a>
           <p class="asm-warn"><strong>&#9888; Safety:</strong> Wear your safety glasses whenever the iron is hot (you already have a pair: check the frame says Z87 or CSA). Never leave a hot iron alone. Wash your hands after soldering and keep food away from the bench: the kit's solder may contain lead.</p>
           <details class="wt-fold"><summary>Show the written steps</summary>
 <div class="asm-do">
@@ -2929,7 +2984,7 @@
         </div>
         <div class="practice-stage" id="practice-stage-3">
           <h4>Stage 3 &middot; Radio &amp; reflexes</h4>
-          <a class="wt-link" href="docs/walkthrough/index.html#s3r-tour">&#9654; Watch it in 3D, with quizzes</a> <a class="wt-link" href="docs/walkthrough/practice-radio.html">&#9654; Practise on a pretend radio</a>
+          <a class="wt-link wt-thumb" href="docs/walkthrough/index.html#s3r-tour"><img src="docs/images/lessons/s3r-tour.jpg" alt="" width="720" height="255"><span class="wt-play" aria-hidden="true">&#9654;</span><span class="wt-cap">Watch it in 3D, with quizzes</span></a> <a class="wt-link" href="docs/walkthrough/practice-radio.html">&#9654; Practise on a pretend radio</a>
           <div class="asm-do">
             <span class="asm-label">What you can do with it</span>
             <ol class="asm-actions">
@@ -2941,95 +2996,20 @@
             <ul><li class="s1-rich"><p>Our target for beginners, in the simulator's self-levelling (Angle) mode, the mode of your first real hover in Step 8: hold the pretend drone in a hover for 30 seconds inside a box about 3 m wide, three times in a row. Then arm and disarm with the switch without looking at the radio.</p><p>Hover means staying still in the air. Arm means switching the motors on.</p></li></ul><label class="stg-done"><input type="checkbox" data-key="stg-3-done"> Stage 3 practice done</label></div>
         </div>
     </div>
-  </details>
-
-
-
-  <details class="acc" open>
-    <summary>Then: the 8 steps</summary>
-    <div class="acc-body">
-      <div class="assembly" data-assembly>
-        <div class="asm-legend">
-          <span class="asm-key">How this works:</span>
-          <span>1 Watch or read the step &rarr; 2 Do it &rarr; 3 Pass the &#10003; check &rarr; 4 Tick the box &rarr; 5 Next step</span>
-          <span class="asm-key">&#9888; = safety rule</span>
-          <span class="asm-key">&#10003; = check before going on</span>
-        </div>
-
-        <div class="asm-goal">
-          <h3>What you are building</h3>
-          <p>The finished drone: this is what Step 8 must look like. Turn it to see where each part sits.</p>
-          <div class="viewer3d" data-model="docs/models/final-product.glb" data-title="The finished build">
-            <button type="button" class="v3d-poster" hidden><img src="docs/images/build/finished-drone-poster.jpg" alt="The finished drone: a still picture of its 3D view" width="640" height="401" loading="lazy"><span>&#9654; Open the 3D view of the finished drone</span></button>
-            <div class="viewer3d-canvas">
-              <div class="viewer3d-labels"></div>
-              <span class="viewer3d-status">Loading 3D&hellip;</span>
-            </div>
-            <p class="viewer3d-nogl">This interactive view needs WebGL. Every step still shows
-            its flat picture, so the guide stays readable without it.</p>
-            <div class="viewer3d-bar">
-              <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
-              <button type="button" data-action="reset">Reset view</button>
-              <button type="button" data-action="labels" aria-pressed="false">Labels</button>
-              <button type="button" data-action="fullscreen">Full screen</button>
-            </div>
-          </div>
-          <script>
-            /* Phone pass (job 11): on a phone this 3D view waits as a picture until tapped, so Build opens with one live
-               3D view (the step's). It runs before the viewer starts: the viewer only starts views that have a data-model. */
-            (function () {
-              var root = document.currentScript && document.currentScript.previousElementSibling;
-              if (!root || !root.classList.contains("viewer3d") || !window.matchMedia || !matchMedia("(max-width: 600px)").matches) { return; }
-              var btn = root.querySelector(".v3d-poster");
-              if (!btn) { return; }
-              root.setAttribute("data-poster-model", root.getAttribute("data-model"));
-              root.removeAttribute("data-model");
-              root.classList.add("v3d-poster-on");
-              btn.hidden = false;
-              btn.addEventListener("click", function () {
-                root.setAttribute("data-model", root.getAttribute("data-poster-model"));
-                root.classList.remove("v3d-poster-on");
-                btn.hidden = true;
-                var go = function () { if (window.BuildGuideViewer) { window.BuildGuideViewer.mount(root); } };
-                if (window.BuildGuideViewer) { go(); } else { window.addEventListener("load", go, { once: true }); }
-              });
-            })();
-          </script>
-        </div>
-
-        <div class="asm-toolbar">
-          <div class="asm-dots">
-            <button type="button" class="asm-dot" data-asm-dot="1" title="Step 1: Lay out all the parts" aria-label="Step 1: Lay out all the parts">1</button>
-            <button type="button" class="asm-dot" data-asm-dot="2" title="Step 2: Build the frame" aria-label="Step 2: Build the frame">2</button>
-            <button type="button" class="asm-dot" data-asm-dot="3" title="Step 3: Solder the stack" aria-label="Step 3: Solder the stack">3</button>
-            <button type="button" class="asm-dot" data-asm-dot="4" title="Step 4: Add control and video" aria-label="Step 4: Add control and video">4</button>
-            <button type="button" class="asm-dot" data-asm-dot="5" title="Step 5: Charge the batteries safely" aria-label="Step 5: Charge the batteries safely">5</button>
-            <button type="button" class="asm-dot" data-asm-dot="6" title="Step 6: Wire the Pi payload" aria-label="Step 6: Wire the Pi payload">6</button>
-            <button type="button" class="asm-dot" data-asm-dot="7" title="Step 7: Mount and balance" aria-label="Step 7: Mount and balance">7</button>
-            <button type="button" class="asm-dot" data-asm-dot="8" title="Step 8: Test, in this order" aria-label="Step 8: Test, in this order">8</button>
-          </div>
-          <button type="button" class="expand-btn" data-asm-all aria-pressed="false">Show all 8 steps</button>
-        </div>
-
-        <div class="asm-banner" data-asm-banner role="status" hidden>
-          <span data-asm-banner-text></span>
-          <span class="asm-banner-btns">
-            <button type="button" class="asm-btn primary" data-asm-banner-go>Go back</button>
-            <button type="button" class="asm-btn" data-asm-banner-x aria-label="Dismiss this message">Dismiss</button>
-          </span>
-        </div>
-        <div class="asm-stage">
-        <section class="asm-step" data-step="1" aria-label="Step 1: Lay out all the parts">
-          <div class="asm-head">
+        </details>
+        <details class="asm-step" data-step="1" aria-label="Step 1: Lay out all the parts">
+          <summary class="asm-head">
             <span class="asm-num" aria-hidden="true">1</span>
             <div class="asm-title">
               <h3>Lay out all the parts</h3>
               <p class="asm-meta">You need a clear table, small cups or bags for loose screws, a pen and your laptop</p>
-              <p class="here-terms"><strong>You are buying in stages, so you won&rsquo;t have every part yet.</strong> Do this step again each time a stage arrives: lay out what came and tick it on the Buy page. Build only the steps whose parts are all here.</p>
-              <p class="muted here-terms">A Stage is a batch of parts to buy. A Step is a page of the build. Stage numbers and Step numbers do not match one to one.</p>
             </div>
+          </summary>
+          <div class="asm-intro">
+            <p class="here-terms"><strong>You are buying in stages, so you won&rsquo;t have every part yet.</strong> Do this step again each time a stage arrives: lay out what came and tick it on the Buy page. Build only the steps whose parts are all here.</p>
+            <p class="muted here-terms">A Stage is a batch of parts to buy. A Step is a page of the build. Stage numbers and Step numbers do not match one to one.</p>
           </div>
-          <a class="wt-link" href="docs/walkthrough/index.html#st1-layout">&#9654; Watch it in 3D, with quizzes</a>
+          <a class="wt-link wt-thumb" href="docs/walkthrough/index.html#st1-layout"><img src="docs/images/lessons/st1-layout.jpg" alt="" width="720" height="255"><span class="wt-play" aria-hidden="true">&#9654;</span><span class="wt-cap">Watch it in 3D, with quizzes</span></a>
           <div class="asm-body">
             <div class="asm-visual">
               <div class="asm-picture">
@@ -3069,16 +3049,16 @@
               <label class="asm-done"><input type="checkbox" data-asm="1"> This step is done</label>
             </div>
           </div>
-        </section>
-        <section class="asm-step" data-step="2" aria-label="Step 2: Build the frame">
-          <div class="asm-head">
+        </details>
+        <details class="asm-step" data-step="2" aria-label="Step 2: Build the frame">
+          <summary class="asm-head">
             <span class="asm-num" aria-hidden="true">2</span>
             <div class="asm-title">
               <h3>Build the frame</h3>
               <p class="asm-meta">You need the frame box and the 4 motors &middot; hexagon screwdrivers from the tool kit</p>
             </div>
-          </div>
-          <a class="wt-link" href="docs/walkthrough/index.html#s2-frame">&#9654; Watch it in 3D, with quizzes</a>
+          </summary>
+          <a class="wt-link wt-thumb" href="docs/walkthrough/index.html#s2-frame"><img src="docs/images/lessons/s2-frame.jpg" alt="" width="720" height="268"><span class="wt-play" aria-hidden="true">&#9654;</span><span class="wt-cap">Watch it in 3D, with quizzes</span></a>
           <div class="asm-body">
             <details class="wt-fold"><summary>Show the drawing</summary>
 <div class="asm-visual">
@@ -3118,17 +3098,19 @@
               <label class="asm-done"><input type="checkbox" data-asm="2"> This step is done</label>
             </div>
           </div>
-        </section>
-        <section class="asm-step" data-step="3" aria-label="Step 3: Solder the stack">
-          <div class="asm-head">
+        </details>
+        <details class="asm-step" data-step="3" aria-label="Step 3: Solder the stack">
+          <summary class="asm-head">
             <span class="asm-num" aria-hidden="true">3</span>
             <div class="asm-title">
               <h3>Solder the stack</h3>
               <p class="asm-meta">Soldering iron + safety glasses &middot; you practised in Stage 1 &middot; take your time here</p>
-              <p class="asm-note-top"><strong>No battery in this step.</strong> The stack's first power-up comes at the end of Step 5, right after the first charge, with the fire extinguisher beside you.</p>
             </div>
+          </summary>
+          <div class="asm-intro">
+            <p class="asm-note-top"><strong>No battery in this step.</strong> The stack's first power-up comes at the end of Step 5, right after the first charge, with the fire extinguisher beside you.</p>
           </div>
-          <a class="wt-link" href="docs/walkthrough/index.html#s3-esc">&#9654; Watch it in 3D, with quizzes</a>
+          <a class="wt-link wt-thumb" href="docs/walkthrough/index.html#s3-esc"><img src="docs/images/lessons/s3-esc.jpg" alt="" width="720" height="268"><span class="wt-play" aria-hidden="true">&#9654;</span><span class="wt-cap">Watch it in 3D, with quizzes</span></a>
           <div class="asm-body">
             <details class="wt-fold"><summary>Show the drawing</summary>
 <div class="asm-visual">
@@ -3168,16 +3150,16 @@
               <label class="asm-done"><input type="checkbox" data-asm="3"> This step is done</label>
             </div>
           </div>
-        </section>
-        <section class="asm-step" data-step="4" aria-label="Step 4: Add control and video">
-          <div class="asm-head">
+        </details>
+        <details class="asm-step" data-step="4" aria-label="Step 4: Add control and video">
+          <summary class="asm-head">
             <span class="asm-num" aria-hidden="true">4</span>
             <div class="asm-title">
               <h3>Add control and video</h3>
               <p class="asm-meta">Soldering iron &middot; the radio link and the video chain</p>
             </div>
-          </div>
-          <a class="wt-link" href="docs/walkthrough/index.html#s4-wiring">&#9654; Watch it in 3D, with quizzes</a>
+          </summary>
+          <a class="wt-link wt-thumb" href="docs/walkthrough/index.html#s4-wiring"><img src="docs/images/lessons/s4-wiring.jpg" alt="" width="720" height="255"><span class="wt-play" aria-hidden="true">&#9654;</span><span class="wt-cap">Watch it in 3D, with quizzes</span></a>
           <div class="asm-body">
             <details class="wt-fold"><summary>Show the drawing</summary>
 <div class="asm-visual">
@@ -3221,17 +3203,19 @@
               <label class="asm-done"><input type="checkbox" data-asm="4"> This step is done</label>
             </div>
           </div>
-        </section>
-        <section class="asm-step" data-step="5" aria-label="Step 5: Charge the batteries safely">
-          <div class="asm-head">
+        </details>
+        <details class="asm-step" data-step="5" aria-label="Step 5: Charge the batteries safely">
+          <summary class="asm-head">
             <span class="asm-num" aria-hidden="true">5</span>
             <div class="asm-title">
               <h3>Charge the batteries safely</h3>
               <p class="asm-meta">The charger and the LiPo bag &middot; never skip the bag &middot; then the stack's first power-up</p>
-              <p class="asm-note-top"><strong>Before your first charge:</strong> buy a small home fire extinguisher rated for electrical fires. Its label shows the letter C, for example 1-A:10-B:C. Keep it within reach of the charging spot, and read how to use it before you need it.</p>
             </div>
+          </summary>
+          <div class="asm-intro">
+            <p class="asm-note-top"><strong>Before your first charge:</strong> buy a small home fire extinguisher rated for electrical fires. Its label shows the letter C, for example 1-A:10-B:C. Keep it within reach of the charging spot, and read how to use it before you need it.</p>
           </div>
-          <a class="wt-link" href="docs/walkthrough/index.html#s5-charge">&#9654; Watch it in 3D, with quizzes</a>
+          <a class="wt-link wt-thumb" href="docs/walkthrough/index.html#s5-charge"><img src="docs/images/lessons/s5-charge.jpg" alt="" width="720" height="268"><span class="wt-play" aria-hidden="true">&#9654;</span><span class="wt-cap">Watch it in 3D, with quizzes</span></a>
           <div class="asm-body">
             <details class="wt-fold"><summary>Show the drawing</summary>
 <div class="asm-visual">
@@ -3284,16 +3268,16 @@
               <label class="asm-done"><input type="checkbox" data-asm="5"> This step is done</label>
             </div>
           </div>
-        </section>
-        <section class="asm-step" data-step="6" aria-label="Step 6: Wire the Pi payload">
-          <div class="asm-head">
+        </details>
+        <details class="asm-step" data-step="6" aria-label="Step 6: Wire the Pi payload">
+          <summary class="asm-head">
             <span class="asm-num" aria-hidden="true">6</span>
             <div class="asm-title">
               <h3>Wire the Pi payload</h3>
               <p class="asm-meta">Soldering iron and multimeter &middot; the small computer that sees heat</p>
             </div>
-          </div>
-          <a class="wt-link" href="docs/walkthrough/index.html#s6-pi">&#9654; Watch it in 3D, with quizzes</a>
+          </summary>
+          <a class="wt-link wt-thumb" href="docs/walkthrough/index.html#s6-pi"><img src="docs/images/lessons/s6-pi.jpg" alt="" width="720" height="254"><span class="wt-play" aria-hidden="true">&#9654;</span><span class="wt-cap">Watch it in 3D, with quizzes</span></a>
           <div class="asm-body">
             <details class="wt-fold"><summary>Show the drawing</summary>
 <div class="asm-visual">
@@ -3353,16 +3337,16 @@
               <label class="asm-done asm-done-auto" hidden><input type="checkbox" data-asm="6"> This step is done</label>
             </div>
           </div>
-        </section>
-        <section class="asm-step" data-step="7" aria-label="Step 7: Mount and balance">
-          <div class="asm-head">
+        </details>
+        <details class="asm-step" data-step="7" aria-label="Step 7: Mount and balance">
+          <summary class="asm-head">
             <span class="asm-num" aria-hidden="true">7</span>
             <div class="asm-title">
               <h3>Mount and balance</h3>
               <p class="asm-meta">Hex drivers + zip ties &middot; battery unplugged while you work on the payload; the props may stay on</p>
             </div>
-          </div>
-          <a class="wt-link" href="docs/walkthrough/index.html#s7-now">&#9654; Watch it in 3D, with quizzes</a>
+          </summary>
+          <a class="wt-link wt-thumb" href="docs/walkthrough/index.html#s7-now"><img src="docs/images/lessons/s7-now.jpg" alt="" width="720" height="240"><span class="wt-play" aria-hidden="true">&#9654;</span><span class="wt-cap">Watch it in 3D, with quizzes</span></a>
           <div class="asm-body">
             <details class="wt-fold"><summary>Show the drawing</summary>
 <div class="asm-visual">
@@ -3406,16 +3390,16 @@
               <label class="asm-done"><input type="checkbox" data-asm="7"> This step is done</label>
             </div>
           </div>
-        </section>
-        <section class="asm-step" data-step="8" aria-label="Step 8: Test, in this order">
-          <div class="asm-head">
+        </details>
+        <details class="asm-step" data-step="8" aria-label="Step 8: Test, in this order">
+          <summary class="asm-head">
             <span class="asm-num" aria-hidden="true">8</span>
             <div class="asm-title">
               <h3>Test, in this order</h3>
               <p class="asm-meta">Your laptop &middot; each test only after the last one passes</p>
             </div>
-          </div>
-          <a class="wt-link" href="docs/walkthrough/index.html#s8-bench">&#9654; Watch it in 3D, with quizzes</a>
+          </summary>
+          <a class="wt-link wt-thumb" href="docs/walkthrough/index.html#s8-bench"><img src="docs/images/lessons/s8-bench.jpg" alt="" width="720" height="255"><span class="wt-play" aria-hidden="true">&#9654;</span><span class="wt-cap">Watch it in 3D, with quizzes</span></a>
           <div class="asm-body">
             <details class="wt-fold"><summary>Show the drawing</summary>
 <div class="asm-visual">
@@ -3473,17 +3457,50 @@
               <label class="asm-done"><input type="checkbox" data-asm="8"> This step is done</label>
             </div>
           </div>
-        </section>
+        </details>
         </div>
 
-        <div class="asm-nav">
-          <button type="button" class="asm-btn" data-asm-prev>&larr; Previous step</button>
-          <span class="asm-count">Step <b data-asm-cur>1</b> of 8</span>
-          <button type="button" class="asm-btn primary" data-asm-next>Next step &rarr;</button>
+        <div class="asm-goal">
+          <h3>What you are building</h3>
+          <p>The finished drone: this is what Step 8 must look like. Turn it to see where each part sits.</p>
+          <div class="viewer3d" data-model="docs/models/final-product.glb" data-title="The finished build">
+            <button type="button" class="v3d-poster" hidden><img src="docs/images/build/finished-drone-poster.jpg" alt="The finished drone: a still picture of its 3D view" width="640" height="401" loading="lazy"><span>&#9654; Open the 3D view of the finished drone</span></button>
+            <div class="viewer3d-canvas">
+              <div class="viewer3d-labels"></div>
+              <span class="viewer3d-status">Loading 3D&hellip;</span>
+            </div>
+            <p class="viewer3d-nogl">This interactive view needs WebGL. Every step still shows
+            its flat picture, so the guide stays readable without it.</p>
+            <div class="viewer3d-bar">
+              <span class="viewer3d-hint">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan</span>
+              <button type="button" data-action="reset">Reset view</button>
+              <button type="button" data-action="labels" aria-pressed="false">Labels</button>
+              <button type="button" data-action="fullscreen">Full screen</button>
+            </div>
+          </div>
+          <script>
+            /* Phone pass (job 11): on a phone this 3D view waits as a picture until tapped, so Build opens with one live
+               3D view (the step's). It runs before the viewer starts: the viewer only starts views that have a data-model. */
+            (function () {
+              var root = document.currentScript && document.currentScript.previousElementSibling;
+              if (!root || !root.classList.contains("viewer3d") || !window.matchMedia || !matchMedia("(max-width: 600px)").matches) { return; }
+              var btn = root.querySelector(".v3d-poster");
+              if (!btn) { return; }
+              root.setAttribute("data-poster-model", root.getAttribute("data-model"));
+              root.removeAttribute("data-model");
+              root.classList.add("v3d-poster-on");
+              btn.hidden = false;
+              btn.addEventListener("click", function () {
+                root.setAttribute("data-model", root.getAttribute("data-poster-model"));
+                root.classList.remove("v3d-poster-on");
+                btn.hidden = true;
+                var go = function () { if (window.BuildGuideViewer) { window.BuildGuideViewer.mount(root); } };
+                if (window.BuildGuideViewer) { go(); } else { window.addEventListener("load", go, { once: true }); }
+              });
+            })();
+          </script>
         </div>
       </div>
-    </div>
-  </details>
 
 
 
@@ -3943,7 +3960,7 @@ while True:
         if (pr) { pr.open = true; }
         if (box.offsetParent) { window.scrollTo({ top: box.getBoundingClientRect().top + window.scrollY - 8, behavior: "instant" }); }
       } else {
-        const bar = document.querySelector("#p-steps .asm-toolbar");
+        const bar = document.querySelector("#p-steps .asm-step[open]") || document.querySelector("#p-steps .asm-stage");
         if (bar && bar.offsetParent) {
           window.scrollTo({ top: bar.getBoundingClientRect().top + window.scrollY - 8, behavior: "instant" });
         }
@@ -5474,7 +5491,7 @@ while True:
     btn.addEventListener("click", function () {
       if (!btn.dataset.panel) return; /* e.g. "Show all 8 steps" has its own handler */
       const panel = document.getElementById(btn.dataset.panel);
-      const accs = panel.querySelectorAll("details.acc");
+      const accs = panel.querySelectorAll("details.acc, details.asm-step, details.asm-step0");
       const anyClosed = Array.prototype.some.call(accs, function (d) { return !d.open; });
       accs.forEach(function (d) { d.open = anyClosed; });
       btn.textContent = anyClosed ? "Collapse all" : "Expand all";
@@ -5542,7 +5559,7 @@ while True:
     }
     function show(n, scroll) {
       current = Math.max(0, Math.min(steps.length - 1, n));
-      steps.forEach(function (s, k) { s.hidden = k !== current; });
+      steps.forEach(function (s, k) { s.open = k === current; });
       if (curEl) curEl.textContent = String(current + 1);
       if (prevBtn) prevBtn.disabled = current === 0;
       if (nextBtn) nextBtn.disabled = current === steps.length - 1;
@@ -5598,6 +5615,20 @@ while True:
             && !asm.classList.contains("show-all")) {
           show(current + 1);
         }
+      });
+    });
+    /* the step list (11 Nov 2026): a row opened by hand becomes the current step; "Expand all" does not move him */
+    steps.forEach(function (s, k) {
+      const head = s.querySelector("summary");
+      if (!head) return;
+      head.addEventListener("click", function () {
+        setTimeout(function () {
+          if (!s.open || k === current) return;
+          current = k;
+          paintDots();
+          paintBanner();
+          try { if (saved) { saved.asmStep = current; if (typeof save === "function") save(); } } catch (e) {}
+        }, 0);
       });
     });
     /* put him back on the step he was on; a first visit starts at his first unfinished step */
@@ -5872,6 +5903,6 @@ while True:
 </script>
 <script src="docs/js/domain.js"></script>
 <!-- Guide Assistant: offline-first Q&A. Remove these two lines to drop it. -->
-<script src="docs/js/assistant.js?v=build-guide-v11"></script>
+<script src="docs/js/assistant.js?v=build-guide-v12"></script>
 </body>
 </html>
