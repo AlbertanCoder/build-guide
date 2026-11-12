@@ -377,7 +377,7 @@ function systemPrompt() {
     "   one line each. Plain words, no marketing, no exclamation marks. Max 160 words.",
     "   When the user asks for more detail, up to 400 words.",
     "7. You may add navigation buttons by writing a directive on its own line:",
-    "   [[NAV steps 6]] or [[NAV parts]]. Tabs: why, build, parts, steps, career, quiz, limits.",
+    "   [[NAV steps 6]] or [[NAV parts]]. Tabs: why, build, parts, steps, quiz.",
     "   Use at most two, and only for places you actually referenced.",
     "8. WHERE SHAD IS and WHAT SHAD HAS TOLD YOU, when given, describe this user's own build. Answer for",
     "   his current step and his parts, and say which step you mean. Do not repeat advice he has already",
@@ -590,10 +590,10 @@ async function streamAnthropic(messages, onDelta, opts) {
    The model may ask for a button by writing [[NAV steps 6]]. Those are stripped
    from the prose and handed to the client as buttons, so a model can never
    inject markup or a URL into the page. */
-const TABS = ["why", "build", "parts", "steps", "career", "quiz", "limits"];
+const TABS = ["why", "build", "parts", "steps", "quiz"];
 const TAB_LABEL = {
-  why: "What you're building & why", build: "How it works", parts: "Parts & budget",
-  steps: "Build steps", career: "Career & pay", quiz: "Quizzes", limits: "Honest limits"
+  why: "Learn: What it is, and why", build: "Learn: How it works", parts: "Parts & budget",
+  steps: "Build steps", quiz: "Learn: Prove it"
 };
 
 function extractNav(text) {
@@ -1547,7 +1547,7 @@ async function handleAsk(req, res) {
    missing file is never fatal — the page's localStorage copy keeps it. */
 const CONVERSATIONS_DIR = ENV.CONVERSATIONS_DIR || path.join(__dirname, ".conversations");
 const THREAD_ID = /^[a-z0-9-]{1,64}$/i;
-const BUILD_TABS = ["why", "build", "parts", "steps", "career", "quiz", "limits"];
+const BUILD_TABS = ["why", "build", "parts", "steps", "quiz"];
 
 function cleanBuild(value) {
   if (!value || typeof value !== "object" || Array.isArray(value)) { return null; }

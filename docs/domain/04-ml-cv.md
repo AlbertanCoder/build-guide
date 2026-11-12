@@ -23,7 +23,7 @@ At 30 m with the 55° lens a 1 m heat source covers about one pixel, so detectio
 is a sampling question before it is an algorithm question. Ideal-nadir geometry
 also omits tilt, terrain, lens distortion and GPS/altitude/heading errors.
 
-source:: domain 01; payload README limitations; Guide, Learn > How it works (calculator)
+source:: domain 01; payload README limitations; Guide, Learn, Lesson 5 (calculator)
 verified:: 2026-11-03
 
 ## Geolocation is geometry plus assumptions
@@ -47,8 +47,8 @@ verified:: 2026-11-01
 
 ## Why it matters for your build
 
-The career asset is the honest pipeline — group, locate, map, report, prove —
+What matters is the honest pipeline — group, locate, map, report, prove —
 not a model claim. Each stage is testable on the bench before anything flies.
 
-source:: Guide, Learn > Career & pay ("the pipeline is the career asset"); payload README
+source:: Guide, Learn, Lesson 5 ("the pipeline matters more than the airframe"); payload README
 verified:: 2026-11-03

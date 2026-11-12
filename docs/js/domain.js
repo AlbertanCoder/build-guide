@@ -22,10 +22,6 @@ window.GUIDE_DOMAIN = {
     {
       "title": "Airframes — why this quad is built the way it is",
       "file": "05-airframes.md"
-    },
-    {
-      "title": "Careers and pay — what the data says and what you may claim",
-      "file": "06-careers.md"
     }
   ],
   "chunks": [
@@ -47,7 +43,7 @@ window.GUIDE_DOMAIN = {
         "resolution limit"
       ],
       "text": "The sensor is a 32 by 24 array. The MLX90640 gives 768 temperature readings per frame, at roughly ±2 °C over a 0–100 °C range. That is the specification, not a measured detection result.",
-      "source": "MLX90640 datasheet; Guide, Learn > What & Why (the honesty box)",
+      "source": "MLX90640 datasheet; Guide, Learn, Lesson 6 (the honest line)",
       "verified": "2026-11-03",
       "correction": false,
       "unverified": false
@@ -70,7 +66,7 @@ window.GUIDE_DOMAIN = {
         "resolution limit"
       ],
       "text": "The ground footprint decides your pixel size. Ground width for a downward camera is 2 × altitude × tan(FOV ÷ 2). With the 55° lens at 30 m that is about 31.2 m across, which over 32 pixels is roughly 0.98 m per pixel.",
-      "source": "Guide, Learn > How it works (altitude and coverage calculator)",
+      "source": "Guide, Learn, Lesson 5 (altitude and coverage calculator)",
       "verified": "2026-11-03",
       "correction": false,
       "unverified": false
@@ -93,7 +89,7 @@ window.GUIDE_DOMAIN = {
         "resolution limit"
       ],
       "text": "A one metre heat source at 30 m is about one pixel. At 30 m with the 55° lens a 1 m target covers about one pixel, so detection is a sampling question before it is an algorithm question. This is why the guide refuses to promise \"finds a 1 m heat source from 30 m\" as a capability.",
-      "source": "Guide, Learn > What & Why and How it works; audit pass 2 finding 12",
+      "source": "Guide, Learn, Lessons 5 and 6; audit pass 2 finding 12",
       "verified": "2026-11-03",
       "correction": false,
       "unverified": false
@@ -162,7 +158,7 @@ window.GUIDE_DOMAIN = {
         "vlos"
       ],
       "text": "The mission product is a map, not an autopilot. FPInnovations describes the deliverable as a map of GPS-referenced hotspots handed to the firefighter — not an aircraft that finds fires by itself. The prototype should be measured against that framing.",
-      "source": "FPInnovations TR-2020-N29 (2020), as cited in Guide, Learn > Limits & sources, and domain 01",
+      "source": "FPInnovations TR-2020-N29 (2020), as cited in Guide, Learn, Sources and checks, and domain 01",
       "verified": "2026-11-03",
       "correction": false,
       "unverified": false
@@ -185,7 +181,7 @@ window.GUIDE_DOMAIN = {
         "vlos"
       ],
       "text": "A real fire is agency airspace. Unauthorised drones near a wildfire ground air tankers and endanger crews, which is why the guide says plainly that no drone may fly over or within 5 nautical miles (9.3 km) of a wildfire below 3,000 ft (CAR 601.15). Real fires are not practice.",
-      "source": "Guide, Learn > What & Why, and Fly safely; CAR 601.15",
+      "source": "Guide, Learn, Lesson 6, and Fly safely; CAR 601.15",
       "verified": "2026-11-03",
       "correction": false,
       "unverified": false
@@ -254,7 +250,7 @@ window.GUIDE_DOMAIN = {
         "vlos"
       ],
       "text": "Why it matters for your build. The build is judged on delivering a credible hotspot map a crew could act on, with the caveats attached — not on \"finding fires\". Every design choice that looks conservative follows from that.",
-      "source": "Guide, Learn > What & Why; FPInnovations TR-2020-N29 (2020)",
+      "source": "Guide, Learn, Lesson 1; FPInnovations TR-2020-N29 (2020)",
       "verified": "2026-11-03",
       "correction": false,
       "unverified": false
@@ -279,7 +275,7 @@ window.GUIDE_DOMAIN = {
         "vlos"
       ],
       "text": "The forest-fire line that never bends. Do not operate over a forest-fire area or within 5 nautical miles (9.3 km) of one below 3,000 ft AGL, and do not enter airspace restricted by a NOTAM under CAR 601.16. Unauthorised drones ground air tankers and endanger crews.",
-      "source": "CAR 601.15 and CAR 601.16, as cited in Guide, Learn > What & Why, and Fly safely",
+      "source": "CAR 601.15 and CAR 601.16, as cited in Guide, Learn, Lesson 6, and Fly safely",
       "verified": "2026-11-03",
       "correction": false,
       "unverified": false
@@ -354,7 +350,7 @@ window.GUIDE_DOMAIN = {
         "vlos"
       ],
       "text": "Night lights are necessary, not sufficient. CAR 901.39 requires the aircraft to remain visible; a generic LED kit does not by itself make a flight legal. VLOS, airspace, bystander, aerodrome, NOTAM, Alberta fire bans and local rules all still apply at night.",
-      "source": "Guide, Learn > What & Why (stat) and Fly safely (night-lighting note)",
+      "source": "Guide, Fly safely, Step 6 (night-lighting note)",
       "verified": "2026-11-03",
       "correction": false,
       "unverified": false
@@ -427,7 +423,7 @@ window.GUIDE_DOMAIN = {
         "geo.py"
       ],
       "text": "The resolution floor comes before the algorithm. At 30 m with the 55° lens a 1 m heat source covers about one pixel, so detection is a sampling question before it is an algorithm question. Ideal-nadir geometry also omits tilt, terrain, lens distortion and GPS/altitude/heading errors.",
-      "source": "domain 01; payload README limitations; Guide, Learn > How it works (calculator)",
+      "source": "domain 01; payload README limitations; Guide, Learn, Lesson 5 (calculator)",
       "verified": "2026-11-03",
       "correction": false,
       "unverified": false
@@ -498,8 +494,8 @@ window.GUIDE_DOMAIN = {
         "hotspots.py",
         "geo.py"
       ],
-      "text": "Why it matters for your build. The career asset is the honest pipeline — group, locate, map, report, prove — not a model claim. Each stage is testable on the bench before anything flies.",
-      "source": "Guide, Learn > Career & pay (\"the pipeline is the career asset\"); payload README",
+      "text": "Why it matters for your build. What matters is the honest pipeline — group, locate, map, report, prove — not a model claim. Each stage is testable on the bench before anything flies.",
+      "source": "Guide, Learn, Lesson 5 (\"the pipeline matters more than the airframe\"); payload README",
       "verified": "2026-11-03",
       "correction": false,
       "unverified": false
@@ -616,116 +612,6 @@ window.GUIDE_DOMAIN = {
       "text": "Why it matters for your build. The airframe exists to carry a calibrated payload — thermal lens down, GPS antenna up, independent retention, boards clear of carbon fibre. Bench-test power and sensors before the first flight.",
       "source": "payload README wiring; Guide steps 6–8",
       "verified": "2026-11-01",
-      "correction": false,
-      "unverified": false
-    },
-    {
-      "id": "06-careers-25",
-      "page": "Careers and pay — what the data says and what you may claim",
-      "heading": "What the Job Bank data says",
-      "tags": [
-        "career",
-        "job",
-        "pay",
-        "noc 21211",
-        "portfolio",
-        "interview",
-        "alberta",
-        "mrs",
-        "classification",
-        "evidence"
-      ],
-      "text": "What the Job Bank data says. Job Bank groups the data engineer profile under Data scientists (NOC 21211) and rates Alberta prospects \"Moderate\". The Alberta/Edmonton median is CA$43.27/hr (Job Bank, NOC 21211, updated 19 Nov 2025).",
-      "source": "Guide, Learn > Career & pay; Job Bank NOC 21211, updated 19 Nov 2025",
-      "verified": "2026-11-03",
-      "correction": false,
-      "unverified": false
-    },
-    {
-      "id": "06-careers-26",
-      "page": "Careers and pay — what the data says and what you may claim",
-      "heading": "The classification question is separate",
-      "tags": [
-        "career",
-        "job",
-        "pay",
-        "noc 21211",
-        "portfolio",
-        "interview",
-        "alberta",
-        "mrs",
-        "classification",
-        "evidence"
-      ],
-      "text": "The classification question is separate. GoA Systems Analyst is a different classification with its own controls; Level 1 MRS accepts a related two-year diploma, or a related one-year certificate and qualifying experience. Do not assume experience alone replaces the education requirement — check the current MRS wording.",
-      "source": "Guide, Learn > Career & pay and the MRS discussion there",
-      "verified": "2026-11-03",
-      "correction": false,
-      "unverified": false
-    },
-    {
-      "id": "06-careers-27",
-      "page": "Careers and pay — what the data says and what you may claim",
-      "heading": "Portfolio evidence, not promises",
-      "tags": [
-        "career",
-        "job",
-        "pay",
-        "noc 21211",
-        "portfolio",
-        "interview",
-        "alberta",
-        "mrs",
-        "classification",
-        "evidence"
-      ],
-      "text": "Portfolio evidence, not promises. A completed, tested project is portfolio evidence; an unbuilt guide is not evidence of a working system, a reference, or interview fluency. No employment outcome is guaranteed — the guide says so in its own words.",
-      "source": "Guide, Learn > What & Why (\"Will this land me a job? The straight answer\")",
-      "verified": "2026-11-03",
-      "correction": false,
-      "unverified": false
-    },
-    {
-      "id": "06-careers-28",
-      "page": "Careers and pay — what the data says and what you may claim",
-      "heading": "Say only what you measured",
-      "tags": [
-        "career",
-        "job",
-        "pay",
-        "noc 21211",
-        "portfolio",
-        "interview",
-        "alberta",
-        "mrs",
-        "classification",
-        "evidence"
-      ],
-      "text": "Say only what you measured. The pitch script's rule is that you never claim a detection rate until you have measured it. Demo kit and pitch practice live on the Career & pay page in Learn; the honest version of the pitch is the one that survives the follow-up question.",
-      "source": "Guide, Learn > What & Why (script) and Career & pay (demo kit)",
-      "verified": "2026-11-03",
-      "correction": false,
-      "unverified": false
-    },
-    {
-      "id": "06-careers-29",
-      "page": "Careers and pay — what the data says and what you may claim",
-      "heading": "Why it matters for your build",
-      "tags": [
-        "career",
-        "job",
-        "pay",
-        "noc 21211",
-        "portfolio",
-        "interview",
-        "alberta",
-        "mrs",
-        "classification",
-        "evidence"
-      ],
-      "text": "Why it matters for your build. Every line of the intended pitch maps to something you did and can show — the build is designed backwards from that interview.",
-      "source": "Guide, Learn > What & Why and Career & pay",
-      "verified": "2026-11-03",
       "correction": false,
       "unverified": false
     }

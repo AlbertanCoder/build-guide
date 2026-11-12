@@ -491,7 +491,7 @@
     .asm-body > details.wt-fold { margin: 12px 18px 0; }
     .asm-body > details.wt-fold .asm-visual { position: static; max-height: none; overflow: visible; border-left: 0; max-width: 760px; }
   }
-  /* Final audit, 11 Nov 2026 (S21): finger-sized targets on a touch screen, and a Career table that fits a phone. */
+  /* Final audit, 11 Nov 2026 (S21): finger-sized targets on a touch screen. */
   @media (pointer: coarse) {
     .buy-row { grid-template-columns: 44px 1fr auto; }
     .buy-row input[type="checkbox"] { width: 30px; height: 30px; margin: 4px 7px 7px; }
@@ -500,11 +500,9 @@
     .wt-link { padding: 12px 16px; }                                 /* PHONES P1: the 3D lesson button was 38 px high */
   }
   @media (max-width: 600px) {
-    #p-career table { font-size: 13.5px; table-layout: fixed; }
-    #p-career th, #p-career td { padding: 8px 6px; overflow-wrap: anywhere; }
-    /* PHONES P2: on a 320 px phone the Plan page's hours table stuck out 4 px */
-    #p-plan table { font-size: 13.5px; }
-    #p-plan th, #p-plan td { padding: 8px 6px; overflow-wrap: anywhere; }
+    /* PHONES P2: on a 320 px phone the hours table (now under Learn's "Sources and checks") stuck out 4 px */
+    #hours-card table { font-size: 13.5px; }
+    #hours-card th, #hours-card td { padding: 8px 6px; overflow-wrap: anywhere; }
   }
   /* Final audit, 11 Nov 2026 (PHONES P3): a phone on its side is too short for the floating chat box (its top, with
      the close button, slid out of view). There the open chat is the same full sheet as on an upright phone
@@ -596,6 +594,17 @@
   details:not([open]) > summary.asm-head .asm-meta { color: var(--soft); }
   .asm-intro { padding: 12px 18px 0; }
   .asm-step0 > .acc-body { padding-top: 12px; }
+  /* Learn as a small course (Shad, 12 Nov 2026): three parts of one page, the same rows as Build */
+  h2.learn-part { margin: 22px 2px 10px; font-size: 12px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; color: var(--soft); }
+  .learn-step .asm-notes > ul { margin: 0 0 12px; padding-left: 20px; }
+  .learn-step .asm-notes > ul > li { margin: 0 0 8px; }
+  .learn-step .asm-notes > ul.tasks { padding-left: 0; }
+  .learn-step .asm-notes > details.acc { margin: 0 0 12px; box-shadow: none; }
+  .learn-step .asm-notes > .grid2 { margin: 0 0 12px; }
+  .learn-step .asm-notes > .asm-label { margin-top: 14px; }
+  .learn-step .asm-notes > .asm-label:first-child { margin-top: 0; }
+  .learn-score { margin: 14px 2px; }
+  #p-build .assembly, #p-quiz .assembly { margin-bottom: 0; }
   /* Fly safely as steps (Shad, 12 Nov 2026): the same rows as Build */
   .fly-part { margin: 8px 2px -8px; font-size: 12px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; color: var(--soft); }
   .fly-part:first-child { margin-top: 0; }
@@ -1034,135 +1043,149 @@
 
 <section role="tabpanel" id="p-why" aria-labelledby="t-why" hidden>
   <div class="sec-head">
-    <h2>What you're building &amp; why</h2>
-    <button class="expand-btn" data-panel="p-why">Expand all</button>
+    <h2>Learn</h2>
+    <button class="expand-btn" data-panel="p-why,p-build,p-quiz">Expand all</button>
   </div>
-
-  <div class="card">
-    <p>A 5-inch drone that carries a thermal camera, a GPS and a small computer, and puts the hot spots it sees on a map.
+  <div class="assembly" id="learn-course">
+    <div class="asm-legend">
+      <span>A short course: seven lessons, then a final exam. Open a lesson, take its quiz, then tick it.</span>
+    </div>
+    <div class="asm-stage">
+      <details class="fly-step learn-step" id="learn-what" data-learn-step="1" aria-label="Lesson 1: What it is, and why">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">1</span>
+          <div class="asm-title">
+            <h3>What it is, and why</h3>
+            <p class="asm-meta">A small drone that puts hot spots on a map</p>
+          </div>
+        </summary>
+        <div class="asm-notes">
+          <p>A 5-inch drone that carries a thermal camera, a GPS and a small computer, and puts the hot spots it sees on a map.
     You buy it in <strong>7 stages</strong> and build it in <strong>8 steps</strong>.</p>
-    <details class="acc">
-      <summary>Details: what is on board and what is tested</summary>
-      <div class="acc-body">
-        <p>The drone is a 5-inch analog FPV quadcopter carrying a Raspberry Pi Zero 2 WH, a Pimoroni MLX90640 thermal board and a PA1010D GPS.
+          <p>An airborne prototype can combine mechanical, radio, sensing, positioning and software
+      work, but it is not inherently more valuable than a tested ground station. FPInnovations'
+      Alberta-funded 2020 report calls the platform only one small part of the solution and says the
+      mission is incomplete until interpreted data reaches the firefighter as a map of GPS-referenced
+      hotspots.</p>
+          <div class="grid2">
+            <div class="stat"><div class="big">31 / 31</div><div class="lbl">Payload software tests passed (not yet on the drone)</div></div>
+            <div class="stat"><div class="big">768</div><div class="lbl">Temperatures per thermal frame (32 &times; 24)</div></div>
+          </div>
+          <div id="quiz-learn1" class="quiz" data-quiz="learn1"></div>
+          <label class="asm-done"><input type="checkbox" data-key="learn-1"> This lesson is done</label>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+<section role="tabpanel" id="p-build" aria-labelledby="t-build" hidden>
+  <h2 class="learn-part">How it works</h2>
+  <div class="assembly">
+    <div class="asm-stage">
+      <details class="fly-step learn-step" id="learn-airframe" data-learn-step="2" aria-label="Lesson 2: The airframe: the parts that fly it">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">2</span>
+          <div class="asm-title">
+            <h3>The airframe: the parts that fly it</h3>
+            <p class="asm-meta">Frame, motors, props, the stack, the radio and the video</p>
+          </div>
+        </summary>
+        <div class="asm-notes">
+          <ul>
+            <li><strong>Frame:</strong> carries everything. The four motors sit on its arms, numbered M1 to M4 in the order Betaflight uses.</li>
+            <li><strong>Motors and props:</strong> four of each. Two props turn clockwise (on M1 and M4) and two counter-clockwise (on M2 and M3).</li>
+            <li><strong>The stack:</strong> the flight controller and the ESC stacked on the same four screws. The flight controller is the board with the gyro that keeps the drone level and talks to the receiver. The ESC (speed controller) is the board that drives the four motors. Soft rubber rings, the grommets, soak up vibration under the stack.</li>
+            <li><strong>Radio and receiver:</strong> the receiver gets your stick commands from the radio. Binding pairs the two, so the receiver only listens to your radio.</li>
+            <li><strong>Camera and video transmitter:</strong> the VTX sends the camera picture to the monitor. The flight controller draws text on top of the video (battery, timer).</li>
+            <li><strong>Betaflight:</strong> the free program on your laptop that sets up the flight controller.</li>
+          </ul>
+          <p class="muted">Every word, one line each: <a href="#words-card" data-open="words-card">Words used in this guide</a>, in Build.</p>
+          <div id="quiz-airframe" class="quiz" data-quiz="airframe"></div>
+          <label class="asm-done"><input type="checkbox" data-key="learn-2"> This lesson is done</label>
+        </div>
+      </details>
+      <details class="fly-step learn-step" id="learn-power" data-learn-step="3" aria-label="Lesson 3: Power and batteries">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">3</span>
+          <div class="asm-title">
+            <h3>Power and batteries</h3>
+            <p class="asm-meta">One flight pack, three voltages, and a fuse for the first power-up</p>
+          </div>
+        </summary>
+        <div class="asm-notes">
+          <ul>
+            <li><strong>The flight pack:</strong> a 4S battery, 4 cells in a row. This build has two packs and flies with one at a time.</li>
+            <li><strong>Power is split on purpose:</strong> 5 V for the Pi, 9 V for the video transmitter, and 3.3 V for the sensor boards.</li>
+            <li><strong>The radio has its own power:</strong> two 18650 cells in your hand controller.</li>
+            <li><strong>The smoke stopper:</strong> a plug-in fuse for the first power-up. It cuts out at 1.2 A.</li>
+            <li><strong>The XT60:</strong> the yellow battery plug on the packs and the drone. Polarity is which side is + and which is -.</li>
+          </ul>
+          <p class="asm-warn"><strong>&#9888; Safety:</strong> LiPo fires are the genuine hazard in this hobby. The charging rules are in <a href="#fly-after" data-open="fly-after">Fly safely, Step 10</a>.</p>
+          <div id="quiz-power" class="quiz" data-quiz="power"></div>
+          <label class="asm-done"><input type="checkbox" data-key="learn-3"> This lesson is done</label>
+        </div>
+      </details>
+      <details class="fly-step learn-step" id="learn-payload" data-learn-step="4" aria-label="Lesson 4: The payload: a camera, a GPS and a small computer">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">4</span>
+          <div class="asm-title">
+            <h3>The payload: a camera, a GPS and a small computer</h3>
+            <p class="asm-meta">Thermal lens down, GPS antenna up</p>
+          </div>
+        </summary>
+        <div class="asm-notes">
+          <p>The drone is a 5-inch analog FPV quadcopter carrying a Raspberry Pi Zero 2 WH, a Pimoroni MLX90640 thermal board and a PA1010D GPS.
         Separate sensor cables let the thermal lens point down while the GPS antenna points up.
         The flight stack supplies regulated 5 V 3 A for the Pi; the video transmitter runs from the flight controller's 9V pad.</p>
         <p>The <a href="Shad-Drone-Payload/README.md">payload software</a> groups hotspots, finds their position, logs them and shows them on an offline map.
         Its 31 synthetic tests passed. Fit, power, detection accuracy and flight still have to be proven by the tests in the build steps.</p>
-      </div>
-    </details>
-    <div class="grid3">
-      <div class="stat"><div class="big">46 hours</div><div class="lbl">Estimated hands-on time; the Hours this week slider on Home gives a finish date</div></div>
-      <div class="stat"><div class="big">31 / 31</div><div class="lbl">Payload software tests passed (not yet on the drone)</div></div>
-      <div class="stat"><div class="big">768</div><div class="lbl">Temperatures per thermal frame (32 &times; 24)</div></div>
-    </div>
-  </div>
+          <ul>
+            <li><strong>I2C:</strong> the two-wire link the sensors use.</li>
+            <li><strong>Qwiic:</strong> SparkFun's small 4-pin plug for I2C.</li>
+            <li><strong>HAT:</strong> a board that plugs onto the Pi's 40 pins.</li>
+          </ul>
+          <details class="wt-fold" id="payload-example"><summary>Show the example code</summary>
+      <pre><code>import time, board, busio
+import adafruit_mlx90640
+from hotspots import find_hotspots   # included tested module in Shad-Drone-Payload
 
-  <details class="acc">
-    <summary>Will this land me a job? The straight answer</summary>
-    <div class="acc-body">
-      <p><strong>No employment outcome is guaranteed.</strong> A completed, tested project can be
-      portfolio evidence, but this unbuilt HTML guide is not evidence of a working system, a reference,
-      or interview fluency.</p>
-      <p>Job Bank groups the data engineer profile under <strong>Data scientists (NOC 21211)</strong>
-      and rates Alberta prospects <strong>Moderate</strong>. GoA Systems Analyst is a separate
-      classification; its current
-      Level 1 MRS accepts a related two-year diploma, or a related one-year certificate/qualifying
-      industry certification plus one year of related experience. Experience alone does not satisfy that
-      written education/certification route. The specific job posting and hiring ministry decide relatedness.</p>
-      <div class="note"><strong>Honest next step:</strong> finish and test the system before describing
-      it as working. Publish source code, test results, limitations and flight records; then use it as one
-      part of a broader job application rather than a substitute for required education or experience.</div>
-    </div>
-  </details>
+# The Pi sets the I2C speed in its config file, not here (see the note under this box).
+i2c = busio.I2C(board.SCL, board.SDA)
+mlx = adafruit_mlx90640.MLX90640(i2c)
+mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_2_HZ
 
-  <details class="acc">
-    <summary>What it can and cannot see (the honest capability line)</summary>
-    <div class="acc-body">
-      <p><strong>Design target, not a verified capability:</strong> test a controlled warm target
-      from low altitude and record detection rate, false positives and geolocation error. At 30 m AGL,
-      a 55&deg;&times;35&deg; frame is about 31&times;19 m, or roughly 1&times;0.8 m per pixel;
-      a 1 m target may occupy about one pixel and cannot be promised detectable. Day/night, emissivity,
-      atmospheric conditions, motion, tilt and terrain all affect results.</p>
-      <p><strong>Cannot:</strong> replace agency aircraft or declare an area safe. The MLX90640's
-      32&times;24 grid is a learning-grade sensor. No detection range, mapping accuracy, professional
-      sensor cost, flight endurance or operational readiness claim is bench-verified for this build.</p>
-      <div class="note warn"><strong>The one legal line that never bends:</strong> no drone may
-      fly over or within <strong>5 nautical miles (9.3 km)</strong> of a wildfire below 3,000 ft
-      (CAR 601.15). Real fires are agency airspace &mdash; unauthorised drones ground air tankers
-      and endanger crews. You will train on a <em>safe heat target</em>: a mug of hot water,
-      never a fire.</div>
-    </div>
-  </details>
-
-  <details class="acc">
-    <summary>Why a drone beats the ground station for your portfolio</summary>
-    <div class="acc-body">
-      <p>An airborne prototype can combine mechanical, radio, sensing, positioning and software
-      work, but it is not inherently more valuable than a tested ground station. FPInnovations'
-      Alberta-funded 2020 report calls the platform only one small part of the solution and says the
-      mission is incomplete until interpreted data reaches the firefighter as a map of GPS-referenced
-      hotspots. That supports the value of integration and reporting, not a hiring guarantee.</p>
-    </div>
-  </details>
-
-  <details class="acc">
-    <summary>What you'll be able to say when it's true</summary>
-    <div class="acc-body">
-      <div class="script">"I built a thermal-camera drone from parts: the airframe, the flight controller, and a Raspberry Pi running my own hot-spot detection code. In my own tests it found [fill in after you measure it: what, from how high, how many times out of how many] and put it on a map with GPS coordinates. I can explain every part of it. Want to see?"</div>
-      <p class="muted">The demo kit and pitch practice live on the Career &amp; pay page in Learn. Never say any of
-      it until you've measured it.</p>
-    </div>
-  </details>
-
-
-
-
-  <details class="acc" id="verify-card">
-    <summary><strong>How this was checked</strong> <span class="fly-first" id="verify-first"></span></summary>
-    <div class="acc-body" id="verify-out"></div>
-    <details class="tp-more" id="open-facts"><summary>Open facts: what is still to be checked or found</summary><p class="muted">Every fact this guide could not yet confirm, by step. Most are checked with the real part in hand: see "When a parcel arrives". None is hidden.</p><p><strong>Stage 1</strong></p><ul><li>where the cover is, and whether you need a screwdriver (the kit has a hexagon screwdriver set).</li><li>the exact dial position for about 24 V: from the meter's manual or the real meter.</li><li>how close to 24 counts as "about"; the adapter's label or manual should say.</li><li>which end of the XT60 to DC cable is which (inferred from its name), the iron's polarity marking, and how long the iron takes to heat. No listing gives these.</li><li>how long, and how to set the temperature, from the iron's manual. The shop listing says the iron works from 220 to 400 C.</li><li>the wire colours inside this cable (the guide does not rely on them), and how to see pin 1 and pin 5 inside the real plug. An arrival check is added.</li><li>what the beep symbol looks like on this meter.</li></ul><p><strong>Stage 3 and Steps 1, 2</strong></p><ul><li>the switch names on the Pocket (its manual).</li><li>that your laptop meets the simulator's stated needs (a GTX 650 with 2 GB or better), or that the low graphics settings work; the exact words of the EdgeTX prompt on the Pocket.</li><li>no V6 build manual was found (drawings only), and no RadioMaster PDF was opened.</li><li>the bit sizes in the set, and whether the frame box has a sheet.</li><li>which screw length goes in which hole, and where the press nuts sit (no V6 manual found).</li></ul><p><strong>Step 3</strong></p><ul><li>which way the screws go in and where the nuts go (arrival check "Stack").</li><li>the + mark beside the pad can be read only as "-" on the manufacturer's diagram. "Can destroy the ESC" is general knowledge, not quoted from GEPRC.</li><li>an arrow or "front" mark on the flight controller (none is readable on the diagram).</li></ul><p><strong>Step 4</strong></p><ul><li>the box cable's wire colours (not published) and that its plug fits that socket (named sh1.0 4-pin).</li><li>whether the flight controller has a camera socket that the stack box's camera cable fits, or only pads. The wiring diagram shows three pads.</li><li>whether the V6 frame has a hole for the SMA nut (arrival check).</li><li>that USB alone powers the receiver (an arrival check exists), and the exact name of the receiver's Wi-Fi network.</li><li>that USB does not power the VTX (its 9 V supply is fed by the battery). Opus's "3 red then 1 blue = 25 mW" is its reading of the manual's table: check it at the first power-up.</li><li>the screw size the TBS manual names, and whether it wants threadlock.</li></ul><p><strong>Step 5</strong></p><ul><li>how long it takes and how you see it is full: from the radio's manual.</li><li>the label on the real pack.</li></ul><p><strong>Step 6</strong></p><ul><li>the exact SSH command on Windows. The Pi docs link a separate page for it that Opus has not opened yet.</li><li>which side of the board the pins go through, and how the headers are supplied (loose strips or with the boards). Neither is stated in the listings.</li><li>which way round the HAT faces.</li><li>the sensor boards' left-to-right pin order as printed (Pimoroni's photos show 3-6V or 3-5V, SDA, SCL, a crossed circle, GND), and which HAT socket each cable goes into.</li><li>the exact look of the i2cdetect table. Check against a screenshot from the real Pi.</li></ul><p><strong>Step 7</strong></p><ul><li>the tape's thickness (measure on arrival), and whether two layers stay put under the zip ties.</li><li>that the board's back is flat enough for tape (arrival check).</li><li>that the board's back is flat enough for tape. The maker lists only its size, about 28 x 21 x 9 mm.</li><li>the real loop length. Wrap a string round the Pi on its standoffs and measure it.</li><li>that the LED group's 5V pad shares the 5V 3A supply. The diagram labels it 5V; the "5 V rail" arrival test covers the load.</li><li>the right length: 10 mm is chosen from the 6.3 mm foot height; check it on the real foot</li></ul><p><strong>Step 8</strong></p><ul><li>where the light is.</li><li>confirm at the first power-up.</li><li>whether this version of Configurator has a slider for each motor as well as the Master slider. The docs name the Master slider; check on the laptop.</li><li>confirm that the prop tool fits the Gemfan prop nut.</li><li>what to do if the prop has no letters</li></ul><p><strong>Still open after the research pass</strong></p><ul><li>How long the radio takes to charge and what shows when it is full: the quick-start manual gives neither.</li><li>Whether the XT60 plug is marked + and -: look at the plug.</li><li>How long the GPS takes to get its first fix: about half a minute, from a distributor&rsquo;s listing (&ldquo;TTFF 1s/35s&rdquo;); the maker&rsquo;s datasheet was not opened.</li></ul></details>
-    <script type="application/json" id="verify-data">
-{"date":"2026-11-11","totals":{"checks":243,"passed":206,"failed":0,"need_real_parts":37,"page_fixes":0},"tolerance_runs":10000,"measured_checks_varied":35,"weakest_margins":["speed controller, flight controller and frame stack holes line up (30.5 mm, with the soft grommets): 0.5 mm as designed, 0.3 mm in the worst of 10,000 runs","M3 x 10 set screw: at least 3 mm of thread on each side of the plate: 1.0 mm as designed, 0.5 mm in the worst of 10,000 runs","Stack screw tip stays below the top plate: 2.0 mm as designed, 1.03 mm in the worst of 10,000 runs","Motor M1's 120 mm leads, measured from the motor's edge, reach the speed controller pad farthest from the motor, with the climb up to the speed controller board, 10 % extra for bends and 10 mm to spare: 6.09 mm as designed, 1.25 mm in the worst of 10,000 runs","Motor M2's 120 mm leads, measured from the motor's edge, reach the speed controller pad farthest from the motor, with the climb up to the speed controller board, 10 % extra for bends and 10 mm to spare: 6.09 mm as designed, 1.25 mm in the worst of 10,000 runs"]}
-    </script>
-    <script>
-    (function () {
-      const node = document.getElementById("verify-data");
-      const out = document.getElementById("verify-out");
-      const first = document.getElementById("verify-first");
-      if (!node || !out) { return; }
-      const V = JSON.parse(node.textContent), T = V.totals;
-      function mk(tag, cls, text) { const e = document.createElement(tag); if (cls) { e.className = cls; } if (text !== undefined) { e.textContent = text; } return e; }
-      const head = T.checks + " checks: " + T.passed + " passed, " + T.failed + " failed, " + T.need_real_parts + " need the real part in your hand";
-      first.textContent = head;
-      out.appendChild(mk("p", "", "The build was put together on a computer, step by step, from the shop listings, the datasheets and the 3D model. Nothing was tested on real parts."));
-      const big = mk("p", "", head + (T.page_fixes ? ", and " + T.page_fixes + " point to a line on the page or the buy list that still needs a decision." : "."));
-      big.style.fontWeight = "700";
-      out.appendChild(big);
-      out.appendChild(mk("p", "", V.measured_checks_varied + " of the checks use sizes that were measured or estimated. Those were repeated " + V.tolerance_runs.toLocaleString("en-CA") + " times, with every size varied at random inside its tolerance."));
-      out.appendChild(mk("p", "", "The tightest fits, with the room each one had left in the worst of those runs:"));
-      const ul = mk("ul", "");
-      V.weakest_margins.forEach(function (m) { ul.appendChild(mk("li", "", m)); });
-      out.appendChild(ul);
-      const note = mk("p", "muted", "");
-      note.appendChild(document.createTextNode("A pass here is a simulation result. The real parts decide: the checks that need them are in "));
-      const a = mk("a", "", "When a parcel arrives");
-      a.setAttribute("href", "#arrival-card"); a.setAttribute("data-open-arrival", "");
-      note.appendChild(a);
-      note.appendChild(document.createTextNode(" (Buy page). Run on " + V.date + "."));
-      out.appendChild(note);
-      out.appendChild(mk("p", "muted", "Source for the camera tilt in Step 4: Oscar Liang's camera-angle guide says an angle of 10 to 15 degrees is a good starting point for new pilots."));
-    })();
-    </script>
-  </details>
-</section>
-<section role="tabpanel" id="p-build" aria-labelledby="t-build" hidden>
-  <div class="sec-head">
-    <h2>How it works</h2>
-    <button class="expand-btn" data-panel="p-build">Expand all</button>
-  </div>
-
-  <div class="card">
+frame = [0] * 768
+while True:
+    try:
+        mlx.getFrame(frame)
+    except ValueError:
+        continue
+    for h in find_hotspots(frame, 60, 3):   # threshold 60C, 3+ pixels
+        print("HOTSPOT,%.1f,%.1f,%d,%.1f" %
+              (h["x"], h["y"], h["pixels"], h["max_c"]))
+    time.sleep(0.5)</code></pre>
+      <p class="muted"><strong>Set the I2C speed on the Pi, not in the code.</strong> Add
+      <code>dtparam=i2c_arm_baudrate=400000</code> to <code>/boot/firmware/config.txt</code> (Pi OS bookworm and later;
+      <code>/boot/config.txt</code> before that) and reboot (Adafruit's clock-speed guide). The audit found that a
+      <code>frequency</code> argument in the code is ignored on a Pi. How to read the speed back: not confirmed.</p>
+      <p class="muted">The MLX90640 uses the documented <code>getFrame</code> API, 768-value buffer
+      and refresh-rate settings at address 0x33. The full GPS/logging/map implementation is in
+      <a href="Shad-Drone-Payload/README.md">Shad-Drone-Payload</a>. Its 31 synthetic tests and demo passed;
+      physical Pi/sensor integration and airborne accuracy still require the listed acceptance tests.</p>
+          </details>
+          <div id="quiz-payload" class="quiz" data-quiz="payload"></div>
+          <label class="asm-done"><input type="checkbox" data-key="learn-4"> This lesson is done</label>
+        </div>
+      </details>
+      <details class="fly-step learn-step" id="learn-heat" data-learn-step="5" aria-label="Lesson 5: How it finds heat">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">5</span>
+          <div class="asm-title">
+            <h3>How it finds heat</h3>
+            <p class="asm-meta">Sense, detect, locate, map, report, prove</p>
+          </div>
+        </summary>
+        <div class="asm-notes">
     <p><strong>One pipeline, six steps.</strong> The chain is the same airborne or on
     the bench &mdash; tap any step to see what it does. <strong>1 Sense:</strong> the
     MLX90640 reads 768 temperatures per frame. <strong>2 Detect:</strong> the included
@@ -1173,9 +1196,7 @@
     targets.</p>
     <div class="row" id="chain" style="align-items:stretch"></div>
     <div class="note info" id="chainDetail" aria-live="polite" style="margin-top:12px">Tap any step above.</div>
-  </div>
-
-  <details class="acc" open>
+  <details class="acc">
     <summary><span class="emoji">&#128200;</span> Try it &mdash; altitude &amp; coverage calculator</summary>
     <div class="acc-body">
       <p>Move the sliders to estimate the ideal nadir footprint. This is simple pinhole-camera
@@ -1209,7 +1230,6 @@
       lens distortion and GPS/heading/height error.</p>
     </div>
   </details>
-
   <details class="acc" id="thermal-card">
     <summary><span class="emoji">&#127777;</span> What would the thermal camera see?</summary>
     <div class="acc-body">
@@ -1335,7 +1355,7 @@
           const panel = card.closest("[role=tabpanel]");
           const tab = panel && document.getElementById(panel.getAttribute("aria-labelledby"));
           if (tab) { tab.click(); }
-          card.open = true;
+          for (let p = card; p; p = p.parentElement) { if (p.tagName === "DETAILS") { p.open = true; } }   /* the lesson it sits in opens too */
           card.scrollIntoView({ behavior: "smooth", block: "start" });
         });
         draw();
@@ -1343,7 +1363,6 @@
       </script>
     </div>
   </details>
-
   <details class="acc">
     <summary><span class="emoji">&#128293;</span> What "detecting a fire" actually means</summary>
     <div class="acc-body">
@@ -1359,10 +1378,15 @@
         <code>map_server.py</code> displays them offline. Detection and coordinate accuracy still require
         controlled hardware tests.</li>
       </ol>
-      <p>The same three layers work from the ground, the air, or a satellite feed &mdash; that's
-      why the pipeline is the career asset, not the airframe.</p>
+      <p>The same three layers work from the ground, the air, or a satellite feed &mdash; that is why the pipeline matters more than the airframe.</p>
     </div>
   </details>
+          <div id="quiz-detect" class="quiz" data-quiz="detect"></div>
+          <label class="asm-done"><input type="checkbox" data-key="learn-5"> This lesson is done</label>
+        </div>
+      </details>
+    </div>
+  </div>
 </section>
 <section role="tabpanel" id="p-parts" aria-labelledby="t-parts" hidden>
   <div class="sec-head">
@@ -3763,275 +3787,123 @@
     <div class="acc-body"><ul class="gloss-list"><li><strong>Betaflight:</strong> the free program on your laptop that sets up the flight controller.</li><li><strong>ESC (speed controller):</strong> the board that drives the four motors. Here it is the 50 A four-in-one board in the stack.</li><li><strong>FC (flight controller):</strong> the board with the gyro that keeps the drone level and talks to the receiver.</li><li><strong>The stack:</strong> the flight controller and the ESC stacked on the same four screws.</li><li><strong>VTX (video transmitter):</strong> sends the camera picture to the monitor.</li><li><strong>Receiver:</strong> gets your stick commands from the radio.</li><li><strong>ELRS (ExpressLRS):</strong> the radio link system the radio and the receiver both use.</li><li><strong>UART:</strong> a numbered pair of pads (TX and RX) on the flight controller for talking to one device. This one has 6.</li><li><strong>TX / RX:</strong> send / receive. A TX pad always goes to the other device's RX.</li><li><strong>AWG:</strong> wire thickness. A bigger number is a thinner wire.</li><li><strong>4S:</strong> a battery of 4 cells in a row.</li><li><strong>LiPo / LiHV:</strong> lithium polymer battery / the high-voltage kind, charged to 4.35 V a cell.</li><li><strong>Windings:</strong> the copper wire coils inside a motor.</li><li><strong>Threadlock:</strong> liquid that stops a screw working loose. The blue kind can still be undone.</li><li><strong>Standoff:</strong> a metal or nylon post with threads that holds two plates apart.</li><li><strong>Knurled:</strong> with a gripping texture on the outside.</li><li><strong>Set screw:</strong> a screw with no head, threaded all the way.</li><li><strong>Grommets:</strong> soft rubber rings the stack sits on to soak up vibration.</li><li><strong>Tinning:</strong> putting a thin layer of solder on a pad or wire end before joining them.</li><li><strong>Polarity:</strong> which side is + and which is -.</li><li><strong>Solder bridge:</strong> solder that joins two pads that must stay separate.</li><li><strong>XT60:</strong> the yellow battery plug on the packs and the drone.</li><li><strong>Smoke stopper:</strong> a plug-in fuse for the first power-up. It cuts out at 1.2 A.</li><li><strong>OSD:</strong> the text drawn on top of the video (battery, timer). The flight controller has one.</li><li><strong>CRSF:</strong> the language the receiver uses to talk to the flight controller. You pick it in Betaflight.</li><li><strong>Bind:</strong> pairing the radio with the receiver so it only listens to your radio.</li><li><strong>Flash:</strong> writing new firmware onto a board.</li><li><strong>I2C:</strong> the two-wire link the sensors use.</li><li><strong>Qwiic:</strong> SparkFun's small 4-pin plug for I2C.</li><li><strong>HAT:</strong> a board that plugs onto the Pi's 40 pins.</li><li><strong>Header:</strong> a row of metal pins.</li><li><strong>Payload:</strong> everything the drone carries for the job: the Pi, the thermal camera and the GPS.</li><li><strong>Bare quad:</strong> the drone without the payload.</li><li><strong>Hover:</strong> staying still in the air.</li><li><strong>Arm / disarm:</strong> switching the motors live or dead with a radio switch.</li><li><strong>Throttle:</strong> the stick that sets motor speed.</li><li><strong>AGL:</strong> above ground level.</li><li><strong>Pi:</strong> the Raspberry Pi, a small computer (common usage).</li><li><strong>Props, CW and CCW:</strong> the propellers; clockwise and counter-clockwise, the two spin directions (common usage).</li><li><strong>M1 to M4:</strong> the four motor numbers (common usage).</li><li><strong>Bench:</strong> your work table (common usage).</li></ul></div>
   </details>
 </section>
-<section role="tabpanel" id="p-plan" aria-labelledby="t-plan" hidden>
-  <div class="sec-head">
-    <h2>Plan</h2>
-    <button class="expand-btn" data-panel="p-plan">Expand all</button>
-  </div>
-  <div class="card">
-    <div class="note gold" style="margin:0"><strong>Done-means rule:</strong> every step has an
-    observable check. Don't move on until it passes &mdash; and after each step, explain out loud
-    what you did, then take the quizzes on the Quizzes page in Learn.</div>
-  </div>
-  <details class="acc" open>
-    <summary>Weekend 1 &mdash; build the airframe (tick as you go)</summary>
-    <div class="acc-body">
-      <ul class="tasks">
-        <li><label><input type="checkbox" data-key="s-1"><span><strong>1 &middot; Order and inventory</strong>
-          <small>Buy in the stages on the Buy tab. Each time a stage arrives, lay the parts out and tick them: <a href="#p-steps" data-go-step="1">Build, Step 1</a>. Done when that step's own check passes.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="s-2"><span><strong>2 &middot; Frame assembly</strong>
-          <small>How to do it: <a href="#p-steps" data-go-step="2">Build, Step 2</a>. Done when that step's own check passes.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="s-3"><span><strong>3 &middot; Solder and inspect the stack</strong>
-          <small>How to do it: <a href="#p-steps" data-go-step="3">Build, Step 3</a>. No battery in that step. Done when that step's own check passes.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="s-4"><span><strong>4 &middot; RP1 V2 serial receiver + flight controller</strong>
-          <small>How to do it: <a href="#p-steps" data-go-step="4">Build, Step 4</a> (wire the receiver, then bind it). Done when that step's own check passes.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="s-5"><span><strong>5 &middot; Betaflight setup (props OFF)</strong>
-          <small>How to do it: <a href="#p-steps" data-go-step="4">Build, Step 4</a> (Betaflight on USB only: no battery, no props). The checks that need a battery come in <a href="#p-steps" data-go-step="8">Build, Step 8</a>, items 2 to 4.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="s-6"><span><strong>6 &middot; First hover &mdash; legal area, no payload</strong>
-          <small>First <a href="#p-steps" data-go-step="5">Build, Step 5</a> (charge, then the first power-up) and the NOW parts of <a href="#p-steps" data-go-step="7">Build, Step 7</a>. You need the pilot certificate, the amateur radio certificate and the registration (the card above). Then <a href="#p-steps" data-go-step="8">Build, Step 8</a>, items 1 to 8.</small></span></label></li>
-      </ul>
-    </div>
-  </details>
-    <details class="acc">
-    <summary>Weekend 2 &mdash; build the thermal payload</summary>
-    <div class="acc-body">
-      <ul class="tasks">
-        <li><label><input type="checkbox" data-key="s-7"><span><strong>7 &middot; Pi Zero 2 WH on the bench</strong>
-          <small>How to do it: <a href="#p-steps" data-go-step="6">Build, Step 6</a>, part 6A. Done when that step's own check passes.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="s-8"><span><strong>8 &middot; Connect camera and GPS through the Qwiic HAT</strong>
-          <small>How to do it: <a href="#p-steps" data-go-step="6">Build, Step 6</a>, parts 6B and 6C. Done when that step's own check passes.</small></span></label></li>
-        <li><label><input type="checkbox" data-key="s-9"><span><strong>9 &middot; Run and tune the included detection code</strong>
-          <small>How to do it: <a href="#p-steps" data-go-step="8">Build, Step 8</a>: item 1 (the 31 tests and the demo), then item 9 (the heat test on a mug of hot water).</small></span></label></li>
-        <li><label><input type="checkbox" data-key="s-10"><span><strong>10 &middot; Mount and power the payload</strong>
-          <small>How to do it: <a href="#p-steps" data-go-step="7">Build, Step 7</a>, the parts marked AFTER THE FIRST HOVER. Done when that step's own check passes.</small></span></label></li>
-      </ul>
-      <h3>Payload example &mdash; included package, 31 synthetic tests passed</h3>
-      <pre><code>import time, board, busio
-import adafruit_mlx90640
-from hotspots import find_hotspots   # included tested module in Shad-Drone-Payload
-
-# The Pi sets the I2C speed in its config file, not here (see the note under this box).
-i2c = busio.I2C(board.SCL, board.SDA)
-mlx = adafruit_mlx90640.MLX90640(i2c)
-mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_2_HZ
-
-frame = [0] * 768
-while True:
-    try:
-        mlx.getFrame(frame)
-    except ValueError:
-        continue
-    for h in find_hotspots(frame, 60, 3):   # threshold 60C, 3+ pixels
-        print("HOTSPOT,%.1f,%.1f,%d,%.1f" %
-              (h["x"], h["y"], h["pixels"], h["max_c"]))
-    time.sleep(0.5)</code></pre>
-      <p class="muted"><strong>Set the I2C speed on the Pi, not in the code.</strong> Add
-      <code>dtparam=i2c_arm_baudrate=400000</code> to <code>/boot/firmware/config.txt</code> (Pi OS bookworm and later;
-      <code>/boot/config.txt</code> before that) and reboot (Adafruit's clock-speed guide). The audit found that a
-      <code>frequency</code> argument in the code is ignored on a Pi. How to read the speed back: not confirmed.</p>
-      <p class="muted">The MLX90640 uses the documented <code>getFrame</code> API, 768-value buffer
-      and refresh-rate settings at address 0x33. The full GPS/logging/map implementation is in
-      <a href="Shad-Drone-Payload/README.md">Shad-Drone-Payload</a>. Its 31 synthetic tests and demo passed;
-      physical Pi/sensor integration and airborne accuracy still require the listed acceptance tests.</p>
-    </div>
-  </details>
-  <details class="acc">
-    <summary>Weekend 3 &mdash; link it up: coordinates on a map</summary>
-    <div class="acc-body">
-      <ul class="tasks">
+<section role="tabpanel" id="p-quiz" aria-labelledby="t-quiz" hidden>
+  <h2 class="learn-part">Limits and proof</h2>
+  <div class="assembly">
+    <div class="asm-stage">
+      <details class="fly-step learn-step" id="learn-limits" data-learn-step="6" aria-label="Lesson 6: What it can and cannot do">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">6</span>
+          <div class="asm-title">
+            <h3>What it can and cannot do</h3>
+            <p class="asm-meta">The honest line</p>
+          </div>
+        </summary>
+        <div class="asm-notes">
+      <p><strong>Design target, not a verified capability:</strong> test a controlled warm target
+      from low altitude and record detection rate, false positives and geolocation error. At 30 m AGL,
+      a 55&deg;&times;35&deg; frame is about 31&times;19 m, or roughly 1&times;0.8 m per pixel;
+      a 1 m target may occupy about one pixel and cannot be promised detectable. Day/night, emissivity,
+      atmospheric conditions, motion, tilt and terrain all affect results.</p>
+      <p><strong>Cannot:</strong> replace agency aircraft or declare an area safe. The MLX90640's
+      32&times;24 grid is a learning-grade sensor. No detection range, mapping accuracy, professional
+      sensor cost, flight endurance or operational readiness claim is bench-verified for this build.</p>
+      <div class="note warn"><strong>The one legal line that never bends:</strong> no drone may
+      fly over or within <strong>5 nautical miles (9.3 km)</strong> of a wildfire below 3,000 ft
+      (CAR 601.15). Real fires are agency airspace &mdash; unauthorised drones ground air tankers
+      and endanger crews. You will train on a <em>safe heat target</em>: a mug of hot water,
+      never a fire.</div>
+          <div id="quiz-learn6" class="quiz" data-quiz="learn6"></div>
+          <label class="asm-done"><input type="checkbox" data-key="learn-6"> This lesson is done</label>
+        </div>
+      </details>
+      <details class="fly-step learn-step" id="learn-prove" data-learn-step="7" aria-label="Lesson 7: Prove it works: the test flights">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">7</span>
+          <div class="asm-title">
+            <h3>Prove it works: the test flights</h3>
+            <p class="asm-meta">After the build: nine tasks, ticked as you go</p>
+          </div>
+        </summary>
+        <div class="asm-notes">
+          <span class="asm-label">On the ground first</span>
+          <ul class="tasks">
         <li><label><input type="checkbox" data-key="s-11"><span><strong>11 &middot; GPS position feed</strong>
           <small>Read the PA1010D at 0x10 and log latitude, longitude, altitude and fix quality with each frame. Set the calibrated aircraft heading explicitly; do not infer reliable heading from a stationary GPS.</small></span></label></li>
         <li><label><input type="checkbox" data-key="s-12"><span><strong>12 &middot; Validate the included geo.py</strong>
           <small>The module converts pixel offsets to metres, rotates by measured heading and returns coordinates. It omits tilt, terrain and lens distortion. Done (on the ground): for a few test frames with known pixel offsets, altitude and heading, its coordinates match your own hand calculation. Its real error in flight is measured in step 14, not a promised 2 m accuracy.</small></span></label></li>
         <li><label><input type="checkbox" data-key="s-13"><span><strong>13 &middot; Run the offline coordinate viewer</strong>
           <small>Run <code>python payload.py --demo --serve</code> in the payload folder and open the local map. Then run the real backend with a GPS fix. Done: recorded data produces the expected marker and JSONL log before a live flight.</small></span></label></li>
-      </ul>
-    </div>
-  </details>
-  <details class="acc">
-    <summary>Weekend 4&ndash;5 &mdash; flight tests over heat targets (the fun part)</summary>
-    <div class="acc-body">
-      <div class="note warn"><strong>Safety first, every time:</strong> use a controlled heat target such as a mug of hot water
+          </ul>
+          <span class="asm-label">Then in the air, over a safe heat target</span>
+          <div class="note warn"><strong>Safety first, every time:</strong> use a controlled heat target such as a mug of hot water
       rather than an open fire. Obtain site permission; check certification, registration, airspace,
       NOTAMs, weather and fire rules. For Basic operations stay more than 30 m horizontally from any
       person. These are test acceptance criteria, not pre-existing results.</div>
-      <ul class="tasks">
+          <ul class="tasks">
         <li><label><input type="checkbox" data-key="s-14"><span><strong>14 &middot; Calibration pass (day)</strong>
           <small>Use three measured targets with cold controls at a safe, legal altitude. Record detection rate, false positives and geolocation error over repeated passes (this is geo.py's flight check from step 12); do not claim 3/3 or zero false alarms before the evidence exists.</small></span></label></li>
         <li><label><input type="checkbox" data-key="s-15"><span><strong>15 &middot; Night pass &mdash; only if every rule is met</strong>
           <small>As built, this drone has no lights (the LED strip is optional, and the GND and 5V pads of its group carry the Pi lead), so skip this step unless you add lights that meet CAR 901.39. Use lights sufficient for VLOS and repeat the same targets. Passive longwave IR does not need LED illumination; the lights are for aircraft visibility. Compare results with day tests and report measured coordinate error.</small></span></label></li>
         <li><label><input type="checkbox" data-key="s-16"><span><strong>16 &middot; Controlled demo mission</strong>
           <small>Run a VLOS grid over a safe warm target (a mug of hot water) among cold controls and replay the logged map. Use the selected Phoenix 2/HV VTX/M5F analog chain on a legal channel and power setting. Done only after three repeated, documented runs meet the acceptance thresholds.</small></span></label></li>
-      </ul>
-    </div>
-  </details>
-  <details class="acc">
-    <summary>Weekend 6 &mdash; make it undeniable</summary>
-    <div class="acc-body">
-      <ul class="tasks">
+          </ul>
+          <span class="asm-label">Then write it up</span>
+          <ul class="tasks">
         <li><label><input type="checkbox" data-key="s-17"><span><strong>17 &middot; README + honest limits</strong>
           <small>What it does, how to run it, what it can't do (32&times;24 resolution, approximate position, prototype), sources. The limits section makes the rest believable.</small></span></label></li>
         <li><label><input type="checkbox" data-key="s-18"><span><strong>18 &middot; Record the evidence</strong>
           <small>5-minute video: bench test &rarr; daytime takeoff (as built, this drone has no lights, so it does not fly at night) &rarr; detection &rarr; map with marker on target. Plus a build photo and the flight log.</small></span></label></li>
         <li><label><input type="checkbox" data-key="s-19"><span><strong>19 &middot; Quizzes + story</strong>
-          <small>Pass every quiz on the Quizzes page in Learn. Practise explaining the actual tested implementation without notes; do not present unverified features as finished.</small></span></label></li>
-      </ul>
-    </div>
-  </details>
-  <details class="acc">
-    <summary>46-hour build-time estimate &mdash; all 19 steps</summary>
-    <div class="acc-body">
-      <table>
-        <tr><th>Steps</th><th>Work</th><th>Hours</th></tr>
-        <tr><td>1&ndash;3</td><td>BOM resolution/inventory, frame and soldered stack</td><td>8.0</td></tr>
-        <tr><td>4&ndash;6</td><td>Receiver, Betaflight/failsafe and first hover</td><td>7.0</td></tr>
-        <tr><td>7&ndash;10</td><td>Pi setup, camera/GPS integration, detection tests, payload mounting</td><td>10.0</td></tr>
-        <tr><td>11&ndash;14</td><td>GPS feed, geolocation validation, map implementation, calibration</td><td>11.0</td></tr>
-        <tr><td>15&ndash;19</td><td>Demo tests, README, evidence and quizzes</td><td>10.0</td></tr>
-        <tr><td colspan="2"><strong>Total hands-on estimate (not six guaranteed weekends)</strong></td><td><strong>46.0</strong></td></tr>
-      </table>
-      <p class="muted">Per-step figures: 1, 3, 4, 2, 3, 2, 2, 2, 4, 2, 2, 3, 3, 3, 2, 3, 2, 2, 1 hours.
-      Learning delays, shipping and regulator/retailer lead times are excluded.</p>
-    </div>
-  </details>
-</section>
-
-<section role="tabpanel" id="p-career" aria-labelledby="t-career" hidden>
-  <div class="sec-head">
-    <h2>Career &amp; pay</h2>
-    <button class="expand-btn" data-panel="p-career">Expand all</button>
-  </div>
-
-  <div class="card">
-    <div class="note ok"><strong>Why this build travels well:</strong> wildfire tech is
-    unmistakably Alberta &mdash; and the drone is a story interviewers remember.
-    Alberta's general MRS page describes both one-way and two-way equivalencies, but the classification
-    and job posting control. For Systems Analyst Level 1, do not assume experience alone replaces the
-    written education/certification route; the hiring ministry decides related qualifications.</div>
-    <div class="grid3">
-      <div class="stat"><div class="big">$28.00/hr</div><div class="lbl">Low &mdash; not a promised starting wage</div></div>
-      <div class="stat"><div class="big">$43.27/hr</div><div class="lbl">Median &mdash; Alberta and Edmonton</div></div>
-      <div class="stat"><div class="big">$57.69/hr</div><div class="lbl">High &mdash; reference 2023&ndash;2024
-        <span class="muted">(Job Bank, NOC 21211, updated 19 Nov 2025)</span></div></div>
+          <small>Pass every quiz in this course. Practise explaining the actual tested implementation without notes; do not present unverified features as finished.</small></span></label></li>
+          </ul>
+        </div>
+      </details>
+      <div id="quiz-final" class="quiz" data-quiz="final"></div>
     </div>
   </div>
-
-  <details class="acc">
-    <summary>Where to apply (check weekly)</summary>
+  <p class="muted learn-score">Every quiz, here and in Fly safely: <strong id="score-overview">&mdash;</strong></p>
+  <details class="acc" id="learn-sources">
+    <summary><strong>Sources and checks</strong> <span class="fly-first">Where the facts come from, and what is still to be proven</span></summary>
     <div class="acc-body">
-      <table>
-        <tr><th>Where</th><th>Look for</th><th>Why</th></tr>
-        <tr><td><a href="https://jobpostings.alberta.ca">jobpostings.alberta.ca</a></td>
-          <td>Program Services 3&ndash;4, data/engineering analyst, anything "data" in Forestry/Environment</td>
-          <td>Official route &mdash; MRS equivalency applies</td></tr>
-        <tr><td><a href="https://ca.linkedin.com/jobs">LinkedIn &mdash; Edmonton + Remote</a></td>
-          <td>"Junior data scientist", "ML developer", "drone pilot", "data engineer"</td>
-          <td>Private rules; portfolios welcome</td></tr>
-        <tr><td>AltaML, Amii, InnoTech Alberta, Alberta Innovates</td>
-          <td>Associate/ML developer, data scientist</td>
-          <td>AI-specific; portfolio work accepted</td></tr>
-        <tr><td>Drone &amp; wildfire services (RPAS contractors, forestry tech)</td>
-          <td>RPAS pilot, remote sensing tech, data analyst</td>
-          <td>Potentially relevant project experience; certification and posting requirements still apply</td></tr>
-      </table>
-      <div class="note gold">Free fluency builders: the
-      <a href="https://github.com/GovAlta/Alberta-AI-Academy">Alberta AI Academy</a> and GovAlta's
-      <a href="https://github.com/GovAlta/THE-VELOCITY-WHITE-PAPERS">Velocity White Papers</a>.</div>
-    </div>
-  </details>
-
-  <details class="acc" id="community-card">
-    <summary>Community and career near Edmonton</summary>
-    <div class="acc-body">
-      <p><strong>Drone groups</strong></p>
-      <ul>
-        <li><a href="https://www.northernalbertafpv.ca/">Northern Alberta FPV League</a> (MAAC club 928): first-timers and spectators welcome. In winter it races tiny whoops (small ducted drones, not this build) indoors almost every weekend: 8, 15, 22 and 29 Nov, and 6, 13 and 20 Dec 2026. In summer it flies outdoors at Ministik Park on approved event days (drones under 800 g in its Open class). A race costs a CA$10 donation, and you need a MAAC membership (the club says: &ldquo;If cost is an issue, let us know&rdquo;). Sign-ups are free on MultiGP. Its site did not open on 11 Nov 2026: check the dates and the cost with the league.</li>
-        <li><a href="https://www.ercs.ab.ca/">Edmonton Radio Control Society</a>: free ground school and flight training for members, and indoor flying at the Alberta Aviation Museum. Its outdoor field closed in Aug 2025, and its website does not say whether drones are welcome.</li>
-        <li>Other model-aircraft clubs within about 100 km are on <a href="https://www.maac.ca/clubs/list?zoneCode=A">MAAC's Zone A list</a>. Most of their pages do not say whether drones are allowed: ask the club.</li>
-      </ul>
-      <p><strong>Tech, AI and maker groups</strong></p>
-      <ul>
-        <li><a href="https://edmonton.aitinkerers.org/">AI Tinkerers Edmonton</a>: a hands-on meetup for people who build with AI, with live demos, about once a month on a Wednesday evening. No next date was posted on 4 Nov.</li>
-        <li><a href="https://epl.ca/makerspace/">Edmonton Public Library Makerspace</a>: 3D printers at six branches, and a laser cutter and a soldering lab at the downtown Milner library (training first). Mostly free; ages 12 and up.</li>
-        <li><a href="https://edmontonunlimited.com/events/">Edmonton Unlimited</a>: the city's innovation hub, with workshops and meetups (in Nov 2026: &ldquo;Enhancing AI literacy among Canadian SMEs&rdquo; on 24 and 30 Nov).</li>
-        <li><a href="https://www.ents.ca/">ENTS</a>, Edmonton's makerspace since 2009: an electronics lab open 24/7, plus wood and metal shops. CA$120 a month (new members: CA$240 for the first 3 months, one of them free). Tours on Tuesday evenings.</li>
-      </ul>
-      <p><strong>Training (free or funded)</strong></p>
-      <ul>
-        <li><a href="https://npowercanada.ca/ab">NPower Canada, Alberta</a>: free online tech training for adults who are out of work or under-employed and under its income limits. Its AI and Data Analytics program needs some Python or R; the current one runs 5 Oct 2026 to 29 Jan 2027. Recruiting starts 4 to 7 weeks before each start date.</li>
-        <li><a href="https://www.alberta.ca/indigenous-employment-training-partnerships-program">Indigenous Employment Training Partnerships</a> (Alberta): group training with employers for unemployed or under-employed Indigenous people. You join through a project, not on your own.</li>
-        <li><a href="https://www.oteenow.com/">Oteenow Employment &amp; Training Society</a>: training and job services for First Nations people in the Edmonton area. Your own Nation's employment and training office is worth asking too.</li>
-        <li>Alberta's <a href="https://www.alberta.ca/training-for-work">Training for work</a> page lists the province's other programs.</li>
-      </ul>
-      <p><strong>How this project helps a job search (no promises)</strong></p>
-      <p>It gives you something real to show: a drone you built, the payload's code and tests, and logs from real flights. Once you pass them, it also gives you two certificates to list: the Transport Canada Basic pilot certificate and the amateur radio Basic. It is not a qualification, and it does not meet a job posting's requirements by itself: each employer sets its own. Use the 3-minute demo below, and only claim what you have measured.</p>
-      <p class="muted">Read on 4 Nov 2026. Nothing was joined or signed up for.</p>
-    </div>
+  <details class="acc" id="verify-card">
+    <summary><strong>How this was checked</strong> <span class="fly-first" id="verify-first"></span></summary>
+    <div class="acc-body" id="verify-out"></div>
+    <details class="tp-more" id="open-facts"><summary>Open facts: what is still to be checked or found</summary><p class="muted">Every fact this guide could not yet confirm, by step. Most are checked with the real part in hand: see "When a parcel arrives". None is hidden.</p><p><strong>Stage 1</strong></p><ul><li>where the cover is, and whether you need a screwdriver (the kit has a hexagon screwdriver set).</li><li>the exact dial position for about 24 V: from the meter's manual or the real meter.</li><li>how close to 24 counts as "about"; the adapter's label or manual should say.</li><li>which end of the XT60 to DC cable is which (inferred from its name), the iron's polarity marking, and how long the iron takes to heat. No listing gives these.</li><li>how long, and how to set the temperature, from the iron's manual. The shop listing says the iron works from 220 to 400 C.</li><li>the wire colours inside this cable (the guide does not rely on them), and how to see pin 1 and pin 5 inside the real plug. An arrival check is added.</li><li>what the beep symbol looks like on this meter.</li></ul><p><strong>Stage 3 and Steps 1, 2</strong></p><ul><li>the switch names on the Pocket (its manual).</li><li>that your laptop meets the simulator's stated needs (a GTX 650 with 2 GB or better), or that the low graphics settings work; the exact words of the EdgeTX prompt on the Pocket.</li><li>no V6 build manual was found (drawings only), and no RadioMaster PDF was opened.</li><li>the bit sizes in the set, and whether the frame box has a sheet.</li><li>which screw length goes in which hole, and where the press nuts sit (no V6 manual found).</li></ul><p><strong>Step 3</strong></p><ul><li>which way the screws go in and where the nuts go (arrival check "Stack").</li><li>the + mark beside the pad can be read only as "-" on the manufacturer's diagram. "Can destroy the ESC" is general knowledge, not quoted from GEPRC.</li><li>an arrow or "front" mark on the flight controller (none is readable on the diagram).</li></ul><p><strong>Step 4</strong></p><ul><li>the box cable's wire colours (not published) and that its plug fits that socket (named sh1.0 4-pin).</li><li>whether the flight controller has a camera socket that the stack box's camera cable fits, or only pads. The wiring diagram shows three pads.</li><li>whether the V6 frame has a hole for the SMA nut (arrival check).</li><li>that USB alone powers the receiver (an arrival check exists), and the exact name of the receiver's Wi-Fi network.</li><li>that USB does not power the VTX (its 9 V supply is fed by the battery). Opus's "3 red then 1 blue = 25 mW" is its reading of the manual's table: check it at the first power-up.</li><li>the screw size the TBS manual names, and whether it wants threadlock.</li></ul><p><strong>Step 5</strong></p><ul><li>how long it takes and how you see it is full: from the radio's manual.</li><li>the label on the real pack.</li></ul><p><strong>Step 6</strong></p><ul><li>the exact SSH command on Windows. The Pi docs link a separate page for it that Opus has not opened yet.</li><li>which side of the board the pins go through, and how the headers are supplied (loose strips or with the boards). Neither is stated in the listings.</li><li>which way round the HAT faces.</li><li>the sensor boards' left-to-right pin order as printed (Pimoroni's photos show 3-6V or 3-5V, SDA, SCL, a crossed circle, GND), and which HAT socket each cable goes into.</li><li>the exact look of the i2cdetect table. Check against a screenshot from the real Pi.</li></ul><p><strong>Step 7</strong></p><ul><li>the tape's thickness (measure on arrival), and whether two layers stay put under the zip ties.</li><li>that the board's back is flat enough for tape (arrival check).</li><li>that the board's back is flat enough for tape. The maker lists only its size, about 28 x 21 x 9 mm.</li><li>the real loop length. Wrap a string round the Pi on its standoffs and measure it.</li><li>that the LED group's 5V pad shares the 5V 3A supply. The diagram labels it 5V; the "5 V rail" arrival test covers the load.</li><li>the right length: 10 mm is chosen from the 6.3 mm foot height; check it on the real foot</li></ul><p><strong>Step 8</strong></p><ul><li>where the light is.</li><li>confirm at the first power-up.</li><li>whether this version of Configurator has a slider for each motor as well as the Master slider. The docs name the Master slider; check on the laptop.</li><li>confirm that the prop tool fits the Gemfan prop nut.</li><li>what to do if the prop has no letters</li></ul><p><strong>Still open after the research pass</strong></p><ul><li>How long the radio takes to charge and what shows when it is full: the quick-start manual gives neither.</li><li>Whether the XT60 plug is marked + and -: look at the plug.</li><li>How long the GPS takes to get its first fix: about half a minute, from a distributor&rsquo;s listing (&ldquo;TTFF 1s/35s&rdquo;); the maker&rsquo;s datasheet was not opened.</li></ul></details>
+    <script type="application/json" id="verify-data">
+{"date":"2026-11-11","totals":{"checks":243,"passed":206,"failed":0,"need_real_parts":37,"page_fixes":0},"tolerance_runs":10000,"measured_checks_varied":35,"weakest_margins":["speed controller, flight controller and frame stack holes line up (30.5 mm, with the soft grommets): 0.5 mm as designed, 0.3 mm in the worst of 10,000 runs","M3 x 10 set screw: at least 3 mm of thread on each side of the plate: 1.0 mm as designed, 0.5 mm in the worst of 10,000 runs","Stack screw tip stays below the top plate: 2.0 mm as designed, 1.03 mm in the worst of 10,000 runs","Motor M1's 120 mm leads, measured from the motor's edge, reach the speed controller pad farthest from the motor, with the climb up to the speed controller board, 10 % extra for bends and 10 mm to spare: 6.09 mm as designed, 1.25 mm in the worst of 10,000 runs","Motor M2's 120 mm leads, measured from the motor's edge, reach the speed controller pad farthest from the motor, with the climb up to the speed controller board, 10 % extra for bends and 10 mm to spare: 6.09 mm as designed, 1.25 mm in the worst of 10,000 runs"]}
+    </script>
+    <script>
+    (function () {
+      const node = document.getElementById("verify-data");
+      const out = document.getElementById("verify-out");
+      const first = document.getElementById("verify-first");
+      if (!node || !out) { return; }
+      const V = JSON.parse(node.textContent), T = V.totals;
+      function mk(tag, cls, text) { const e = document.createElement(tag); if (cls) { e.className = cls; } if (text !== undefined) { e.textContent = text; } return e; }
+      const head = T.checks + " checks: " + T.passed + " passed, " + T.failed + " failed, " + T.need_real_parts + " need the real part in your hand";
+      first.textContent = head;
+      out.appendChild(mk("p", "", "The build was put together on a computer, step by step, from the shop listings, the datasheets and the 3D model. Nothing was tested on real parts."));
+      const big = mk("p", "", head + (T.page_fixes ? ", and " + T.page_fixes + " point to a line on the page or the buy list that still needs a decision." : "."));
+      big.style.fontWeight = "700";
+      out.appendChild(big);
+      out.appendChild(mk("p", "", V.measured_checks_varied + " of the checks use sizes that were measured or estimated. Those were repeated " + V.tolerance_runs.toLocaleString("en-CA") + " times, with every size varied at random inside its tolerance."));
+      out.appendChild(mk("p", "", "The tightest fits, with the room each one had left in the worst of those runs:"));
+      const ul = mk("ul", "");
+      V.weakest_margins.forEach(function (m) { ul.appendChild(mk("li", "", m)); });
+      out.appendChild(ul);
+      const note = mk("p", "muted", "");
+      note.appendChild(document.createTextNode("A pass here is a simulation result. The real parts decide: the checks that need them are in "));
+      const a = mk("a", "", "When a parcel arrives");
+      a.setAttribute("href", "#arrival-card"); a.setAttribute("data-open-arrival", "");
+      note.appendChild(a);
+      note.appendChild(document.createTextNode(" (Buy page). Run on " + V.date + "."));
+      out.appendChild(note);
+      out.appendChild(mk("p", "muted", "Source for the camera tilt in Step 4: Oscar Liang's camera-angle guide says an angle of 10 to 15 degrees is a good starting point for new pilots."));
+    })();
+    </script>
   </details>
   <details class="acc">
-    <summary>The pitch, the ask, and the 3-minute demo</summary>
-    <div class="acc-body">
-      <div class="script">"I built a thermal-camera drone from parts: the airframe, the flight controller, and a Raspberry Pi running my own hot-spot detection code. In my own tests it found [fill in after you measure it: what, from how high, how many times out of how many] and put it on a map with GPS coordinates. I can explain every part of it. Want to see?"</div>
-      <p><strong>Demo flow (3 min):</strong> 0:00 the problem &middot; 0:30 bench: the 768-number frame and the flood fill finding a mug of hot water &middot; 1:30 the flight footage &middot; 2:15 the map marker landing on the target &middot; 2:45 <strong>honest limits first</strong>: "32&times;24 sensor, approximate position, a prototype flown by day under Basic rules. But the pipeline works, and I can explain every line."</p>
-      <p><strong>Earning a vouch:</strong> show don't ask &middot; ask "what would make this
-      useless?" &middot; fix what they say &middot; come back with the fix &middot; then, once
-      they've seen real work: "Would you be comfortable being a reference for me? It's completely
-      fine if not."</p>
-    </div>
-  </details>
-
-  <details class="acc">
-    <summary>Where you stand for GoA Systems Analyst Level 1 (official MRS)</summary>
-    <div class="acc-body">
-      <p class="muted">Pick what's true (official MRS PDF, reviewed 20 May 2026):</p>
-      <div id="level1-options"></div>
-      <div class="note info" id="level1-result" aria-live="polite">Pick one above.</div>
-      <p class="muted">Level 2 needs: degree + 2 yrs, <em>or</em> diploma + 4 yrs, <em>or</em>
-      certificate + 5 yrs. The hiring team decides what counts as "related" &mdash; never
-      automatic. No project waives a written minimum on its own.</p>
-    </div>
-  </details>
-</section>
-<section role="tabpanel" id="p-quiz" aria-labelledby="t-quiz" hidden>
-  <div class="sec-head">
-    <h2>Prove you know it</h2>
-    <button class="expand-btn" data-panel="p-quiz">Expand all</button>
-  </div>
-
-  <div class="card">
-    <p>One question at a time, instant feedback with the reason. Quizzes go by topic: take each one when you
-    reach that part of the build. Best scores save in this browser.</p>
-    <div class="grid2">
-      <div class="stat"><div class="big" id="score-overview">&mdash;</div>
-        <div class="lbl">Overall quiz mastery (best scores)</div></div>
-      <div class="stat"><div class="big" id="flash-progress">0 / 10</div>
-        <div class="lbl">Flashcards reviewed (below)</div></div>
-    </div>
-  </div>
-
-  <div id="quiz-airframe" class="quiz" data-quiz="airframe"></div>
-  <div id="quiz-power" class="quiz" data-quiz="power"></div>
-  <div id="quiz-payload" class="quiz" data-quiz="payload"></div>
-  <div id="quiz-detect" class="quiz" data-quiz="detect"></div>
-  <div id="quiz-final" class="quiz" data-quiz="final"></div>
-
-  <details class="acc">
-    <summary>Interview flashcards &mdash; tap to flip (10 cards)</summary>
-    <div class="acc-body">
-      <p class="muted">The questions you'll actually be asked. Say your answer out loud before
-      you flip.</p>
-      <div id="flashcards"></div>
-    </div>
-  </details>
-</section>
-
-<section role="tabpanel" id="p-limits" aria-labelledby="t-limits" hidden>
-  <div class="sec-head">
-    <h2>Honest limits &amp; sources</h2>
-    <button class="expand-btn" data-panel="p-limits">Expand all</button>
-  </div>
-
-  <details class="acc" open>
     <summary>Checked at primary sources (31 Oct 2026)</summary>
     <div class="acc-body">
       <ul>
@@ -4044,8 +3916,6 @@ while True:
         <li><span class="badge b-green">Checked</span> Transport Canada Basic operations, CAR 901.25
         (400 ft / 122 m AGL ceiling) and CAR 900.06/901.39/601.15. The 30 m condition is a Basic-category
         boundary; night lights do not waive other rules.</li>
-        <li><span class="badge b-green">Checked</span> GoA Systems Analyst MRS PDF (reviewed
-        20 May 2026) and Job Bank NOC 21211 Alberta/Edmonton wages $28.00/$43.27/$57.69.</li>
         <li><span class="badge b-green">Checked</span> FPInnovations TR-2020-N29 (2020), including
         solar gain/reflectance, GPS-referenced maps and the complete-system conclusions.</li>
         <li><span class="badge b-green">Verified locally</span> <code>hotspots.py</code>, <code>geo.py</code>,
@@ -4055,7 +3925,6 @@ while True:
       </ul>
     </div>
   </details>
-
   <details class="acc">
     <summary>Assembly and acceptance checks after delivery</summary>
     <div class="acc-body">
@@ -4071,7 +3940,6 @@ while True:
       </ul>
     </div>
   </details>
-
   <details class="acc">
     <summary>Primary sources checked 31 Oct 2026</summary>
     <div class="acc-body">
@@ -4090,15 +3958,50 @@ while True:
         &middot; <a href="https://www.pishop.ca/product/pa1010d-gps-breakout/">Pimoroni PA1010D GPS</a>
         &middot; <a href="https://www.sparkfun.com/sparkfun-qwiic-hat-for-raspberry-pi.html">SparkFun Qwiic HAT</a>
         &middot; <a href="Shad-Drone-Order-List.md">All order links (stock re-check required)</a></li>
-        <li><a href="https://www.alberta.ca/system/files/custom_downloaded_images/psc-recruitment-standards-systems-analyst.pdf">GoA Systems Analyst MRS PDF</a>
-        &middot; <a href="https://www.jobbank.gc.ca/marketreport/wages-occupation/24510/AB">Job Bank wages</a>
-        &middot; <a href="https://www.jobbank.gc.ca/marketreport/summary-occupation/24510/AB">Job Bank profile/outlook</a>
-        &middot; <a href="https://library.fpinnovations.ca/media/FOP/TR2020N29.PDF">FPInnovations TR-2020-N29</a></li>
+        <li><a href="https://library.fpinnovations.ca/media/FOP/TR2020N29.PDF">FPInnovations TR-2020-N29</a></li>
       </ul>
       <p class="muted"><a href="Shad-Drone-Audit-Report.md">Read the updated A&ndash;G audit and
       substitution report</a>, or open the <a href="Shad-Drone-Payload/README.md">tested payload package</a>.
       The supplied chat artwork was not available as a readable image file, so the existing
       <code>shad-drone-icon.svg</code> remains.</p>
+    </div>
+  </details>
+  <details class="acc" id="hours-card">
+    <summary>Where the 46 hours come from</summary>
+    <div class="acc-body">
+      <table>
+        <tr><th>Steps</th><th>Work</th><th>Hours</th></tr>
+        <tr><td>1&ndash;3</td><td>BOM resolution/inventory, frame and soldered stack</td><td>8.0</td></tr>
+        <tr><td>4&ndash;6</td><td>Receiver, Betaflight/failsafe and first hover</td><td>7.0</td></tr>
+        <tr><td>7&ndash;10</td><td>Pi setup, camera/GPS integration, detection tests, payload mounting</td><td>10.0</td></tr>
+        <tr><td>11&ndash;14</td><td>GPS feed, geolocation validation, map implementation, calibration</td><td>11.0</td></tr>
+        <tr><td>15&ndash;19</td><td>Demo tests, README, evidence and quizzes</td><td>10.0</td></tr>
+        <tr><td colspan="2"><strong>Total hands-on estimate (not six guaranteed weekends)</strong></td><td><strong>46.0</strong></td></tr>
+      </table>
+      <p class="muted">Per-step figures: 1, 3, 4, 2, 3, 2, 2, 2, 4, 2, 2, 3, 3, 3, 2, 3, 2, 2, 1 hours.
+      Learning delays, shipping and regulator/retailer lead times are excluded.</p>
+      <p class="muted">The numbers are the 19 tasks the hours were counted on: 1 to 10 are the build (Build, Steps 1 to 8), and 11 to 19 are the nine tasks of Lesson 7.</p>
+    </div>
+  </details>
+    </div>
+  </details>
+  <details class="acc" id="community-card">
+    <summary><strong>Clubs and groups near Edmonton</strong> <span class="fly-first">Drone clubs, makerspaces and meetups</span></summary>
+    <div class="acc-body">
+      <p><strong>Drone groups</strong></p>
+      <ul>
+        <li><a href="https://www.northernalbertafpv.ca/">Northern Alberta FPV League</a> (MAAC club 928): first-timers and spectators welcome. In winter it races tiny whoops (small ducted drones, not this build) indoors almost every weekend: 8, 15, 22 and 29 Nov, and 6, 13 and 20 Dec 2026. In summer it flies outdoors at Ministik Park on approved event days (drones under 800 g in its Open class). A race costs a CA$10 donation, and you need a MAAC membership (the club says: &ldquo;If cost is an issue, let us know&rdquo;). Sign-ups are free on MultiGP. Its site did not open on 11 Nov 2026: check the dates and the cost with the league.</li>
+        <li><a href="https://www.ercs.ab.ca/">Edmonton Radio Control Society</a>: free ground school and flight training for members, and indoor flying at the Alberta Aviation Museum. Its outdoor field closed in Aug 2025, and its website does not say whether drones are welcome.</li>
+        <li>Other model-aircraft clubs within about 100 km are on <a href="https://www.maac.ca/clubs/list?zoneCode=A">MAAC's Zone A list</a>. Most of their pages do not say whether drones are allowed: ask the club.</li>
+      </ul>
+      <p><strong>Tech, AI and maker groups</strong></p>
+      <ul>
+        <li><a href="https://edmonton.aitinkerers.org/">AI Tinkerers Edmonton</a>: a hands-on meetup for people who build with AI, with live demos, about once a month on a Wednesday evening. No next date was posted on 4 Nov.</li>
+        <li><a href="https://epl.ca/makerspace/">Edmonton Public Library Makerspace</a>: 3D printers at six branches, and a laser cutter and a soldering lab at the downtown Milner library (training first). Mostly free; ages 12 and up.</li>
+        <li><a href="https://edmontonunlimited.com/events/">Edmonton Unlimited</a>: the city's innovation hub, with workshops and meetups (in Nov 2026: &ldquo;Enhancing AI literacy among Canadian SMEs&rdquo; on 24 and 30 Nov).</li>
+        <li><a href="https://www.ents.ca/">ENTS</a>, Edmonton's makerspace since 2009: an electronics lab open 24/7, plus wood and metal shops. CA$120 a month (new members: CA$240 for the first 3 months, one of them free). Tours on Tuesday evenings.</li>
+      </ul>
+      <p class="muted">Read on 4 Nov 2026. Nothing was joined or signed up for.</p>
     </div>
   </details>
 </section>
@@ -4156,29 +4059,36 @@ while True:
      is a page, so deep links (#p-steps) and the assistant's jumps keep working. */
   const PLACES = [["home", "Home", "&#8962;"], ["steps", "Build", "&#128295;"], ["parts", "Buy", "&#128722;"],
                   ["fly", "Fly safely", "&#9888;"], ["learn", "Learn", "&#128214;"]];
-  const LEARN = [["why", "What &amp; Why"], ["build", "How it works"], ["plan", "Plan"],
-                 ["career", "Career &amp; pay"], ["quiz", "Quizzes"], ["limits", "Limits &amp; sources"]];
+  /* Learn is one page since 12 Nov 2026: its three parts (why, build, quiz) show together as one list of lessons, and the
+     bar of Learn pages stays hidden. The three names are kept because links, the chat and the edit tools use them. */
+  const LEARN = [["why", "Learn"], ["build", "How it works"], ["quiz", "Prove it"]];
+  const OLD_PAGES = { plan: "quiz", career: "why", limits: "quiz" };   /* pages that left Learn: an old link lands on the course */
   const TABS = PLACES.filter(function (p) { return p[0] !== "learn"; }).concat(LEARN);
   const tabBar = document.getElementById("tabs");
   const learnBar = document.getElementById("learn-tabs");
   function isLearn(id) { return LEARN.some(function (t) { return t[0] === id; }); }
   function openTab(id) {
-    if (id === "learn") { id = isLearn(saved.learnTab) ? saved.learnTab : "why"; }
+    if (id === "learn") { id = "why"; }
+    if (OLD_PAGES[id]) { id = OLD_PAGES[id]; }
     if (!TABS.some(function (t) { return t[0] === id; })) { id = "home"; }
     TABS.forEach(function (t) {
       const on = t[0] === id;
-      document.getElementById("p-" + t[0]).hidden = !on;
+      document.getElementById("p-" + t[0]).hidden = !(on || (isLearn(id) && isLearn(t[0])));
       const b = document.getElementById("t-" + t[0]);
       b.setAttribute("aria-selected", on ? "true" : "false");
       b.tabIndex = on ? 0 : -1;
     });
     const learning = isLearn(id);
-    learnBar.hidden = !learning;
+    learnBar.hidden = true;
     const lb = document.getElementById("t-learn");
     if (learning) { lb.setAttribute("aria-current", "page"); saved.learnTab = id; save(); }
     else { lb.removeAttribute("aria-current"); }
     document.body.setAttribute("data-place", learning ? "learn" : id);
     window.scrollTo({ top: 0, behavior: "instant" });
+    if (learning && id !== "why") {
+      const part = document.getElementById("p-" + id);
+      if (part && part.offsetParent) { window.scrollTo({ top: part.getBoundingClientRect().top + window.scrollY - 8, behavior: "instant" }); }
+    }
     if (id === "steps") {
       /* Fable audit S1 (10 Nov 2026): while a stage's practice is the next thing to do, Build opens at that practice
          box; the step buttons are the landing place only once the practice stages are behind him. */
@@ -4348,9 +4258,9 @@ while True:
       if (asmEl) { asmEl.scrollIntoView({ block: "start" }); }
       return;
     }
-    openTab("steps");
-    const group = hereTarget.closest("details");
-    if (group) { group.open = true; }
+    const holder = hereTarget.closest("[role=tabpanel]");
+    openTab(holder ? holder.id.slice(2) : "steps");   /* the nine test-flight tasks live in Learn, Lesson 7 */
+    for (let p = hereTarget.parentElement; p; p = p.parentElement) { if (p.tagName === "DETAILS") { p.open = true; } }
     hereTarget.scrollIntoView({ block: "center" });
     hereTarget.focus();
   });
@@ -4623,19 +4533,15 @@ while True:
       { q: "What does FPInnovations identify as the mission product?",
         a: ["The aircraft alone", "A map of GPS-referenced hotspots delivered to the firefighter; the platform is only one small part of the solution", "A dramatic video", "A guaranteed job"],
         c: 1,
-        why: "That is supported by the 2020 report. It does not show that this prototype works or that an employer will hire the builder." },
+        why: "That is supported by the 2020 report. It does not show that this prototype works." },
       { q: "Can this drone, as built, fly at night?",
         a: ["Yes: the thermal camera sees in the dark", "Not legally: CAR 901.39 needs lights the pilot can see, and no step fits the optional LED strip", "Yes, once it is registered", "Yes, below 30 m"],
         c: 1,
         why: "Lighting and thermal contrast are separate issues: the thermal camera does not make a night flight legal. Plan daylight flights unless lights are fitted and on." },
       { q: "What must the README always include?",
-        a: ["Only successes", "Honest limits, measured results, missing features, prototype status and sources", "A guaranteed accuracy", "A hiring promise"],
+        a: ["Only successes", "Honest limits, measured results, missing features, prototype status and sources", "A guaranteed accuracy", "A promise that it finds every fire"],
         c: 1,
-        why: "Report what was actually tested and distinguish design targets from evidence." },
-      { q: "Where do the wage numbers in this guide come from?",
-        a: ["Reddit", "Job Bank NOC 21211, Alberta/Edmonton, updated Nov 2025 — recheck before quoting", "A friend", "A guaranteed employer offer"],
-        c: 1,
-        why: "The $28.00/$43.27/$57.69 figures are low/median/high occupational wages, not a promised starting salary." }
+        why: "Report what was actually tested and distinguish design targets from evidence." }
     ],
     fly0: [
       { q: "What does a 250 g–25 kg drone need for Basic operations?",
@@ -4782,6 +4688,26 @@ while True:
         a: ["Right away, while it is warm", "After it has cooled: attended, in the LiPo bag, on a fireproof surface", "Overnight, while you sleep", "In the freezer"],
         c: 1,
         why: "Let a pack cool before charging it. Charge it attended, in the LiPo bag, on a fireproof surface. Never charge a swollen or damaged pack." }
+    ],
+    learn1: [
+      { q: "What does this drone carry?",
+        a: ["Only a video camera", "A thermal camera, a GPS and a small computer", "A water tank", "A second radio"],
+        c: 1,
+        why: "It carries a thermal camera, a GPS and a small computer, and puts the hot spots it sees on a map." },
+      { q: "The payload software passed 31 of 31 tests. What does that show?",
+        a: ["That the drone finds fires", "That the code works on made-up test data; nothing is proven on the drone yet", "That it may fly at night", "That the camera is exact to 1 °C"],
+        c: 1,
+        why: "The tests are synthetic. Fit, power, detection accuracy and flight still have to be proven by the tests in the build steps." }
+    ],
+    learn6: [
+      { q: "Can this prototype declare an area safe?",
+        a: ["Yes, when it sees no hot pixel", "No: it cannot replace agency aircraft or declare an area safe", "Yes, at night", "Yes, from below 30 m"],
+        c: 1,
+        why: "The MLX90640's 32×24 grid is a learning-grade sensor. It cannot replace agency aircraft or declare an area safe." },
+      { q: "Which of these is proven on the bench for this build today?",
+        a: ["Its detection range", "Its mapping accuracy", "Its flight time", "None of them yet"],
+        c: 3,
+        why: "No detection range, mapping accuracy, professional sensor cost, flight endurance or operational readiness claim is bench-verified for this build." }
     ]
   };
 
@@ -4792,12 +4718,12 @@ while True:
 
   /* ---------- Quiz engine: one question at a time, instant feedback ---------- */
   const QUIZ_TITLES = {
-    airframe: "Quiz: Build the airframe (10 questions)",
-    power: "Quiz: Power, batteries & safety (8 questions)",
-    payload: "Quiz: The thermal payload (9 questions)",
-    detect: "Quiz: Detection & mapping (5 questions)",
+    airframe: "Quiz: Lesson 2, the airframe (10 questions)",
+    power: "Quiz: Lesson 3, power and batteries (8 questions)",
+    payload: "Quiz: Lesson 4, the payload (9 questions)",
+    detect: "Quiz: Lesson 5, detection and mapping (5 questions)",
     rules: "Last check: flight rules, the whole picture (4 questions)",
-    final: "Final exam (8 questions)",
+    final: "Final exam (7 questions)",
     fly0: "Quiz: Step 0 (2 questions)",
     fly1: "Quiz: Step 1 (3 questions)",
     fly2: "Quiz: Step 2 (2 questions)",
@@ -4808,7 +4734,9 @@ while True:
     fly7: "Quiz: Step 7 (3 questions)",
     fly8: "Quiz: Step 8 (2 questions)",
     fly9: "Quiz: Step 9 (4 questions)",
-    fly10: "Quiz: Step 10 (2 questions)"
+    fly10: "Quiz: Step 10 (2 questions)",
+    learn1: "Quiz: Lesson 1 (2 questions)",
+    learn6: "Quiz: Lesson 6 (2 questions)"
   };
   /* a quiz answer's money figures, filled in from the buy list when the question is shown (the bill's own sums) */
   function quizLive(text) {
@@ -5729,101 +5657,14 @@ while True:
     }
   })();
 
-  /* ---------- Level 1 eligibility picker (official MRS routes) ---------- */
-  const LEVEL1 = [
-    { id: "diploma", label: "I have a related two-year diploma",
-      answer: "yes", text: "Yes — that meets Level 1 by itself (related two-year diploma from a recognized institution)." },
-    { id: "certplus", label: "I have a related one-year certificate + 1 year of related experience",
-      answer: "yes", text: "Yes — if the hiring team agrees your experience is related. The standard requires exactly this combination." },
-    { id: "industryplus", label: "I have an industry certification (e.g. ISC2) + experience",
-      answer: "maybe", text: "Possibly. The standard says an industry-recognized certification from a credible source, such as ISC2, may replace the one-year certificate — you would still need 1 year of related experience. Confirm both with the hiring team before spending money." },
-    { id: "certonly", label: "I have a certificate or certification but no related experience yet",
-      answer: "no", text: "Not yet — the missing piece is 1 year of related experience. Paid tech work is the clearest way to build that." },
-    { id: "none", label: "I have none of these yet",
-      answer: "no", text: "Not yet. Fastest routes: paid tech work plus a qualifying certification, or a funded two-year diploma. This build proves skill and earns references — it doesn't replace the written minimum." }
-  ];
-  const l1box = document.getElementById("level1-options");
-  LEVEL1.forEach(function (opt) {
-    const b = document.createElement("button");
-    b.className = "choice";
-    b.style.margin = "8px 0";
-    b.textContent = opt.label;
-    b.addEventListener("click", function () {
-      l1box.querySelectorAll("button").forEach(function (x) {
-        x.classList.remove("right"); x.classList.remove("wrong");
-      });
-      b.classList.add(opt.answer === "no" ? "wrong" : "right");
-      const r = document.getElementById("level1-result");
-      r.className = "note " + (opt.answer === "yes" ? "ok" : opt.answer === "maybe" ? "gold" : "warn");
-      r.textContent = opt.text;
-      saved.level1 = opt.id;
-      save();
-    });
-    l1box.appendChild(b);
-  });
-  if (saved.level1) {
-    const match = LEVEL1.find(function (o) { return o.id === saved.level1; });
-    if (match) l1box.querySelectorAll("button").forEach(function (b) {
-      if (b.textContent === match.label) b.click();
-    });
-  }
-  /* ---------- Flashcards ---------- */
-  const FLASHES = [
-    ["Walk me through the proposed build.",
-     "The order uses a Source One V6 frame, GEPRC F405 BLS 50A stack, Emax ECO III motors and analog FPV. The payload is a header-equipped Zero 2 WH, Qwiic HAT, Pimoroni MLX90640 and PA1010D GPS, with independent sensor orientation."],
-    ["How would it detect heat?",
-     "The sensor returns 768 readings. The included flood-fill module groups edge-connected pixels above a tuned threshold. All 31 synthetic tests passed; real detection still needs controlled-target measurements."],
-    ["What does one pixel cover?",
-     "At 30 m AGL, the 55° horizontal FoV covers about 31.2 m, or 0.98 m per horizontal pixel. The 35° vertical FoV covers about 18.9 m, or 0.79 m per vertical pixel. Small-target detection is therefore uncertain."],
-    ["Why compare day and night tests?",
-     "FPInnovations describes solar gain and reflectance as daytime false-positive sources and recommends high thermal contrast. Night lights are for VLOS, not thermal illumination, and CAR 901.39 is only one of the rules that must be met."],
-    ["What can't it do?",
-     "It is a 32×24 learning-grade prototype. It cannot certify an area safe, replace agency operations, or claim detection range and mapping accuracy without measured evidence."],
-    ["What is the forest-fire restriction?",
-     "CAR 601.15 prohibits operating over a forest-fire area or within 5 NM below 3,000 ft AGL, and NOTAM-restricted airspace is separate. I would use controlled bench targets, not fly to a wildfire."],
-    ["How would you validate detections?",
-     "Use repeated controlled hot/cold targets, record true/false detections and surveyed-position error, and publish the data. A single 3/3 pass is not enough to establish operational reliability."],
-    ["Why separate detection logic from flight code?",
-     "Pure functions can be tested before hardware integration. The included package has 31 passing unit tests plus demo/map checks. Those validate the logic, not physical hardware or airborne performance."],
-    ["Is the AI briefing implemented?",
-     "No. This HTML does not include the airborne map or AI briefing. If added later, generated text must be checked against logged measurements and kept away from flight-safety decisions."],
-    ["Can this project replace job requirements?",
-     "No. A tested project can support a portfolio, but GoA Systems Analyst Level 1 still has written MRS education/certification routes, and the hiring ministry decides related qualifications and experience."]
-  ];
-  const flashBox = document.getElementById("flashcards");
-  FLASHES.forEach(function (pair, i) {
-    const wrap = document.createElement("div");
-    const card = document.createElement("div");
-    card.className = "flash" + (saved.flashes[i] ? " flip" : "");
-    card.innerHTML =
-      '<div class="flash-in">' +
-      '<div class="face front"><div class="tag">Question ' + (i + 1) + '</div><strong>' + pair[0] + '</strong></div>' +
-      '<div class="face back"><div class="tag">Say it out loud first</div>' + pair[1] + '</div></div>';
-    card.addEventListener("click", function () {
-      card.classList.toggle("flip");
-      saved.flashes[i] = card.classList.contains("flip");
-      save(); paintFlashes();
-    });
-    const hint = document.createElement("div");
-    hint.className = "hint";
-    hint.textContent = "tap to flip";
-    wrap.appendChild(card);
-    wrap.appendChild(hint);
-    flashBox.appendChild(wrap);
-  });
-  function paintFlashes() {
-    const seen = Object.keys(saved.flashes).filter(function (k) { return saved.flashes[k]; }).length;
-    document.getElementById("flash-progress").textContent = seen + " / " + FLASHES.length;
-  }
 
   /* ---------- Go ---------- */
-  paintFlashes();
   paintGlobal();
   /* Deep links: "#p-steps" or "#steps" opens that tab directly, so the build
      steps (and their 3D viewers) can be shared or bookmarked. */
   function tabFromHash() {
     const id = (location.hash || "").replace(/^#p-/, "").replace(/^#/, "");
-    if (id === "learn") return "learn";
+    if (id === "learn" || OLD_PAGES[id]) return id;
     for (let i = 0; i < TABS.length; i += 1) { if (TABS[i][0] === id) return id; }
     return "home";
   }
@@ -5943,8 +5784,11 @@ while True:
   document.querySelectorAll(".expand-btn").forEach(function (btn) {
     btn.addEventListener("click", function () {
       if (!btn.dataset.panel) return;
-      const panel = document.getElementById(btn.dataset.panel);
-      const accs = panel.querySelectorAll("details.acc, details.asm-step, details.asm-step0, details.fly-step");
+      const accs = [];
+      btn.dataset.panel.split(",").forEach(function (pid) {   /* Learn's one button covers its three parts */
+        const panel = document.getElementById(pid);
+        if (panel) { Array.prototype.push.apply(accs, panel.querySelectorAll("details.acc, details.asm-step, details.asm-step0, details.fly-step")); }
+      });
       const anyClosed = Array.prototype.some.call(accs, function (d) { return !d.open; });
       accs.forEach(function (d) { d.open = anyClosed; });
       btn.textContent = anyClosed ? "Collapse all" : "Expand all";
@@ -6376,10 +6220,6 @@ window.GUIDE_DOMAIN = {
     {
       "title": "Airframes — why this quad is built the way it is",
       "file": "05-airframes.md"
-    },
-    {
-      "title": "Careers and pay — what the data says and what you may claim",
-      "file": "06-careers.md"
     }
   ],
   "chunks": [
@@ -6401,7 +6241,7 @@ window.GUIDE_DOMAIN = {
         "resolution limit"
       ],
       "text": "The sensor is a 32 by 24 array. The MLX90640 gives 768 temperature readings per frame, at roughly ±2 °C over a 0–100 °C range. That is the specification, not a measured detection result.",
-      "source": "MLX90640 datasheet; Guide, Learn > What & Why (the honesty box)",
+      "source": "MLX90640 datasheet; Guide, Learn, Lesson 6 (the honest line)",
       "verified": "2026-11-03",
       "correction": false,
       "unverified": false
@@ -6424,7 +6264,7 @@ window.GUIDE_DOMAIN = {
         "resolution limit"
       ],
       "text": "The ground footprint decides your pixel size. Ground width for a downward camera is 2 × altitude × tan(FOV ÷ 2). With the 55° lens at 30 m that is about 31.2 m across, which over 32 pixels is roughly 0.98 m per pixel.",
-      "source": "Guide, Learn > How it works (altitude and coverage calculator)",
+      "source": "Guide, Learn, Lesson 5 (altitude and coverage calculator)",
       "verified": "2026-11-03",
       "correction": false,
       "unverified": false
@@ -6447,7 +6287,7 @@ window.GUIDE_DOMAIN = {
         "resolution limit"
       ],
       "text": "A one metre heat source at 30 m is about one pixel. At 30 m with the 55° lens a 1 m target covers about one pixel, so detection is a sampling question before it is an algorithm question. This is why the guide refuses to promise \"finds a 1 m heat source from 30 m\" as a capability.",
-      "source": "Guide, Learn > What & Why and How it works; audit pass 2 finding 12",
+      "source": "Guide, Learn, Lessons 5 and 6; audit pass 2 finding 12",
       "verified": "2026-11-03",
       "correction": false,
       "unverified": false
@@ -6516,7 +6356,7 @@ window.GUIDE_DOMAIN = {
         "vlos"
       ],
       "text": "The mission product is a map, not an autopilot. FPInnovations describes the deliverable as a map of GPS-referenced hotspots handed to the firefighter — not an aircraft that finds fires by itself. The prototype should be measured against that framing.",
-      "source": "FPInnovations TR-2020-N29 (2020), as cited in Guide, Learn > Limits & sources, and domain 01",
+      "source": "FPInnovations TR-2020-N29 (2020), as cited in Guide, Learn, Sources and checks, and domain 01",
       "verified": "2026-11-03",
       "correction": false,
       "unverified": false
@@ -6539,7 +6379,7 @@ window.GUIDE_DOMAIN = {
         "vlos"
       ],
       "text": "A real fire is agency airspace. Unauthorised drones near a wildfire ground air tankers and endanger crews, which is why the guide says plainly that no drone may fly over or within 5 nautical miles (9.3 km) of a wildfire below 3,000 ft (CAR 601.15). Real fires are not practice.",
-      "source": "Guide, Learn > What & Why, and Fly safely; CAR 601.15",
+      "source": "Guide, Learn, Lesson 6, and Fly safely; CAR 601.15",
       "verified": "2026-11-03",
       "correction": false,
       "unverified": false
@@ -6608,7 +6448,7 @@ window.GUIDE_DOMAIN = {
         "vlos"
       ],
       "text": "Why it matters for your build. The build is judged on delivering a credible hotspot map a crew could act on, with the caveats attached — not on \"finding fires\". Every design choice that looks conservative follows from that.",
-      "source": "Guide, Learn > What & Why; FPInnovations TR-2020-N29 (2020)",
+      "source": "Guide, Learn, Lesson 1; FPInnovations TR-2020-N29 (2020)",
       "verified": "2026-11-03",
       "correction": false,
       "unverified": false
@@ -6633,7 +6473,7 @@ window.GUIDE_DOMAIN = {
         "vlos"
       ],
       "text": "The forest-fire line that never bends. Do not operate over a forest-fire area or within 5 nautical miles (9.3 km) of one below 3,000 ft AGL, and do not enter airspace restricted by a NOTAM under CAR 601.16. Unauthorised drones ground air tankers and endanger crews.",
-      "source": "CAR 601.15 and CAR 601.16, as cited in Guide, Learn > What & Why, and Fly safely",
+      "source": "CAR 601.15 and CAR 601.16, as cited in Guide, Learn, Lesson 6, and Fly safely",
       "verified": "2026-11-03",
       "correction": false,
       "unverified": false
@@ -6708,7 +6548,7 @@ window.GUIDE_DOMAIN = {
         "vlos"
       ],
       "text": "Night lights are necessary, not sufficient. CAR 901.39 requires the aircraft to remain visible; a generic LED kit does not by itself make a flight legal. VLOS, airspace, bystander, aerodrome, NOTAM, Alberta fire bans and local rules all still apply at night.",
-      "source": "Guide, Learn > What & Why (stat) and Fly safely (night-lighting note)",
+      "source": "Guide, Fly safely, Step 6 (night-lighting note)",
       "verified": "2026-11-03",
       "correction": false,
       "unverified": false
@@ -6781,7 +6621,7 @@ window.GUIDE_DOMAIN = {
         "geo.py"
       ],
       "text": "The resolution floor comes before the algorithm. At 30 m with the 55° lens a 1 m heat source covers about one pixel, so detection is a sampling question before it is an algorithm question. Ideal-nadir geometry also omits tilt, terrain, lens distortion and GPS/altitude/heading errors.",
-      "source": "domain 01; payload README limitations; Guide, Learn > How it works (calculator)",
+      "source": "domain 01; payload README limitations; Guide, Learn, Lesson 5 (calculator)",
       "verified": "2026-11-03",
       "correction": false,
       "unverified": false
@@ -6852,8 +6692,8 @@ window.GUIDE_DOMAIN = {
         "hotspots.py",
         "geo.py"
       ],
-      "text": "Why it matters for your build. The career asset is the honest pipeline — group, locate, map, report, prove — not a model claim. Each stage is testable on the bench before anything flies.",
-      "source": "Guide, Learn > Career & pay (\"the pipeline is the career asset\"); payload README",
+      "text": "Why it matters for your build. What matters is the honest pipeline — group, locate, map, report, prove — not a model claim. Each stage is testable on the bench before anything flies.",
+      "source": "Guide, Learn, Lesson 5 (\"the pipeline matters more than the airframe\"); payload README",
       "verified": "2026-11-03",
       "correction": false,
       "unverified": false
@@ -6972,116 +6812,6 @@ window.GUIDE_DOMAIN = {
       "verified": "2026-11-01",
       "correction": false,
       "unverified": false
-    },
-    {
-      "id": "06-careers-25",
-      "page": "Careers and pay — what the data says and what you may claim",
-      "heading": "What the Job Bank data says",
-      "tags": [
-        "career",
-        "job",
-        "pay",
-        "noc 21211",
-        "portfolio",
-        "interview",
-        "alberta",
-        "mrs",
-        "classification",
-        "evidence"
-      ],
-      "text": "What the Job Bank data says. Job Bank groups the data engineer profile under Data scientists (NOC 21211) and rates Alberta prospects \"Moderate\". The Alberta/Edmonton median is CA$43.27/hr (Job Bank, NOC 21211, updated 19 Nov 2025).",
-      "source": "Guide, Learn > Career & pay; Job Bank NOC 21211, updated 19 Nov 2025",
-      "verified": "2026-11-03",
-      "correction": false,
-      "unverified": false
-    },
-    {
-      "id": "06-careers-26",
-      "page": "Careers and pay — what the data says and what you may claim",
-      "heading": "The classification question is separate",
-      "tags": [
-        "career",
-        "job",
-        "pay",
-        "noc 21211",
-        "portfolio",
-        "interview",
-        "alberta",
-        "mrs",
-        "classification",
-        "evidence"
-      ],
-      "text": "The classification question is separate. GoA Systems Analyst is a different classification with its own controls; Level 1 MRS accepts a related two-year diploma, or a related one-year certificate and qualifying experience. Do not assume experience alone replaces the education requirement — check the current MRS wording.",
-      "source": "Guide, Learn > Career & pay and the MRS discussion there",
-      "verified": "2026-11-03",
-      "correction": false,
-      "unverified": false
-    },
-    {
-      "id": "06-careers-27",
-      "page": "Careers and pay — what the data says and what you may claim",
-      "heading": "Portfolio evidence, not promises",
-      "tags": [
-        "career",
-        "job",
-        "pay",
-        "noc 21211",
-        "portfolio",
-        "interview",
-        "alberta",
-        "mrs",
-        "classification",
-        "evidence"
-      ],
-      "text": "Portfolio evidence, not promises. A completed, tested project is portfolio evidence; an unbuilt guide is not evidence of a working system, a reference, or interview fluency. No employment outcome is guaranteed — the guide says so in its own words.",
-      "source": "Guide, Learn > What & Why (\"Will this land me a job? The straight answer\")",
-      "verified": "2026-11-03",
-      "correction": false,
-      "unverified": false
-    },
-    {
-      "id": "06-careers-28",
-      "page": "Careers and pay — what the data says and what you may claim",
-      "heading": "Say only what you measured",
-      "tags": [
-        "career",
-        "job",
-        "pay",
-        "noc 21211",
-        "portfolio",
-        "interview",
-        "alberta",
-        "mrs",
-        "classification",
-        "evidence"
-      ],
-      "text": "Say only what you measured. The pitch script's rule is that you never claim a detection rate until you have measured it. Demo kit and pitch practice live on the Career & pay page in Learn; the honest version of the pitch is the one that survives the follow-up question.",
-      "source": "Guide, Learn > What & Why (script) and Career & pay (demo kit)",
-      "verified": "2026-11-03",
-      "correction": false,
-      "unverified": false
-    },
-    {
-      "id": "06-careers-29",
-      "page": "Careers and pay — what the data says and what you may claim",
-      "heading": "Why it matters for your build",
-      "tags": [
-        "career",
-        "job",
-        "pay",
-        "noc 21211",
-        "portfolio",
-        "interview",
-        "alberta",
-        "mrs",
-        "classification",
-        "evidence"
-      ],
-      "text": "Why it matters for your build. Every line of the intended pitch maps to something you did and can show — the build is designed backwards from that interview.",
-      "source": "Guide, Learn > What & Why and Career & pay",
-      "verified": "2026-11-03",
-      "correction": false,
-      "unverified": false
     }
   ]
 };
@@ -7148,8 +6878,7 @@ window.GUIDE_DOMAIN = {
   /* The page's places (Home, Build, Buy, Fly safely) and the pages inside Learn. */
   const TABS = {
     home: "Home", steps: "Build", parts: "Buy", fly: "Fly safely",
-    why: "Learn: What & Why", build: "Learn: How it works", plan: "Learn: Plan",
-    career: "Learn: Career & pay", quiz: "Learn: Quizzes", limits: "Learn: Limits & sources"
+    why: "Learn", build: "Learn: How it works", quiz: "Learn: Prove it"
   };
 
   /* C3: how to reach the AI answers. No fixed address: the launcher starts THIS folder's server and opens it,
@@ -7179,7 +6908,7 @@ window.GUIDE_DOMAIN = {
      "With props off you can still check motor order and direction: Betaflight → Motors tab → enable the safety checkbox → spin each motor at a low value.",
      "Props go on last — only after the receiver, modes, failsafe and video all work — and come off first before anything is changed.",
      "Treat every powered quad as armed. A 5-inch prop at idle cuts skin; at power it injures badly."],
-    { note: "If a prop is already spinning and something is wrong: pull the battery, not the radio. Disconnect the XT60 first.", why: "The guide calls this 'the cardinal rule of the hobby' and repeats it at every step for a reason: a spinning 5-inch prop is the only part of this build that can hurt you in a fraction of a second.", src: "Guide steps 1, 2, 3, 8 and the airframe quiz", see: [STEP(8), ["Airframe quiz", "quiz"]] })
+    { note: "If a prop is already spinning and something is wrong: pull the battery, not the radio. Disconnect the XT60 first.", why: "The guide calls this 'the cardinal rule of the hobby' and repeats it at every step for a reason: a spinning 5-inch prop is the only part of this build that can hurt you in a fraction of a second.", src: "Guide steps 1, 2, 3, 8 and the airframe quiz", see: [STEP(8), ["Learn: The airframe", "build"]] })
     .next = "motor-order";
 
   kb("lipo-swollen", "LiPo is swollen, warm, puffy or damaged", "lipo,swollen,puffy,puffed,round,hot,warm,smoke,fire,damaged,battery,charge,charging,storage,retire,dispose,recycle,vent",
@@ -7210,7 +6939,7 @@ window.GUIDE_DOMAIN = {
      "Test before you replace anything: run sudo i2cdetect -y 1 and look for 33 (thermal) and 10 (GPS).",
      "If only one address is missing, only that board is gone. If neither appears, re-check the HAT seating and the header solder joints first — that failure looks identical.",
      "Replace a suspect board rather than living with it. A partly damaged sensor returns plausible-looking garbage, which is worse than a dead one."],
-    { note: "Guide step 6 warning, verbatim: sensors are 3.3V only — never put 5V on them.", src: "Guide step 6", see: [STEP(6, "Step 6 — wire the Pi payload"), ["Weekend 2 checklist", "plan"]] })
+    { note: "Guide step 6 warning, verbatim: sensors are 3.3V only — never put 5V on them.", src: "Guide step 6", see: [STEP(6, "Step 6 — wire the Pi payload")] })
     .next = "i2c-detect";
 
   kb("wildfire-law", "Can I fly near a wildfire to test this?", "fire,wildfire,forest,601.15,notam,legal,fly over,5 nautical,9.3 km,3000 ft,emergency,permission",
@@ -7218,7 +6947,7 @@ window.GUIDE_DOMAIN = {
      "An active fire creates its own emergency airspace. Firefighting aircraft operate low and fast and are not looking for your quad.",
      "Use the guide's substitute: a controlled warm target such as a mug of hot water among cold objects, on private land with permission, at a legal test site.",
      "Write down what you measured. That controlled test is the evidence; a wildfire is not a test range."],
-    { note: "Illegal and dangerous, regardless of how good the thermal data would be.", why: "This is the one mission that looks obvious and is the one you must not fly — which is why the final exam asks about it directly.", src: "CAR 601.15 · Guide rules quiz", see: [["Rules quiz", "quiz"], ["Honest limits & sources", "limits"]] })
+    { note: "Illegal and dangerous, regardless of how good the thermal data would be.", why: "This is the one mission that looks obvious and is the one you must not fly — which is why the final exam asks about it directly.", src: "CAR 601.15 · Guide rules quiz", see: [["Fly safely: the last check", "fly"], ["Learn: What it can and cannot do", "quiz"]] })
     .next = "people-30m";
 
   kb("people-30m", "How close can I fly to people?", "people,person,30 metres,meters,30m,basic,crowd,bystander,public,over people,horizontal,bystanders",
@@ -7226,7 +6955,7 @@ window.GUIDE_DOMAIN = {
      "Closer than that becomes Advanced operations territory — different certificate, different rules, different conversation with an insurer.",
      "Basic conditions the guide lists: VLOS, \u226425 kg, uncontrolled airspace, more than 5.6 km from certified airports and more than 1.9 km from heliports.",
      "Keep the aircraft in sight without aids, and keep every other rule in force: aerodromes, NOTAMs, site permission, fire rules."],
-    { why: "The 30 m figure is a category boundary, not a safety suggestion: crossing it changes which certificate the flight requires.", src: "Transport Canada — Basic operations · Guide rules quiz", see: [["Rules quiz", "quiz"], ["Honest limits & sources", "limits"]] })
+    { why: "The 30 m figure is a category boundary, not a safety suggestion: crossing it changes which certificate the flight requires.", src: "Transport Canada — Basic operations · Guide rules quiz", see: [["Fly safely: the last check", "fly"], ["Learn: What it can and cannot do", "quiz"]] })
     .next = "certification";
 
   kb("first-power-smoke", "Smoke, sparks or a hot smell on first power-up", "smoke,smoke stopper,short,pop,spark,burning,smell,capacitor,cap,polarity,first power,smoked,blew up",
@@ -7235,7 +6964,7 @@ window.GUIDE_DOMAIN = {
      "Inspect in this order: battery-lead polarity, capacitor orientation, solder bridges on the ESC pads, motor wires shorting to carbon, a damaged motor winding.",
      "Use the meter: continuity across the XT60 should not read shorted, and neither should neighbouring motor pads.",
      "First power always goes through the iFlight smoke stopper in this plan. Direct connection is how you turn an $86 stack into a story."],
-    { note: "Glasses on, window open, and never leave a LiPo connected unattended while you work.", src: "Guide step 5 (S5.4b, the first power-up) and step 3 (the soldering it checks)", see: [STEP(5, "Step 5 — the first power-up"), STEP(3, "Step 3 — solder the stack"), ["Weekend 1 checklist", "plan"]] })
+    { note: "Glasses on, window open, and never leave a LiPo connected unattended while you work.", src: "Guide step 5 (S5.4b, the first power-up) and step 3 (the soldering it checks)", see: [STEP(5, "Step 5 — the first power-up"), STEP(3, "Step 3 — solder the stack")] })
     .next = "esc-desync";
 
   /* ======================================================================
@@ -7248,7 +6977,7 @@ window.GUIDE_DOMAIN = {
      "Or bind without the radio: press and hold the receiver's bind button for about 1.5 s, or short the boot pad to ground, then power it.",
      "Read the LED: double blink, pause, repeat = sitting in bind mode. Solid = bound. Three fast blinks then a pause = Model Mismatch (fix Model Match in the Lua, or toggle it off and on while both ends are powered).",
      "Once bound, the Lua script shows a C in the top right when the receiver is connected and talking."],
-    { note: "Bind with the flight controller powered from USB and props off. You are one accidental arm command from a bench injury otherwise.", why: "Almost every 'won't bind' case is a firmware major-version mismatch or a receiver that is not actually powered — both are visible in under a minute before you touch anything else.", src: "ExpressLRS binding docs · Guide weekend 1 task 4", see: [STEP(4, "Step 4 — add the receiver"), ["Weekend 1 checklist", "plan"]] })
+    { note: "Bind with the flight controller powered from USB and props off. You are one accidental arm command from a bench injury otherwise.", why: "Almost every 'won't bind' case is a firmware major-version mismatch or a receiver that is not actually powered — both are visible in under a minute before you touch anything else.", src: "ExpressLRS binding docs · Guide Step 4", see: [STEP(4, "Step 4 — add the receiver")] })
     .next = "no-channels";
 
   kb("no-channels", "Sticks do nothing in Betaflight's Receiver tab", "channels,sticks,no input,no movement,receiver tab,uart,uart2,serial rx,crsf,rp1,sbus,protocol,mode",
@@ -7258,7 +6987,7 @@ window.GUIDE_DOMAIN = {
      "Check the receiver is actually bound (solid LED) and that the radio's model is the one with the ELRS module active.",
      "Then check channel map — AETR is the usual default — and confirm the arm switch is on a channel you can see moving.",
      "If channels move but nothing arms, that is a different problem: look at the arming-disable flags."],
-    { why: "TX-to-RX and RX-to-TX is the single most common wiring error, and no amount of software configuration fixes a crossed pair.", src: "Guide weekend 1 task 4", see: [STEP(4, "Step 4 — add control and video"), ["Weekend 1 checklist", "plan"]] })
+    { why: "TX-to-RX and RX-to-TX is the single most common wiring error, and no amount of software configuration fixes a crossed pair.", src: "Guide Step 4", see: [STEP(4, "Step 4 — add control and video")] })
     .next = "arm-wont-arm";
 
   kb("failsafe", "Setting up failsafe (do this before the first hover)", "failsafe,fail safe,signal loss,lost signal,drop,disarm,throttle cut,safety,stage 2",
@@ -7275,7 +7004,7 @@ window.GUIDE_DOMAIN = {
      "The usual ones: throttle not at zero, arm switch assigned to the wrong range, accelerometer needs calibration, the quad is not level (some modes), or the model is still in a pre-arm state.",
      "Check the Modes tab actually saves: press Save, not just Add Range.",
      "USB-only power can also block arming on some setups — arm from a battery with props off when you are testing (until you hold the amateur radio certificate, with the video transmitter unplugged from its cable)."],
-    { src: "Guide weekend 1 task 5 — Betaflight setup, props off", see: [["Weekend 1 checklist", "plan"], STEP(8)] })
+    { src: "Guide Step 4 — Betaflight setup, props off", see: [STEP(8)] })
     .next = "motor-order";
 
   kb("motor-order", "Motors spin the wrong way, or in the wrong order", "motor,motors,direction,order,reversed,spin wrong,props out,desync,flip over,instaflip,m1 m2 m3 m4",
@@ -7329,7 +7058,7 @@ window.GUIDE_DOMAIN = {
      "Do not feed another 5V source into the same rail (no backfeed from a second BEC or a USB power bank while the flight pack is connected).",
      "Keep the pigtail short, and keep the payload wiring away from the ESC's motor current paths.",
      "If it still browns out on throttle punches, suspect the stack's 5V regulator before the Pi: a servo/ESC spike is a normal cause."],
-    { note: "Never power the Pi from both the bench USB supply and the flight battery at once.", why: "A Pi that reboots mid-flight takes your thermal log with it, and repeated brownouts corrupt the SD card — the failure looks like a software bug but it is a voltage problem.", src: "Raspberry Pi power-supply docs · Guide step 6 and weekend 2 task 10", see: [STEP(6, "Step 6 — wire the Pi payload"), ["Weekend 2 checklist", "plan"], ["Honest limits & sources", "limits"]] })
+    { note: "Never power the Pi from both the bench USB supply and the flight battery at once.", why: "A Pi that reboots mid-flight takes your thermal log with it, and repeated brownouts corrupt the SD card — the failure looks like a software bug but it is a voltage problem.", src: "Raspberry Pi power-supply docs · Guide Steps 6 and 7", see: [STEP(6, "Step 6 — wire the Pi payload"), ["Learn: What it can and cannot do", "quiz"]] })
     .next = "bec-current";
 
   kb("bec-current", "Will the 5V rail power the Pi and both sensors?", "current,amps,bec,3a,power budget,rail,how much current,overload,lights,led",
@@ -7371,7 +7100,7 @@ window.GUIDE_DOMAIN = {
      "Let it settle. Give the sensor 30 s or so after power-up before you judge the noise — cold-start drift looks like noise on a 32×24 frame.",
      "Average a few frames in software for your detection pass (2–4 frames is plenty at 2 Hz). Averaging costs you nothing in hardware and cuts fixed-pattern noise.",
      "If it is still ugly: check the sensor is not getting vibration from the frame (nylon standoffs, zip tie, Kevlar strap — step 7), and that nothing warm (ESC, VTX, Pi) is in the lens's field of view."],
-    { note: "Do not 'fix' noise by raising the refresh rate — that is the cause, not the cure. Higher refresh also makes motion smear worse in flight, not better.", why: "At 8 Hz and above, the sensor's readout is faster than a marginal I2C link can service, so half-frames get dropped or truncated and the reconstructed image shows exactly the streaky, speckled noise people describe as '8 Hz noise'.", src: "Adafruit MLX90640 library API docs (refresh_rate) · Guide weekend 2 payload example running REFRESH_2_HZ at 400 kHz", see: [STEP(6, "Step 6 — wire the Pi payload"), ["Weekend 2 checklist (payload code)", "plan"], ["Detection & mapping quiz", "quiz"]] })
+    { note: "Do not 'fix' noise by raising the refresh rate — that is the cause, not the cure. Higher refresh also makes motion smear worse in flight, not better.", why: "At 8 Hz and above, the sensor's readout is faster than a marginal I2C link can service, so half-frames get dropped or truncated and the reconstructed image shows exactly the streaky, speckled noise people describe as '8 Hz noise'.", src: "Adafruit MLX90640 library API docs (refresh_rate) · Guide Learn's payload example running REFRESH_2_HZ at 400 kHz", see: [STEP(6, "Step 6 — wire the Pi payload"), ["Learn: The payload", "build"], ["Learn: How it finds heat", "build"]] })
     .next = "thermal-valueerror";
 
   kb("thermal-valueerror", "getFrame keeps raising ValueError (or Errno 121 remote I/O)", "valueerror,error,exception,read fail,i2c error,errno 121,remote i/o,nack,crash,cant read frame,traceback",
@@ -7381,7 +7110,7 @@ window.GUIDE_DOMAIN = {
      "Errno 121 / remote I/O error is the same story one layer down: the device did not acknowledge. Check 3.3 V power at the sensor, and that the Qwiic HAT is fully pushed onto the Pi's header.",
      "If it fails only when the motors run, you have electromagnetic noise on the bus: move the payload wiring away from the ESC and re-test on the bench with the stack powered.",
      "After repeated failures, re-initialise the sensor object rather than hammering a wedged one."],
-    { note: "Never wrap this in a bare except that hides everything — the guide's example catches ValueError specifically so a real bug still surfaces.", src: "Guide weekend 2 payload example (try/except ValueError, continue)", see: [["Weekend 2 checklist (payload code)", "plan"], STEP(6)] })
+    { note: "Never wrap this in a bare except that hides everything — the guide's example catches ValueError specifically so a real bug still surfaces.", src: "Guide Learn's payload example (try/except ValueError, continue)", see: [["Learn: The payload", "build"], STEP(6)] })
     .next = "thermal-noise";
 
   kb("thermal-flat", "Every pixel reads the same, or roughly room temperature", "flat,all same,ambient,nothing,lens cap,blank,no heat,uniform,sensor cold,not working,constant temperature",
@@ -7391,7 +7120,7 @@ window.GUIDE_DOMAIN = {
      "Give it 30 s after power-up. Right after boot the sensor is still settling and reads flat.",
      "Then test properly: a controlled warm target (a mug of hot water, a person) among cold objects at 1–2 m on the bench.",
      "Remember what the guide refuses to claim: 768 readings per frame at ±2 °C in the 0–100 °C range is a sensor specification, not a proven detection result."],
-    { src: "Guide step 6 and weekend 2 tasks 8–9", see: [STEP(6), ["Detection & mapping quiz", "quiz"]] })
+    { src: "Guide Steps 6 and 8", see: [STEP(6), ["Learn: How it finds heat", "build"]] })
     .next = "thermal-noise";
 
   kb("i2c-detect", "i2cdetect shows no sensors (0x33 and 0x10 missing)", "i2cdetect,i2c,0x33,0x10,not detected,sensors not found,no address,qwiic,hat,header,enable i2c,raspi-config,address missing",
@@ -7402,7 +7131,7 @@ window.GUIDE_DOMAIN = {
      "Re-seat each CAB-17261 cable: its Qwiic plug clicks into the HAT, and each female jumper must sit fully on its own sensor pin. Wire by cable colour (black GND, red 3.3 V, blue SDA, yellow SCL) in the sensor's pin order, and ignore the HAT's SDA and SCL letters: SparkFun says they are swapped (Step 6).",
      "Measure 3.3 V at the sensor with the meter. No 3.3 V means the problem is upstream of the sensor, not the sensor.",
      "If only one address is missing, swap that cable to a known-good port on the HAT to separate a bad cable from a dead board."],
-    { note: "Never probe a Qwiic connector with the Pi powered and the sensor connected — shorting 3V3 to SDA is how sensors die.", why: "The guide's step 6 makes this an explicit gate: both addresses must answer before you mount the payload. Everything downstream assumes the bus works.", src: "Guide step 6 and weekend 2 task 8", see: [STEP(6, "Step 6 — wire the Pi payload"), ["Weekend 2 checklist", "plan"]] })
+    { note: "Never probe a Qwiic connector with the Pi powered and the sensor connected — shorting 3V3 to SDA is how sensors die.", why: "The guide's step 6 makes this an explicit gate: both addresses must answer before you mount the payload. Everything downstream assumes the bus works.", src: "Guide Step 6", see: [STEP(6, "Step 6 — wire the Pi payload")] })
     .next = "shared-bus";
 
   kb("shared-bus", "Two sensors on one Qwiic HAT — will they conflict?", "share,shared,bus,address,conflict,two sensors,both sensors,qwiic hat,dev-14459,cab-17261,cable,same bus,3.3v",
@@ -7418,10 +7147,10 @@ window.GUIDE_DOMAIN = {
     ["Start from the guide's tested defaults in the payload example: find_hotspots(frame, 60, 3) — 60 °C threshold, at least 3 connected pixels.",
      "Too many false positives → raise the temperature threshold and raise the minimum pixel count. A single hot pixel is usually a fixed-pattern artefact, not a fire.",
      "Missing real targets → lower the threshold toward the target's actual surface temperature, and lower the pixel minimum — but write down that you did.",
-     "Test the change against a controlled warm target among cold controls, not against your imagination. Recording detection rate and false positives is the whole point of weekend 4.",
+     "Test the change against a controlled warm target among cold controls, not against your imagination. Recording detection rate and false positives is the whole point of the test flights (Learn, Lesson 7).",
      "Keep the logic separate from the flight code — the included hotspots.py is pure and covered by the package's synthetic tests, so you can change a threshold and re-run the suite in seconds.",
      "Never describe the result as accuracy. The guide is explicit that ideal geometry is sampling, not detection performance."],
-    { note: "Every threshold change invalidates your previous measurements. Re-run the same controlled test after each change or the numbers mean nothing.", why: "A 32×24 sensor and a 1 m target at 30 m are the same size in pixels; the threshold is doing most of the work, so it has to be tuned against measurements rather than vibes.", src: "Guide weekend 2 task 9, weekend 4–5 tasks 14–16, 'Detection & mapping' quiz", see: [["Weekend 4 checklist", "plan"], ["Detection & mapping quiz", "quiz"], ["Honest limits & sources", "limits"]] })
+    { note: "Every threshold change invalidates your previous measurements. Re-run the same controlled test after each change or the numbers mean nothing.", why: "A 32×24 sensor and a 1 m target at 30 m are the same size in pixels; the threshold is doing most of the work, so it has to be tuned against measurements rather than vibes.", src: "Guide Step 8; Learn, Prove it works, tasks 14 to 16, 'Detection & mapping' quiz", see: [["Learn: Prove it works", "quiz"], ["Learn: How it finds heat", "build"], ["Learn: What it can and cannot do", "quiz"]] })
     .next = "detect-reality";
 
   kb("thermal-mount", "Image smears or blurs while the drone is moving", "smear,blur,vibration,motion,mount,jelly,wobbly,shaky,standoff,loose,cable,moving",
@@ -7442,7 +7171,7 @@ window.GUIDE_DOMAIN = {
      "Antenna up, away from carbon fibre and away from the Pi's metal and the VTX. Carbon shadows GPS badly.",
      "Confirm the device answers at 0x10 and that NMEA sentences are arriving — if the sentences flow but the fix does not, it is sky view, not wiring.",
      "Log fix quality alongside position so a 2-satellite 'fix' never ends up on a map as if it were good data."],
-    { src: "Guide weekend 3 task 11, step 6 wiring", see: [["Weekend 3 checklist", "plan"], STEP(6)] })
+    { src: "Guide Learn, Prove it works, task 11, step 6 wiring", see: [["Learn: Prove it works", "quiz"], STEP(6)] })
     .next = "map-viewer";
 
   kb("map-viewer", "The map viewer shows nothing / the demo won't serve", "map,viewer,payload.py,serve,localhost,8000,demo,jsonl,flight log,empty,blank map,no marker,browser",
@@ -7451,7 +7180,7 @@ window.GUIDE_DOMAIN = {
      "Then run the real backend and confirm a GPS fix exists before expecting a marker. No fix means no coordinates, whatever the map does.",
      "Check the append-only log is actually growing (flight-log.jsonl) and that each line parses as JSON. One truncated line is enough to break a naive reader.",
      "Run the unit tests before blaming the code: python -m unittest -v test_drone_logic.py. The package ships 31 passing synthetic tests — if they fail on your machine, the environment is the problem."],
-    { src: "Guide weekend 3 task 13 · payload package README", see: [["Weekend 3 checklist", "plan"]] })
+    { src: "Guide Learn, Prove it works, task 13 · payload package README", see: [["Learn: Prove it works", "quiz"]] })
     .next = "geo-error";
 
   kb("geo-error", "The map marker is nowhere near the target", "marker,off target,position,error,geolocation,heading,accuracy,offset,map wrong,gps error,coordinate",
@@ -7460,7 +7189,7 @@ window.GUIDE_DOMAIN = {
      "Altitude sets the scale: ground width = 2 × altitude × tan(FOV/2), and a 10 % altitude error is a 10 % position error, neatly.",
      "Altitude, tilt, terrain and lens distortion are all excluded from the included geo.py model. Over uneven ground or with the aircraft tilted, expect the error you were warned about.",
      "Measure it: put surveyed targets at measured positions, fly repeated passes, and record the error. That measured number is the only honest one."],
-    { note: "Do not quote a 2 m accuracy figure. The guide measures the real error in flight, over repeated passes, in step 14 (step 12 checks geo.py on the ground).", src: "Guide weekend 3 task 12, weekend 4–5 task 14 · 'Detection & mapping' quiz", see: [["Weekend 3 checklist", "plan"], ["Detection & mapping quiz", "quiz"]] })
+    { note: "Do not quote a 2 m accuracy figure. The guide measures the real error in flight, over repeated passes, in step 14 (step 12 checks geo.py on the ground).", src: "Guide Learn, Prove it works, tasks 12 and 14 · 'Detection & mapping' quiz", see: [["Learn: Prove it works", "quiz"], ["Learn: How it finds heat", "build"]] })
     .next = "detect-reality";
 
   kb("detect-reality", "Will this actually detect a fire from 30 m?", "detect,detection,works,really,accuracy,30 m,30m,1 metre,pixel,resolution,honest,limit,can it see,small target",
@@ -7470,7 +7199,7 @@ window.GUIDE_DOMAIN = {
      "What the evidence supports: FPInnovations describes the mission product as a map of GPS-referenced hotspots delivered to the firefighter — not a magic aircraft, and not a guarantee this prototype works.",
      "Get closer, hug the thermal contrast, or accept that the honest deliverable is 'hotspots on a map, with measured error'.",
      "Until you have repeated controlled tests with recorded detection rates and false positives, do not say it detects fires. The guide's honesty box is the product."],
-    { why: "Every over-claim invites one question you cannot answer. Measured limits survive scrutiny; promises do not.", src: "Guide: How it works calculator, final exam question on 1 m at 30 m, FPInnovations TR-2020-N29", see: [["Altitude & coverage calculator", "build"], ["Honest limits & sources", "limits"], ["Final exam", "quiz"]] })
+    { why: "Every over-claim invites one question you cannot answer. Measured limits survive scrutiny; promises do not.", src: "Guide: How it works calculator, final exam question on 1 m at 30 m, FPInnovations TR-2020-N29", see: [["Altitude & coverage calculator", "build"], ["Learn: What it can and cannot do", "quiz"], ["Final exam", "quiz"]] })
     .next = "fov";
 
   /* ======================================================================
@@ -7509,21 +7238,21 @@ window.GUIDE_DOMAIN = {
     .next = "stock";
 
   kb("what-next", "What should I do next? Where do I start?", "next,start,begin,first,order,whats next,step by step,how do i begin,kick off",
-    ["Read What & Why (in Learn) for the ten minutes it takes — it tells you what you are building and why, including what it will not do.",
+    ["Read Lesson 1 in Learn first — it tells you what you are building and why, including what it will not do.",
      "Then order with the staged plan in Buy if money is tight, or the full list if it is not. Confirm stock at checkout; the links are checked but stock is not guaranteed.",
      "When the boxes arrive, do step 1: five piles, every item ticked against the order list, and the manuals downloaded.",
      "Then work the eight steps in order, respecting the done-means rule: each step has an observable check, and you do not move on until it passes.",
-     "Take the matching quiz on the Quizzes page in Learn after each weekend. If you cannot explain a step out loud, you do not own it yet."],
-    { src: "Guide tabs 1, 3, 4 and 6", see: [["What you're building & why", "why"], STEP(1, "Step 1 — lay out the parts"), ["Quizzes", "quiz"]] })
+     "Take each lesson's quiz in Learn as you go. If you cannot explain a step out loud, you do not own it yet."],
+    { src: "Guide tabs 1, 3, 4 and 6", see: [["Learn: What it is, and why", "why"], STEP(1, "Step 1 — lay out the parts"), ["Learn", "why"]] })
     .next = "how-long";
 
   kb("how-long", "How long will this take?", "how long,time,weeks,hours,46,weekend,finish date,schedule,commitment",
-    ["46 hours of hands-on work across 19 tracked tasks and 8 assembly steps.",
+    ["46 hours of hands-on work: the 8 build steps, then the 9 test-flight tasks in Learn, Lesson 7.",
      "The slider in the header turns that into weeks and a projected finish date from today — 8 hours a week lands around 6 weeks.",
      "Realistically the clock is dominated by three things: waiting for deliveries, learning Betaflight, and the thermal tuning weekend.",
-     "The weekend breakdown on the Plan page in Learn is a reasonable pace: airframe, payload, GPS/mapping, flight tests, then the evidence pass.",
+     "A reasonable order: airframe, payload, GPS and mapping, flight tests, then the evidence pass. The hours for each are under Sources and checks, at the bottom of Learn.",
      "The finish date saves with your other progress in this browser, so you can keep it honest instead of optimistic."],
-    { src: "Guide: Home's hours slider and the Plan page", see: [["Build-time calculator", "home"], ["Plan", "plan"], ["Build steps", "steps"]] })
+    { src: "Guide: Home's hours slider and Learn's hours table", see: [["Build-time calculator", "home"], ["Learn: Prove it works", "quiz"], ["Build steps", "steps"]] })
     .next = "what-next";
 
   kb("certification", "Do I need a licence or registration to fly this?", "licence,license,certificate,basic,advanced,registration,tc,canada,law,legal,pilot,exam,fees",
@@ -7534,24 +7263,15 @@ window.GUIDE_DOMAIN = {
      "Night flying needs lights sufficient for you or a visual observer to see the aircraft (CAR 901.39) — and that does not waive any other rule.",
      "Beyond Visual Line of Sight, over people, or in controlled airspace puts you in Advanced operations, which is a different certificate and a different project.",
      "This build is 5-inch class and well over 250 g, so assume you are in scope and get the certificate before the first hover."],
-    { note: "The guide's footer says it plainly: a prototype builder's roadmap, not career or legal advice. Check the current Transport Canada rules yourself.", src: "Transport Canada Basic operations · CAR 901.39 · CAR 901.56 and 901.57 · Guide rules quiz", see: [["Rules quiz", "quiz"], ["Honest limits & sources", "limits"]] })
-    .next = "career";
-
-  kb("career", "Is any of this a career? What does it pay?", "job,career,salary,wage,pay,systems analyst,resume,work,employer,hiring,43.27,21211,pitch",
-    ["The guide pairs the build with a target role: Systems Analyst / data work, NOC 21211, Alberta/Edmonton.",
-     "Job Bank figures quoted: CA$28.00 low, CA$43.27 median, CA$57.69 high per hour, updated 19 Nov 2025. Those are occupational wages, not a starting offer.",
-     "The GoA Systems Analyst recruitment standard PDF was reviewed 20 May 2026 — that is the document to read for what a hiring manager there expects.",
-     "The build is the demonstration, not the credential. The evidence package (README, honest limits, measured results, 5-minute video, flight log) is what makes it credible in an interview.",
-     "The Career & pay page in Learn has the demo kit and pitch practice. Do not say 'it detects fires from 30 m' until you have measured it — one exaggeration undoes the whole story."],
-    { src: "Guide: Career & pay · Job Bank NOC 21211 · GoA Systems Analyst MRS", see: [["Career & pay", "career"]] })
-    .next = "certification";
+    { note: "The guide's footer says it plainly: a prototype builder's roadmap, not career or legal advice. Check the current Transport Canada rules yourself.", src: "Transport Canada Basic operations · CAR 901.39 · CAR 901.56 and 901.57 · Guide rules quiz", see: [["Fly safely: the last check", "fly"], ["Learn: What it can and cannot do", "quiz"]] })
+    .next = "saved-progress";
 
   kb("saved-progress", "Is my progress saved? Will it sync to my phone?", "saved,progress,save,localstorage,sync,browser,phone,laptop,other device,lost,cleared,tick",
-    ["Everything saves in this browser only — checkboxes, quiz bests, flashcard state, budget prices and the build-time slider.",
+    ["Everything saves in this browser only — checkboxes, quiz bests, budget prices and the build-time slider.",
      "There is no account and no sync: opening the page on your phone starts from zero.",
      "Clearing site data, or using private/incognito mode, wipes it. So does a different browser on the same machine.",
      "For a record you can keep, screenshot the progress bar and the quiz scores, or keep the numbers in the order document."],
-    { src: "Guide footer — progress and quiz scores save in this browser only", see: [["Build steps", "steps"], ["Quizzes", "quiz"]] })
+    { src: "Guide footer — progress and quiz scores save in this browser only", see: [["Build steps", "steps"], ["Learn", "why"]] })
     .next = "stock";
 
   kb("stock", "A part is out of stock or discontinued — can I substitute?", "stock,out of stock,substitute,alternative,discontinued,replace,unavailable,cant find,backup,substitution",
@@ -7560,7 +7280,7 @@ window.GUIDE_DOMAIN = {
      "A safe substitute has to match on voltage, current rating, mounting pattern and connector — and for the payload, on I2C address and 3.3 V logic.",
      "If you change a part, update the order document and the budget rather than carrying a stale number in your head.",
      "Read the audit report for the reasoning already applied, so you are not repeating work that was done."],
-    { src: "Guide: Buy · Shad-Drone-Audit-Report.md", see: [["Parts & budget", "parts"], ["Honest limits & sources", "limits"]] })
+    { src: "Guide: Buy · Shad-Drone-Audit-Report.md", see: [["Parts & budget", "parts"], ["Learn: What it can and cannot do", "quiz"]] })
     .next = "budget";
 
   kb("solder", "My solder joints look bad / a joint broke off", "solder,soldering,joint,cold joint,tin,flux,bridge,pad,wire,wont stick,tug test,iron,temperature",
@@ -7612,7 +7332,7 @@ window.GUIDE_DOMAIN = {
      "To flash, use DFU mode: hold the boot button while plugging in, then flash the correct target for the GEPRC F405.",
      "Before you change anything, save a diff: CLI → diff all → copy it somewhere. It is the difference between a five-minute fix and an evening.",
      "Never flash with a battery connected. USB only, props off, and let it finish before you touch anything."],
-    { note: "Back up the diff before flashing or restoring. This costs ten seconds and has saved more builds than any tutorial.", src: "Guide weekend 1 task 5", see: [["Weekend 1 checklist", "plan"]] })
+    { note: "Back up the diff before flashing or restoring. This costs ten seconds and has saved more builds than any tutorial.", src: "Guide Step 4", see: [["Build", "steps"]] })
     .next = "no-channels";
 
   kb("payload-tests", "How many payload software tests are there, and how do I run them?", "how many tests,payload tests,software tests,unit tests,run the tests,unittest,31 tests,test_drone_logic,synthetic tests",
@@ -7626,13 +7346,12 @@ window.GUIDE_DOMAIN = {
      "The packs charge to 4.35 V per cell; at 4.35, Betaflight would count a full pack as 5 cells."],
     { src: "Guide Step 4 and Stage 3", see: [STEP(4, "Step 4 — control and video")] });
 
-  kb("quiz", "How do the quizzes and flashcards work?", "quiz,quizzes,score,flashcard,flashcards,pass,75,questions,exam",
-    ["Four topic quizzes and a final exam in Learn (airframe; power, batteries & safety; payload; detection & mapping; the final exam has 8 questions). Each Fly safely step has its own short quiz, and a last check on flight rules sits under the steps.",
+  kb("quiz", "How do the quizzes work?", "quiz,quizzes,score,pass,75,questions,exam",
+    ["Most lessons in Learn end with a quiz, and the course ends with a final exam (7 questions). Each Fly safely step has its own short quiz, and a last check on flight rules sits under the steps.",
      "You pass a quiz at 75 % or better; the overview counts how many you have passed.",
      "Every answer explains why it is right, with the source — that explanation is worth more than the score.",
-     "Flashcards are the fast recall layer: flip each card, and the progress counter tracks how many you have seen.",
-     "Your best score per quiz and the flashcard state save in this browser, so you can walk away and come back."],
-    { src: "Guide: Quizzes", see: [["Quizzes", "quiz"]] })
+     "Your best score per quiz saves in this browser, so you can walk away and come back."],
+    { src: "Guide: Learn", see: [["Learn", "why"]] })
     .next = "what-next";
 
   kb("autonomy", "Can it fly itself and find fires on its own?", "fly itself,flies itself,on its own,autonomous,autonomy,self flying,waypoint,gps flight,mission,autopilot,ai decides,rtl",
@@ -7640,7 +7359,7 @@ window.GUIDE_DOMAIN = {
      "What exists: a payload that finds hot pixels, converts them to GPS-referenced coordinates and logs them. A human flies the aircraft.",
      "Letting detection logic command the flight controller is a safety decision nobody should make casually — the guide keeps detection separate from flight code on purpose.",
      "If you want to go further later, that is a new project with new certifications, and it should never start by removing the human."],
-    { why: "Keeping detection separate from flight control is what makes the synthetic tests possible, and it keeps a false positive from becoming a control input.", src: "Guide: Limits & sources 'future AI briefing' question · CHAIN step 5", see: [["What you're building & why", "why"], ["Honest limits & sources", "limits"]] })
+    { why: "Keeping detection separate from flight control is what makes the synthetic tests possible, and it keeps a false positive from becoming a control input.", src: "Guide: Detection and mapping quiz, 'future AI briefing' question · CHAIN step 5", see: [["Learn: What it is, and why", "why"], ["Learn: What it can and cannot do", "quiz"]] })
     .next = "detect-reality";
 
   /* ======================================================================
@@ -8118,8 +7837,7 @@ window.GUIDE_DOMAIN = {
   const TAB_WORDS = [
     [/^(open |show |go to |jump to )?(the )?(budget|parts list|price list)/, "parts"],
     [/^(open |show |go to |jump to )?(the )?quiz/, "quiz"],
-    [/^(open |show |go to |jump to )?(the )?(career|salary|jobs)/, "career"],
-    [/^(open |show |go to |jump to )?(the )?(limits|sources)/, "limits"],
+    [/^(open |show |go to |jump to )?(the )?(limits|sources)/, "quiz"],
     [/^(open |show |go to |jump to )?(the )?(how it works|pipeline)/, "build"]
   ];
 
@@ -10549,8 +10267,9 @@ window.GUIDE_DOMAIN = {
     Array.prototype.forEach.call(tabs, function (t) {
       if (String(t.textContent || "").trim().length > 200) { rendered += 1; }
     });
-    /* 10 pages since the five-places layout: Home, Build, Buy, Fly safely + the six Learn pages */
-    add("every tab panel renders content", tabs.length >= 10 && rendered === tabs.length,
+    /* 7 since 12 Nov 2026 (Shad: Learn as a small course): Home, Build, Buy, Fly safely + the three parts of Learn (why, build,
+       quiz); the Plan, Career and Limits pages are gone. Before: 10 pages since the five-places layout, with six Learn pages. */
+    add("every tab panel renders content", tabs.length >= 7 && rendered === tabs.length,
       rendered + "/" + tabs.length);
 
     /* Fable Part 2, S1: the "Before you start" boxes in the step headers sat white on cream. Every one must have

@@ -22,7 +22,7 @@
 const ALLOWED_ORIGINS = (env) => String(env.ALLOWED_ORIGINS || "")
   .split(",").map((s) => s.trim()).filter(Boolean);
 
-const TABS = ["why", "build", "parts", "steps", "career", "quiz", "limits"];
+const TABS = ["why", "build", "parts", "steps", "quiz"];
 const MAX_QUESTION = 400;
 const MAX_PASSAGES = 6;
 const RATE_LIMIT = 12;          // requests per window, per IP
@@ -72,7 +72,7 @@ function systemPrompt() {
     "5. Never claim measured detection performance. Sampling geometry is not detection proof.",
     "",
     "Reply with JSON only, exactly this shape:",
-    '{"answer":"2-4 short paragraphs separated by \\n\\n","steps":["..."],"sources":["passage labels you actually used"],"see":[{"label":"...","tab":"why|build|parts|steps|career|quiz|limits","step":1}],"chips":["..."],"note":""}',
+    '{"answer":"2-4 short paragraphs separated by \\n\\n","steps":["..."],"sources":["passage labels you actually used"],"see":[{"label":"...","tab":"why|build|parts|steps|quiz","step":1}],"chips":["..."],"note":""}',
     "`steps` may be empty. `note` is for a safety warning, or empty."
   ].join("\n");
 }

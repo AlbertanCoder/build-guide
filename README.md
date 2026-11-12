@@ -24,7 +24,7 @@ A step-by-step guide to building a small drone that carries a thermal camera and
 | **3D lessons** | 38 short lessons you can pause and turn around, with 39 quizzes (203 questions). They show which part goes where before you touch it. |
 | **Buy** | 50 parts, each with a shop link and a dated stock check, and a backup shop where one was found. Bought in stages, so every parcel gives you something to do. |
 | **Fly safely** | One list, Step 0 to Step 10. First what this drone needs once (pilot certificate, registration, the radio licence for the video link, your papers), then what to do every flight. Each step has its official sources and a short quiz; four have a 3D lesson. |
-| **Learn** | Why it is built this way, how the heat detection works, the plan, and its limits. |
+| **Learn** | A short course: seven lessons and a final exam. What it is, what each part does, how it finds heat, what it cannot do, and the test flights that prove it. |
 
 <a href="docs/images/guide-phone.png"><img src="docs/images/guide-phone.png" alt="The guide on a phone: Home, a build step and a 3D lesson" width="100%"></a>
 
@@ -81,7 +81,7 @@ cd build-guide
 python -m http.server 8000        # then open http://localhost:8000/
 ```
 
-ES modules and `.glb` files need HTTP, so open it through a server, not as a file. Links that open a place directly: `#p-steps` (Build), `#parts` (Buy), `#fly`, `#plan`. The lessons are at `docs/walkthrough/index.html`; add `#<lesson-id>` to open one, for example `#s2-motors`.
+ES modules and `.glb` files need HTTP, so open it through a server, not as a file. Links that open a place directly: `#p-steps` (Build), `#parts` (Buy), `#fly`, `#learn`. The lessons are at `docs/walkthrough/index.html`; add `#<lesson-id>` to open one, for example `#s2-motors`.
 
 ### Repository map
 
@@ -151,7 +151,7 @@ node scripts/standalone/make-standalone.js bundle.js "Shad's Build Guide.html"
 The 3D lessons are not in the single file: it shows a plain note in their place.
 
 Every place and page is deep-linkable: `#p-steps` (or `#steps`) opens Build, `#parts` opens Buy, `#fly`
-opens Fly safely and `#plan` opens Learn > Plan. With no link, a first visit opens on Home; after that the
+opens Fly safely and `#learn` opens Learn. With no link, a first visit opens on Home; after that the
 guide reopens the place you were last on.
 
 ### Keeping prices honest, and checking links
@@ -201,8 +201,8 @@ backed by an exact quote from the guide.
 `http://localhost:8790/` is the whole guide, served from your own computer by a small Node server
 (`server/assistant-server.js`), with the AI switched on:
 
-- **The guide itself:** the five places (Home, Build, Buy, Fly safely, and Learn with its pages What & Why,
-  How it works, Plan, Career & pay, Quizzes, Limits & sources), the build-time calculator, the eight-step assembly manual and its
+- **The guide itself:** the five places (Home, Build, Buy, Fly safely, and Learn, a short course of seven lessons
+  and a final exam), the build-time calculator, the eight-step assembly manual and its
   interactive 3D models. Progress and quiz scores are kept in your browser.
 - **Ask the guide** (bottom right) opens the assistant. Its header buttons are **⌘** for past
   conversations (kept on this computer and restored on reload), **⚙** for Settings, **Clear** for a

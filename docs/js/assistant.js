@@ -59,8 +59,7 @@
   /* The page's places (Home, Build, Buy, Fly safely) and the pages inside Learn. */
   const TABS = {
     home: "Home", steps: "Build", parts: "Buy", fly: "Fly safely",
-    why: "Learn: What & Why", build: "Learn: How it works", plan: "Learn: Plan",
-    career: "Learn: Career & pay", quiz: "Learn: Quizzes", limits: "Learn: Limits & sources"
+    why: "Learn", build: "Learn: How it works", quiz: "Learn: Prove it"
   };
 
   /* C3: how to reach the AI answers. No fixed address: the launcher starts THIS folder's server and opens it,
@@ -90,7 +89,7 @@
      "With props off you can still check motor order and direction: Betaflight → Motors tab → enable the safety checkbox → spin each motor at a low value.",
      "Props go on last — only after the receiver, modes, failsafe and video all work — and come off first before anything is changed.",
      "Treat every powered quad as armed. A 5-inch prop at idle cuts skin; at power it injures badly."],
-    { note: "If a prop is already spinning and something is wrong: pull the battery, not the radio. Disconnect the XT60 first.", why: "The guide calls this 'the cardinal rule of the hobby' and repeats it at every step for a reason: a spinning 5-inch prop is the only part of this build that can hurt you in a fraction of a second.", src: "Guide steps 1, 2, 3, 8 and the airframe quiz", see: [STEP(8), ["Airframe quiz", "quiz"]] })
+    { note: "If a prop is already spinning and something is wrong: pull the battery, not the radio. Disconnect the XT60 first.", why: "The guide calls this 'the cardinal rule of the hobby' and repeats it at every step for a reason: a spinning 5-inch prop is the only part of this build that can hurt you in a fraction of a second.", src: "Guide steps 1, 2, 3, 8 and the airframe quiz", see: [STEP(8), ["Learn: The airframe", "build"]] })
     .next = "motor-order";
 
   kb("lipo-swollen", "LiPo is swollen, warm, puffy or damaged", "lipo,swollen,puffy,puffed,round,hot,warm,smoke,fire,damaged,battery,charge,charging,storage,retire,dispose,recycle,vent",
@@ -121,7 +120,7 @@
      "Test before you replace anything: run sudo i2cdetect -y 1 and look for 33 (thermal) and 10 (GPS).",
      "If only one address is missing, only that board is gone. If neither appears, re-check the HAT seating and the header solder joints first — that failure looks identical.",
      "Replace a suspect board rather than living with it. A partly damaged sensor returns plausible-looking garbage, which is worse than a dead one."],
-    { note: "Guide step 6 warning, verbatim: sensors are 3.3V only — never put 5V on them.", src: "Guide step 6", see: [STEP(6, "Step 6 — wire the Pi payload"), ["Weekend 2 checklist", "plan"]] })
+    { note: "Guide step 6 warning, verbatim: sensors are 3.3V only — never put 5V on them.", src: "Guide step 6", see: [STEP(6, "Step 6 — wire the Pi payload")] })
     .next = "i2c-detect";
 
   kb("wildfire-law", "Can I fly near a wildfire to test this?", "fire,wildfire,forest,601.15,notam,legal,fly over,5 nautical,9.3 km,3000 ft,emergency,permission",
@@ -129,7 +128,7 @@
      "An active fire creates its own emergency airspace. Firefighting aircraft operate low and fast and are not looking for your quad.",
      "Use the guide's substitute: a controlled warm target such as a mug of hot water among cold objects, on private land with permission, at a legal test site.",
      "Write down what you measured. That controlled test is the evidence; a wildfire is not a test range."],
-    { note: "Illegal and dangerous, regardless of how good the thermal data would be.", why: "This is the one mission that looks obvious and is the one you must not fly — which is why the final exam asks about it directly.", src: "CAR 601.15 · Guide rules quiz", see: [["Rules quiz", "quiz"], ["Honest limits & sources", "limits"]] })
+    { note: "Illegal and dangerous, regardless of how good the thermal data would be.", why: "This is the one mission that looks obvious and is the one you must not fly — which is why the final exam asks about it directly.", src: "CAR 601.15 · Guide rules quiz", see: [["Fly safely: the last check", "fly"], ["Learn: What it can and cannot do", "quiz"]] })
     .next = "people-30m";
 
   kb("people-30m", "How close can I fly to people?", "people,person,30 metres,meters,30m,basic,crowd,bystander,public,over people,horizontal,bystanders",
@@ -137,7 +136,7 @@
      "Closer than that becomes Advanced operations territory — different certificate, different rules, different conversation with an insurer.",
      "Basic conditions the guide lists: VLOS, \u226425 kg, uncontrolled airspace, more than 5.6 km from certified airports and more than 1.9 km from heliports.",
      "Keep the aircraft in sight without aids, and keep every other rule in force: aerodromes, NOTAMs, site permission, fire rules."],
-    { why: "The 30 m figure is a category boundary, not a safety suggestion: crossing it changes which certificate the flight requires.", src: "Transport Canada — Basic operations · Guide rules quiz", see: [["Rules quiz", "quiz"], ["Honest limits & sources", "limits"]] })
+    { why: "The 30 m figure is a category boundary, not a safety suggestion: crossing it changes which certificate the flight requires.", src: "Transport Canada — Basic operations · Guide rules quiz", see: [["Fly safely: the last check", "fly"], ["Learn: What it can and cannot do", "quiz"]] })
     .next = "certification";
 
   kb("first-power-smoke", "Smoke, sparks or a hot smell on first power-up", "smoke,smoke stopper,short,pop,spark,burning,smell,capacitor,cap,polarity,first power,smoked,blew up",
@@ -146,7 +145,7 @@
      "Inspect in this order: battery-lead polarity, capacitor orientation, solder bridges on the ESC pads, motor wires shorting to carbon, a damaged motor winding.",
      "Use the meter: continuity across the XT60 should not read shorted, and neither should neighbouring motor pads.",
      "First power always goes through the iFlight smoke stopper in this plan. Direct connection is how you turn an $86 stack into a story."],
-    { note: "Glasses on, window open, and never leave a LiPo connected unattended while you work.", src: "Guide step 5 (S5.4b, the first power-up) and step 3 (the soldering it checks)", see: [STEP(5, "Step 5 — the first power-up"), STEP(3, "Step 3 — solder the stack"), ["Weekend 1 checklist", "plan"]] })
+    { note: "Glasses on, window open, and never leave a LiPo connected unattended while you work.", src: "Guide step 5 (S5.4b, the first power-up) and step 3 (the soldering it checks)", see: [STEP(5, "Step 5 — the first power-up"), STEP(3, "Step 3 — solder the stack")] })
     .next = "esc-desync";
 
   /* ======================================================================
@@ -159,7 +158,7 @@
      "Or bind without the radio: press and hold the receiver's bind button for about 1.5 s, or short the boot pad to ground, then power it.",
      "Read the LED: double blink, pause, repeat = sitting in bind mode. Solid = bound. Three fast blinks then a pause = Model Mismatch (fix Model Match in the Lua, or toggle it off and on while both ends are powered).",
      "Once bound, the Lua script shows a C in the top right when the receiver is connected and talking."],
-    { note: "Bind with the flight controller powered from USB and props off. You are one accidental arm command from a bench injury otherwise.", why: "Almost every 'won't bind' case is a firmware major-version mismatch or a receiver that is not actually powered — both are visible in under a minute before you touch anything else.", src: "ExpressLRS binding docs · Guide weekend 1 task 4", see: [STEP(4, "Step 4 — add the receiver"), ["Weekend 1 checklist", "plan"]] })
+    { note: "Bind with the flight controller powered from USB and props off. You are one accidental arm command from a bench injury otherwise.", why: "Almost every 'won't bind' case is a firmware major-version mismatch or a receiver that is not actually powered — both are visible in under a minute before you touch anything else.", src: "ExpressLRS binding docs · Guide Step 4", see: [STEP(4, "Step 4 — add the receiver")] })
     .next = "no-channels";
 
   kb("no-channels", "Sticks do nothing in Betaflight's Receiver tab", "channels,sticks,no input,no movement,receiver tab,uart,uart2,serial rx,crsf,rp1,sbus,protocol,mode",
@@ -169,7 +168,7 @@
      "Check the receiver is actually bound (solid LED) and that the radio's model is the one with the ELRS module active.",
      "Then check channel map — AETR is the usual default — and confirm the arm switch is on a channel you can see moving.",
      "If channels move but nothing arms, that is a different problem: look at the arming-disable flags."],
-    { why: "TX-to-RX and RX-to-TX is the single most common wiring error, and no amount of software configuration fixes a crossed pair.", src: "Guide weekend 1 task 4", see: [STEP(4, "Step 4 — add control and video"), ["Weekend 1 checklist", "plan"]] })
+    { why: "TX-to-RX and RX-to-TX is the single most common wiring error, and no amount of software configuration fixes a crossed pair.", src: "Guide Step 4", see: [STEP(4, "Step 4 — add control and video")] })
     .next = "arm-wont-arm";
 
   kb("failsafe", "Setting up failsafe (do this before the first hover)", "failsafe,fail safe,signal loss,lost signal,drop,disarm,throttle cut,safety,stage 2",
@@ -186,7 +185,7 @@
      "The usual ones: throttle not at zero, arm switch assigned to the wrong range, accelerometer needs calibration, the quad is not level (some modes), or the model is still in a pre-arm state.",
      "Check the Modes tab actually saves: press Save, not just Add Range.",
      "USB-only power can also block arming on some setups — arm from a battery with props off when you are testing (until you hold the amateur radio certificate, with the video transmitter unplugged from its cable)."],
-    { src: "Guide weekend 1 task 5 — Betaflight setup, props off", see: [["Weekend 1 checklist", "plan"], STEP(8)] })
+    { src: "Guide Step 4 — Betaflight setup, props off", see: [STEP(8)] })
     .next = "motor-order";
 
   kb("motor-order", "Motors spin the wrong way, or in the wrong order", "motor,motors,direction,order,reversed,spin wrong,props out,desync,flip over,instaflip,m1 m2 m3 m4",
@@ -240,7 +239,7 @@
      "Do not feed another 5V source into the same rail (no backfeed from a second BEC or a USB power bank while the flight pack is connected).",
      "Keep the pigtail short, and keep the payload wiring away from the ESC's motor current paths.",
      "If it still browns out on throttle punches, suspect the stack's 5V regulator before the Pi: a servo/ESC spike is a normal cause."],
-    { note: "Never power the Pi from both the bench USB supply and the flight battery at once.", why: "A Pi that reboots mid-flight takes your thermal log with it, and repeated brownouts corrupt the SD card — the failure looks like a software bug but it is a voltage problem.", src: "Raspberry Pi power-supply docs · Guide step 6 and weekend 2 task 10", see: [STEP(6, "Step 6 — wire the Pi payload"), ["Weekend 2 checklist", "plan"], ["Honest limits & sources", "limits"]] })
+    { note: "Never power the Pi from both the bench USB supply and the flight battery at once.", why: "A Pi that reboots mid-flight takes your thermal log with it, and repeated brownouts corrupt the SD card — the failure looks like a software bug but it is a voltage problem.", src: "Raspberry Pi power-supply docs · Guide Steps 6 and 7", see: [STEP(6, "Step 6 — wire the Pi payload"), ["Learn: What it can and cannot do", "quiz"]] })
     .next = "bec-current";
 
   kb("bec-current", "Will the 5V rail power the Pi and both sensors?", "current,amps,bec,3a,power budget,rail,how much current,overload,lights,led",
@@ -282,7 +281,7 @@
      "Let it settle. Give the sensor 30 s or so after power-up before you judge the noise — cold-start drift looks like noise on a 32×24 frame.",
      "Average a few frames in software for your detection pass (2–4 frames is plenty at 2 Hz). Averaging costs you nothing in hardware and cuts fixed-pattern noise.",
      "If it is still ugly: check the sensor is not getting vibration from the frame (nylon standoffs, zip tie, Kevlar strap — step 7), and that nothing warm (ESC, VTX, Pi) is in the lens's field of view."],
-    { note: "Do not 'fix' noise by raising the refresh rate — that is the cause, not the cure. Higher refresh also makes motion smear worse in flight, not better.", why: "At 8 Hz and above, the sensor's readout is faster than a marginal I2C link can service, so half-frames get dropped or truncated and the reconstructed image shows exactly the streaky, speckled noise people describe as '8 Hz noise'.", src: "Adafruit MLX90640 library API docs (refresh_rate) · Guide weekend 2 payload example running REFRESH_2_HZ at 400 kHz", see: [STEP(6, "Step 6 — wire the Pi payload"), ["Weekend 2 checklist (payload code)", "plan"], ["Detection & mapping quiz", "quiz"]] })
+    { note: "Do not 'fix' noise by raising the refresh rate — that is the cause, not the cure. Higher refresh also makes motion smear worse in flight, not better.", why: "At 8 Hz and above, the sensor's readout is faster than a marginal I2C link can service, so half-frames get dropped or truncated and the reconstructed image shows exactly the streaky, speckled noise people describe as '8 Hz noise'.", src: "Adafruit MLX90640 library API docs (refresh_rate) · Guide Learn's payload example running REFRESH_2_HZ at 400 kHz", see: [STEP(6, "Step 6 — wire the Pi payload"), ["Learn: The payload", "build"], ["Learn: How it finds heat", "build"]] })
     .next = "thermal-valueerror";
 
   kb("thermal-valueerror", "getFrame keeps raising ValueError (or Errno 121 remote I/O)", "valueerror,error,exception,read fail,i2c error,errno 121,remote i/o,nack,crash,cant read frame,traceback",
@@ -292,7 +291,7 @@
      "Errno 121 / remote I/O error is the same story one layer down: the device did not acknowledge. Check 3.3 V power at the sensor, and that the Qwiic HAT is fully pushed onto the Pi's header.",
      "If it fails only when the motors run, you have electromagnetic noise on the bus: move the payload wiring away from the ESC and re-test on the bench with the stack powered.",
      "After repeated failures, re-initialise the sensor object rather than hammering a wedged one."],
-    { note: "Never wrap this in a bare except that hides everything — the guide's example catches ValueError specifically so a real bug still surfaces.", src: "Guide weekend 2 payload example (try/except ValueError, continue)", see: [["Weekend 2 checklist (payload code)", "plan"], STEP(6)] })
+    { note: "Never wrap this in a bare except that hides everything — the guide's example catches ValueError specifically so a real bug still surfaces.", src: "Guide Learn's payload example (try/except ValueError, continue)", see: [["Learn: The payload", "build"], STEP(6)] })
     .next = "thermal-noise";
 
   kb("thermal-flat", "Every pixel reads the same, or roughly room temperature", "flat,all same,ambient,nothing,lens cap,blank,no heat,uniform,sensor cold,not working,constant temperature",
@@ -302,7 +301,7 @@
      "Give it 30 s after power-up. Right after boot the sensor is still settling and reads flat.",
      "Then test properly: a controlled warm target (a mug of hot water, a person) among cold objects at 1–2 m on the bench.",
      "Remember what the guide refuses to claim: 768 readings per frame at ±2 °C in the 0–100 °C range is a sensor specification, not a proven detection result."],
-    { src: "Guide step 6 and weekend 2 tasks 8–9", see: [STEP(6), ["Detection & mapping quiz", "quiz"]] })
+    { src: "Guide Steps 6 and 8", see: [STEP(6), ["Learn: How it finds heat", "build"]] })
     .next = "thermal-noise";
 
   kb("i2c-detect", "i2cdetect shows no sensors (0x33 and 0x10 missing)", "i2cdetect,i2c,0x33,0x10,not detected,sensors not found,no address,qwiic,hat,header,enable i2c,raspi-config,address missing",
@@ -313,7 +312,7 @@
      "Re-seat each CAB-17261 cable: its Qwiic plug clicks into the HAT, and each female jumper must sit fully on its own sensor pin. Wire by cable colour (black GND, red 3.3 V, blue SDA, yellow SCL) in the sensor's pin order, and ignore the HAT's SDA and SCL letters: SparkFun says they are swapped (Step 6).",
      "Measure 3.3 V at the sensor with the meter. No 3.3 V means the problem is upstream of the sensor, not the sensor.",
      "If only one address is missing, swap that cable to a known-good port on the HAT to separate a bad cable from a dead board."],
-    { note: "Never probe a Qwiic connector with the Pi powered and the sensor connected — shorting 3V3 to SDA is how sensors die.", why: "The guide's step 6 makes this an explicit gate: both addresses must answer before you mount the payload. Everything downstream assumes the bus works.", src: "Guide step 6 and weekend 2 task 8", see: [STEP(6, "Step 6 — wire the Pi payload"), ["Weekend 2 checklist", "plan"]] })
+    { note: "Never probe a Qwiic connector with the Pi powered and the sensor connected — shorting 3V3 to SDA is how sensors die.", why: "The guide's step 6 makes this an explicit gate: both addresses must answer before you mount the payload. Everything downstream assumes the bus works.", src: "Guide Step 6", see: [STEP(6, "Step 6 — wire the Pi payload")] })
     .next = "shared-bus";
 
   kb("shared-bus", "Two sensors on one Qwiic HAT — will they conflict?", "share,shared,bus,address,conflict,two sensors,both sensors,qwiic hat,dev-14459,cab-17261,cable,same bus,3.3v",
@@ -329,10 +328,10 @@
     ["Start from the guide's tested defaults in the payload example: find_hotspots(frame, 60, 3) — 60 °C threshold, at least 3 connected pixels.",
      "Too many false positives → raise the temperature threshold and raise the minimum pixel count. A single hot pixel is usually a fixed-pattern artefact, not a fire.",
      "Missing real targets → lower the threshold toward the target's actual surface temperature, and lower the pixel minimum — but write down that you did.",
-     "Test the change against a controlled warm target among cold controls, not against your imagination. Recording detection rate and false positives is the whole point of weekend 4.",
+     "Test the change against a controlled warm target among cold controls, not against your imagination. Recording detection rate and false positives is the whole point of the test flights (Learn, Lesson 7).",
      "Keep the logic separate from the flight code — the included hotspots.py is pure and covered by the package's synthetic tests, so you can change a threshold and re-run the suite in seconds.",
      "Never describe the result as accuracy. The guide is explicit that ideal geometry is sampling, not detection performance."],
-    { note: "Every threshold change invalidates your previous measurements. Re-run the same controlled test after each change or the numbers mean nothing.", why: "A 32×24 sensor and a 1 m target at 30 m are the same size in pixels; the threshold is doing most of the work, so it has to be tuned against measurements rather than vibes.", src: "Guide weekend 2 task 9, weekend 4–5 tasks 14–16, 'Detection & mapping' quiz", see: [["Weekend 4 checklist", "plan"], ["Detection & mapping quiz", "quiz"], ["Honest limits & sources", "limits"]] })
+    { note: "Every threshold change invalidates your previous measurements. Re-run the same controlled test after each change or the numbers mean nothing.", why: "A 32×24 sensor and a 1 m target at 30 m are the same size in pixels; the threshold is doing most of the work, so it has to be tuned against measurements rather than vibes.", src: "Guide Step 8; Learn, Prove it works, tasks 14 to 16, 'Detection & mapping' quiz", see: [["Learn: Prove it works", "quiz"], ["Learn: How it finds heat", "build"], ["Learn: What it can and cannot do", "quiz"]] })
     .next = "detect-reality";
 
   kb("thermal-mount", "Image smears or blurs while the drone is moving", "smear,blur,vibration,motion,mount,jelly,wobbly,shaky,standoff,loose,cable,moving",
@@ -353,7 +352,7 @@
      "Antenna up, away from carbon fibre and away from the Pi's metal and the VTX. Carbon shadows GPS badly.",
      "Confirm the device answers at 0x10 and that NMEA sentences are arriving — if the sentences flow but the fix does not, it is sky view, not wiring.",
      "Log fix quality alongside position so a 2-satellite 'fix' never ends up on a map as if it were good data."],
-    { src: "Guide weekend 3 task 11, step 6 wiring", see: [["Weekend 3 checklist", "plan"], STEP(6)] })
+    { src: "Guide Learn, Prove it works, task 11, step 6 wiring", see: [["Learn: Prove it works", "quiz"], STEP(6)] })
     .next = "map-viewer";
 
   kb("map-viewer", "The map viewer shows nothing / the demo won't serve", "map,viewer,payload.py,serve,localhost,8000,demo,jsonl,flight log,empty,blank map,no marker,browser",
@@ -362,7 +361,7 @@
      "Then run the real backend and confirm a GPS fix exists before expecting a marker. No fix means no coordinates, whatever the map does.",
      "Check the append-only log is actually growing (flight-log.jsonl) and that each line parses as JSON. One truncated line is enough to break a naive reader.",
      "Run the unit tests before blaming the code: python -m unittest -v test_drone_logic.py. The package ships 31 passing synthetic tests — if they fail on your machine, the environment is the problem."],
-    { src: "Guide weekend 3 task 13 · payload package README", see: [["Weekend 3 checklist", "plan"]] })
+    { src: "Guide Learn, Prove it works, task 13 · payload package README", see: [["Learn: Prove it works", "quiz"]] })
     .next = "geo-error";
 
   kb("geo-error", "The map marker is nowhere near the target", "marker,off target,position,error,geolocation,heading,accuracy,offset,map wrong,gps error,coordinate",
@@ -371,7 +370,7 @@
      "Altitude sets the scale: ground width = 2 × altitude × tan(FOV/2), and a 10 % altitude error is a 10 % position error, neatly.",
      "Altitude, tilt, terrain and lens distortion are all excluded from the included geo.py model. Over uneven ground or with the aircraft tilted, expect the error you were warned about.",
      "Measure it: put surveyed targets at measured positions, fly repeated passes, and record the error. That measured number is the only honest one."],
-    { note: "Do not quote a 2 m accuracy figure. The guide measures the real error in flight, over repeated passes, in step 14 (step 12 checks geo.py on the ground).", src: "Guide weekend 3 task 12, weekend 4–5 task 14 · 'Detection & mapping' quiz", see: [["Weekend 3 checklist", "plan"], ["Detection & mapping quiz", "quiz"]] })
+    { note: "Do not quote a 2 m accuracy figure. The guide measures the real error in flight, over repeated passes, in step 14 (step 12 checks geo.py on the ground).", src: "Guide Learn, Prove it works, tasks 12 and 14 · 'Detection & mapping' quiz", see: [["Learn: Prove it works", "quiz"], ["Learn: How it finds heat", "build"]] })
     .next = "detect-reality";
 
   kb("detect-reality", "Will this actually detect a fire from 30 m?", "detect,detection,works,really,accuracy,30 m,30m,1 metre,pixel,resolution,honest,limit,can it see,small target",
@@ -381,7 +380,7 @@
      "What the evidence supports: FPInnovations describes the mission product as a map of GPS-referenced hotspots delivered to the firefighter — not a magic aircraft, and not a guarantee this prototype works.",
      "Get closer, hug the thermal contrast, or accept that the honest deliverable is 'hotspots on a map, with measured error'.",
      "Until you have repeated controlled tests with recorded detection rates and false positives, do not say it detects fires. The guide's honesty box is the product."],
-    { why: "Every over-claim invites one question you cannot answer. Measured limits survive scrutiny; promises do not.", src: "Guide: How it works calculator, final exam question on 1 m at 30 m, FPInnovations TR-2020-N29", see: [["Altitude & coverage calculator", "build"], ["Honest limits & sources", "limits"], ["Final exam", "quiz"]] })
+    { why: "Every over-claim invites one question you cannot answer. Measured limits survive scrutiny; promises do not.", src: "Guide: How it works calculator, final exam question on 1 m at 30 m, FPInnovations TR-2020-N29", see: [["Altitude & coverage calculator", "build"], ["Learn: What it can and cannot do", "quiz"], ["Final exam", "quiz"]] })
     .next = "fov";
 
   /* ======================================================================
@@ -420,21 +419,21 @@
     .next = "stock";
 
   kb("what-next", "What should I do next? Where do I start?", "next,start,begin,first,order,whats next,step by step,how do i begin,kick off",
-    ["Read What & Why (in Learn) for the ten minutes it takes — it tells you what you are building and why, including what it will not do.",
+    ["Read Lesson 1 in Learn first — it tells you what you are building and why, including what it will not do.",
      "Then order with the staged plan in Buy if money is tight, or the full list if it is not. Confirm stock at checkout; the links are checked but stock is not guaranteed.",
      "When the boxes arrive, do step 1: five piles, every item ticked against the order list, and the manuals downloaded.",
      "Then work the eight steps in order, respecting the done-means rule: each step has an observable check, and you do not move on until it passes.",
-     "Take the matching quiz on the Quizzes page in Learn after each weekend. If you cannot explain a step out loud, you do not own it yet."],
-    { src: "Guide tabs 1, 3, 4 and 6", see: [["What you're building & why", "why"], STEP(1, "Step 1 — lay out the parts"), ["Quizzes", "quiz"]] })
+     "Take each lesson's quiz in Learn as you go. If you cannot explain a step out loud, you do not own it yet."],
+    { src: "Guide tabs 1, 3, 4 and 6", see: [["Learn: What it is, and why", "why"], STEP(1, "Step 1 — lay out the parts"), ["Learn", "why"]] })
     .next = "how-long";
 
   kb("how-long", "How long will this take?", "how long,time,weeks,hours,46,weekend,finish date,schedule,commitment",
-    ["46 hours of hands-on work across 19 tracked tasks and 8 assembly steps.",
+    ["46 hours of hands-on work: the 8 build steps, then the 9 test-flight tasks in Learn, Lesson 7.",
      "The slider in the header turns that into weeks and a projected finish date from today — 8 hours a week lands around 6 weeks.",
      "Realistically the clock is dominated by three things: waiting for deliveries, learning Betaflight, and the thermal tuning weekend.",
-     "The weekend breakdown on the Plan page in Learn is a reasonable pace: airframe, payload, GPS/mapping, flight tests, then the evidence pass.",
+     "A reasonable order: airframe, payload, GPS and mapping, flight tests, then the evidence pass. The hours for each are under Sources and checks, at the bottom of Learn.",
      "The finish date saves with your other progress in this browser, so you can keep it honest instead of optimistic."],
-    { src: "Guide: Home's hours slider and the Plan page", see: [["Build-time calculator", "home"], ["Plan", "plan"], ["Build steps", "steps"]] })
+    { src: "Guide: Home's hours slider and Learn's hours table", see: [["Build-time calculator", "home"], ["Learn: Prove it works", "quiz"], ["Build steps", "steps"]] })
     .next = "what-next";
 
   kb("certification", "Do I need a licence or registration to fly this?", "licence,license,certificate,basic,advanced,registration,tc,canada,law,legal,pilot,exam,fees",
@@ -445,24 +444,15 @@
      "Night flying needs lights sufficient for you or a visual observer to see the aircraft (CAR 901.39) — and that does not waive any other rule.",
      "Beyond Visual Line of Sight, over people, or in controlled airspace puts you in Advanced operations, which is a different certificate and a different project.",
      "This build is 5-inch class and well over 250 g, so assume you are in scope and get the certificate before the first hover."],
-    { note: "The guide's footer says it plainly: a prototype builder's roadmap, not career or legal advice. Check the current Transport Canada rules yourself.", src: "Transport Canada Basic operations · CAR 901.39 · CAR 901.56 and 901.57 · Guide rules quiz", see: [["Rules quiz", "quiz"], ["Honest limits & sources", "limits"]] })
-    .next = "career";
-
-  kb("career", "Is any of this a career? What does it pay?", "job,career,salary,wage,pay,systems analyst,resume,work,employer,hiring,43.27,21211,pitch",
-    ["The guide pairs the build with a target role: Systems Analyst / data work, NOC 21211, Alberta/Edmonton.",
-     "Job Bank figures quoted: CA$28.00 low, CA$43.27 median, CA$57.69 high per hour, updated 19 Nov 2025. Those are occupational wages, not a starting offer.",
-     "The GoA Systems Analyst recruitment standard PDF was reviewed 20 May 2026 — that is the document to read for what a hiring manager there expects.",
-     "The build is the demonstration, not the credential. The evidence package (README, honest limits, measured results, 5-minute video, flight log) is what makes it credible in an interview.",
-     "The Career & pay page in Learn has the demo kit and pitch practice. Do not say 'it detects fires from 30 m' until you have measured it — one exaggeration undoes the whole story."],
-    { src: "Guide: Career & pay · Job Bank NOC 21211 · GoA Systems Analyst MRS", see: [["Career & pay", "career"]] })
-    .next = "certification";
+    { note: "The guide's footer says it plainly: a prototype builder's roadmap, not career or legal advice. Check the current Transport Canada rules yourself.", src: "Transport Canada Basic operations · CAR 901.39 · CAR 901.56 and 901.57 · Guide rules quiz", see: [["Fly safely: the last check", "fly"], ["Learn: What it can and cannot do", "quiz"]] })
+    .next = "saved-progress";
 
   kb("saved-progress", "Is my progress saved? Will it sync to my phone?", "saved,progress,save,localstorage,sync,browser,phone,laptop,other device,lost,cleared,tick",
-    ["Everything saves in this browser only — checkboxes, quiz bests, flashcard state, budget prices and the build-time slider.",
+    ["Everything saves in this browser only — checkboxes, quiz bests, budget prices and the build-time slider.",
      "There is no account and no sync: opening the page on your phone starts from zero.",
      "Clearing site data, or using private/incognito mode, wipes it. So does a different browser on the same machine.",
      "For a record you can keep, screenshot the progress bar and the quiz scores, or keep the numbers in the order document."],
-    { src: "Guide footer — progress and quiz scores save in this browser only", see: [["Build steps", "steps"], ["Quizzes", "quiz"]] })
+    { src: "Guide footer — progress and quiz scores save in this browser only", see: [["Build steps", "steps"], ["Learn", "why"]] })
     .next = "stock";
 
   kb("stock", "A part is out of stock or discontinued — can I substitute?", "stock,out of stock,substitute,alternative,discontinued,replace,unavailable,cant find,backup,substitution",
@@ -471,7 +461,7 @@
      "A safe substitute has to match on voltage, current rating, mounting pattern and connector — and for the payload, on I2C address and 3.3 V logic.",
      "If you change a part, update the order document and the budget rather than carrying a stale number in your head.",
      "Read the audit report for the reasoning already applied, so you are not repeating work that was done."],
-    { src: "Guide: Buy · Shad-Drone-Audit-Report.md", see: [["Parts & budget", "parts"], ["Honest limits & sources", "limits"]] })
+    { src: "Guide: Buy · Shad-Drone-Audit-Report.md", see: [["Parts & budget", "parts"], ["Learn: What it can and cannot do", "quiz"]] })
     .next = "budget";
 
   kb("solder", "My solder joints look bad / a joint broke off", "solder,soldering,joint,cold joint,tin,flux,bridge,pad,wire,wont stick,tug test,iron,temperature",
@@ -523,7 +513,7 @@
      "To flash, use DFU mode: hold the boot button while plugging in, then flash the correct target for the GEPRC F405.",
      "Before you change anything, save a diff: CLI → diff all → copy it somewhere. It is the difference between a five-minute fix and an evening.",
      "Never flash with a battery connected. USB only, props off, and let it finish before you touch anything."],
-    { note: "Back up the diff before flashing or restoring. This costs ten seconds and has saved more builds than any tutorial.", src: "Guide weekend 1 task 5", see: [["Weekend 1 checklist", "plan"]] })
+    { note: "Back up the diff before flashing or restoring. This costs ten seconds and has saved more builds than any tutorial.", src: "Guide Step 4", see: [["Build", "steps"]] })
     .next = "no-channels";
 
   kb("payload-tests", "How many payload software tests are there, and how do I run them?", "how many tests,payload tests,software tests,unit tests,run the tests,unittest,31 tests,test_drone_logic,synthetic tests",
@@ -537,13 +527,12 @@
      "The packs charge to 4.35 V per cell; at 4.35, Betaflight would count a full pack as 5 cells."],
     { src: "Guide Step 4 and Stage 3", see: [STEP(4, "Step 4 — control and video")] });
 
-  kb("quiz", "How do the quizzes and flashcards work?", "quiz,quizzes,score,flashcard,flashcards,pass,75,questions,exam",
-    ["Four topic quizzes and a final exam in Learn (airframe; power, batteries & safety; payload; detection & mapping; the final exam has 8 questions). Each Fly safely step has its own short quiz, and a last check on flight rules sits under the steps.",
+  kb("quiz", "How do the quizzes work?", "quiz,quizzes,score,pass,75,questions,exam",
+    ["Most lessons in Learn end with a quiz, and the course ends with a final exam (7 questions). Each Fly safely step has its own short quiz, and a last check on flight rules sits under the steps.",
      "You pass a quiz at 75 % or better; the overview counts how many you have passed.",
      "Every answer explains why it is right, with the source — that explanation is worth more than the score.",
-     "Flashcards are the fast recall layer: flip each card, and the progress counter tracks how many you have seen.",
-     "Your best score per quiz and the flashcard state save in this browser, so you can walk away and come back."],
-    { src: "Guide: Quizzes", see: [["Quizzes", "quiz"]] })
+     "Your best score per quiz saves in this browser, so you can walk away and come back."],
+    { src: "Guide: Learn", see: [["Learn", "why"]] })
     .next = "what-next";
 
   kb("autonomy", "Can it fly itself and find fires on its own?", "fly itself,flies itself,on its own,autonomous,autonomy,self flying,waypoint,gps flight,mission,autopilot,ai decides,rtl",
@@ -551,7 +540,7 @@
      "What exists: a payload that finds hot pixels, converts them to GPS-referenced coordinates and logs them. A human flies the aircraft.",
      "Letting detection logic command the flight controller is a safety decision nobody should make casually — the guide keeps detection separate from flight code on purpose.",
      "If you want to go further later, that is a new project with new certifications, and it should never start by removing the human."],
-    { why: "Keeping detection separate from flight control is what makes the synthetic tests possible, and it keeps a false positive from becoming a control input.", src: "Guide: Limits & sources 'future AI briefing' question · CHAIN step 5", see: [["What you're building & why", "why"], ["Honest limits & sources", "limits"]] })
+    { why: "Keeping detection separate from flight control is what makes the synthetic tests possible, and it keeps a false positive from becoming a control input.", src: "Guide: Detection and mapping quiz, 'future AI briefing' question · CHAIN step 5", see: [["Learn: What it is, and why", "why"], ["Learn: What it can and cannot do", "quiz"]] })
     .next = "detect-reality";
 
   /* ======================================================================
@@ -1029,8 +1018,7 @@
   const TAB_WORDS = [
     [/^(open |show |go to |jump to )?(the )?(budget|parts list|price list)/, "parts"],
     [/^(open |show |go to |jump to )?(the )?quiz/, "quiz"],
-    [/^(open |show |go to |jump to )?(the )?(career|salary|jobs)/, "career"],
-    [/^(open |show |go to |jump to )?(the )?(limits|sources)/, "limits"],
+    [/^(open |show |go to |jump to )?(the )?(limits|sources)/, "quiz"],
     [/^(open |show |go to |jump to )?(the )?(how it works|pipeline)/, "build"]
   ];
 
@@ -3460,8 +3448,9 @@
     Array.prototype.forEach.call(tabs, function (t) {
       if (String(t.textContent || "").trim().length > 200) { rendered += 1; }
     });
-    /* 10 pages since the five-places layout: Home, Build, Buy, Fly safely + the six Learn pages */
-    add("every tab panel renders content", tabs.length >= 10 && rendered === tabs.length,
+    /* 7 since 12 Nov 2026 (Shad: Learn as a small course): Home, Build, Buy, Fly safely + the three parts of Learn (why, build,
+       quiz); the Plan, Career and Limits pages are gone. Before: 10 pages since the five-places layout, with six Learn pages. */
+    add("every tab panel renders content", tabs.length >= 7 && rendered === tabs.length,
       rendered + "/" + tabs.length);
 
     /* Fable Part 2, S1: the "Before you start" boxes in the step headers sat white on cream. Every one must have

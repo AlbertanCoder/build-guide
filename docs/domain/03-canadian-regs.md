@@ -12,7 +12,7 @@ Do not operate over a forest-fire area or within 5 nautical miles (9.3 km) of
 one below 3,000 ft AGL, and do not enter airspace restricted by a NOTAM under
 CAR 601.16. Unauthorised drones ground air tankers and endanger crews.
 
-source:: CAR 601.15 and CAR 601.16, as cited in Guide, Learn > What & Why, and Fly safely
+source:: CAR 601.15 and CAR 601.16, as cited in Guide, Learn, Lesson 6, and Fly safely
 verified:: 2026-11-03
 
 ## Register, mark, and carry the certificate
@@ -45,7 +45,7 @@ CAR 901.39 requires the aircraft to remain visible; a generic LED kit does not
 by itself make a flight legal. VLOS, airspace, bystander, aerodrome, NOTAM,
 Alberta fire bans and local rules all still apply at night.
 
-source:: Guide, Learn > What & Why (stat) and Fly safely (night-lighting note)
+source:: Guide, Fly safely, Step 6 (night-lighting note)
 verified:: 2026-11-03
 
 ## Why it matters for your build

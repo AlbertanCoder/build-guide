@@ -33,10 +33,11 @@ const START_DETECT = parsed.quizzes.detect.length;
 const NEED_BEFORE = Math.ceil(START_DETECT * 0.75);
 const NEED_AFTER = Math.ceil((START_DETECT + 1) * 0.75);
 
-/* 17 since 12 Nov 2026 (Shad: Fly safely as steps, each with its quiz): 11 short step quizzes, fly0 to fly10, joined the six.
+/* 19 since 12 Nov 2026, later the same day (Shad: Learn as a small course): two short lesson quizzes, learn1 and learn6.
+   17 since 12 Nov 2026 (Shad: Fly safely as steps, each with its quiz): 11 short step quizzes, fly0 to fly10, joined the six.
    Before: 6 since 4 Nov 2026: the sixth quiz, "Power, batteries & safety", holds the new questions that would have pushed
    Airframe and Rules past quiz-add's 12-question cap. A real structural change, not a looser check. */
-check("reads the real quizzes out of index.html", Object.keys(parsed.quizzes).length === 17,
+check("reads the real quizzes out of index.html", Object.keys(parsed.quizzes).length === 19,
   Object.keys(parsed.quizzes).join(", "));
 /* These used to assert "28 questions" and "5 detect", which meant a legitimate
    accepted question turned the whole gate red. Read the baseline instead. */

@@ -15,11 +15,8 @@ const assistant = fs.readFileSync("docs/js/assistant.js", "utf8");
 
 // Figures the assistant is allowed to quote that the guide does not carry, because they
 // come from an outside source cited in the same sentence. Keep this list short and say why.
-const EXTERNAL = new Map([
-  ["28.00", "Job Bank wage low, cited in the career entry"],
-  ["43.27", "Job Bank wage median, cited in the career entry"],
-  ["57.69", "Job Bank wage high, cited in the career entry"]
-]);
+/* Empty since 12 Nov 2026: the three Job Bank wage figures left with the chat's career answer (Shad: the jobs material comes off). */
+const EXTERNAL = new Map([]);
 
 // CA$1,714.94 -> "1714.94", the form both files are compared in.
 function amountsIn(text) {
