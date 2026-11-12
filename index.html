@@ -133,6 +133,11 @@
   .stage-chip.is-pick { background: var(--pine-pale); border-color: var(--pine); }
   .stage-chip.is-blocked { opacity: .55; background: #f1eee6; }
   .stage-chip.is-done { background: #eef4f0; color: var(--soft); }
+  .stage-chip.is-done strong::before { content: "\2713\00a0"; color: var(--pine); }   /* a check mark on each bought stage (Shad, 12 Nov) */
+  .stage-chip.is-next { background: var(--pine-pale); border: 2px solid var(--pine); padding: 7px 9px; }
+  .stage-chip.is-next span { font-weight: 700; color: var(--pine-deep); }
+  .buy-next { margin: 12px 0 0; font-size: 15px; }
+  .stage-chip .chip-why { display: block; margin-top: 4px; font-size: 12.5px; line-height: 1.4; color: var(--soft); }
   .buy-backup { font-size: 12.5px; color: var(--soft); }
   .stage-items { list-style: none; margin: 0; padding: 0; }
   .asm-note-top { margin: 0 0 12px; padding: 9px 14px; border-radius: 10px; background: var(--gold-pale); color: var(--ink); font-size: 14.5px; }
@@ -1367,6 +1372,7 @@
   <section class="bill-card" id="bill" aria-labelledby="bill-title">
     <span class="here-label" id="bill-title">Your bill</span>
     <div data-bill></div>
+    <p id="buy-next" class="buy-next"></p>
     <ul id="stage-chips" class="stage-chips" aria-label="Buying stages"></ul>
   </section>
 </div>
@@ -5104,6 +5110,43 @@ while True:
     root.appendChild(mk("p", "bill-pct", pct + "% bought"));
     root.appendChild(mk("p", "bill-opt", "Optional extras: " + cad(t.optional) + " + GST"));
   }
+  /* Shad (12 Nov 2026): ONE rule for what to buy next, used by the Home line and the Buy page so they always agree.
+     It is the rule of Fable audit S2 (10 Nov): the first required stage not yet bought that can be bought now (a
+     Canadian backup shop counts); if every open stage has a part out of stock, the first open stage. Earlier stages
+     that wait on stock are named as waiting. */
+  function nextBuy() {
+    const open = STAGE_IDS.filter(function (n) { return !isOptional(n) && !stageState(n).done; });
+    const nx = open.filter(function (n) { return !stageInfo(n).blocked.length; })[0] || open[0] || null;
+    const waiting = nx === null ? [] : open.filter(function (n) { return n < nx && stageInfo(n).blocked.length; });
+    return { nx: nx, waiting: waiting };
+  }
+  /* Shad (12 Nov 2026): one short "why" for each stage still to buy. The Build step that needs it first comes from each
+     stage's own text on this page ("Its practice is in Build > Step 0", "Used in Step 2 ...", "Stage 2 practice =
+     Step 6"); the stock words come from the same buy list as everything else: out of stock, a Canadian backup shop
+     standing in, fewer left than the build needs, or only one or two left. */
+  const STAGE_WHY = { 1: "The Step 0 practice uses it", 2: "For the payload practice (Step 6)", 3: "The Step 0 practice uses it",
+    4: "Step 2 starts with it", 5: "Needed from Step 3", 6: "Needed from Step 3", 7: "Needed before the first flight (Step 8)",
+    8: "For after the first flight" };
+  const SHORT_NAMES = { pi: "Pi kit", thermal: "thermal camera", gps: "GPS board", qwiic: "Qwiic HAT", "spare-sd": "spare microSD card",
+    frame: "frame", motors: "motors", props: "propellers", finder: "lost-drone beeper", stack: "flight stack", receiver: "receiver",
+    batteries: "LiPo packs", "liion-5000": "Li-ion pack", charger: "charger", vtx: "video transmitter", "fpv-camera": "camera",
+    "vtx-antenna": "antenna", monitor: "video monitor", tools: "tool kit", radio: "radio" };
+  function shortName(l) { return SHORT_NAMES[l.id] || l.item.split(/ \(|, | with /)[0]; }
+  function shopName(s) { return String(s || "").replace(/ \(Canada\)$/, ""); }
+  function stageWhy(n) {
+    const st = stageInfo(n), notes = [];
+    if (st.blocked.length) {
+      notes.push("Waiting for the " + st.blocked.map(shortName).join(" and the ") + " (out of stock)");
+    } else {
+      st.lines.filter(function (l) { return !owned(l); }).forEach(function (l) {
+        const bk = l.backup || {}, m = /only (\d+) left/i.exec(l.stockNote || ""), nLeft = m ? Number(m[1]) : null;
+        if (l.status === "out" && canadianAlt(l)) { notes.push(shortName(l).charAt(0).toUpperCase() + shortName(l).slice(1) + " from " + shopName(bk.shop) + " (" + l.shop + " is out)"); }
+        else if (nLeft !== null && nLeft < l.qty) { notes.push(l.shop + " has " + nLeft + " of the " + l.qty + " " + shortName(l) + (canadianAlt(l) ? ": get them from " + shopName(bk.shop) : "")); }
+        else if (nLeft !== null && nLeft <= 2) { notes.push(shortName(l).charAt(0).toUpperCase() + shortName(l).slice(1) + ": only " + nLeft + " left, buy soon"); }
+      });
+    }
+    return [STAGE_WHY[n] || ""].concat(notes).filter(Boolean).join(". ") + ".";
+  }
   function updateMoney() {
     /* tick boxes and struck-through lines follow saved.owned everywhere */
     Array.prototype.forEach.call(document.querySelectorAll("input[data-own]"), function (c) { c.checked = !!saved.owned[c.getAttribute("data-own")]; });
@@ -5135,12 +5178,12 @@ while True:
       const lc = sumCents(todayLines.filter(function (l) { return !owned(l); }));
       /* Fable audit S2 (10 Nov 2026): the first required stage not yet bought that can be bought today; an earlier
          stage with a part out of stock is named as waiting. This is the same rule "Best buy for this week" uses, so
-         the two lines no longer point at different stages. */
-      const openSt = lc === 0 ? STAGE_IDS.filter(function (n) { return OPTIONAL_STAGES.indexOf(n) === -1 && !stageState(n).done; }) : [];
-      const nx = openSt.filter(function (n) { return !stageInfo(n).blocked.length; })[0] || openSt[0] || null;
+         the two lines no longer point at different stages. The rule itself is nextBuy() (shared with the Buy page). */
+      const nb = lc === 0 ? nextBuy() : { nx: null, waiting: [] };
+      const nx = nb.nx;
       if (lc === 0 && nx) {
         const si = stageInfo(nx), out = si.blocked.length;
-        const waiting = openSt.filter(function (n) { return n < nx && stageInfo(n).blocked.length; });
+        const waiting = nb.waiting;
         lineEl.textContent = "Next to buy: Stage " + nx + " \u00b7 " + (STAGE_NAMES[String(nx)] || "") + ", " + cad(si.left) +
           (out ? " (" + out + " line" + (out === 1 ? "" : "s") + " out of stock: see Buy)" : "") +
           (waiting.length ? " (" + (waiting.length === 1 ? "Stage " + waiting[0] + " waits" : "Stages " + waiting.join(", ") + " wait") + " on stock: see Buy)" : "");
@@ -5202,17 +5245,41 @@ while True:
       const chips = document.getElementById("stage-chips");
       if (chips) {
         chips.textContent = "";
+        const nb = nextBuy();
+        /* Shad (12 Nov 2026): "if you bought this part and this part, buy this one next", in one plain line */
+        const nextEl = document.getElementById("buy-next");
+        if (nextEl) {
+          nextEl.textContent = "";
+          const req = STAGE_IDS.filter(function (n) { return !isOptional(n); });
+          const have = req.filter(function (n) { return stageState(n).done; }).map(function (n) { return "Stage " + n; });
+          const part = req.filter(function (n) { const s = stageState(n); return !s.done && s.got > 0; }).map(function (n) { return "part of Stage " + n; });
+          const both = have.concat(part);
+          const words = function (a) { return a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " and " + a[a.length - 1]; };
+          if (nb.nx === null) {
+            nextEl.appendChild(mk("strong", "", "Everything on the list is bought."));
+          } else {
+            const si = stageInfo(nb.nx);
+            nextEl.appendChild(document.createTextNode(both.length ? "You have " + words(both) + ". " : "Nothing is ticked as bought yet. "));
+            nextEl.appendChild(mk("strong", "", "Buy next: Stage " + nb.nx + " · " + (STAGE_NAMES[String(nb.nx)] || "") + ", " + cad(si.left) +
+              (si.blocked.length ? ", when it is back in stock." : ".")));
+            if (nb.waiting.length) {
+              nextEl.appendChild(document.createTextNode(" " + (nb.waiting.length === 1 ? "Stage " + nb.waiting[0] + " waits" : "Stages " + words(nb.waiting.map(String)) + " wait") + " on stock."));
+            }
+          }
+        }
         STAGE_IDS.forEach(function (n) {
           const st = stageInfo(n);
           const li = mk("li", "stage-chip");
           let state;
           if (st.done) { li.classList.add("is-done"); state = "Bought"; }
+          else if (n === nb.nx && !st.blocked.length) { li.classList.add("is-next"); state = "Buy next"; }
           else if (st.blocked.length) { li.classList.add("is-blocked"); state = "Out of stock"; }
           else if (isOptional(n)) { li.classList.add("is-optional"); state = plan.extras.some(function (s) { return s.n === n; }) ? "Optional, fits what is left" : "Optional, later"; }
           else if (plan.picks.some(function (s) { return s.n === n; })) { li.classList.add("is-pick"); state = "In this week's buy"; }
           else { li.classList.add("is-wait"); state = st.left > budget ? "More than this week" : "Later"; }
           li.appendChild(mk("strong", "", stageLabel(n)));
           li.appendChild(mk("span", "", cad(st.done ? st.total : st.left) + " · " + state));   /* job 13: a bought stage shows its price, not CA$0.00 */
+          if (!st.done) { li.appendChild(mk("small", "chip-why", stageWhy(n))); }   /* Shad, 12 Nov: why this stage, and when */
           chips.appendChild(li);
         });
       }
@@ -5882,6 +5949,6 @@ while True:
 </script>
 <script src="docs/js/domain.js"></script>
 <!-- Guide Assistant: offline-first Q&A. Remove these two lines to drop it. -->
-<script src="docs/js/assistant.js?v=build-guide-v13"></script>
+<script src="docs/js/assistant.js?v=build-guide-v14"></script>
 </body>
 </html>
