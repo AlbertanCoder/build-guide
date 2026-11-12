@@ -5489,7 +5489,7 @@ while True:
   /* Expand / collapse all accordion cards in a panel */
   document.querySelectorAll(".expand-btn").forEach(function (btn) {
     btn.addEventListener("click", function () {
-      if (!btn.dataset.panel) return; /* e.g. "Show all 8 steps" has its own handler */
+      if (!btn.dataset.panel) return;
       const panel = document.getElementById(btn.dataset.panel);
       const accs = panel.querySelectorAll("details.acc, details.asm-step, details.asm-step0");
       const anyClosed = Array.prototype.some.call(accs, function (d) { return !d.open; });
@@ -5500,18 +5500,14 @@ while True:
 </script>
 <script>
   "use strict";
-  /* ---------- IKEA-style assembly walker (tab 4) ----------
-     One step at a time: picture + numbered actions + check gate, then Next.
+  /* ---------- the step list on Build (Step 0 to Step 8; since 11 Nov 2026 every step is a row that opens and closes) ----------
+     The "current" step is the row last opened by hand or by a link; ticking it done opens the next one.
      Done ticks persist in the same saved.ticks store as the checklist. */
   (function () {
     const asm = document.querySelector("[data-assembly]");
     if (!asm) return;
     const steps = Array.from(asm.querySelectorAll(".asm-step"));
     const dots = Array.from(asm.querySelectorAll("[data-asm-dot]"));
-    const prevBtn = asm.querySelector("[data-asm-prev]");
-    const nextBtn = asm.querySelector("[data-asm-next]");
-    const curEl = asm.querySelector("[data-asm-cur]");
-    const toggleBtn = asm.querySelector("[data-asm-all]");
     const banner = asm.querySelector("[data-asm-banner]");
     const bannerText = asm.querySelector("[data-asm-banner-text]");
     const bannerGo = asm.querySelector("[data-asm-banner-go]");
@@ -5560,9 +5556,6 @@ while True:
     function show(n, scroll) {
       current = Math.max(0, Math.min(steps.length - 1, n));
       steps.forEach(function (s, k) { s.open = k === current; });
-      if (curEl) curEl.textContent = String(current + 1);
-      if (prevBtn) prevBtn.disabled = current === 0;
-      if (nextBtn) nextBtn.disabled = current === steps.length - 1;
       paintDots();
       paintBanner();
       try { if (saved) { saved.asmStep = current; if (typeof save === "function") save(); } } catch (e) {}
@@ -5570,8 +5563,6 @@ while True:
         steps[current].scrollIntoView({ block: "start" });
       }
     }
-    if (prevBtn) prevBtn.addEventListener("click", function () { show(current - 1); });
-    if (nextBtn) nextBtn.addEventListener("click", function () { show(current + 1); });
     dots.forEach(function (d, k) {
       d.addEventListener("click", function () {
         if (asm.classList.contains("show-all")) {
@@ -5580,18 +5571,6 @@ while True:
           show(k);
         }
       });
-    });
-    if (toggleBtn) toggleBtn.addEventListener("click", function () {
-      const on = asm.classList.toggle("show-all");
-      toggleBtn.setAttribute("aria-pressed", String(on));
-      toggleBtn.textContent = on ? "One step at a time" : "Show all 8 steps";
-      if (on) {
-        steps.forEach(function (s) { s.hidden = false; });
-      } else {
-        show(current, false);
-      }
-      paintDots();
-      paintBanner();
     });
     steps.forEach(function (s, k) {
       const box = s.querySelector("input[data-asm]");
@@ -5903,6 +5882,6 @@ while True:
 </script>
 <script src="docs/js/domain.js"></script>
 <!-- Guide Assistant: offline-first Q&A. Remove these two lines to drop it. -->
-<script src="docs/js/assistant.js?v=build-guide-v12"></script>
+<script src="docs/js/assistant.js?v=build-guide-v13"></script>
 </body>
 </html>

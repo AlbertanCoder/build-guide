@@ -20,7 +20,7 @@ A step-by-step guide to building a small drone that carries a thermal camera and
 | | |
 |---|---|
 | **Home** | Where you are, what to do next and what to buy next. |
-| **Build** | 8 build steps, and the practice stages before them. Each step has a drawing, a 3D lesson and a check before the next step. |
+| **Build** | One list, Step 0 (practice) to Step 8. Each step opens to a picture of its 3D lesson, a drawing, the written steps and a check before the next step. |
 | **3D lessons** | 34 short lessons you can pause and turn around, with 35 quizzes (185 questions). They show which part goes where before you touch it. |
 | **Buy** | 50 parts, each with a shop link and a dated stock check, and a backup shop where one was found. Bought in stages, so every parcel gives you something to do. |
 | **Fly safely** | The Canadian rules for this drone, each with its official source: pilot certificate, registration, where you can fly, the radio licence for the video link. |
