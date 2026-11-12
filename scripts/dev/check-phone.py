@@ -332,13 +332,20 @@ try:
                    about550: /about 55[0-9] g/.test(document.body.innerText) }; })()""")
         check("weight: every figure the page shows comes from the one weight list (%s g): the park and indoor lines, the Home and Fly safely glance" % wt["n"],
               len(wt["spans"]) >= 2 and all(x == "at least %d g" % wt["n"] for x in wt["spans"]) and wt["glance"].startswith("At least %d g" % wt["n"]) and not wt["about550"], wt)
-        fl = pg.evaluate("""(() => { const first = document.querySelector('#p-fly details.acc'), c = document.getElementById('where-card');
-          const heads = [...c.querySelectorAll('.acc-body > p > strong')].map(s => s.textContent).filter(x => /^Where you|^Before you fly/.test(x));
-          const lists = [...c.querySelectorAll('.acc-body > ul')].slice(0, 3);
-          const nolink = lists.flatMap(u => [...u.children]).filter(li => !li.querySelector('a[href^="http"]') && !/below explains/.test(li.textContent)).map(li => li.textContent.slice(0, 50));
-          const firstP = (c.querySelector('.acc-body > p') || {}).textContent || ''; return { first: first && first.id, open: c.open, leadsWithCan: firstP.trim() === 'Where you can fly:', heads: heads, counts: lists.map(u => u.children.length), nolink: nolink }; })()""")
-        check("Fly safely (Shad, item 11) leads with 'Where you can fly', then 'Where you can't fly', then 'Before you fly'; every line has its source link",
-              fl["first"] == "where-card" and fl["open"] and fl["leadsWithCan"] and fl["heads"] == ["Where you can fly:", "Where you can't fly:", "Before you fly:"] and fl["counts"][0] >= 4 and fl["counts"][2] >= 5 and not fl["nolink"], fl)
+        fl = pg.evaluate("""(() => { const rows = [...document.querySelectorAll('#fly-steps details[data-fly-step]')];
+          const nums = rows.map(r => r.getAttribute('data-fly-step')), shown = rows.map(r => r.querySelector('.asm-num').textContent.trim());
+          const can = [...document.querySelectorAll('#where-card #fly-can > li')], cant = [...document.querySelectorAll('#where-card #fly-cant > li')];
+          const nolink = can.concat(cant).filter(li => !li.querySelector('a[href^="http"]')).map(li => li.textContent.slice(0, 50));
+          const heads = [...document.querySelectorAll('#p-fly h3')].map(h => h.textContent.trim());
+          return { nums: nums, shown: shown, open: rows.filter(r => r.open).length, ticks: rows.filter(r => r.querySelector('input[data-key^="fly-"]')).length,
+                   quizzes: rows.filter(r => r.querySelector('.quiz[data-quiz] button')).length, can: can.length, cant: cant.length, nolink: nolink,
+                   twice: heads.filter((h, i) => heads.indexOf(h) !== i), adv: !!document.querySelector('#fly-advanced a[href*="advanced-operations"]'),
+                   oldCards: document.querySelectorAll('#p-fly details.acc').length }; })()""")
+        # 12 Nov 2026, Shad: "a step-by-step guide ... just like how you have the build guide". This replaces the check of the three lists
+        # he asked for on 5 Nov (item 11); he chose to put those lists inside the steps (answer 1 of 12 Nov).
+        check("Fly safely (Shad, 12 Nov) is one list of steps like Build: Step 0 to Step 10 in order, all closed, each with its quiz and its tick; 'where you can' and 'where you can't' sit inside 'Pick a legal spot', every line with its source link; the Advanced certificate is an 'only if' row; no heading twice",
+              fl["nums"] == [str(i) for i in range(11)] and fl["shown"] == fl["nums"] and fl["open"] == 0 and fl["ticks"] == 11 and fl["quizzes"] == 11
+              and fl["can"] >= 4 and fl["cant"] >= 10 and not fl["nolink"] and not fl["twice"] and fl["adv"] and fl["oldCards"] == 0, fl)
         tt = pg.evaluate("[document.title, document.querySelector('header h1').textContent, /Fire-Detecting/i.test(document.body.innerText + document.title)]")
         check("title (Shad's decision): 'Build a Heat-Spotting Drone' in the header and the page title; 'Fire-Detecting' nowhere on the page",
               tt[0].startswith("Shad's Heat-Spotting Drone") and tt[1] == "Build a Heat-Spotting Drone" and tt[2] is False, tt)

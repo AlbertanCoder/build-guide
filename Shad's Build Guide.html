@@ -306,7 +306,6 @@
   .arr-tick { display: flex; align-items: flex-start; gap: 6px; font-size: 15px; }
   .arr-tick input { margin-top: 4px; width: 18px; height: 18px; flex: none; accent-color: var(--pine); }
   .fly-first { display: block; font-weight: 400; font-size: 14px; color: var(--soft); margin-top: 2px; }
-  #fly-card > summary .fly-first { display: none; }   /* said in rule 1 and in the top line; Home's door still reads it */
   .fly-list { margin: 0 0 12px; padding-left: 22px; }
   .fly-list li { margin: 0 0 8px; }
   details.acc[open] > summary { border-bottom: 1px solid var(--line); }
@@ -575,7 +574,7 @@
   .asm-dot.is-done { background: var(--pine-pale); border-color: var(--pine); color: var(--pine); }
   .asm-dot.is-current { background: var(--pine); border-color: var(--pine); color: #fff; }
   .asm-stage { display: grid; gap: 18px; }
-  .asm-step, .asm-step0 { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  .asm-step, .asm-step0, .fly-step { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
               box-shadow: var(--shadow); overflow: clip; scroll-margin-top: 12px; }
   .asm-head { display: flex; align-items: center; gap: 14px; padding: 15px 18px;
               background: linear-gradient(135deg, var(--pine-deep) 0%, var(--pine) 100%);
@@ -597,6 +596,20 @@
   details:not([open]) > summary.asm-head .asm-meta { color: var(--soft); }
   .asm-intro { padding: 12px 18px 0; }
   .asm-step0 > .acc-body { padding-top: 12px; }
+  /* Fly safely as steps (Shad, 12 Nov 2026): the same rows as Build */
+  .fly-part { margin: 8px 2px -8px; font-size: 12px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; color: var(--soft); }
+  .fly-part:first-child { margin-top: 0; }
+  .fly-step .asm-notes > .quiz { margin: 16px 0; box-shadow: none; }
+  .fly-step .asm-notes > p { margin: 0 0 12px; }
+  .fly-step .wt-fold > ul { margin: 6px 0; padding-left: 20px; }
+  .fly-step .wt-fold li { margin: 0 0 8px; }
+  .fly-step .wt-fold > p { margin: 6px 0; }
+  .fly-need { list-style: none; margin: 0 0 12px; padding: 0; }
+  .fly-need li { position: relative; padding: 9px 0 9px 32px; border-top: 1px solid var(--line); }
+  .fly-need li:first-child { border-top: 0; }
+  .fly-need li::before { content: ""; position: absolute; left: 2px; top: 11px; width: 18px; height: 18px; box-sizing: border-box;
+    border: 2px solid var(--soft); border-radius: 5px; font-size: 13px; font-weight: 800; line-height: 14px; text-align: center; color: #fff; }
+  .fly-need li.is-done::before { content: "\2713"; border-color: var(--pine); background: var(--pine); }
   .wt-link.wt-thumb { display: block; position: relative; margin: 14px 18px 6px; padding: 0; border-radius: 12px; overflow: hidden;
     background: #eef1f4; max-width: 620px; font-size: 14px; }
   .wt-thumb img { display: block; width: 100%; height: auto; }
@@ -668,7 +681,7 @@
   @media print {
     .asm-step[hidden] { display: block !important; }
     .asm-nav, .asm-toolbar, .asm-done { display: none !important; }
-    .asm-step { break-inside: avoid; }
+    .asm-step, .fly-step { break-inside: avoid; }
   }
   /* ===== Guide Assistant (docs/js/assistant.js) — grounded chat panel ===== */
   #ga-root { position: fixed; right: 18px; bottom: 18px; z-index: 60; }
@@ -998,7 +1011,7 @@
       </div>
     </section>
   <p class="muted here-terms">A Stage is a batch of parts to buy. A Step is a page of the build. Stage numbers and Step numbers do not match one to one.</p>
-  <p class="here-study">Start studying for the amateur radio exam now: it takes the longest, and you need it before the video transmitter is first powered (Step 8). Practise free with <a href="https://ised-isde.canada.ca/site/amateur-radio-operator-certificate-services/en/amateur-radio-exam-generator" target="_blank" rel="noopener">ISED's exam generator</a>; <a href="#licences-card" data-open="licences-card">Licences and courses</a> in Learn has the rest.</p>
+  <p class="here-study">Start studying for the amateur radio exam now: it takes the longest, and you need it before the video transmitter is first powered (Step 8). Practise free with <a href="https://ised-isde.canada.ca/site/amateur-radio-operator-certificate-services/en/amateur-radio-exam-generator" target="_blank" rel="noopener">ISED's exam generator</a>; <a href="#fly-radio" data-open="fly-radio">Fly safely, Step 3</a> has the rest.</p>
   </section>
 </div>
 <div class="money-home">
@@ -2512,7 +2525,7 @@
         <div class="stage">
           <h4>Stage 7 &middot; Papers &amp; first flight</h4>
           <p class="stg-cost" data-stage-cost="7"></p>
-          <p class="stage-uses">Used in Step 8: the first hover needs the Basic certificate and the registration, and the video transmitter needs the amateur radio certificate first (see <a href="#licences-card" data-open="licences-card">Licences and courses</a> in Learn).</p>
+          <p class="stage-uses">Used in Step 8: the first hover needs the Basic certificate and the registration, and the video transmitter needs the amateur radio certificate first (see <a href="#fly-card" data-open="fly-card">Fly safely</a>, Steps 1 to 3).</p>
           <div class="asm-parts">
             <span class="asm-label">What to buy</span>
             <ul class="stage-items" data-stage-list="7"></ul>
@@ -2593,156 +2606,31 @@
     <p><strong>Weather:</strong> Not weatherproof: dry, calm, mild days only until tested. <a href="#weather-card" data-open="weather-card">Weather details</a></p>
   </section>
 </div>
-  <details class="acc" id="where-card" open>
-    <summary>Where and when you can fly (this drone)</summary>
-    <div class="acc-body">
-      <p><strong>Where you can fly:</strong></p>
-      <ul>
-        <li>On private land, with the owner's permission: your own, or someone else's. The City of Edmonton says a drone of any size may take off and land from private property with the owner's permission. The federal rules still apply. (<a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use" target="_blank" rel="noopener">City of Edmonton, recreational microdrone use</a>)</li>
-        <li>At a model-aircraft club field, on the club's own flying days. The Northern Alberta FPV League flew outdoors at Ministik Park, about 22 km east of Edmonton on Highway 14, on ten event days in summer 2026. Strathcona County approved those days only (the last was 13 Sep 2026); on any other day the County's drone ban applies there. Outdoors the league flies drones under 800 g (its Open class). For 2027, ask the league first, and ask whether this drone suits it. You need a MAAC membership (see Licences and courses in Learn) and to be a league member or its invited guest. (<a href="https://www.maac.ca/clubs/view/928" target="_blank" rel="noopener">MAAC, club 928</a>; <a href="https://northernalbertafpv.ca/getting-started-in-fpv/" target="_blank" rel="noopener">the league says absolute beginners are welcome</a>; its site did not open on 11 Nov 2026)</li>
-        <li>At other model-aircraft club fields near Edmonton, as a MAAC member. Most club pages do not say whether drones are allowed, so ask the club first. (<a href="https://www.maac.ca/clubs/list?zoneCode=A" target="_blank" rel="noopener">MAAC, Zone A club list</a>)</li>
-        <li id="fly-indoors"><strong>Indoors, with the building owner's permission.</strong> Transport Canada's drone rules (Part IX of the Canadian Aviation Regulations) do not apply indoors, but you must still fly safely and respect all other laws, and Transport Canada recommends getting permission from the building owner and/or occupants before you fly indoors (in an apartment, ask your landlord). This drone weighs <span data-weight-min>at least 512 g</span> and spins four 5-inch props: it is not an indoor drone. To practise indoors, use the simulator (Stage 3 practice); the Northern Alberta FPV League flies small "whoop" drones, with ducts around the props, indoors in winter. (<a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/where-fly-your-drone" target="_blank" rel="noopener">Transport Canada, Where to fly your drone</a>; <a href="https://northernalbertafpv.ca/getting-started-in-fpv/" target="_blank" rel="noopener">the league's getting-started page</a>, which did not open on 11 Nov 2026)</li>
-      </ul>
-      <p id="fly-basic">This drone flies under Transport Canada's Basic operations (TC page updated 19 Mar 2026). Every spot must also pass the airspace check: look up the exact take-off point on one of the free maps at the bottom, every time. The 5.6 km airport, 1.9 km heliport and uncontrolled-airspace rules rule out a lot of Edmonton: an empty park is not a legal site.</p>
-      <p><strong>Where you can't fly:</strong></p>
-      <ul>
-        <li><strong>In Edmonton, City parks are for microdrones only.</strong> The City allows drones under 250 grams (counting everything attached) to take off and land on cut grass in most named parks. This drone weighs <span data-weight-min>at least 512 g</span> with the LiPo and more with the Li-ion, so it may not be flown from within a City park or other municipal public space (land the City owns or controls, plus utility lots, school reserves and school grounds, whoever owns them; Bylaw 20700, s. 55; the fine is $250). Take off and land from private property instead: your own, or someone else's with the owner's permission. All flights still follow the Transport Canada rules. (City of Edmonton, <a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use" target="_blank" rel="noopener">Public Spaces Bylaw 20700, Section 55</a>.)</li>
-        <li>In Strathcona County parks: the parks bylaw bans remote-controlled flying objects. (<a href="https://www.strathcona.ca/emergencies-enforcement/policing-and-enforcement/drones/" target="_blank" rel="noopener">Strathcona County, drones</a>)</li>
-        <li>In Parkland County parks: no drones, except under 250 g in a marked area, or with a County permit. (<a href="https://www.parklandcounty.com/media/swwb4tgx/bylaw-2023-16-parks.pdf" target="_blank" rel="noopener">Parkland County Parks Bylaw 2023-16</a>)</li>
-        <li>In any Alberta provincial park: recreational drones of any size are banned. (<a href="https://albertaparks.ca/albertaparksca/science-and-research/conducting-research/use-of-unmanned-aerial-vehicles" target="_blank" rel="noopener">Alberta Parks</a>)</li>
-        <li>In Elk Island National Park, or any national park. (<a href="https://parks.canada.ca/pn-np/ab/elkisland/securite-safety/drones" target="_blank" rel="noopener">Parks Canada, Elk Island</a>)</li>
-        <li>Near airports and heliports: within 5.6 km of a certified airport's centre, or 1.9 km of a heliport's. Near a military airfield you need its permission. (<a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations" target="_blank" rel="noopener">Transport Canada, Basic operations</a>)</li>
-        <li>In controlled airspace or a restricted area. Around Edmonton that means the control zones at Edmonton International (a circle of 7 nautical miles, about 13 km), Villeneuve (5 nautical miles) and Namao, and the restricted areas CYR212 (Edmonton Institution) and CYR232 and CYR233 (Namao, CFB Edmonton). (NAV CANADA, Designated Airspace Handbook, 29 Oct 2026; <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/where-fly-your-drone" target="_blank" rel="noopener">Transport Canada, Where to fly your drone</a>; <a href="https://map.navdrone.ca" target="_blank" rel="noopener">check the exact spot on NAV Drone Viewer</a>)</li>
-        <li>Near wildfires: Do not fly over a forest-fire area or within 5 nautical miles (9.3 km) of one below 3,000 ft AGL (CAR 601.15), and do not enter airspace restricted by a NOTAM under 601.16. Real fires are agency airspace: drones ground air tankers and endanger crews. Check NOTAMs and Alberta fire bans before you fly. Practise only on controlled heat targets, such as a mug of hot water, on private land with permission. Never light a fire to test the drone. (<a href="https://laws-lois.justice.gc.ca/eng/regulations/SOR-96-433/FullText.html" target="_blank" rel="noopener">CAR 601.15</a>)</li>
-        <li>Over people: keep 30 m sideways from bystanders. (<a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations" target="_blank" rel="noopener">Transport Canada, Basic operations</a>) Never fly at an advertised event, such as a concert or a game, without a special flight operations certificate. (<a href="https://laws-lois.justice.gc.ca/eng/regulations/SOR-96-433/section-901.41.html" target="_blank" rel="noopener">CAR 901.41</a>)</li>
-        <li>Inside a police, fire or crash scene. Edmonton Fire Rescue's perimeter is 30 m sideways and 400 ft up around an active emergency. (<a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use" target="_blank" rel="noopener">City of Edmonton, recreational microdrone use</a>)</li>
-      </ul>
-      <p><strong>Before you fly:</strong></p>
-      <ul>
-        <li>Pass the Basic pilot exam: online, in Transport Canada's Drone Management Portal; 35 multiple-choice questions, 90 minutes, 65% to pass, age 14 or older; CA$10.17 a try (1 Apr 2026 to 31 Mar 2027). (<a href="https://tc.canada.ca/en/aviation/drone-safety/drone-pilot-licensing/take-drone-pilot-online-exam/small-basic" target="_blank" rel="noopener">Transport Canada, Small Basic exam</a>)</li>
-        <li>Register the drone in the same portal (250 g or more must be registered): CA$10.17 (1 Apr 2026 to 31 Mar 2027). Mark the number on the drone. (<a href="https://tc.canada.ca/en/aviation/drone-safety/registering-your-drone" target="_blank" rel="noopener">Transport Canada, registering your drone</a>)</li>
-        <li>The video licence: the 5.8 GHz video needs the ISED Amateur Radio Operator Certificate (Basic), as "Before you fly" below explains.</li>
-        <li>Check the exact take-off spot on NAV Drone Viewer, every time. (<a href="https://map.navdrone.ca" target="_blank" rel="noopener">NAV Drone Viewer</a>)</li>
-        <li>Carry proof of registration and your pilot certificate, and keep the drone in sight. (<a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations" target="_blank" rel="noopener">Transport Canada, Basic operations</a>)</li>
-      </ul>
-      <p><strong>When:</strong> by day. At night only with lights on the drone that the pilot or a visual observer can see, turned on (CAR 901.39). Lighting is necessary, not sufficient: line of sight, airspace, people, airports, NOTAMs and the site's own rules still apply. No step in this build fits lights.</p>
-      <p><strong>Not checked:</strong> Leduc County. No drone rule was found on the county's website, so ask the county before you fly there.</p>
-      <p><strong>Free maps:</strong> the <a href="https://nrc.canada.ca/en/drone-tool/">NRC Drone Site Selection Tool</a> (red: no; orange: needs permission; yellow: take care; Transport Canada calls it &ldquo;for your convenience only&rdquo; on its <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/where-fly-your-drone" target="_blank" rel="noopener">where to fly page</a>) and NAV CANADA's <a href="https://map.navdrone.ca">NAV Drone Viewer</a> (no account needed).</p>
-      <p class="muted">Read on 4 Nov 2026: Transport Canada, <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/where-fly-your-drone">Where you can fly</a> and <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations">Basic operations</a>; <a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use">City of Edmonton, recreational microdrone use</a>; <a href="https://www.strathcona.ca/emergencies-enforcement/policing-and-enforcement/drones/">Strathcona County, drones</a>; <a href="https://www.parklandcounty.com/media/swwb4tgx/bylaw-2023-16-parks.pdf">Parkland County Parks Bylaw 2023-16</a>; <a href="https://albertaparks.ca/albertaparksca/science-and-research/conducting-research/use-of-unmanned-aerial-vehicles">Alberta Parks</a>; <a href="https://parks.canada.ca/pn-np/ab/elkisland/securite-safety/drones">Parks Canada, Elk Island</a>; <a href="https://www.maac.ca/clubs/view/928">MAAC, club 928</a>.</p>
+  <div class="assembly" id="fly-steps">
+    <div class="asm-legend" id="fly-card">
+      <span>Open a step. Do it, take its quiz, then tick it.</span>
     </div>
-  </details>
-  <details class="acc" id="fly-card" open>
-    <summary><strong>Before you fly</strong> <span class="fly-first">Not weatherproof: dry, calm, mild days only until tested</span></summary>
-    <div class="acc-body">
-      <p>Short rules. Read them before the first hover.</p>
-      <ol class="fly-list">
-        <li><strong>No rain or snow.</strong> This build is not weatherproof. Dry, calm, mild days only until it has been tested.</li>
-        <li><strong>Wind:</strong> there is no tested wind limit for this build, so this guide gives no number. Until one is tested, fly only in calm air.</li>
-        <li>Keep the flight pack warm until you fly. Never charge a frozen pack.</li>
-        <li><strong>No frost, ice or snow on the drone:</strong> wipe the props and the frame clean and dry before you fly (CAR 901.35). <strong>No flying within 12 hours of an alcoholic drink, or when you are tired</strong> (CAR 901.19).</li>
-        <li><strong>Where you may fly</strong> (airports, controlled airspace, parks, wildfires, people): see <a href="#where-card" data-open="where-card">Where and when you can fly</a> above, and check the take-off spot on a map every time.</li>
-        <li>Keep the drone in sight. If you fly by a screen, you need a visual observer; until then, fly looking at the drone.</li>
-        <li><strong>Papers first:</strong> you hold the Basic certificate, and the drone is registered and marked (a drone of 250 g or more must be registered; this build is over that). The certificate does not expire, but you may fly only if, within the last 24 months, you got the certificate, passed a Transport Canada drone exam again, passed a flight review, or completed recurrent training (a safety seminar or self-paced study program endorsed by Transport Canada, or a drone flight school's recurrent training program). Carry your certificate and proof of that, printed or on your phone, whenever you fly.</li>
-        <li><strong>Three more papers the rules ask for:</strong> (1) your own written procedures, read before the flight and with you at the field: the normal ones, and the emergency ones, including what you do if the radio link is lost, if the drone flies away, and how you end the flight (CAR 901.23). (2) A flight log: who flew and when; keep it 12 months. (3) A log of every repair or change to the drone; keep it 24 months (CAR 901.48). A notebook is enough.</li>
-        <li><strong>Video licence:</strong> in Canada the 5.8 GHz video link sits in the amateur radio band. The lawful way to run the VTX is an ISED Amateur Radio Operator Certificate (Basic): an exam you write with an accredited examiner (see Licences and courses in Learn). This guide cannot tell you to fly it without one. Once you have it, the video must carry your call sign: ISED's rule says an amateur station identifies itself with its call sign at the start and end of each transmission and at least every 30 minutes (RBR-4, section 9). ISED does not say how to do that on a video picture. One simple way: write the call sign on a card and hold it in front of the camera at the start and end of each flight.</li>
-        <li>Keep nobody within 30 m (100 ft) sideways. That is the Basic-operations boundary, not a safe distance in itself.</li>
-        <li><strong>Privacy:</strong> Transport Canada says &ldquo;You must respect the privacy rights of others when you fly&rdquo; and &ldquo;You must respect trespassing laws.&rdquo; Point the thermal camera only at your own land, or land whose owner said yes. Do not record or log neighbours, their yards or their windows, and delete anything that catches other people.</li>
-        <li>Stay below 122 m (400 ft) above the ground, and no more than 30 m above any building or structure within 61 m of it (CAR 901.25); going higher needs a special flight operations certificate. This is the limit beginners break first.</li>
-        <li><strong>Take off and land on a flat board or hard flat ground, not grass.</strong>: the Pi hangs only about 2.5 cm above the ground. Land straight down and slowly, then disarm as soon as the feet touch. The feet are close together side to side, so if the drone lands leaning or sliding sideways it falls on its side and a prop and an arm hit the ground.</li>
-        <li><strong>Batteries:</strong> charge them attended, in the LiPo bag, on a fireproof surface. Never charge a swollen or damaged pack. Let a pack cool before charging it. Keep the fire extinguisher and a bucket of water within reach: the bag slows a fire but does not stop it. If a pack burns and you cannot put it out at once, or you are in any doubt: get everyone out and call 911.</li>
-      </ol>
-      <p class="muted">This guide is not legal advice. Check Transport Canada's rules and the manufacturers' manuals.</p>
-    </div>
-  </details>
-  <details class="acc" id="flight-check-card">
-    <summary>Every flight: the field checklist</summary>
-    <div class="acc-body">
-      <p>Before you plug in the pack:</p>
-      <ol class="fly-list">
-        <li>The spot passed the airspace check today (NAV Drone or the NRC map), and you checked NOTAMs and fire bans.</li>
-        <li>Nobody within 30 m sideways.</li>
-        <li>No frost, ice or snow on the props or the frame.</li>
-        <li>Props on the right motors (CW on M1 and M4, CCW on M2 and M3), and the nuts are tight.</li>
-        <li>The pack is strapped tight and cannot slide.</li>
-        <li>The video antenna is screwed on.</li>
-        <li>The pack switch on the radio matches the pack: GNB or Li-ion (Step 4).</li>
-        <li>The radio is on and its timer is reset.</li>
-      </ol>
-      <p>After you plug in:</p>
-      <ol class="fly-list" start="9">
-        <li>Start the payload the way that survives a Wi-Fi drop (Step 8), and wait for &ldquo;Ground height set&rdquo;.</li>
-      </ol>
-      <p>After you land:</p>
-      <ol class="fly-list" start="10">
-        <li>Disarm. Type <code>sudo poweroff</code> in the SSH window and wait until the Pi&rsquo;s light stays off. Then unplug the pack.</li>
-      </ol>
-    </div>
-  </details>
-  <details class="acc" id="weather-card">
-    <summary>What weather can it handle?</summary>
-    <div class="acc-body">
-      <div id="weather-out"></div>
-      <script type="application/json" id="weather-data">
-{
- "lines": [
-  {
-   "what": "Rain, snow or a wet field",
-   "label": "not_confirmed",
-   "text": "Treat it as not weatherproof. No part on the list has a water rating on the pages I opened, so none can be assumed. Do not fly in rain or snow."
-  },
-  {
-   "what": "Raspberry Pi Zero 2 W",
-   "label": "datasheet",
-   "text": "Operating temperature -20 to +70 C.",
-   "source": "Raspberry Pi Zero 2 W product brief",
-   "url": "https://pip-assets.raspberrypi.com/categories/584-raspberry-pi-zero-2-w/documents/RP-008359-DS-1-raspberry-pi-zero-2-w-product-brief.pdf"
-  },
-  {
-   "what": "Thermal camera board (MLX90640)",
-   "label": "datasheet",
-   "text": "Operating temperature -40 to +85 C. It reads targets from -40 to +300 C.",
-   "source": "Adafruit listing for the same chip; Pimoroni's page gives only the target range",
-   "url": "https://www.adafruit.com/product/4407"
-  },
-  {
-   "what": "GPS board (PA1010D)",
-   "label": "not_confirmed",
-   "text": "No operating temperature on the listings I opened."
-  },
-  {
-   "what": "Flight battery (GNB 1500 mAh 4S)",
-   "label": "not_confirmed",
-   "text": "The listing gives no temperature limit. Cold weakens flight batteries in general: they give less power and the voltage drops faster. Keep the pack warm until you fly. Never charge a frozen pack."
-  },
-  {
-   "what": "Flight battery (More Volts 4S 5000 mAh Li-ion)",
-   "label": "not_confirmed",
-   "text": "The listing gives no temperature limit. Charge it only above 0 °C: Li-ion cells of this kind are rated to charge from 0 °C (Molicel P45B data sheet: 'Charge 0°C to 60°C'); the listing names the More Volts cells (TenPower 50XG) but not their charging temperature range. Keep it warm before flying, like the GNB."
-  },
-  {
-   "what": "Frame, motors, speed controller, camera, video transmitter, receiver, radio",
-   "label": "not_confirmed",
-   "text": "The listings give no operating temperature. (The video transmitter's page only says to watch for normal airflow.)"
-  },
-  {
-   "what": "Wind",
-   "label": "not_confirmed",
-   "text": "No wind limit was found for this build and none has been tested. Pick a calm day for the first flights."
-  },
-  {
-   "what": "Flying in real weather",
-   "label": "not_confirmed",
-   "text": "Nothing has been tested: the drone is not built yet."
-  }
- ]
-}
-      </script>
-    </div>
-  </details>
-  <details class="acc" id="weight-card">
-    <summary>How heavy will it be? <span class="muted">(estimate from shop listings)</span></summary>
-    <div class="acc-body">
-      <div id="weight-out"></div>
+    <div class="asm-stage">
+      <h3 class="fly-part" id="fly-once">Do once, before the first hover</h3>
+      <details class="fly-step" id="fly-weight" data-fly-step="0" aria-label="Step 0: What this drone needs">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">0</span>
+          <div class="asm-title">
+            <h3>What this drone needs</h3>
+            <p class="asm-meta">Four things before the first flight</p>
+          </div>
+        </summary>
+        <div class="asm-notes">
+          <span class="asm-label">Over 250 g, so you need</span>
+          <ul class="fly-need">
+            <li data-fly-need="1"><a href="#fly-exam" data-open="fly-exam">Step 1: a pilot certificate (Basic)</a></li>
+            <li data-fly-need="2"><a href="#fly-register" data-open="fly-register">Step 2: the drone registered and marked</a></li>
+            <li data-fly-need="3"><a href="#fly-radio" data-open="fly-radio">Step 3: a radio licence for the video link</a></li>
+            <li data-fly-need="4"><a href="#fly-papers" data-open="fly-papers">Step 4: your papers (procedures and two logs)</a></li>
+          </ul>
+          <p class="muted">The Advanced certificate is needed only for controlled airspace, or closer than 30 m to people: <a href="#fly-advanced" data-open="fly-advanced">see &ldquo;Only if&rdquo;, after Step 10</a>.</p>
+          <details class="wt-fold" id="weight-card"><summary>How heavy will it be? <span class="muted">(estimate from shop listings)</span></summary>
+            <div id="weight-out"></div>
       <script type="application/json" id="weight-data">
 {
  "asOf": "2026-11-04",
@@ -2888,9 +2776,377 @@
  ]
 }
       </script>
+          </details>
+          <div class="quiz" data-quiz="fly0"></div>
+          <label class="asm-done"><input type="checkbox" data-key="fly-0"> This step is done</label>
+        </div>
+      </details>
+      <details class="fly-step" id="fly-exam" data-fly-step="1" aria-label="Step 1: Pass the Basic exam">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">1</span>
+          <div class="asm-title">
+            <h3>Pass the Basic exam</h3>
+            <p class="asm-meta">Online &middot; 35 questions &middot; CA$10.17 a try</p>
+          </div>
+        </summary>
+        <div class="asm-notes">
+          <div class="asm-do">
+            <span class="asm-label">What to do</span>
+            <ol class="asm-actions">
+              <li>Read what the exam covers: <a href="https://tc.canada.ca/en/aviation/publications/knowledge-requirements-pilots-remotely-piloted-aircraft-systems-250-g-including-150-kg-basic-advanced-operations-tp-15263" target="_blank" rel="noopener">TP 15263, Knowledge Requirements</a> (free; Transport Canada says it is not a study guide). Transport Canada keeps a <a href="https://tc.canada.ca/en/aviation/drone-safety/drone-pilot-licensing/find-drone-flight-school" target="_blank" rel="noopener">list of drone flight schools</a> and recommends a course before the exam.</li>
+              <li>Open the <a href="https://tc.canada.ca/en/aviation/drone-safety/drone-management-portal" target="_blank" rel="noopener">Drone Management Portal</a> and take the <a href="https://tc.canada.ca/en/aviation/drone-safety/drone-pilot-licensing/take-drone-pilot-online-exam/small-basic" target="_blank" rel="noopener">Small Basic exam</a> (the Pilot Certificate &mdash; Basic Operations): 35 multiple-choice questions in 90 minutes; 65 % passes; age 14 or older. CA$10.17 a try until 31 Mar 2027 (CA$10.45 from 1 Apr 2027).</li>
+              <li>Not passed? You can try again after 24 hours, as often as you need.</li>
+              <li>The certificate downloads as soon as you pass. Keep it on your phone, or print it.</li>
+            </ol>
+          </div>
+          <details class="wt-fold"><summary>Keeping it valid</summary>
+            <p>The certificate does not expire, but you may fly only if, within the last 24 months, you got the certificate, passed a Transport Canada drone exam again, passed a flight review, or completed recurrent training (a safety seminar or self-paced study program endorsed by Transport Canada, or a drone flight school's recurrent training program). Carry your certificate and proof of that, printed or on your phone, whenever you fly.</p>
+          </details>
+          <div class="quiz" data-quiz="fly1"></div>
+          <label class="asm-done"><input type="checkbox" data-key="fly-1"> This step is done</label>
+        </div>
+      </details>
+      <details class="fly-step" id="fly-register" data-fly-step="2" aria-label="Step 2: Register the drone and mark it">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">2</span>
+          <div class="asm-title">
+            <h3>Register the drone and mark it</h3>
+            <p class="asm-meta">Online &middot; about 3 minutes &middot; CA$10.17</p>
+          </div>
+        </summary>
+        <a class="wt-link wt-thumb" href="docs/walkthrough/index.html#fly-mark"><img src="data:image/jpeg;base64,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" alt="" width="720" height="255"><span class="wt-play" aria-hidden="true">&#9654;</span><span class="wt-cap">Watch it in 3D, with quizzes</span></a>
+        <div class="asm-notes">
+          <div class="asm-do">
+            <span class="asm-label">What to do</span>
+            <ol class="asm-actions">
+              <li>Register it in the same portal: every drone of 250 g or more, home-built ones too. It takes about 3 minutes and costs CA$10.17 until 31 Mar 2027. Have ready: the purchase date (if there is one), the make, model, serial number and type of drone, and a credit card. (<a href="https://tc.canada.ca/en/aviation/drone-safety/registering-your-drone" target="_blank" rel="noopener">Transport Canada, registering your drone</a>)</li>
+              <li>Mark the registration number on the drone, where it is clearly visible: permanent marker, a permanent label or engraving. Transport Canada also recommends adding your name and contact information.</li>
+              <li>Carry proof of registration whenever you fly.</li>
+            </ol>
+          </div>
+          <p class="muted">Not answered on Transport Canada's pages: what a home build enters as its make, model and serial number.</p>
+          <div class="quiz" data-quiz="fly2"></div>
+          <label class="asm-done"><input type="checkbox" data-key="fly-2"> This step is done</label>
+        </div>
+      </details>
+      <details class="fly-step" id="fly-radio" data-fly-step="3" aria-label="Step 3: Get the radio licence for the video">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">3</span>
+          <div class="asm-title">
+            <h3>Get the radio licence for the video</h3>
+            <p class="asm-meta">Amateur radio, Basic &middot; before the video transmitter is first powered</p>
+          </div>
+        </summary>
+        <div class="asm-notes">
+          <p>In Canada the 5.8 GHz video link sits in the amateur radio band. The lawful way to run the VTX is an ISED Amateur Radio Operator Certificate (Basic). This guide cannot tell you to fly it without one.</p>
+          <div class="asm-do">
+            <span class="asm-label">What to do</span>
+            <ol class="asm-actions">
+              <li>Study the question bank (the current one has been in force since 15 Jul 2025) and practise with ISED's free <a href="https://ised-isde.canada.ca/site/amateur-radio-operator-certificate-services/en/amateur-radio-exam-generator" target="_blank" rel="noopener">exam generator</a>.</li>
+              <li>Write the exam with an accredited examiner: 100 questions; 70 % passes; 80 % or more passes &ldquo;with Honours&rdquo; and adds the bands below 30 MHz. ISED's examiner search lists 5 in Edmonton.</li>
+              <li>After you pass, the examiner tells you how to open your ISED account and choose a call sign (this guide has not confirmed the exact steps).</li>
+              <li>Put your call sign on the video. ISED's rule says an amateur station identifies itself with its call sign at the start and end of each transmission and at least every 30 minutes (RBR-4, section 9). ISED does not say how to do that on a video picture. One simple way: write the call sign on a card and hold it in front of the camera at the start and end of each flight.</li>
+            </ol>
+          </div>
+          <details class="wt-fold"><summary>Help nearby, and the exam fee</summary>
+            <p>The <a href="https://www.tnarc.ca/training" target="_blank" rel="noopener">Northern Alberta Radio Club</a> trains new operators and has 2 accredited examiners; it runs Basic courses when there is interest (no dates posted). <a href="https://www.rac.ca/rac-basic-course-re" target="_blank" rel="noopener">Radio Amateurs of Canada</a> runs an online Basic course for CA$50 + GST; the fall 2026 course is already under way, and no 2027 dates are posted.</p>
+            <p class="muted">The exam fee: ISED itself charges none, but an accredited examiner may charge one to cover their costs, so ask the examiner (ISED, RIC-1, section 5.3).</p>
+          </details>
+          <div class="quiz" data-quiz="fly3"></div>
+          <label class="asm-done"><input type="checkbox" data-key="fly-3"> This step is done</label>
+        </div>
+      </details>
+      <details class="fly-step" id="fly-papers" data-fly-step="4" aria-label="Step 4: Get your papers ready">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">4</span>
+          <div class="asm-title">
+            <h3>Get your papers ready</h3>
+            <p class="asm-meta">What the rules ask you to write, keep and carry &middot; a notebook is enough</p>
+          </div>
+        </summary>
+        <div class="asm-notes">
+          <div class="asm-do">
+            <span class="asm-label">What to do</span>
+            <ol class="asm-actions">
+              <li>Write your own procedures: the normal ones, and the emergency ones, including what you do if the radio link is lost, if the drone flies away, and how you end the flight (CAR 901.23). Read them before the flight and have them with you at the field.</li>
+              <li>Start a flight log: who flew and when. Keep it 12 months.</li>
+              <li>Start a log of every repair or change to the drone. Keep it 24 months (CAR 901.48).</li>
+              <li>Put in your flight bag: your pilot certificate with proof that it is current (Step 1), and proof of registration (Step 2). (<a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations" target="_blank" rel="noopener">Transport Canada, Basic operations</a>)</li>
+            </ol>
+          </div>
+          <div class="quiz" data-quiz="fly4"></div>
+          <label class="asm-done"><input type="checkbox" data-key="fly-4"> This step is done</label>
+        </div>
+      </details>
+      <h3 class="fly-part" id="fly-every">Do every flight</h3>
+      <details class="fly-step" id="where-card" data-fly-step="5" aria-label="Step 5: Pick a legal spot">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">5</span>
+          <div class="asm-title">
+            <h3>Pick a legal spot</h3>
+            <p class="asm-meta">Where this drone may take off, and where it may not</p>
+          </div>
+        </summary>
+        <div class="asm-notes">
+          <p id="fly-basic">This drone flies under Transport Canada's Basic operations (TC page updated 19 Mar 2026). Every spot must also pass the airspace check: look up the exact take-off point on one of the free maps below, every time. The 5.6 km airport, 1.9 km heliport and uncontrolled-airspace rules rule out a lot of Edmonton: an empty park is not a legal site.</p>
+          <div class="asm-do">
+            <span class="asm-label">What to do</span>
+            <ol class="asm-actions">
+              <li>Open <a href="https://map.navdrone.ca" target="_blank" rel="noopener">NAV Drone Viewer</a> and find the spot.</li>
+              <li>Controlled airspace or a restricted area at that point? This drone cannot fly there under Basic: pick another spot. (<a href="#fly-advanced" data-open="fly-advanced">Only if: the Advanced certificate</a>)</li>
+              <li>Check NOTAMs and Alberta fire bans.</li>
+              <li>Have the land owner's permission.</li>
+            </ol>
+          </div>
+          <details class="wt-fold" id="fly-can-fold"><summary>Where you can fly</summary>
+            <ul id="fly-can">
+        <li>On private land, with the owner's permission: your own, or someone else's. The City of Edmonton says a drone of any size may take off and land from private property with the owner's permission. The federal rules still apply. (<a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use" target="_blank" rel="noopener">City of Edmonton, recreational microdrone use</a>)</li>
+        <li>At a model-aircraft club field, on the club's own flying days. The Northern Alberta FPV League flew outdoors at Ministik Park, about 22 km east of Edmonton on Highway 14, on ten event days in summer 2026. Strathcona County approved those days only (the last was 13 Sep 2026); on any other day the County's drone ban applies there. Outdoors the league flies drones under 800 g (its Open class). For 2027, ask the league first, and ask whether this drone suits it. You need a MAAC membership (see &ldquo;MAAC membership&rdquo;, below) and to be a league member or its invited guest. (<a href="https://www.maac.ca/clubs/view/928" target="_blank" rel="noopener">MAAC, club 928</a>; <a href="https://northernalbertafpv.ca/getting-started-in-fpv/" target="_blank" rel="noopener">the league says absolute beginners are welcome</a>; its site did not open on 11 Nov 2026)</li>
+        <li>At other model-aircraft club fields near Edmonton, as a MAAC member. Most club pages do not say whether drones are allowed, so ask the club first. (<a href="https://www.maac.ca/clubs/list?zoneCode=A" target="_blank" rel="noopener">MAAC, Zone A club list</a>)</li>
+        <li id="fly-indoors"><strong>Indoors, with the building owner's permission.</strong> Transport Canada's drone rules (Part IX of the Canadian Aviation Regulations) do not apply indoors, but you must still fly safely and respect all other laws, and Transport Canada recommends getting permission from the building owner and/or occupants before you fly indoors (in an apartment, ask your landlord). This drone weighs <span data-weight-min>at least 512 g</span> and spins four 5-inch props: it is not an indoor drone. To practise indoors, use the simulator (Stage 3 practice); the Northern Alberta FPV League flies small "whoop" drones, with ducts around the props, indoors in winter. (<a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/where-fly-your-drone" target="_blank" rel="noopener">Transport Canada, Where to fly your drone</a>; <a href="https://northernalbertafpv.ca/getting-started-in-fpv/" target="_blank" rel="noopener">the league's getting-started page</a>, which did not open on 11 Nov 2026)</li>
+            </ul>
+          </details>
+          <details class="wt-fold" id="fly-cant-fold"><summary>Where you can't fly</summary>
+            <ul id="fly-cant">
+        <li><strong>In Edmonton, City parks are for microdrones only.</strong> The City allows drones under 250 grams (counting everything attached) to take off and land on cut grass in most named parks. This drone weighs <span data-weight-min>at least 512 g</span> with the LiPo and more with the Li-ion, so it may not be flown from within a City park or other municipal public space (land the City owns or controls, plus utility lots, school reserves and school grounds, whoever owns them; Bylaw 20700, s. 55; the fine is $250). Take off and land from private property instead: your own, or someone else's with the owner's permission. All flights still follow the Transport Canada rules. (City of Edmonton, <a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use" target="_blank" rel="noopener">Public Spaces Bylaw 20700, Section 55</a>.)</li>
+        <li>In Strathcona County parks: the parks bylaw bans remote-controlled flying objects. (<a href="https://www.strathcona.ca/emergencies-enforcement/policing-and-enforcement/drones/" target="_blank" rel="noopener">Strathcona County, drones</a>)</li>
+        <li>In Parkland County parks: no drones, except under 250 g in a marked area, or with a County permit. (<a href="https://www.parklandcounty.com/media/swwb4tgx/bylaw-2023-16-parks.pdf" target="_blank" rel="noopener">Parkland County Parks Bylaw 2023-16</a>)</li>
+        <li>In any Alberta provincial park: recreational drones of any size are banned. (<a href="https://albertaparks.ca/albertaparksca/science-and-research/conducting-research/use-of-unmanned-aerial-vehicles" target="_blank" rel="noopener">Alberta Parks</a>)</li>
+        <li>In Elk Island National Park, or any national park. (<a href="https://parks.canada.ca/pn-np/ab/elkisland/securite-safety/drones" target="_blank" rel="noopener">Parks Canada, Elk Island</a>)</li>
+        <li>Near airports and heliports: within 5.6 km of a certified airport's centre, or 1.9 km of a heliport's. Near a military airfield you need its permission. (<a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations" target="_blank" rel="noopener">Transport Canada, Basic operations</a>)</li>
+        <li>In controlled airspace or a restricted area. Around Edmonton that means the control zones at Edmonton International (a circle of 7 nautical miles, about 13 km), Villeneuve (5 nautical miles) and Namao, and the restricted areas CYR212 (Edmonton Institution) and CYR232 and CYR233 (Namao, CFB Edmonton). (NAV CANADA, Designated Airspace Handbook, 29 Oct 2026; <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/where-fly-your-drone" target="_blank" rel="noopener">Transport Canada, Where to fly your drone</a>; <a href="https://map.navdrone.ca" target="_blank" rel="noopener">check the exact spot on NAV Drone Viewer</a>)</li>
+        <li>Near wildfires: Do not fly over a forest-fire area or within 5 nautical miles (9.3 km) of one below 3,000 ft AGL (CAR 601.15), and do not enter airspace restricted by a NOTAM under 601.16. Real fires are agency airspace: drones ground air tankers and endanger crews. Check NOTAMs and Alberta fire bans before you fly. Practise only on controlled heat targets, such as a mug of hot water, on private land with permission. Never light a fire to test the drone. (<a href="https://laws-lois.justice.gc.ca/eng/regulations/SOR-96-433/FullText.html" target="_blank" rel="noopener">CAR 601.15</a>)</li>
+        <li>Over people: keep 30 m sideways from bystanders. (<a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations" target="_blank" rel="noopener">Transport Canada, Basic operations</a>) Never fly at an advertised event, such as a concert or a game, without a special flight operations certificate. (<a href="https://laws-lois.justice.gc.ca/eng/regulations/SOR-96-433/section-901.41.html" target="_blank" rel="noopener">CAR 901.41</a>)</li>
+        <li>Inside a police, fire or crash scene. Edmonton Fire Rescue's perimeter is 30 m sideways and 400 ft up around an active emergency. (<a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use" target="_blank" rel="noopener">City of Edmonton, recreational microdrone use</a>)</li>
+            </ul>
+            <p><strong>Not checked:</strong> Leduc County. No drone rule was found on the county's website, so ask the county before you fly there.</p>
+          </details>
+          <details class="wt-fold"><summary>The free maps</summary>
+            <p>The <a href="https://nrc.canada.ca/en/drone-tool/">NRC Drone Site Selection Tool</a> (red: no; orange: needs permission; yellow: take care; Transport Canada calls it &ldquo;for your convenience only&rdquo; on its <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/where-fly-your-drone" target="_blank" rel="noopener">where to fly page</a>) and NAV CANADA's <a href="https://map.navdrone.ca">NAV Drone Viewer</a> (no account needed).</p>
+          </details>
+          <details class="wt-fold" id="maac-card"><summary>MAAC membership (needed at club fields)</summary>
+            <p>Open CA$115, Introductory CA$30, Junior CA$25, all plus GST. It includes MAAC's liability insurance (you pay a CA$500 share if you are at fault). Memberships end on 31 Dec; if you join after 1 Sep there is a 16-month option, so joining now can cover you to the end of 2027 (check the form). <a href="https://www.maac.ca/membership/join" target="_blank" rel="noopener">MAAC's join page</a>. Not explained there: what Introductory allows.</p>
+          </details>
+          <details class="wt-fold"><summary>Sources</summary>
+            <p class="muted">Read on 4 Nov 2026: Transport Canada, <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/where-fly-your-drone">Where you can fly</a> and <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations">Basic operations</a>; <a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use">City of Edmonton, recreational microdrone use</a>; <a href="https://www.strathcona.ca/emergencies-enforcement/policing-and-enforcement/drones/">Strathcona County, drones</a>; <a href="https://www.parklandcounty.com/media/swwb4tgx/bylaw-2023-16-parks.pdf">Parkland County Parks Bylaw 2023-16</a>; <a href="https://albertaparks.ca/albertaparksca/science-and-research/conducting-research/use-of-unmanned-aerial-vehicles">Alberta Parks</a>; <a href="https://parks.canada.ca/pn-np/ab/elkisland/securite-safety/drones">Parks Canada, Elk Island</a>; <a href="https://www.maac.ca/clubs/view/928">MAAC, club 928</a>.</p>
+          </details>
+          <div class="quiz" data-quiz="fly5"></div>
+          <label class="asm-done"><input type="checkbox" data-key="fly-5"> I know this step</label>
+        </div>
+      </details>
+      <details class="fly-step" id="fly-day" data-fly-step="6" aria-label="Step 6: Pick the day">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">6</span>
+          <div class="asm-title">
+            <h3>Pick the day</h3>
+            <p class="asm-meta">The weather, the daylight, and you</p>
+          </div>
+        </summary>
+        <div class="asm-notes">
+          <div class="asm-do">
+            <span class="asm-label">Fly only when all of these are true</span>
+            <ol class="asm-actions">
+              <li><strong>No rain or snow.</strong> This build is not weatherproof. Dry, calm, mild days only until it has been tested.</li>
+              <li><strong>Wind:</strong> there is no tested wind limit for this build, so this guide gives no number. Until one is tested, fly only in calm air.</li>
+              <li>Keep the flight pack warm until you fly. Never charge a frozen pack.</li>
+              <li><strong>No frost, ice or snow on the drone:</strong> wipe the props and the frame clean and dry before you fly (CAR 901.35).</li>
+              <li><strong>No flying within 12 hours of an alcoholic drink, or when you are tired</strong> (CAR 901.19).</li>
+              <li><strong>Fly by day.</strong> At night only with lights on the drone that the pilot or a visual observer can see, turned on (CAR 901.39). Lighting is necessary, not sufficient: line of sight, airspace, people, airports, NOTAMs and the site's own rules still apply. No step in this build fits lights.</li>
+            </ol>
+          </div>
+          <details class="wt-fold" id="weather-card"><summary>What weather can it handle?</summary>
+            <div id="weather-out"></div>
+      <script type="application/json" id="weather-data">
+{
+ "lines": [
+  {
+   "what": "Rain, snow or a wet field",
+   "label": "not_confirmed",
+   "text": "Treat it as not weatherproof. No part on the list has a water rating on the pages I opened, so none can be assumed. Do not fly in rain or snow."
+  },
+  {
+   "what": "Raspberry Pi Zero 2 W",
+   "label": "datasheet",
+   "text": "Operating temperature -20 to +70 C.",
+   "source": "Raspberry Pi Zero 2 W product brief",
+   "url": "https://pip-assets.raspberrypi.com/categories/584-raspberry-pi-zero-2-w/documents/RP-008359-DS-1-raspberry-pi-zero-2-w-product-brief.pdf"
+  },
+  {
+   "what": "Thermal camera board (MLX90640)",
+   "label": "datasheet",
+   "text": "Operating temperature -40 to +85 C. It reads targets from -40 to +300 C.",
+   "source": "Adafruit listing for the same chip; Pimoroni's page gives only the target range",
+   "url": "https://www.adafruit.com/product/4407"
+  },
+  {
+   "what": "GPS board (PA1010D)",
+   "label": "not_confirmed",
+   "text": "No operating temperature on the listings I opened."
+  },
+  {
+   "what": "Flight battery (GNB 1500 mAh 4S)",
+   "label": "not_confirmed",
+   "text": "The listing gives no temperature limit. Cold weakens flight batteries in general: they give less power and the voltage drops faster. Keep the pack warm until you fly. Never charge a frozen pack."
+  },
+  {
+   "what": "Flight battery (More Volts 4S 5000 mAh Li-ion)",
+   "label": "not_confirmed",
+   "text": "The listing gives no temperature limit. Charge it only above 0 °C: Li-ion cells of this kind are rated to charge from 0 °C (Molicel P45B data sheet: 'Charge 0°C to 60°C'); the listing names the More Volts cells (TenPower 50XG) but not their charging temperature range. Keep it warm before flying, like the GNB."
+  },
+  {
+   "what": "Frame, motors, speed controller, camera, video transmitter, receiver, radio",
+   "label": "not_confirmed",
+   "text": "The listings give no operating temperature. (The video transmitter's page only says to watch for normal airflow.)"
+  },
+  {
+   "what": "Wind",
+   "label": "not_confirmed",
+   "text": "No wind limit was found for this build and none has been tested. Pick a calm day for the first flights."
+  },
+  {
+   "what": "Flying in real weather",
+   "label": "not_confirmed",
+   "text": "Nothing has been tested: the drone is not built yet."
+  }
+ ]
+}
+      </script>
+          </details>
+          <div class="quiz" data-quiz="fly6"></div>
+          <label class="asm-done"><input type="checkbox" data-key="fly-6"> I know this step</label>
+        </div>
+      </details>
+      <details class="fly-step" id="flight-check-card" data-fly-step="7" aria-label="Step 7: Check the drone">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">7</span>
+          <div class="asm-title">
+            <h3>Check the drone</h3>
+            <p class="asm-meta">The field checklist, before every take-off</p>
+          </div>
+        </summary>
+        <a class="wt-link wt-thumb" href="docs/walkthrough/index.html#fly-check"><img src="data:image/jpeg;base64,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" alt="" width="720" height="268"><span class="wt-play" aria-hidden="true">&#9654;</span><span class="wt-cap">Watch it in 3D, with quizzes</span></a>
+        <div class="asm-notes">
+          <p>Before you plug in the pack:</p>
+          <ol class="fly-list">
+            <li>The spot passed the airspace check today (NAV Drone or the NRC map), and you checked NOTAMs and fire bans.</li>
+            <li>Nobody within 30 m sideways.</li>
+            <li>No frost, ice or snow on the props or the frame.</li>
+            <li>Props on the right motors (CW on M1 and M4, CCW on M2 and M3), and the nuts are tight.</li>
+            <li>The pack is strapped tight and cannot slide.</li>
+            <li>The video antenna is screwed on.</li>
+            <li>The pack switch on the radio matches the pack: GNB or Li-ion (Build, Step 4).</li>
+            <li>The radio is on and its timer is reset.</li>
+          </ol>
+          <p>After you plug in:</p>
+          <ol class="fly-list" start="9">
+            <li>Start the payload the way that survives a Wi-Fi drop (Build, Step 8), and wait for &ldquo;Ground height set&rdquo;.</li>
+          </ol>
+          <div class="quiz" data-quiz="fly7"></div>
+          <label class="asm-done"><input type="checkbox" data-key="fly-7"> I know this step</label>
+        </div>
+      </details>
+      <details class="fly-step" id="fly-takeoff" data-fly-step="8" aria-label="Step 8: Take off and land on a board">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">8</span>
+          <div class="asm-title">
+            <h3>Take off and land on a board</h3>
+            <p class="asm-meta">Flat and hard, never grass</p>
+          </div>
+        </summary>
+        <a class="wt-link wt-thumb" href="docs/walkthrough/index.html#fly-board"><img src="data:image/jpeg;base64,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" alt="" width="720" height="268"><span class="wt-play" aria-hidden="true">&#9654;</span><span class="wt-cap">Watch it in 3D, with quizzes</span></a>
+        <div class="asm-notes">
+          <div class="asm-do">
+            <span class="asm-label">What to do</span>
+            <ol class="asm-actions">
+              <li><strong>Take off and land on a flat board or hard flat ground, not grass:</strong> the Pi hangs only about 2.5 cm above the ground.</li>
+              <li>Land straight down and slowly, then disarm as soon as the feet touch.</li>
+            </ol>
+          </div>
+          <p class="asm-warn"><strong>&#9888; Why:</strong> the feet are close together side to side, so if the drone lands leaning or sliding sideways it falls on its side and a prop and an arm hit the ground.</p>
+          <p><a class="wt-text" href="docs/walkthrough/index.html#s8-hover">The first hover, in 3D</a> (Build, Step 8).</p>
+          <div class="quiz" data-quiz="fly8"></div>
+          <label class="asm-done"><input type="checkbox" data-key="fly-8"> I know this step</label>
+        </div>
+      </details>
+      <details class="fly-step" id="fly-air" data-fly-step="9" aria-label="Step 9: In the air, keep your distance">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">9</span>
+          <div class="asm-title">
+            <h3>In the air, keep your distance</h3>
+            <p class="asm-meta">People, height, sight and privacy</p>
+          </div>
+        </summary>
+        <a class="wt-link wt-thumb" href="docs/walkthrough/index.html#fly-distance"><img src="data:image/jpeg;base64,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" alt="" width="720" height="255"><span class="wt-play" aria-hidden="true">&#9654;</span><span class="wt-cap">Watch it in 3D, with quizzes</span></a>
+        <div class="asm-notes">
+          <div class="asm-do">
+            <span class="asm-label">The rules while you fly</span>
+            <ol class="asm-actions">
+              <li>Keep nobody within 30 m (100 ft) sideways. That is the Basic-operations boundary, not a safe distance in itself.</li>
+              <li>Stay below 122 m (400 ft) above the ground, and no more than 30 m above any building or structure within 61 m of it (CAR 901.25); going higher needs a special flight operations certificate. This is the limit beginners break first.</li>
+              <li>Keep the drone in sight. If you fly by a screen, you need a visual observer; until then, fly looking at the drone.</li>
+              <li><strong>Privacy:</strong> Transport Canada says &ldquo;You must respect the privacy rights of others when you fly&rdquo; and &ldquo;You must respect trespassing laws.&rdquo; Point the thermal camera only at your own land, or land whose owner said yes. Do not record or log neighbours, their yards or their windows, and delete anything that catches other people.</li>
+            </ol>
+          </div>
+          <div class="quiz" data-quiz="fly9"></div>
+          <label class="asm-done"><input type="checkbox" data-key="fly-9"> I know this step</label>
+        </div>
+      </details>
+      <details class="fly-step" id="fly-after" data-fly-step="10" aria-label="Step 10: After you land">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">10</span>
+          <div class="asm-title">
+            <h3>After you land</h3>
+            <p class="asm-meta">Shut down, write it down, look after the pack</p>
+          </div>
+        </summary>
+        <div class="asm-notes">
+          <div class="asm-do">
+            <span class="asm-label">What to do</span>
+            <ol class="asm-actions">
+              <li>Disarm. Type <code>sudo poweroff</code> in the SSH window and wait until the Pi&rsquo;s light stays off. Then unplug the pack.</li>
+              <li>Write the flight in your flight log (Step 4).</li>
+              <li><strong>Batteries:</strong> charge them attended, in the LiPo bag, on a fireproof surface. Never charge a swollen or damaged pack. Let a pack cool before charging it. Keep the fire extinguisher and a bucket of water within reach: the bag slows a fire but does not stop it. If a pack burns and you cannot put it out at once, or you are in any doubt: get everyone out and call 911. (<a class="wt-text" href="docs/walkthrough/index.html#s5-charge">Charging, in 3D</a>)</li>
+            </ol>
+          </div>
+          <p class="fly-crash"><a href="#crash-card" data-open-crash><strong>After a hard landing</strong></a> <span class="fly-first">Twelve checks before you fly again</span></p>
+          <div class="quiz" data-quiz="fly10"></div>
+          <label class="asm-done"><input type="checkbox" data-key="fly-10"> I know this step</label>
+        </div>
+      </details>
+      <h3 class="fly-part" id="fly-onlyif">Only if you need it</h3>
+      <details class="fly-step fly-extra" id="fly-advanced" aria-label="Only if: the Advanced certificate">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">+</span>
+          <div class="asm-title">
+            <h3>The Advanced certificate</h3>
+            <p class="asm-meta">Only for controlled airspace, or closer than 30 m to people</p>
+          </div>
+        </summary>
+        <div class="asm-notes">
+          <p><strong>You do not need it for the steps above.</strong> Basic covers this drone in uncontrolled airspace, 30 m or more from people, away from airports and heliports.</p>
+          <p><strong>You need it only if you want to:</strong></p>
+          <ul>
+            <li>fly in controlled airspace (a lot of Edmonton), with permission from air traffic control;</li>
+            <li>fly closer than 30 m to people;</li>
+            <li>fly less than 5.6 km from the centre of a certified airport, or less than 1.9 km from a heliport.</li>
+          </ul>
+          <div class="asm-do">
+            <span class="asm-label">What it takes</span>
+            <ol class="asm-actions">
+              <li>Be 16 or older, and pass the online <a href="https://tc.canada.ca/en/aviation/drone-safety/drone-pilot-licensing/take-drone-pilot-online-exam/small-advanced" target="_blank" rel="noopener">Advanced exam</a>: 50 multiple-choice questions in 60 minutes; 80 % passes; try again after 24 hours. CA$10.17 a try until 31 Mar 2027.</li>
+              <li>Pass a <a href="https://tc.canada.ca/en/aviation/drone-safety/drone-pilot-licensing/complete-flight-review-drones" target="_blank" rel="noopener">flight review</a> with a flight reviewer. Drone flight schools book them, and ask for the reference number from your exam.</li>
+              <li>Apply for the certificate in the portal and pay its fee (about CA$25).</li>
+              <li><strong>The drone needs papers too.</strong> For most Advanced operations the drone must meet safety requirements. For controlled airspace that is a safety assurance declaration (Standard 922.04; CAR 901.69). A home-built drone has none unless its builder submits one to Transport Canada. (<a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/choosing-right-drone-advanced-complex-operations" target="_blank" rel="noopener">Transport Canada, declaring your drone</a>)</li>
+              <li>To fly in controlled airspace, first ask air traffic control: request an RPAS Flight Authorization from NAV CANADA.</li>
+            </ol>
+          </div>
+          <p class="muted">A pilot who holds the Advanced certificate can fly Basic operations too. Read on 12 Nov 2026: <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/advanced-operations" target="_blank" rel="noopener">Transport Canada, Advanced operations</a>.</p>
+        </div>
+      </details>
     </div>
-  </details>
-  <p class="fly-crash"><a href="#crash-card" data-open-crash><strong>After a hard landing</strong></a> <span class="fly-first">Twelve checks before you fly again</span></p>
+  </div>
+  <div id="quiz-rules" class="quiz" data-quiz="rules"></div>
+  <p class="muted">Check Transport Canada's rules and the manufacturers' manuals.</p>
 </section>
 
 <section role="tabpanel" id="p-steps" aria-labelledby="t-steps" hidden>
@@ -3431,8 +3687,8 @@
                   <li class="s1-rich" data-action-id="S8.3"><p>Still props OFF and without the smoke stopper.</p><ol><li>Open Betaflight Configurator. Download it from github.com/betaflight/betaflight-configurator/releases/latest, or use app.betaflight.com in Chrome. Plug in the USB cable and press Connect.</li><li>Plug in the battery.</li><li>In the Motors tab, tick the confirmation box. Then raise one motor's slider a little at a time.</li><li>Check that the motor that spins is the right one: M1 rear right, M2 front right, M3 rear left, M4 front left, seen from above with the camera at the front.</li><li>Check it spins the way the diagram shows. If a motor spins the wrong way, reverse it with the Motor direction button in the same tab (props off).</li><li>Lower the sliders. Unplug the battery when you are done.</li></ol><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Software and props">On the laptop, check:</a></strong> does Configurator show a slider for each motor, or only the Master slider?</span></p></li>
                   <li class="s1-rich"><p>Set up Angle mode first. In Betaflight's Modes tab, click Add Range next to ANGLE and put it on a switch on your radio. (ANGLE is the self-levelling mode.)</p><p>Before you arm, still connected and disarmed: tilt the drone and check the 3D model on Betaflight's Setup tab tilts the same way as the drone.</p><p>Then press Disconnect in Betaflight (it will not arm while connected). Radio on, arm switch off, then plug the battery in again (you unplugged it at the end of item 3). Props off: arm, switch to Angle mode, and raise the throttle about a third of the way.</p><p>Keep your hands clear of the motors. Tilt the drone so one side points down, for example the nose down. The motors on the low side (here the two front motors) must speed up.</p><p>If any check fails, disarm, unplug the battery and do not fly. Ask for help before trying again.</p></li>
                   <li class="s1-rich" data-action-id="S8.4"><p>Unplug the battery.</p><p>Look at each prop before you fit it: no chips, cracks or bends.</p><p>Fit the props. Each prop has a CW or CCW marking.</p><p>CW props go on M1 and M4. CCW props go on M2 and M3. M1 is rear right, M2 is front right, M3 is rear left, M4 is front left.</p><p>Tighten each nut with the prop tool from the tool kit. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Software and props">When the prop tool arrives, check:</a></strong> it fits the Gemfan prop nut.</span></p><p>Spin each prop with a finger. It should spin freely and straight.</p><p><span class="muted"><strong><a href="#arrival-card" data-open-arrival>When the props arrive, check:</a></strong> how Gemfan marks CW and CCW on a prop, and which face goes up. Look for the letters on the prop. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Software and props">When the props arrive, check:</a></strong> what to do if a prop has no letters. Look at the manufacturer's page.</span></span></p></li>
-                  <li class="s1-rich"><p>Weigh the drone with its battery fitted. The payload is not on yet. Use your kitchen scale.</p><p>Write the number here: ____ g.</p><p>Compare it with the weight card in Fly safely. Your scale reading is the one that counts. 250 g or more must be registered.</p></li>
-                  <li class="s1-rich"><p>Check the site on NAV Drone first. NAV Drone Viewer is NAV CANADA's map: <a href="https://map.navdrone.ca" target="_blank" rel="noopener">map.navdrone.ca</a> (no account needed), or the NAV Drone app for iPhone or Android.</p><p>Basic flying needs uncontrolled airspace, more than 5.6 km from an airport and 1.9 km from a heliport. See the Before you fly card.</p><p>Edmonton city parks are not allowed for this drone (it is over 250 g): use private land with the owner&rsquo;s permission. <a href="#fly-card" data-open="fly-card">See the Before you fly card.</a></p></li>
+                  <li class="s1-rich"><p>Weigh the drone with its battery fitted. The payload is not on yet. Use your kitchen scale.</p><p>Write the number here: ____ g.</p><p>Compare it with the weight in Fly safely, Step 0. Your scale reading is the one that counts. 250 g or more must be registered.</p></li>
+                  <li class="s1-rich"><p>Check the site on NAV Drone first. NAV Drone Viewer is NAV CANADA's map: <a href="https://map.navdrone.ca" target="_blank" rel="noopener">map.navdrone.ca</a> (no account needed), or the NAV Drone app for iPhone or Android.</p><p>Basic flying needs uncontrolled airspace, more than 5.6 km from an airport and 1.9 km from a heliport.</p><p>Edmonton city parks are not allowed for this drone (it is over 250 g): use private land with the owner&rsquo;s permission. <a href="#where-card" data-open="where-card">See Fly safely, Step 5: Pick a legal spot.</a></p></li>
                   <li class="s1-rich" data-action-id="S8.5"><p>First hover of the bare quad (no payload yet). Fly only when all six are true: you hold the Basic drone pilot certificate; you hold the ISED amateur radio certificate (Basic), for the video transmitter; the drone is registered; its registration number is marked on it; the site is in uncontrolled airspace; nobody is within 30 m (100 ft) sideways.</p><p>Never above 122 m (400 ft) above the ground. If you fly by a screen, you need a visual observer; until then, fly looking at the drone.</p><ol><li>Use the GNB pack (the learning pack on the Buy list).</li><li>Put the drone on flat open ground, camera pointing away from you. Radio on, arm switch OFF.</li><li>Angle switch ON (the self-levelling mode you set up in item 4). Pack switch on its GNB position (Step 4).</li><li>Plug in the battery and step back at least 5 m.</li><li>Arm. Slowly raise the throttle until the drone lifts off, and hold it about 1 metre up for up to 30 seconds.</li><li>Lower the throttle gently to land. Disarm. Unplug the battery.</li><li>Touch each motor: they should all feel about the same. If one is much hotter or colder than the others, do not fly again until you have found out why.</li></ol><p><strong>Landing:</strong> The bare drone has no legs yet, so take off and land on a flat board or hard flat ground, not grass. Land straight down and slowly, then disarm as soon as it touches. After a hard landing, use the <a href="#crash-card" data-open-crash>&ldquo;After a hard landing&rdquo; checklist</a>.</p></li>
                   <li class="s1-rich" data-action-id="S8.7"><p>Now mount the payload (Step 7).</p><p>Heat test, props OFF: take the props off first. Radio on, arm switch off, then plug in a charged pack: it powers the Pi through its lead. Turn on your iPhone&rsquo;s Personal Hotspot (Maximize Compatibility on), join it with the laptop and open the SSH window (ssh username@raspberrypi.local). This test needs no GPS fix: in the SSH window, cd Shad-Drone-Payload, then source .venv/bin/activate, then start the payload in bench mode with python payload.py --bench. It takes the camera as 50 cm above the table and prints every hot spot it finds.</p><ol><li>Fill a mug with water just poured from the kettle and set it on the table.</li><li>Hold the drone steady with the thermal camera about 50 cm above the mug. Then put your open hand next to the mug.</li><li>The payload should report the mug as a hot spot, but not your hand. (A hand is far cooler than the 60 C the detector looks for.)</li><li>Write down what it prints. If the mug is not found, refill it with fresh hot water and try again at 50 cm.</li></ol></li>
                   <li class="s1-rich" data-action-id="S8.6"><p>Battery out. Fit the props again, as in item 5.</p><p>Outdoors, with the drone on the ground: turn on your iPhone&rsquo;s Personal Hotspot (Maximize Compatibility on), power the drone, join the hotspot with the laptop and open the SSH window (ssh username@raspberrypi.local). Start the payload so it keeps running if the Wi-Fi drops: cd Shad-Drone-Payload, then source .venv/bin/activate, then <code>nohup python -u payload.py --serve --heading 0 &gt; run.txt 2&gt;&amp;1 &amp;</code>, then <code>tail -f run.txt</code> to watch what it prints. Wait until it prints: "Ground height set to ... from the first GPS fix. Fly only after this line appears." (The first line, "nohup: ignoring input", is normal. Ctrl+C stops only the watching; the payload carries on.) If the SSH window drops, log in again, then cd Shad-Drone-Payload and tail -f run.txt. Once, on the bench with props off, test it: start it this way, turn the hotspot off for 30 seconds, turn it on, log in again and type <code>pgrep -f payload.py</code>. A number means it is still running.</p><p>Three things the payload assumes, so its map is only right when they are true. Before you take the reading you want to report, turn the drone&rsquo;s nose to north. Facing any other way, the map puts the hot spot in the wrong place, and the further from north, the bigger the error. To read a hot spot&rsquo;s position, stop and hover level for a second or two first. In forward flight the positions are metres out. Take off from ground at about the same level as the area you search. (These come from a simulation that runs the payload&rsquo;s own code, not from the real drone.)</p><p><strong>Landing, now that the payload and the legs are on:</strong> Take off and land on a flat board or hard flat ground, not grass: the Pi hangs only about 2.5 cm above the ground. Land straight down and slowly, then disarm as soon as the feet touch. The feet are close together side to side, so if the drone lands leaning or sliding sideways it falls on its side and a prop and an arm hit the ground. After a hard landing, use the <a href="#crash-card" data-open-crash>&ldquo;After a hard landing&rdquo; checklist</a>.</p><p>Then hover 1 metre again: it should stay level without drifting to one side. After you land: disarm, type <code>sudo poweroff</code> in the SSH window, and wait until the Pi&rsquo;s light stays off. Only then unplug the pack. Pulling the pack while the Pi runs is a sudden power cut, and that can spoil the card. (How long the Pi takes to stop was not checked: time it the first time.)</p><p>The line appears in the SSH window on your laptop where you started the payload. Outdoors with a clear sky, the first fix takes about half a minute the first time. The GPS board's light flashes once it has a fix.</p><p>(The half-minute figure comes from a distributor&rsquo;s listing, &ldquo;TTFF 1s/35s&rdquo;. The maker&rsquo;s datasheet was not opened.)</p></li>
@@ -3442,7 +3698,7 @@
 </details>
               <p class="muted tp-link"><a href="#thermal-card" data-open-thermal>Curious what the camera would see from different heights? Open the thermal preview.</a></p>
               <details class="acc" id="crash-card"><summary><strong>After a hard landing</strong> <span class="fly-first">Twelve checks before you fly again</span></summary><div class="acc-body"><ol class="fly-list"><li>Disarm, then take the battery out before you touch anything.</li><li>Look at the battery. Dents, punctures or swelling: do not charge or fly it again. Put it in the LiPo bag. Do not throw it in the household bin: ask a recycling facility. When you charge it, if one cell reads more than 0.2 V below the others, retire the pack. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Packs and charger">When the charger arrives, check:</a></strong> the M7AC shows each cell's voltage while it charges (its first screen; its manual).</span></li><li>Props: replace any that are chipped, bent or white at the hub. Spares are on the buy list.</li><li>Motors, props off: spin each one by hand. A periodic scraping means a bent bell. After the next flight, a motor much hotter than the others points to a bent shaft or bearing.</li><li>Arms and frame: hold them to a light and look for hairline cracks, especially where the arms meet the plates.</li><li>Legs: straight, set screws tight, all four feet on. The drone must still stand level.</li><li>Solder joints: look at and gently tug the battery lead, the capacitor and the motor wires. Re-solder any that move or crack.</li><li>Video antenna: the nut is tight and not bent. The two zip ties still hold it.</li><li>Payload: the joined zip ties are not cut or slipped, the thermal camera still sits flat on its tape, the GPS board is still stuck down, and the GPS cable joints are not pulled.</li><li>Battery strap: not cut, and the pack has not slid.</li><li>Sensors: check again that the heat test finds the mug and not your hand (Step 8, item 9) and that the GPS line appears (item 10), before you fly the payload again.</li><li>Then a short low hover, then a normal flight.</li></ol></div></details>
-              <p class="asm-warn"><strong>&#9888; Safety:</strong> never near a wildfire &mdash; the law says 5 nautical miles (9.3 km). Only controlled targets on private land with permission. <a href="#fly-card" data-open="fly-card">Read the Before you fly card first.</a></p>
+              <p class="asm-warn"><strong>&#9888; Safety:</strong> never near a wildfire &mdash; the law says 5 nautical miles (9.3 km). Only controlled targets on private land with permission. <a href="#fly-card" data-open="fly-card">Do the Fly safely steps first.</a></p>
               <details class="wt-fold"><summary>&#10003; Before you go on</summary>
 <div class="asm-check">
                 <ul>
@@ -3517,27 +3773,6 @@
     observable check. Don't move on until it passes &mdash; and after each step, explain out loud
     what you did, then take the quizzes on the Quizzes page in Learn.</div>
   </div>
-  <details class="acc" id="licences-card">
-    <summary>Licences and courses (amateur radio before the video transmitter is first powered; Transport Canada before the first flight)</summary>
-    <div class="acc-body">
-      <p><strong>Transport Canada:</strong> both are done online in the <a href="https://tc.canada.ca/en/aviation/drone-safety/drone-management-portal">Drone Management Portal</a>.</p>
-      <ul>
-        <li><a href="https://tc.canada.ca/en/aviation/drone-safety/drone-pilot-licensing/take-drone-pilot-online-exam/small-basic">Small Basic exam</a> (the Pilot Certificate &mdash; Basic Operations): 35 multiple-choice questions in 90 minutes; 65 % passes; age 14 or older. CA$10.17 a try until 31 Mar 2027 (CA$10.45 from 1 Apr 2027). You can try again after 24 hours, as often as you need. The certificate downloads as soon as you pass, and it does not expire. But you may fly only within 24 months of passing, or of your latest exam, flight review or Transport Canada endorsed recurrent training, and you carry proof of it when you fly.</li>
-        <li><a href="https://tc.canada.ca/en/aviation/drone-safety/registering-your-drone">Drone registration</a>: every drone of 250 g or more, home-built ones too. It takes about 3 minutes and costs CA$10.17 until 31 Mar 2027. Mark the number on the drone: permanent marker, label or engraving.</li>
-        <li>What the exam covers: <a href="https://tc.canada.ca/en/aviation/publications/knowledge-requirements-pilots-remotely-piloted-aircraft-systems-250-g-including-150-kg-basic-advanced-operations-tp-15263">TP 15263, Knowledge Requirements</a> (free; Transport Canada says it is not a study guide). Transport Canada keeps a <a href="https://tc.canada.ca/en/aviation/drone-safety/drone-pilot-licensing/find-drone-flight-school">list of drone flight schools</a> and recommends a course before the exam.</li>
-      </ul>
-      <p class="muted">Not answered on Transport Canada's pages: what a home build enters as its make, model and serial number.</p>
-      <p><strong>Amateur radio, Basic (for the 5.8 GHz video link):</strong></p>
-      <ul>
-        <li>ISED's Amateur Radio Operator Certificate (Basic): 100 questions; 70 % passes; 80 % or more passes &ldquo;with Honours&rdquo; and adds the bands below 30 MHz.</li>
-        <li>How: study the question bank (the current one has been in force since 15 Jul 2025), practise with ISED's free <a href="https://ised-isde.canada.ca/site/amateur-radio-operator-certificate-services/en/amateur-radio-exam-generator">exam generator</a>, then write the exam with an accredited examiner. ISED's examiner search lists 5 in Edmonton. After you pass, the examiner tells you how to open your ISED account and choose a call sign (this guide has not confirmed the exact steps).</li>
-        <li>Help nearby: the <a href="https://www.tnarc.ca/training">Northern Alberta Radio Club</a> trains new operators and has 2 accredited examiners; it runs Basic courses when there is interest (no dates posted). <a href="https://www.rac.ca/rac-basic-course-re">Radio Amateurs of Canada</a> runs an online Basic course for CA$50 + GST; the fall 2026 course is already under way, and no 2027 dates are posted.</li>
-      </ul>
-      <p class="muted">The exam fee: ISED itself charges none, but an accredited examiner may charge one to cover their costs, so ask the examiner (ISED, RIC-1, section 5.3).</p>
-      <p><strong>MAAC membership (needed at MAAC club fields):</strong> Open CA$115, Introductory CA$30, Junior CA$25, all plus GST. It includes MAAC's liability insurance (you pay a CA$500 share if you are at fault). Memberships end on 31 Dec; if you join after 1 Sep there is a 16-month option, so joining now can cover you to the end of 2027 (check the form). <a href="https://www.maac.ca/membership/join">MAAC's join page</a>. Not explained there: what Introductory allows.</p>
-      <p class="muted">Read on 4 Nov 2026.</p>
-    </div>
-  </details>
   <details class="acc" open>
     <summary>Weekend 1 &mdash; build the airframe (tick as you go)</summary>
     <div class="acc-body">
@@ -3778,7 +4013,6 @@ while True:
   <div id="quiz-power" class="quiz" data-quiz="power"></div>
   <div id="quiz-payload" class="quiz" data-quiz="payload"></div>
   <div id="quiz-detect" class="quiz" data-quiz="detect"></div>
-  <div id="quiz-rules" class="quiz" data-quiz="rules"></div>
   <div id="quiz-final" class="quiz" data-quiz="final"></div>
 
   <details class="acc">
@@ -4205,10 +4439,6 @@ while True:
         a: ["They're heavy", "Armed motors spin with enough force to cause serious injury — configure motor direction, receiver and modes with props off, always", "To save battery", "Betaflight requires it"],
         c: 1,
         why: "This is the cardinal rule of the hobby. A 5-inch prop at idle can cut skin; at power it can injure badly. Props go on last, after everything works, and come off first before any config." },
-      { q: "Under Basic operations, how far must the drone stay from any person?",
-        a: ["5 metres", "More than 30 metres (100 feet) horizontally", "100 metres", "No limit if you're careful"],
-        c: 1,
-        why: "Transport Canada Basic operations: more than 30 m horizontally from any person. Closer than that is Advanced operations territory. That's why test flights happen in empty fields." },
       { q: "What do the 18650 batteries in the RadioMaster Pocket power?",
         a: ["The drone", "Your hand controller — the drone has its own LiPo battery", "The thermal camera", "The GPS"],
         c: 1,
@@ -4268,7 +4498,7 @@ while True:
         a: ["Yes, completely", "No: it slows a fire but does not stop it, so keep an extinguisher and water within reach", "Only for Li-ion packs", "Only if it is zipped shut"],
         c: 1,
         why: "Keep the fire extinguisher and a bucket of water within reach: the bag slows a fire but does not stop it. Do not cover a burning pack: that keeps the heat in.",
-        see: ["Fly safely > Before you fly", "fly-card"] },
+        see: ["Fly safely > Step 10", "fly-after"] },
       { q: "You won't fly for a few days. What do you do with the pack?",
         a: ["Leave it full", "Put it to storage on the charger (Mode: Storage)", "Run it completely flat", "Put it in the freezer"],
         c: 1,
@@ -4283,12 +4513,7 @@ while True:
         a: ["A small campfire", "A mug of hot water", "A lighter flame", "A car's exhaust"],
         c: 1,
         why: "Use a mug of hot water for heat tests. Never light a fire to test the drone.",
-        see: ["Fly safely > Before you fly", "fly-card"] },
-      { q: "Why take off and land on a board or hard flat ground, not grass?",
-        a: ["Grass is often wet", "The Pi hangs only about 2.5 cm above the ground", "Grass blocks the GPS", "It is a Transport Canada rule"],
-        c: 1,
-        why: "Land straight down and slowly, then disarm as soon as the feet touch.",
-        see: ["Fly safely > Before you fly", "fly-card"] },
+        see: ["Fly safely > Step 5", "fly-cant-fold"] },
       { q: "The radio link is lost in flight. With Failsafe Stage 2 = Drop, what does the drone do?",
         a: ["Flies home by GPS", "The motors stop", "Hovers where it is", "Lands slowly"],
         c: 1,
@@ -4360,18 +4585,6 @@ while True:
         why: "Generated prose is not ground truth. Use recorded measurements, human verification and plain-code safety checks." }
     ],
     rules: [
-      { q: "What does CAR 601.15 restrict around a forest fire?",
-        a: ["Nothing for drones", "Operating over the fire area or within 5 NM (9.3 km) below 3,000 ft AGL; NOTAM-restricted airspace is also prohibited", "Only night flights", "Only flights above 25 kg"],
-        c: 1,
-        why: "Read the actual section rather than treating it as a slogan. Check NOTAMs and use controlled bench targets instead of flying to a wildfire." },
-      { q: "What does CAR 901.39 require for night operation?",
-        a: ["Nothing", "Lights sufficient for the pilot or visual observer to see the aircraft, turned on; all other applicable rules still apply", "A generic LED kit alone makes every flight legal", "Flying below trees"],
-        c: 1,
-        why: "Night lighting is necessary, not a waiver of VLOS, category, airspace, aerodrome, NOTAM, site or safety requirements." },
-      { q: "What does a 250 g–25 kg drone need for Basic operations?",
-        a: ["No registration", "Registration/marking, proof of registration and a Pilot Certificate — Basic Operations; exam and registration fees apply", "Only a fire department permit", "Only insurance"],
-        c: 1,
-        why: "Transport Canada requires the certificate and registration proof. Basic is age 14+. The certificate does not expire, but you also need the certificate, a new exam, a flight review or recurrent training within the last 24 months, with proof on hand." },
       { q: "Which set contains only Basic-operation conditions?",
         a: ["Over crowds", "VLOS, ≤25 kg, >30 m from any person, uncontrolled airspace, >5.6 km from certified airports and >1.9 km from heliports", "Any altitude or location", "Beyond visual line of sight"],
         c: 1,
@@ -4380,41 +4593,14 @@ while True:
         a: ["Just look up", "Certification/registration, site permission, airspace/NOTAM/fire checks, weather, >30 m from people for Basic, controlled target and emergency plan", "Charge batteries unattended", "Skip failsafe testing"],
         c: 1,
         why: "Private land alone is not blanket authorization. Recheck current rules and stop if any gate fails." },
-      { q: "What wind limit does this guide give for this build?",
-        a: ["20 km/h", "None yet: it has no tested limit, so fly only in calm air", "40 km/h", "Anything below a wind warning"],
+      { q: "When would you need the Advanced certificate?",
+        a: ["Always, for any drone over 250 g", "To fly in controlled airspace, closer than 30 m to people, or close to an airport or heliport", "To fly on private land", "To carry a thermal camera"],
         c: 1,
-        why: "There is no tested wind limit for this build, so the guide gives no number. Until one is tested, fly only in calm air.",
-        see: ["Fly safely > Before you fly", "fly-card"] },
-      { q: "Can this drone (over 250 g) take off from a City of Edmonton park?",
-        a: ["Yes, on cut grass", "No: City parks are for drones under 250 g; use private property with the owner's permission", "Yes, if nobody is within 30 m", "Only early in the morning"],
+        why: "Basic covers uncontrolled airspace, 30 m or more from people, away from airports and heliports. Controlled airspace, or closer than that, is Advanced." },
+      { q: "With the Advanced certificate, what else does controlled airspace need for a home-built drone?",
+        a: ["Nothing else", "A safety assurance declaration for the drone, and permission from air traffic control", "Only a bigger battery", "A MAAC membership"],
         c: 1,
-        why: "City parks are for microdrones only (Bylaw 20700, s. 55). Take off and land from private property instead.",
-        see: ["Fly safely > Before you fly", "fly-card"] },
-      { q: "How high may you fly?",
-        a: ["Up to 50 m", "Below 122 m (400 ft) above the ground", "Up to 300 m", "No limit away from airports"],
-        c: 1,
-        why: "Stay below 122 m (400 ft) above the ground.",
-        see: ["Fly safely > Before you fly", "fly-card"] },
-      { q: "What is the lawful way to run the 5.8 GHz video transmitter in Canada?",
-        a: ["Nothing is needed at 25 mW", "An ISED Amateur Radio Operator Certificate (Basic)", "The Transport Canada Advanced certificate", "A MAAC membership"],
-        c: 1,
-        why: "The 5.8 GHz video link sits in the amateur radio band. The guide cannot tell you to fly it without the certificate.",
-        see: ["Fly safely > Before you fly", "fly-card"] },
-      { q: "You fly by the screen. What else do you need?",
-        a: ["Nothing extra", "A visual observer; until you have one, fly looking at the drone", "A second screen", "The night LED kit"],
-        c: 1,
-        why: "Keep the drone in sight. If you fly by a screen, you need a visual observer.",
-        see: ["Fly safely > Before you fly", "fly-card"] },
-      { q: "Which of these is a place this drone (over 250 g) can fly near Edmonton?",
-        a: ["An Alberta provincial park", "Elk Island National Park", "Private land, with the owner's permission (after the airspace check)", "A Strathcona County park"],
-        c: 2,
-        why: "Provincial parks, national parks and Strathcona County parks are all closed to it. Private land with permission is open, if the airspace check passes.",
-        see: ["Fly safely > Where you can fly", "where-card"] },
-      { q: "The Transport Canada Small Basic exam: how many questions, and what passes?",
-        a: ["10 questions, 50 %", "35 questions, 65 %", "100 questions, 70 %", "50 questions, 80 %"],
-        c: 1,
-        why: "35 multiple-choice questions in 90 minutes; 65 % passes. (100 questions and 70 % is the amateur radio exam.)",
-        see: ["Learn > Plan > Licences and courses", "licences-card"] }
+        why: "For most Advanced operations the drone itself must meet safety requirements: a home build has no declaration unless its builder submits one to Transport Canada. Controlled airspace also needs permission from air traffic control (NAV CANADA)." }
     ],
     
     final: [
@@ -4450,6 +4636,152 @@ while True:
         a: ["Reddit", "Job Bank NOC 21211, Alberta/Edmonton, updated Nov 2025 — recheck before quoting", "A friend", "A guaranteed employer offer"],
         c: 1,
         why: "The $28.00/$43.27/$57.69 figures are low/median/high occupational wages, not a promised starting salary." }
+    ],
+    fly0: [
+      { q: "What does a 250 g–25 kg drone need for Basic operations?",
+        a: ["No registration", "Registration/marking, proof of registration and a Pilot Certificate — Basic Operations; exam and registration fees apply", "Only a fire department permit", "Only insurance"],
+        c: 1,
+        why: "Transport Canada requires the certificate and registration proof. Basic is age 14+. The certificate does not expire, but you also need the certificate, a new exam, a flight review or recurrent training within the last 24 months, with proof on hand." },
+      { q: "Which weight is the one that counts?",
+        a: ["The estimate from the shop listings", "The finished drone on a kitchen scale, with the battery fitted", "The frame alone", "The weight without the battery"],
+        c: 1,
+        why: "When the drone is finished, put it on a kitchen scale with the battery fitted and write the number down. That figure, not the estimate, is the one that counts." }
+    ],
+    fly1: [
+      { q: "The Transport Canada Small Basic exam: how many questions, and what passes?",
+        a: ["10 questions, 50 %", "35 questions, 65 %", "100 questions, 70 %", "50 questions, 80 %"],
+        c: 1,
+        why: "35 multiple-choice questions in 90 minutes; 65 % passes. (100 questions and 70 % is the amateur radio exam.)" },
+      { q: "You did not pass the Basic exam. When can you try again?",
+        a: ["After 24 hours, as often as you need", "After 30 days", "Never: you get one try", "Only after a flight review"],
+        c: 0,
+        why: "You can try again after 24 hours, as often as you need." },
+      { q: "The Basic certificate does not expire. What must still be true on the day you fly?",
+        a: ["Nothing more", "In the last 24 months you got the certificate, passed an exam again, passed a flight review or did recurrent training, and you carry proof", "You passed the exam in the last 12 months", "You also hold the Advanced certificate"],
+        c: 1,
+        why: "You may fly only if one of those happened within the last 24 months. Carry your certificate and proof of it, printed or on your phone." }
+    ],
+    fly2: [
+      { q: "How may you mark the registration number on the drone?",
+        a: ["In pencil, so it can be changed", "Permanent marker, a permanent label or engraving, where it is clearly visible", "On the radio only", "On a card kept in your pocket"],
+        c: 1,
+        why: "Transport Canada: mark the drone with its registration number, clearly visible, using permanent marker, a permanent label or engraving." },
+      { q: "This drone is home-built. Does it need registering?",
+        a: ["No: only shop-bought drones do", "Yes: every drone of 250 g or more, home-built ones too", "Only if it carries a camera", "Only for night flying"],
+        c: 1,
+        why: "Every drone of 250 g or more must be registered, home-built ones too. It takes about 3 minutes in the Drone Management Portal." }
+    ],
+    fly3: [
+      { q: "What is the lawful way to run the 5.8 GHz video transmitter in Canada?",
+        a: ["Nothing is needed at 25 mW", "An ISED Amateur Radio Operator Certificate (Basic)", "The Transport Canada Advanced certificate", "A MAAC membership"],
+        c: 1,
+        why: "The 5.8 GHz video link sits in the amateur radio band. The guide cannot tell you to fly it without the certificate." },
+      { q: "The amateur radio Basic exam: how many questions, and what passes?",
+        a: ["35 questions, 65 %", "50 questions, 80 %", "100 questions, 70 %", "20 questions, 50 %"],
+        c: 2,
+        why: "100 questions; 70 % passes. 80 % or more passes with Honours and adds the bands below 30 MHz." },
+      { q: "You hold the certificate. What must your video carry?",
+        a: ["Nothing", "Your call sign: at the start and end of each transmission, and at least every 30 minutes", "Your registration number", "The drone's weight"],
+        c: 1,
+        why: "An amateur station identifies itself with its call sign (ISED, RBR-4, section 9). One simple way: hold a card with the call sign in front of the camera at the start and end of each flight." }
+    ],
+    fly4: [
+      { q: "What must your written procedures cover?",
+        a: ["Only how to charge the battery", "Normal flying, and emergencies: a lost radio link, a fly-away, and how you end the flight", "Only the weather", "Nothing: procedures are optional"],
+        c: 1,
+        why: "CAR 901.23: your own procedures, the normal ones and the emergency ones, read before the flight and with you at the field." },
+      { q: "How long do you keep the two logs?",
+        a: ["The flight log 12 months; the repair log 24 months", "Both for one month", "The flight log 24 months; the repair log 12 months", "You do not need to keep them"],
+        c: 0,
+        why: "The flight log (who flew and when) is kept 12 months. The log of every repair or change to the drone is kept 24 months (CAR 901.48)." }
+    ],
+    fly5: [
+      { q: "Can this drone (over 250 g) take off from a City of Edmonton park?",
+        a: ["Yes, on cut grass", "No: City parks are for drones under 250 g; use private property with the owner's permission", "Yes, if nobody is within 30 m", "Only early in the morning"],
+        c: 1,
+        why: "City parks are for microdrones only (Bylaw 20700, s. 55). Take off and land from private property instead." },
+      { q: "Which of these is a place this drone (over 250 g) can fly near Edmonton?",
+        a: ["An Alberta provincial park", "Elk Island National Park", "Private land, with the owner's permission (after the airspace check)", "A Strathcona County park"],
+        c: 2,
+        why: "Provincial parks, national parks and Strathcona County parks are all closed to it. Private land with permission is open, if the airspace check passes." },
+      { q: "What does CAR 601.15 restrict around a forest fire?",
+        a: ["Nothing for drones", "Operating over the fire area or within 5 NM (9.3 km) below 3,000 ft AGL; NOTAM-restricted airspace is also prohibited", "Only night flights", "Only flights above 25 kg"],
+        c: 1,
+        why: "Read the actual section rather than treating it as a slogan. Check NOTAMs and use controlled bench targets instead of flying to a wildfire." },
+      { q: "When do you check the take-off spot on the map?",
+        a: ["Once, the first time you use a field", "Every time, for the exact take-off point", "Only near airports", "Only at night"],
+        c: 1,
+        why: "Every spot must pass the airspace check: look up the exact take-off point on one of the free maps, every time. An empty park is not a legal site." }
+    ],
+    fly6: [
+      { q: "What wind limit does this guide give for this build?",
+        a: ["20 km/h", "None yet: it has no tested limit, so fly only in calm air", "40 km/h", "Anything below a wind warning"],
+        c: 1,
+        why: "There is no tested wind limit for this build, so the guide gives no number. Until one is tested, fly only in calm air." },
+      { q: "What does CAR 901.39 require for night operation?",
+        a: ["Nothing", "Lights sufficient for the pilot or visual observer to see the aircraft, turned on; all other applicable rules still apply", "A generic LED kit alone makes every flight legal", "Flying below trees"],
+        c: 1,
+        why: "Night lighting is necessary, not a waiver of VLOS, category, airspace, aerodrome, NOTAM, site or safety requirements." },
+      { q: "There is frost on the props. What do you do?",
+        a: ["Fly: it melts in the air", "Wipe the props and the frame clean and dry before you fly", "Spin the motors to shake it off", "Put tape over it"],
+        c: 1,
+        why: "No frost, ice or snow on the drone: wipe the props and the frame clean and dry before you fly (CAR 901.35)." },
+      { q: "You had an alcoholic drink 6 hours ago. May you fly?",
+        a: ["Yes, after 4 hours", "No: not within 12 hours of a drink, and not when you are tired", "Yes, if someone watches", "Yes, below 30 m"],
+        c: 1,
+        why: "No flying within 12 hours of an alcoholic drink, or when you are tired (CAR 901.19)." }
+    ],
+    fly7: [
+      { q: "After you plug in the pack, what do you wait for before take-off?",
+        a: ["The props to spin", "The payload to say “Ground height set”", "The radio's timer to reach zero", "Nothing"],
+        c: 1,
+        why: "Start the payload the way that survives a Wi-Fi drop (Build, Step 8), and wait for “Ground height set”." },
+      { q: "The pack switch on the radio: what must it match?",
+        a: ["The weather", "The pack that is fitted: GNB or Li-ion", "The video channel", "The number of props"],
+        c: 1,
+        why: "The pack switch on the radio matches the pack: GNB or Li-ion (Build, Step 4)." },
+      { q: "Which of these is on the checklist before you plug in the pack?",
+        a: ["Nobody within 30 m sideways", "The Pi is already shut down", "The props are still in their packet", "The charger is plugged in"],
+        c: 0,
+        why: "Before you plug in: the spot passed today's airspace check, nobody within 30 m sideways, no frost, the right props tight on the right motors, the pack strapped, the antenna on, the pack switch right, the radio on with its timer reset." }
+    ],
+    fly8: [
+      { q: "Why take off and land on a board or hard flat ground, not grass?",
+        a: ["Grass is often wet", "The Pi hangs only about 2.5 cm above the ground", "Grass blocks the GPS", "It is a Transport Canada rule"],
+        c: 1,
+        why: "Land straight down and slowly, then disarm as soon as the feet touch." },
+      { q: "The feet touch the ground. What do you do next?",
+        a: ["Add a little throttle to settle it", "Disarm at once", "Switch the radio off", "Wait a minute"],
+        c: 1,
+        why: "Land straight down and slowly, then disarm as soon as the feet touch." }
+    ],
+    fly9: [
+      { q: "Under Basic operations, how far must the drone stay from any person?",
+        a: ["5 metres", "More than 30 metres (100 feet) horizontally", "100 metres", "No limit if you're careful"],
+        c: 1,
+        why: "Transport Canada Basic operations: more than 30 m horizontally from any person. Closer than that is Advanced operations territory. That's why test flights happen in empty fields." },
+      { q: "How high may you fly?",
+        a: ["Up to 50 m", "Below 122 m (400 ft) above the ground", "Up to 300 m", "No limit away from airports"],
+        c: 1,
+        why: "Stay below 122 m (400 ft) above the ground." },
+      { q: "You fly by the screen. What else do you need?",
+        a: ["Nothing extra", "A visual observer; until you have one, fly looking at the drone", "A second screen", "The night LED kit"],
+        c: 1,
+        why: "Keep the drone in sight. If you fly by a screen, you need a visual observer." },
+      { q: "The thermal camera caught a neighbour's yard. What do you do?",
+        a: ["Keep it for the build log", "Delete it: point the camera only at your own land, or land whose owner said yes", "Post it with the address hidden", "Nothing: thermal pictures do not count"],
+        c: 1,
+        why: "Transport Canada: you must respect the privacy rights of others when you fly. Do not record or log neighbours, their yards or their windows, and delete anything that catches other people." }
+    ],
+    fly10: [
+      { q: "After landing, what is the right order?",
+        a: ["Unplug the pack, then shut down the Pi", "Disarm, shut down the Pi and wait until its light stays off, then unplug the pack", "Switch the radio off first", "Any order"],
+        c: 1,
+        why: "Disarm. Type sudo poweroff in the SSH window and wait until the Pi's light stays off. Then unplug the pack." },
+      { q: "The pack is warm after the flight. When do you charge it?",
+        a: ["Right away, while it is warm", "After it has cooled: attended, in the LiPo bag, on a fireproof surface", "Overnight, while you sleep", "In the freezer"],
+        c: 1,
+        why: "Let a pack cool before charging it. Charge it attended, in the LiPo bag, on a fireproof surface. Never charge a swollen or damaged pack." }
     ]
   };
 
@@ -4460,12 +4792,23 @@ while True:
 
   /* ---------- Quiz engine: one question at a time, instant feedback ---------- */
   const QUIZ_TITLES = {
-    airframe: "Quiz: Build the airframe (11 questions)",
-    power: "Quiz: Power, batteries & safety (9 questions)",
+    airframe: "Quiz: Build the airframe (10 questions)",
+    power: "Quiz: Power, batteries & safety (8 questions)",
     payload: "Quiz: The thermal payload (9 questions)",
     detect: "Quiz: Detection & mapping (5 questions)",
-    rules: "Quiz: Flight rules & safety (12 questions)",
-    final: "Final exam (8 questions)"
+    rules: "Last check: flight rules, the whole picture (4 questions)",
+    final: "Final exam (8 questions)",
+    fly0: "Quiz: Step 0 (2 questions)",
+    fly1: "Quiz: Step 1 (3 questions)",
+    fly2: "Quiz: Step 2 (2 questions)",
+    fly3: "Quiz: Step 3 (3 questions)",
+    fly4: "Quiz: Step 4 (2 questions)",
+    fly5: "Quiz: Step 5 (4 questions)",
+    fly6: "Quiz: Step 6 (4 questions)",
+    fly7: "Quiz: Step 7 (3 questions)",
+    fly8: "Quiz: Step 8 (2 questions)",
+    fly9: "Quiz: Step 9 (4 questions)",
+    fly10: "Quiz: Step 10 (2 questions)"
   };
   /* a quiz answer's money figures, filled in from the buy list when the question is shown (the bill's own sums) */
   function quizLive(text) {
@@ -4572,7 +4915,7 @@ while True:
         if (!d) { return; }
         const holder = d.closest("[role=tabpanel]");
         if (holder) { openTab(holder.id.slice(2)); }
-        if (d.tagName === "DETAILS") { d.open = true; }
+        for (let p = d; p; p = p.parentElement) { if (p.tagName === "DETAILS") { p.open = true; } }
         d.scrollIntoView({ block: "start" });
       });
       p.appendChild(document.createTextNode("Where this is: "));
@@ -4774,7 +5117,10 @@ while True:
         const d = document.getElementById(a.getAttribute("data-open"));
         const holder = d && d.closest("[role=tabpanel]");
         if (holder) { openTab(holder.id.slice(2)); }
-        if (d) { d.open = true; d.scrollIntoView({ behavior: "smooth", block: "start" }); }
+        if (d) {
+          for (let p = d; p; p = p.parentElement) { if (p.tagName === "DETAILS") { p.open = true; } }   /* a fold inside a step: open the step too */
+          d.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
       });
     });
     const X = readJson("weather-data");
@@ -5598,7 +5944,7 @@ while True:
     btn.addEventListener("click", function () {
       if (!btn.dataset.panel) return;
       const panel = document.getElementById(btn.dataset.panel);
-      const accs = panel.querySelectorAll("details.acc, details.asm-step, details.asm-step0");
+      const accs = panel.querySelectorAll("details.acc, details.asm-step, details.asm-step0, details.fly-step");
       const anyClosed = Array.prototype.some.call(accs, function (d) { return !d.open; });
       accs.forEach(function (d) { d.open = anyClosed; });
       btn.textContent = anyClosed ? "Collapse all" : "Expand all";
@@ -5777,11 +6123,29 @@ while True:
   /* Home's doors show the one-line summary of the card they open. */
   (function () {
     const arr = document.getElementById("arr-first");
-    const fly = document.querySelector("#fly-card .fly-first");
     const a = document.querySelector('[data-door-sub="arr-first"]');
-    const f = document.querySelector('[data-door-sub="fly-card"]');
     if (arr && a) { a.textContent = arr.textContent; }
-    if (fly && f) { f.textContent = fly.textContent; }
+  })();
+  /* Fly safely as steps (Shad, 12 Nov 2026): Step 0's "you need" list shows the tick of the step each line names, and
+     Home's "Before you fly" door names the next step not yet ticked. The ticks themselves are ordinary data-key ticks. */
+  (function () {
+    const steps = Array.prototype.slice.call(document.querySelectorAll("#fly-steps details[data-fly-step]"));
+    if (!steps.length) { return; }
+    function box(s) { return s.querySelector("input[data-key]"); }
+    function paint() {
+      Array.prototype.forEach.call(document.querySelectorAll("[data-fly-need]"), function (li) {
+        const s = steps[Number(li.getAttribute("data-fly-need"))];
+        li.classList.toggle("is-done", !!(s && box(s) && box(s).checked));
+      });
+      const f = document.querySelector('[data-door-sub="fly-card"]');
+      if (!f) { return; }
+      const next = steps.filter(function (s) { return box(s) && !box(s).checked; })[0];
+      const h = next && next.querySelector("h3");
+      f.textContent = next ? "Next: Step " + next.getAttribute("data-fly-step") + " \u00b7 " + (h ? h.textContent : "") : "All " + steps.length + " steps ticked";
+    }
+    document.addEventListener("change", function (e) { if (e.target && e.target.type === "checkbox") { setTimeout(paint, 0); } });
+    paint();
+    window.GuideFly = { repaint: paint };
   })();
 </script>
 <script>
@@ -5852,7 +6216,7 @@ while True:
      lesson button gives way to a plain note. Served by the guide's server or by the public site, nothing changes. */
   (function () {
     if (location.protocol !== "file:") { return; }
-    Array.prototype.forEach.call(document.querySelectorAll("a.wt-link"), function (a) {
+    Array.prototype.forEach.call(document.querySelectorAll("a.wt-link, a.wt-text"), function (a) {   /* wt-text: a lesson link inside a sentence (Fly safely) */
       const next = a.nextElementSibling;
       if (next && next.classList.contains("muted")) { next.remove(); }
       const prev = a.previousElementSibling;
@@ -7263,8 +7627,8 @@ window.GUIDE_DOMAIN = {
     { src: "Guide Step 4 and Stage 3", see: [STEP(4, "Step 4 — control and video")] });
 
   kb("quiz", "How do the quizzes and flashcards work?", "quiz,quizzes,score,flashcard,flashcards,pass,75,questions,exam",
-    ["Five topic quizzes plus a final exam: airframe, power, batteries & safety, payload, detection & mapping, flight rules, then the final exam (8 questions).",
-     "You pass a topic at 75 % or better; the overview counts how many of the six you have passed.",
+    ["Four topic quizzes and a final exam in Learn (airframe; power, batteries & safety; payload; detection & mapping; the final exam has 8 questions). Each Fly safely step has its own short quiz, and a last check on flight rules sits under the steps.",
+     "You pass a quiz at 75 % or better; the overview counts how many you have passed.",
      "Every answer explains why it is right, with the source — that explanation is worth more than the score.",
      "Flashcards are the fast recall layer: flip each card, and the progress counter tracks how many you have seen.",
      "Your best score per quiz and the flashcard state save in this browser, so you can walk away and come back."],
@@ -7641,8 +8005,8 @@ window.GUIDE_DOMAIN = {
   function whereFlyMessage() {
     const card = whereCard();
     if (!card) { return null; }
-    const lists = card.querySelectorAll(".acc-body > ul");
-    const intro = document.getElementById("fly-basic") || card.querySelector(".acc-body > p");   /* the Basic-operations paragraph (now after the list of places he can fly) */
+    const lists = [document.getElementById("fly-can"), document.getElementById("fly-cant")].filter(Boolean);   /* the two lists inside Step 5, "Pick a legal spot" */
+    const intro = document.getElementById("fly-basic");   /* the Basic-operations paragraph */
     if (!intro || lists.length < 2) { return null; }
     const can = Array.prototype.slice.call(lists[0].querySelectorAll("li")).map(function (li) { return "You can: " + clip(plain(li), 300); });
     const want = [/^In Edmonton/, /^Over people/, /^Near airports/, /^In controlled airspace/];
@@ -7655,9 +8019,9 @@ window.GUIDE_DOMAIN = {
       title: "Where you can fly it",
       body: [clip(plain(intro), 360)],
       steps: can.concat(cant),
-      note: "Before you fly (the Basic certificate, registration, the video licence, the NAV Drone check), the full list (other parks, wildfires, night flying) and the free airspace maps are in Fly safely.",
-      src: "Guide: Fly safely (Where and when you can fly)",
-      see: [{ label: "Where and when you can fly", tab: "fly", step: null }],
+      note: "The Basic certificate, registration and the video licence are Steps 1 to 3 of Fly safely. The full list (other parks, wildfires, night flying) and the free airspace maps are in Step 5.",
+      src: "Guide: Fly safely, Step 5 (Pick a legal spot)",
+      see: [{ label: "Fly safely: Pick a legal spot", tab: "fly", step: null }],
       chips: []
     };
   }
@@ -7670,8 +8034,8 @@ window.GUIDE_DOMAIN = {
       body: [plain(p).replace(/^Indoors:\s*/, "")],
       steps: [],
       note: "",
-      src: "Guide: Fly safely (Where and when you can fly), quoting Transport Canada",
-      see: [{ label: "Where and when you can fly", tab: "fly", step: null }],
+      src: "Guide: Fly safely, Step 5 (Pick a legal spot), quoting Transport Canada",
+      see: [{ label: "Fly safely: Pick a legal spot", tab: "fly", step: null }],
       chips: []
     };
   }

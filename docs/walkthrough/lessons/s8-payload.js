@@ -38,7 +38,7 @@ export default {
     { t0: 68, text: "Optional, after the payload works (only if you bought the spray): spray the flight controller, speed controller, receiver, VTX, Pi and HAT 2 to 3 times, everything plugged in first. <b>Do not spray</b> the thermal camera's window, the FPV camera lens, the USB sockets, the microSD slot, the buttons, the barometer or the GPS board's antenna. <b>Weigh before and after</b>: more than 9 g gained, ask before flying.",
       why: "The balance may change.",
       simple: "Optional spray: boards only, not lenses, sockets, buttons or the GPS antenna. Weigh before and after." },
-    { t0: 76, text: "<b>Never near a wildfire</b>: the law says 5 nautical miles (9.3 km). Only controlled targets on private land with permission. Read the Before you fly card first. <b>Before you go on:</b> you have written results before you say \"it detects\".",
+    { t0: 76, text: "<b>Never near a wildfire</b>: the law says 5 nautical miles (9.3 km). Only controlled targets on private land with permission. Do the Fly safely steps first. <b>Before you go on:</b> you have written results before you say \"it detects\".",
       why: "Step 8's safety line and its check.",
       simple: "No wildfires. Private land. Write results down before claiming it works." },
   ],

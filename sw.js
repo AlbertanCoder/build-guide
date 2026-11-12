@@ -22,7 +22,7 @@
    and Shad's bought ticks did not show. Change CACHE for every release, and index.html asks for assistant.js with
    this same name (?v=...), so a page and its script always come together (check-chat-memory.py checks the two match). */
 /* v7 (11 Nov 2026): the final audit's release: seven step drawings corrected, the Step 6 and Step 7 models rebuilt. */
-const CACHE = "build-guide-v15";
+const CACHE = "build-guide-v16";
 
 const PRECACHE = [
   "./",
@@ -72,7 +72,11 @@ const PRECACHE = [
   "docs/images/lessons/s7-now.jpg",
   "docs/images/lessons/s8-bench.jpg",
   "docs/images/lessons/s1-meter.jpg",
-  "docs/images/lessons/s3r-tour.jpg"
+  "docs/images/lessons/s3r-tour.jpg",
+  "docs/images/lessons/fly-mark.jpg",
+  "docs/images/lessons/fly-check.jpg",
+  "docs/images/lessons/fly-board.jpg",
+  "docs/images/lessons/fly-distance.jpg"
 ];
 
 self.addEventListener("install", (event) => {

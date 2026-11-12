@@ -538,8 +538,8 @@
     { src: "Guide Step 4 and Stage 3", see: [STEP(4, "Step 4 — control and video")] });
 
   kb("quiz", "How do the quizzes and flashcards work?", "quiz,quizzes,score,flashcard,flashcards,pass,75,questions,exam",
-    ["Five topic quizzes plus a final exam: airframe, power, batteries & safety, payload, detection & mapping, flight rules, then the final exam (8 questions).",
-     "You pass a topic at 75 % or better; the overview counts how many of the six you have passed.",
+    ["Four topic quizzes and a final exam in Learn (airframe; power, batteries & safety; payload; detection & mapping; the final exam has 8 questions). Each Fly safely step has its own short quiz, and a last check on flight rules sits under the steps.",
+     "You pass a quiz at 75 % or better; the overview counts how many you have passed.",
      "Every answer explains why it is right, with the source — that explanation is worth more than the score.",
      "Flashcards are the fast recall layer: flip each card, and the progress counter tracks how many you have seen.",
      "Your best score per quiz and the flashcard state save in this browser, so you can walk away and come back."],
@@ -916,8 +916,8 @@
   function whereFlyMessage() {
     const card = whereCard();
     if (!card) { return null; }
-    const lists = card.querySelectorAll(".acc-body > ul");
-    const intro = document.getElementById("fly-basic") || card.querySelector(".acc-body > p");   /* the Basic-operations paragraph (now after the list of places he can fly) */
+    const lists = [document.getElementById("fly-can"), document.getElementById("fly-cant")].filter(Boolean);   /* the two lists inside Step 5, "Pick a legal spot" */
+    const intro = document.getElementById("fly-basic");   /* the Basic-operations paragraph */
     if (!intro || lists.length < 2) { return null; }
     const can = Array.prototype.slice.call(lists[0].querySelectorAll("li")).map(function (li) { return "You can: " + clip(plain(li), 300); });
     const want = [/^In Edmonton/, /^Over people/, /^Near airports/, /^In controlled airspace/];
@@ -930,9 +930,9 @@
       title: "Where you can fly it",
       body: [clip(plain(intro), 360)],
       steps: can.concat(cant),
-      note: "Before you fly (the Basic certificate, registration, the video licence, the NAV Drone check), the full list (other parks, wildfires, night flying) and the free airspace maps are in Fly safely.",
-      src: "Guide: Fly safely (Where and when you can fly)",
-      see: [{ label: "Where and when you can fly", tab: "fly", step: null }],
+      note: "The Basic certificate, registration and the video licence are Steps 1 to 3 of Fly safely. The full list (other parks, wildfires, night flying) and the free airspace maps are in Step 5.",
+      src: "Guide: Fly safely, Step 5 (Pick a legal spot)",
+      see: [{ label: "Fly safely: Pick a legal spot", tab: "fly", step: null }],
       chips: []
     };
   }
@@ -945,8 +945,8 @@
       body: [plain(p).replace(/^Indoors:\s*/, "")],
       steps: [],
       note: "",
-      src: "Guide: Fly safely (Where and when you can fly), quoting Transport Canada",
-      see: [{ label: "Where and when you can fly", tab: "fly", step: null }],
+      src: "Guide: Fly safely, Step 5 (Pick a legal spot), quoting Transport Canada",
+      see: [{ label: "Fly safely: Pick a legal spot", tab: "fly", step: null }],
       chips: []
     };
   }

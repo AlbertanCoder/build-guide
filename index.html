@@ -310,7 +310,6 @@
   .arr-tick { display: flex; align-items: flex-start; gap: 6px; font-size: 15px; }
   .arr-tick input { margin-top: 4px; width: 18px; height: 18px; flex: none; accent-color: var(--pine); }
   .fly-first { display: block; font-weight: 400; font-size: 14px; color: var(--soft); margin-top: 2px; }
-  #fly-card > summary .fly-first { display: none; }   /* said in rule 1 and in the top line; Home's door still reads it */
   .fly-list { margin: 0 0 12px; padding-left: 22px; }
   .fly-list li { margin: 0 0 8px; }
   details.acc[open] > summary { border-bottom: 1px solid var(--line); }
@@ -579,7 +578,7 @@
   .asm-dot.is-done { background: var(--pine-pale); border-color: var(--pine); color: var(--pine); }
   .asm-dot.is-current { background: var(--pine); border-color: var(--pine); color: #fff; }
   .asm-stage { display: grid; gap: 18px; }
-  .asm-step, .asm-step0 { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  .asm-step, .asm-step0, .fly-step { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
               box-shadow: var(--shadow); overflow: clip; scroll-margin-top: 12px; }
   .asm-head { display: flex; align-items: center; gap: 14px; padding: 15px 18px;
               background: linear-gradient(135deg, var(--pine-deep) 0%, var(--pine) 100%);
@@ -601,6 +600,20 @@
   details:not([open]) > summary.asm-head .asm-meta { color: var(--soft); }
   .asm-intro { padding: 12px 18px 0; }
   .asm-step0 > .acc-body { padding-top: 12px; }
+  /* Fly safely as steps (Shad, 12 Nov 2026): the same rows as Build */
+  .fly-part { margin: 8px 2px -8px; font-size: 12px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; color: var(--soft); }
+  .fly-part:first-child { margin-top: 0; }
+  .fly-step .asm-notes > .quiz { margin: 16px 0; box-shadow: none; }
+  .fly-step .asm-notes > p { margin: 0 0 12px; }
+  .fly-step .wt-fold > ul { margin: 6px 0; padding-left: 20px; }
+  .fly-step .wt-fold li { margin: 0 0 8px; }
+  .fly-step .wt-fold > p { margin: 6px 0; }
+  .fly-need { list-style: none; margin: 0 0 12px; padding: 0; }
+  .fly-need li { position: relative; padding: 9px 0 9px 32px; border-top: 1px solid var(--line); }
+  .fly-need li:first-child { border-top: 0; }
+  .fly-need li::before { content: ""; position: absolute; left: 2px; top: 11px; width: 18px; height: 18px; box-sizing: border-box;
+    border: 2px solid var(--soft); border-radius: 5px; font-size: 13px; font-weight: 800; line-height: 14px; text-align: center; color: #fff; }
+  .fly-need li.is-done::before { content: "\2713"; border-color: var(--pine); background: var(--pine); }
   .wt-link.wt-thumb { display: block; position: relative; margin: 14px 18px 6px; padding: 0; border-radius: 12px; overflow: hidden;
     background: #eef1f4; max-width: 620px; font-size: 14px; }
   .wt-thumb img { display: block; width: 100%; height: auto; }
@@ -672,7 +685,7 @@
   @media print {
     .asm-step[hidden] { display: block !important; }
     .asm-nav, .asm-toolbar, .asm-done { display: none !important; }
-    .asm-step { break-inside: avoid; }
+    .asm-step, .fly-step { break-inside: avoid; }
   }
   /* ===== Guide Assistant (docs/js/assistant.js) — grounded chat panel ===== */
   #ga-root { position: fixed; right: 18px; bottom: 18px; z-index: 60; }
@@ -1010,7 +1023,7 @@
       </div>
     </section>
   <p class="muted here-terms">A Stage is a batch of parts to buy. A Step is a page of the build. Stage numbers and Step numbers do not match one to one.</p>
-  <p class="here-study">Start studying for the amateur radio exam now: it takes the longest, and you need it before the video transmitter is first powered (Step 8). Practise free with <a href="https://ised-isde.canada.ca/site/amateur-radio-operator-certificate-services/en/amateur-radio-exam-generator" target="_blank" rel="noopener">ISED's exam generator</a>; <a href="#licences-card" data-open="licences-card">Licences and courses</a> in Learn has the rest.</p>
+  <p class="here-study">Start studying for the amateur radio exam now: it takes the longest, and you need it before the video transmitter is first powered (Step 8). Practise free with <a href="https://ised-isde.canada.ca/site/amateur-radio-operator-certificate-services/en/amateur-radio-exam-generator" target="_blank" rel="noopener">ISED's exam generator</a>; <a href="#fly-radio" data-open="fly-radio">Fly safely, Step 3</a> has the rest.</p>
   </section>
 </div>
 <div class="money-home">
@@ -2524,7 +2537,7 @@
         <div class="stage">
           <h4>Stage 7 &middot; Papers &amp; first flight</h4>
           <p class="stg-cost" data-stage-cost="7"></p>
-          <p class="stage-uses">Used in Step 8: the first hover needs the Basic certificate and the registration, and the video transmitter needs the amateur radio certificate first (see <a href="#licences-card" data-open="licences-card">Licences and courses</a> in Learn).</p>
+          <p class="stage-uses">Used in Step 8: the first hover needs the Basic certificate and the registration, and the video transmitter needs the amateur radio certificate first (see <a href="#fly-card" data-open="fly-card">Fly safely</a>, Steps 1 to 3).</p>
           <div class="asm-parts">
             <span class="asm-label">What to buy</span>
             <ul class="stage-items" data-stage-list="7"></ul>
@@ -2605,156 +2618,31 @@
     <p><strong>Weather:</strong> Not weatherproof: dry, calm, mild days only until tested. <a href="#weather-card" data-open="weather-card">Weather details</a></p>
   </section>
 </div>
-  <details class="acc" id="where-card" open>
-    <summary>Where and when you can fly (this drone)</summary>
-    <div class="acc-body">
-      <p><strong>Where you can fly:</strong></p>
-      <ul>
-        <li>On private land, with the owner's permission: your own, or someone else's. The City of Edmonton says a drone of any size may take off and land from private property with the owner's permission. The federal rules still apply. (<a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use" target="_blank" rel="noopener">City of Edmonton, recreational microdrone use</a>)</li>
-        <li>At a model-aircraft club field, on the club's own flying days. The Northern Alberta FPV League flew outdoors at Ministik Park, about 22 km east of Edmonton on Highway 14, on ten event days in summer 2026. Strathcona County approved those days only (the last was 13 Sep 2026); on any other day the County's drone ban applies there. Outdoors the league flies drones under 800 g (its Open class). For 2027, ask the league first, and ask whether this drone suits it. You need a MAAC membership (see Licences and courses in Learn) and to be a league member or its invited guest. (<a href="https://www.maac.ca/clubs/view/928" target="_blank" rel="noopener">MAAC, club 928</a>; <a href="https://northernalbertafpv.ca/getting-started-in-fpv/" target="_blank" rel="noopener">the league says absolute beginners are welcome</a>; its site did not open on 11 Nov 2026)</li>
-        <li>At other model-aircraft club fields near Edmonton, as a MAAC member. Most club pages do not say whether drones are allowed, so ask the club first. (<a href="https://www.maac.ca/clubs/list?zoneCode=A" target="_blank" rel="noopener">MAAC, Zone A club list</a>)</li>
-        <li id="fly-indoors"><strong>Indoors, with the building owner's permission.</strong> Transport Canada's drone rules (Part IX of the Canadian Aviation Regulations) do not apply indoors, but you must still fly safely and respect all other laws, and Transport Canada recommends getting permission from the building owner and/or occupants before you fly indoors (in an apartment, ask your landlord). This drone weighs <span data-weight-min>at least 512 g</span> and spins four 5-inch props: it is not an indoor drone. To practise indoors, use the simulator (Stage 3 practice); the Northern Alberta FPV League flies small "whoop" drones, with ducts around the props, indoors in winter. (<a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/where-fly-your-drone" target="_blank" rel="noopener">Transport Canada, Where to fly your drone</a>; <a href="https://northernalbertafpv.ca/getting-started-in-fpv/" target="_blank" rel="noopener">the league's getting-started page</a>, which did not open on 11 Nov 2026)</li>
-      </ul>
-      <p id="fly-basic">This drone flies under Transport Canada's Basic operations (TC page updated 19 Mar 2026). Every spot must also pass the airspace check: look up the exact take-off point on one of the free maps at the bottom, every time. The 5.6 km airport, 1.9 km heliport and uncontrolled-airspace rules rule out a lot of Edmonton: an empty park is not a legal site.</p>
-      <p><strong>Where you can't fly:</strong></p>
-      <ul>
-        <li><strong>In Edmonton, City parks are for microdrones only.</strong> The City allows drones under 250 grams (counting everything attached) to take off and land on cut grass in most named parks. This drone weighs <span data-weight-min>at least 512 g</span> with the LiPo and more with the Li-ion, so it may not be flown from within a City park or other municipal public space (land the City owns or controls, plus utility lots, school reserves and school grounds, whoever owns them; Bylaw 20700, s. 55; the fine is $250). Take off and land from private property instead: your own, or someone else's with the owner's permission. All flights still follow the Transport Canada rules. (City of Edmonton, <a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use" target="_blank" rel="noopener">Public Spaces Bylaw 20700, Section 55</a>.)</li>
-        <li>In Strathcona County parks: the parks bylaw bans remote-controlled flying objects. (<a href="https://www.strathcona.ca/emergencies-enforcement/policing-and-enforcement/drones/" target="_blank" rel="noopener">Strathcona County, drones</a>)</li>
-        <li>In Parkland County parks: no drones, except under 250 g in a marked area, or with a County permit. (<a href="https://www.parklandcounty.com/media/swwb4tgx/bylaw-2023-16-parks.pdf" target="_blank" rel="noopener">Parkland County Parks Bylaw 2023-16</a>)</li>
-        <li>In any Alberta provincial park: recreational drones of any size are banned. (<a href="https://albertaparks.ca/albertaparksca/science-and-research/conducting-research/use-of-unmanned-aerial-vehicles" target="_blank" rel="noopener">Alberta Parks</a>)</li>
-        <li>In Elk Island National Park, or any national park. (<a href="https://parks.canada.ca/pn-np/ab/elkisland/securite-safety/drones" target="_blank" rel="noopener">Parks Canada, Elk Island</a>)</li>
-        <li>Near airports and heliports: within 5.6 km of a certified airport's centre, or 1.9 km of a heliport's. Near a military airfield you need its permission. (<a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations" target="_blank" rel="noopener">Transport Canada, Basic operations</a>)</li>
-        <li>In controlled airspace or a restricted area. Around Edmonton that means the control zones at Edmonton International (a circle of 7 nautical miles, about 13 km), Villeneuve (5 nautical miles) and Namao, and the restricted areas CYR212 (Edmonton Institution) and CYR232 and CYR233 (Namao, CFB Edmonton). (NAV CANADA, Designated Airspace Handbook, 29 Oct 2026; <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/where-fly-your-drone" target="_blank" rel="noopener">Transport Canada, Where to fly your drone</a>; <a href="https://map.navdrone.ca" target="_blank" rel="noopener">check the exact spot on NAV Drone Viewer</a>)</li>
-        <li>Near wildfires: Do not fly over a forest-fire area or within 5 nautical miles (9.3 km) of one below 3,000 ft AGL (CAR 601.15), and do not enter airspace restricted by a NOTAM under 601.16. Real fires are agency airspace: drones ground air tankers and endanger crews. Check NOTAMs and Alberta fire bans before you fly. Practise only on controlled heat targets, such as a mug of hot water, on private land with permission. Never light a fire to test the drone. (<a href="https://laws-lois.justice.gc.ca/eng/regulations/SOR-96-433/FullText.html" target="_blank" rel="noopener">CAR 601.15</a>)</li>
-        <li>Over people: keep 30 m sideways from bystanders. (<a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations" target="_blank" rel="noopener">Transport Canada, Basic operations</a>) Never fly at an advertised event, such as a concert or a game, without a special flight operations certificate. (<a href="https://laws-lois.justice.gc.ca/eng/regulations/SOR-96-433/section-901.41.html" target="_blank" rel="noopener">CAR 901.41</a>)</li>
-        <li>Inside a police, fire or crash scene. Edmonton Fire Rescue's perimeter is 30 m sideways and 400 ft up around an active emergency. (<a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use" target="_blank" rel="noopener">City of Edmonton, recreational microdrone use</a>)</li>
-      </ul>
-      <p><strong>Before you fly:</strong></p>
-      <ul>
-        <li>Pass the Basic pilot exam: online, in Transport Canada's Drone Management Portal; 35 multiple-choice questions, 90 minutes, 65% to pass, age 14 or older; CA$10.17 a try (1 Apr 2026 to 31 Mar 2027). (<a href="https://tc.canada.ca/en/aviation/drone-safety/drone-pilot-licensing/take-drone-pilot-online-exam/small-basic" target="_blank" rel="noopener">Transport Canada, Small Basic exam</a>)</li>
-        <li>Register the drone in the same portal (250 g or more must be registered): CA$10.17 (1 Apr 2026 to 31 Mar 2027). Mark the number on the drone. (<a href="https://tc.canada.ca/en/aviation/drone-safety/registering-your-drone" target="_blank" rel="noopener">Transport Canada, registering your drone</a>)</li>
-        <li>The video licence: the 5.8 GHz video needs the ISED Amateur Radio Operator Certificate (Basic), as "Before you fly" below explains.</li>
-        <li>Check the exact take-off spot on NAV Drone Viewer, every time. (<a href="https://map.navdrone.ca" target="_blank" rel="noopener">NAV Drone Viewer</a>)</li>
-        <li>Carry proof of registration and your pilot certificate, and keep the drone in sight. (<a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations" target="_blank" rel="noopener">Transport Canada, Basic operations</a>)</li>
-      </ul>
-      <p><strong>When:</strong> by day. At night only with lights on the drone that the pilot or a visual observer can see, turned on (CAR 901.39). Lighting is necessary, not sufficient: line of sight, airspace, people, airports, NOTAMs and the site's own rules still apply. No step in this build fits lights.</p>
-      <p><strong>Not checked:</strong> Leduc County. No drone rule was found on the county's website, so ask the county before you fly there.</p>
-      <p><strong>Free maps:</strong> the <a href="https://nrc.canada.ca/en/drone-tool/">NRC Drone Site Selection Tool</a> (red: no; orange: needs permission; yellow: take care; Transport Canada calls it &ldquo;for your convenience only&rdquo; on its <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/where-fly-your-drone" target="_blank" rel="noopener">where to fly page</a>) and NAV CANADA's <a href="https://map.navdrone.ca">NAV Drone Viewer</a> (no account needed).</p>
-      <p class="muted">Read on 4 Nov 2026: Transport Canada, <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/where-fly-your-drone">Where you can fly</a> and <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations">Basic operations</a>; <a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use">City of Edmonton, recreational microdrone use</a>; <a href="https://www.strathcona.ca/emergencies-enforcement/policing-and-enforcement/drones/">Strathcona County, drones</a>; <a href="https://www.parklandcounty.com/media/swwb4tgx/bylaw-2023-16-parks.pdf">Parkland County Parks Bylaw 2023-16</a>; <a href="https://albertaparks.ca/albertaparksca/science-and-research/conducting-research/use-of-unmanned-aerial-vehicles">Alberta Parks</a>; <a href="https://parks.canada.ca/pn-np/ab/elkisland/securite-safety/drones">Parks Canada, Elk Island</a>; <a href="https://www.maac.ca/clubs/view/928">MAAC, club 928</a>.</p>
+  <div class="assembly" id="fly-steps">
+    <div class="asm-legend" id="fly-card">
+      <span>Open a step. Do it, take its quiz, then tick it.</span>
     </div>
-  </details>
-  <details class="acc" id="fly-card" open>
-    <summary><strong>Before you fly</strong> <span class="fly-first">Not weatherproof: dry, calm, mild days only until tested</span></summary>
-    <div class="acc-body">
-      <p>Short rules. Read them before the first hover.</p>
-      <ol class="fly-list">
-        <li><strong>No rain or snow.</strong> This build is not weatherproof. Dry, calm, mild days only until it has been tested.</li>
-        <li><strong>Wind:</strong> there is no tested wind limit for this build, so this guide gives no number. Until one is tested, fly only in calm air.</li>
-        <li>Keep the flight pack warm until you fly. Never charge a frozen pack.</li>
-        <li><strong>No frost, ice or snow on the drone:</strong> wipe the props and the frame clean and dry before you fly (CAR 901.35). <strong>No flying within 12 hours of an alcoholic drink, or when you are tired</strong> (CAR 901.19).</li>
-        <li><strong>Where you may fly</strong> (airports, controlled airspace, parks, wildfires, people): see <a href="#where-card" data-open="where-card">Where and when you can fly</a> above, and check the take-off spot on a map every time.</li>
-        <li>Keep the drone in sight. If you fly by a screen, you need a visual observer; until then, fly looking at the drone.</li>
-        <li><strong>Papers first:</strong> you hold the Basic certificate, and the drone is registered and marked (a drone of 250 g or more must be registered; this build is over that). The certificate does not expire, but you may fly only if, within the last 24 months, you got the certificate, passed a Transport Canada drone exam again, passed a flight review, or completed recurrent training (a safety seminar or self-paced study program endorsed by Transport Canada, or a drone flight school's recurrent training program). Carry your certificate and proof of that, printed or on your phone, whenever you fly.</li>
-        <li><strong>Three more papers the rules ask for:</strong> (1) your own written procedures, read before the flight and with you at the field: the normal ones, and the emergency ones, including what you do if the radio link is lost, if the drone flies away, and how you end the flight (CAR 901.23). (2) A flight log: who flew and when; keep it 12 months. (3) A log of every repair or change to the drone; keep it 24 months (CAR 901.48). A notebook is enough.</li>
-        <li><strong>Video licence:</strong> in Canada the 5.8 GHz video link sits in the amateur radio band. The lawful way to run the VTX is an ISED Amateur Radio Operator Certificate (Basic): an exam you write with an accredited examiner (see Licences and courses in Learn). This guide cannot tell you to fly it without one. Once you have it, the video must carry your call sign: ISED's rule says an amateur station identifies itself with its call sign at the start and end of each transmission and at least every 30 minutes (RBR-4, section 9). ISED does not say how to do that on a video picture. One simple way: write the call sign on a card and hold it in front of the camera at the start and end of each flight.</li>
-        <li>Keep nobody within 30 m (100 ft) sideways. That is the Basic-operations boundary, not a safe distance in itself.</li>
-        <li><strong>Privacy:</strong> Transport Canada says &ldquo;You must respect the privacy rights of others when you fly&rdquo; and &ldquo;You must respect trespassing laws.&rdquo; Point the thermal camera only at your own land, or land whose owner said yes. Do not record or log neighbours, their yards or their windows, and delete anything that catches other people.</li>
-        <li>Stay below 122 m (400 ft) above the ground, and no more than 30 m above any building or structure within 61 m of it (CAR 901.25); going higher needs a special flight operations certificate. This is the limit beginners break first.</li>
-        <li><strong>Take off and land on a flat board or hard flat ground, not grass.</strong>: the Pi hangs only about 2.5 cm above the ground. Land straight down and slowly, then disarm as soon as the feet touch. The feet are close together side to side, so if the drone lands leaning or sliding sideways it falls on its side and a prop and an arm hit the ground.</li>
-        <li><strong>Batteries:</strong> charge them attended, in the LiPo bag, on a fireproof surface. Never charge a swollen or damaged pack. Let a pack cool before charging it. Keep the fire extinguisher and a bucket of water within reach: the bag slows a fire but does not stop it. If a pack burns and you cannot put it out at once, or you are in any doubt: get everyone out and call 911.</li>
-      </ol>
-      <p class="muted">This guide is not legal advice. Check Transport Canada's rules and the manufacturers' manuals.</p>
-    </div>
-  </details>
-  <details class="acc" id="flight-check-card">
-    <summary>Every flight: the field checklist</summary>
-    <div class="acc-body">
-      <p>Before you plug in the pack:</p>
-      <ol class="fly-list">
-        <li>The spot passed the airspace check today (NAV Drone or the NRC map), and you checked NOTAMs and fire bans.</li>
-        <li>Nobody within 30 m sideways.</li>
-        <li>No frost, ice or snow on the props or the frame.</li>
-        <li>Props on the right motors (CW on M1 and M4, CCW on M2 and M3), and the nuts are tight.</li>
-        <li>The pack is strapped tight and cannot slide.</li>
-        <li>The video antenna is screwed on.</li>
-        <li>The pack switch on the radio matches the pack: GNB or Li-ion (Step 4).</li>
-        <li>The radio is on and its timer is reset.</li>
-      </ol>
-      <p>After you plug in:</p>
-      <ol class="fly-list" start="9">
-        <li>Start the payload the way that survives a Wi-Fi drop (Step 8), and wait for &ldquo;Ground height set&rdquo;.</li>
-      </ol>
-      <p>After you land:</p>
-      <ol class="fly-list" start="10">
-        <li>Disarm. Type <code>sudo poweroff</code> in the SSH window and wait until the Pi&rsquo;s light stays off. Then unplug the pack.</li>
-      </ol>
-    </div>
-  </details>
-  <details class="acc" id="weather-card">
-    <summary>What weather can it handle?</summary>
-    <div class="acc-body">
-      <div id="weather-out"></div>
-      <script type="application/json" id="weather-data">
-{
- "lines": [
-  {
-   "what": "Rain, snow or a wet field",
-   "label": "not_confirmed",
-   "text": "Treat it as not weatherproof. No part on the list has a water rating on the pages I opened, so none can be assumed. Do not fly in rain or snow."
-  },
-  {
-   "what": "Raspberry Pi Zero 2 W",
-   "label": "datasheet",
-   "text": "Operating temperature -20 to +70 C.",
-   "source": "Raspberry Pi Zero 2 W product brief",
-   "url": "https://pip-assets.raspberrypi.com/categories/584-raspberry-pi-zero-2-w/documents/RP-008359-DS-1-raspberry-pi-zero-2-w-product-brief.pdf"
-  },
-  {
-   "what": "Thermal camera board (MLX90640)",
-   "label": "datasheet",
-   "text": "Operating temperature -40 to +85 C. It reads targets from -40 to +300 C.",
-   "source": "Adafruit listing for the same chip; Pimoroni's page gives only the target range",
-   "url": "https://www.adafruit.com/product/4407"
-  },
-  {
-   "what": "GPS board (PA1010D)",
-   "label": "not_confirmed",
-   "text": "No operating temperature on the listings I opened."
-  },
-  {
-   "what": "Flight battery (GNB 1500 mAh 4S)",
-   "label": "not_confirmed",
-   "text": "The listing gives no temperature limit. Cold weakens flight batteries in general: they give less power and the voltage drops faster. Keep the pack warm until you fly. Never charge a frozen pack."
-  },
-  {
-   "what": "Flight battery (More Volts 4S 5000 mAh Li-ion)",
-   "label": "not_confirmed",
-   "text": "The listing gives no temperature limit. Charge it only above 0 °C: Li-ion cells of this kind are rated to charge from 0 °C (Molicel P45B data sheet: 'Charge 0°C to 60°C'); the listing names the More Volts cells (TenPower 50XG) but not their charging temperature range. Keep it warm before flying, like the GNB."
-  },
-  {
-   "what": "Frame, motors, speed controller, camera, video transmitter, receiver, radio",
-   "label": "not_confirmed",
-   "text": "The listings give no operating temperature. (The video transmitter's page only says to watch for normal airflow.)"
-  },
-  {
-   "what": "Wind",
-   "label": "not_confirmed",
-   "text": "No wind limit was found for this build and none has been tested. Pick a calm day for the first flights."
-  },
-  {
-   "what": "Flying in real weather",
-   "label": "not_confirmed",
-   "text": "Nothing has been tested: the drone is not built yet."
-  }
- ]
-}
-      </script>
-    </div>
-  </details>
-  <details class="acc" id="weight-card">
-    <summary>How heavy will it be? <span class="muted">(estimate from shop listings)</span></summary>
-    <div class="acc-body">
-      <div id="weight-out"></div>
+    <div class="asm-stage">
+      <h3 class="fly-part" id="fly-once">Do once, before the first hover</h3>
+      <details class="fly-step" id="fly-weight" data-fly-step="0" aria-label="Step 0: What this drone needs">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">0</span>
+          <div class="asm-title">
+            <h3>What this drone needs</h3>
+            <p class="asm-meta">Four things before the first flight</p>
+          </div>
+        </summary>
+        <div class="asm-notes">
+          <span class="asm-label">Over 250 g, so you need</span>
+          <ul class="fly-need">
+            <li data-fly-need="1"><a href="#fly-exam" data-open="fly-exam">Step 1: a pilot certificate (Basic)</a></li>
+            <li data-fly-need="2"><a href="#fly-register" data-open="fly-register">Step 2: the drone registered and marked</a></li>
+            <li data-fly-need="3"><a href="#fly-radio" data-open="fly-radio">Step 3: a radio licence for the video link</a></li>
+            <li data-fly-need="4"><a href="#fly-papers" data-open="fly-papers">Step 4: your papers (procedures and two logs)</a></li>
+          </ul>
+          <p class="muted">The Advanced certificate is needed only for controlled airspace, or closer than 30 m to people: <a href="#fly-advanced" data-open="fly-advanced">see &ldquo;Only if&rdquo;, after Step 10</a>.</p>
+          <details class="wt-fold" id="weight-card"><summary>How heavy will it be? <span class="muted">(estimate from shop listings)</span></summary>
+            <div id="weight-out"></div>
       <script type="application/json" id="weight-data">
 {
  "asOf": "2026-11-04",
@@ -2900,9 +2788,377 @@
  ]
 }
       </script>
+          </details>
+          <div class="quiz" data-quiz="fly0"></div>
+          <label class="asm-done"><input type="checkbox" data-key="fly-0"> This step is done</label>
+        </div>
+      </details>
+      <details class="fly-step" id="fly-exam" data-fly-step="1" aria-label="Step 1: Pass the Basic exam">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">1</span>
+          <div class="asm-title">
+            <h3>Pass the Basic exam</h3>
+            <p class="asm-meta">Online &middot; 35 questions &middot; CA$10.17 a try</p>
+          </div>
+        </summary>
+        <div class="asm-notes">
+          <div class="asm-do">
+            <span class="asm-label">What to do</span>
+            <ol class="asm-actions">
+              <li>Read what the exam covers: <a href="https://tc.canada.ca/en/aviation/publications/knowledge-requirements-pilots-remotely-piloted-aircraft-systems-250-g-including-150-kg-basic-advanced-operations-tp-15263" target="_blank" rel="noopener">TP 15263, Knowledge Requirements</a> (free; Transport Canada says it is not a study guide). Transport Canada keeps a <a href="https://tc.canada.ca/en/aviation/drone-safety/drone-pilot-licensing/find-drone-flight-school" target="_blank" rel="noopener">list of drone flight schools</a> and recommends a course before the exam.</li>
+              <li>Open the <a href="https://tc.canada.ca/en/aviation/drone-safety/drone-management-portal" target="_blank" rel="noopener">Drone Management Portal</a> and take the <a href="https://tc.canada.ca/en/aviation/drone-safety/drone-pilot-licensing/take-drone-pilot-online-exam/small-basic" target="_blank" rel="noopener">Small Basic exam</a> (the Pilot Certificate &mdash; Basic Operations): 35 multiple-choice questions in 90 minutes; 65 % passes; age 14 or older. CA$10.17 a try until 31 Mar 2027 (CA$10.45 from 1 Apr 2027).</li>
+              <li>Not passed? You can try again after 24 hours, as often as you need.</li>
+              <li>The certificate downloads as soon as you pass. Keep it on your phone, or print it.</li>
+            </ol>
+          </div>
+          <details class="wt-fold"><summary>Keeping it valid</summary>
+            <p>The certificate does not expire, but you may fly only if, within the last 24 months, you got the certificate, passed a Transport Canada drone exam again, passed a flight review, or completed recurrent training (a safety seminar or self-paced study program endorsed by Transport Canada, or a drone flight school's recurrent training program). Carry your certificate and proof of that, printed or on your phone, whenever you fly.</p>
+          </details>
+          <div class="quiz" data-quiz="fly1"></div>
+          <label class="asm-done"><input type="checkbox" data-key="fly-1"> This step is done</label>
+        </div>
+      </details>
+      <details class="fly-step" id="fly-register" data-fly-step="2" aria-label="Step 2: Register the drone and mark it">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">2</span>
+          <div class="asm-title">
+            <h3>Register the drone and mark it</h3>
+            <p class="asm-meta">Online &middot; about 3 minutes &middot; CA$10.17</p>
+          </div>
+        </summary>
+        <a class="wt-link wt-thumb" href="docs/walkthrough/index.html#fly-mark"><img src="docs/images/lessons/fly-mark.jpg" alt="" width="720" height="255"><span class="wt-play" aria-hidden="true">&#9654;</span><span class="wt-cap">Watch it in 3D, with quizzes</span></a>
+        <div class="asm-notes">
+          <div class="asm-do">
+            <span class="asm-label">What to do</span>
+            <ol class="asm-actions">
+              <li>Register it in the same portal: every drone of 250 g or more, home-built ones too. It takes about 3 minutes and costs CA$10.17 until 31 Mar 2027. Have ready: the purchase date (if there is one), the make, model, serial number and type of drone, and a credit card. (<a href="https://tc.canada.ca/en/aviation/drone-safety/registering-your-drone" target="_blank" rel="noopener">Transport Canada, registering your drone</a>)</li>
+              <li>Mark the registration number on the drone, where it is clearly visible: permanent marker, a permanent label or engraving. Transport Canada also recommends adding your name and contact information.</li>
+              <li>Carry proof of registration whenever you fly.</li>
+            </ol>
+          </div>
+          <p class="muted">Not answered on Transport Canada's pages: what a home build enters as its make, model and serial number.</p>
+          <div class="quiz" data-quiz="fly2"></div>
+          <label class="asm-done"><input type="checkbox" data-key="fly-2"> This step is done</label>
+        </div>
+      </details>
+      <details class="fly-step" id="fly-radio" data-fly-step="3" aria-label="Step 3: Get the radio licence for the video">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">3</span>
+          <div class="asm-title">
+            <h3>Get the radio licence for the video</h3>
+            <p class="asm-meta">Amateur radio, Basic &middot; before the video transmitter is first powered</p>
+          </div>
+        </summary>
+        <div class="asm-notes">
+          <p>In Canada the 5.8 GHz video link sits in the amateur radio band. The lawful way to run the VTX is an ISED Amateur Radio Operator Certificate (Basic). This guide cannot tell you to fly it without one.</p>
+          <div class="asm-do">
+            <span class="asm-label">What to do</span>
+            <ol class="asm-actions">
+              <li>Study the question bank (the current one has been in force since 15 Jul 2025) and practise with ISED's free <a href="https://ised-isde.canada.ca/site/amateur-radio-operator-certificate-services/en/amateur-radio-exam-generator" target="_blank" rel="noopener">exam generator</a>.</li>
+              <li>Write the exam with an accredited examiner: 100 questions; 70 % passes; 80 % or more passes &ldquo;with Honours&rdquo; and adds the bands below 30 MHz. ISED's examiner search lists 5 in Edmonton.</li>
+              <li>After you pass, the examiner tells you how to open your ISED account and choose a call sign (this guide has not confirmed the exact steps).</li>
+              <li>Put your call sign on the video. ISED's rule says an amateur station identifies itself with its call sign at the start and end of each transmission and at least every 30 minutes (RBR-4, section 9). ISED does not say how to do that on a video picture. One simple way: write the call sign on a card and hold it in front of the camera at the start and end of each flight.</li>
+            </ol>
+          </div>
+          <details class="wt-fold"><summary>Help nearby, and the exam fee</summary>
+            <p>The <a href="https://www.tnarc.ca/training" target="_blank" rel="noopener">Northern Alberta Radio Club</a> trains new operators and has 2 accredited examiners; it runs Basic courses when there is interest (no dates posted). <a href="https://www.rac.ca/rac-basic-course-re" target="_blank" rel="noopener">Radio Amateurs of Canada</a> runs an online Basic course for CA$50 + GST; the fall 2026 course is already under way, and no 2027 dates are posted.</p>
+            <p class="muted">The exam fee: ISED itself charges none, but an accredited examiner may charge one to cover their costs, so ask the examiner (ISED, RIC-1, section 5.3).</p>
+          </details>
+          <div class="quiz" data-quiz="fly3"></div>
+          <label class="asm-done"><input type="checkbox" data-key="fly-3"> This step is done</label>
+        </div>
+      </details>
+      <details class="fly-step" id="fly-papers" data-fly-step="4" aria-label="Step 4: Get your papers ready">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">4</span>
+          <div class="asm-title">
+            <h3>Get your papers ready</h3>
+            <p class="asm-meta">What the rules ask you to write, keep and carry &middot; a notebook is enough</p>
+          </div>
+        </summary>
+        <div class="asm-notes">
+          <div class="asm-do">
+            <span class="asm-label">What to do</span>
+            <ol class="asm-actions">
+              <li>Write your own procedures: the normal ones, and the emergency ones, including what you do if the radio link is lost, if the drone flies away, and how you end the flight (CAR 901.23). Read them before the flight and have them with you at the field.</li>
+              <li>Start a flight log: who flew and when. Keep it 12 months.</li>
+              <li>Start a log of every repair or change to the drone. Keep it 24 months (CAR 901.48).</li>
+              <li>Put in your flight bag: your pilot certificate with proof that it is current (Step 1), and proof of registration (Step 2). (<a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations" target="_blank" rel="noopener">Transport Canada, Basic operations</a>)</li>
+            </ol>
+          </div>
+          <div class="quiz" data-quiz="fly4"></div>
+          <label class="asm-done"><input type="checkbox" data-key="fly-4"> This step is done</label>
+        </div>
+      </details>
+      <h3 class="fly-part" id="fly-every">Do every flight</h3>
+      <details class="fly-step" id="where-card" data-fly-step="5" aria-label="Step 5: Pick a legal spot">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">5</span>
+          <div class="asm-title">
+            <h3>Pick a legal spot</h3>
+            <p class="asm-meta">Where this drone may take off, and where it may not</p>
+          </div>
+        </summary>
+        <div class="asm-notes">
+          <p id="fly-basic">This drone flies under Transport Canada's Basic operations (TC page updated 19 Mar 2026). Every spot must also pass the airspace check: look up the exact take-off point on one of the free maps below, every time. The 5.6 km airport, 1.9 km heliport and uncontrolled-airspace rules rule out a lot of Edmonton: an empty park is not a legal site.</p>
+          <div class="asm-do">
+            <span class="asm-label">What to do</span>
+            <ol class="asm-actions">
+              <li>Open <a href="https://map.navdrone.ca" target="_blank" rel="noopener">NAV Drone Viewer</a> and find the spot.</li>
+              <li>Controlled airspace or a restricted area at that point? This drone cannot fly there under Basic: pick another spot. (<a href="#fly-advanced" data-open="fly-advanced">Only if: the Advanced certificate</a>)</li>
+              <li>Check NOTAMs and Alberta fire bans.</li>
+              <li>Have the land owner's permission.</li>
+            </ol>
+          </div>
+          <details class="wt-fold" id="fly-can-fold"><summary>Where you can fly</summary>
+            <ul id="fly-can">
+        <li>On private land, with the owner's permission: your own, or someone else's. The City of Edmonton says a drone of any size may take off and land from private property with the owner's permission. The federal rules still apply. (<a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use" target="_blank" rel="noopener">City of Edmonton, recreational microdrone use</a>)</li>
+        <li>At a model-aircraft club field, on the club's own flying days. The Northern Alberta FPV League flew outdoors at Ministik Park, about 22 km east of Edmonton on Highway 14, on ten event days in summer 2026. Strathcona County approved those days only (the last was 13 Sep 2026); on any other day the County's drone ban applies there. Outdoors the league flies drones under 800 g (its Open class). For 2027, ask the league first, and ask whether this drone suits it. You need a MAAC membership (see &ldquo;MAAC membership&rdquo;, below) and to be a league member or its invited guest. (<a href="https://www.maac.ca/clubs/view/928" target="_blank" rel="noopener">MAAC, club 928</a>; <a href="https://northernalbertafpv.ca/getting-started-in-fpv/" target="_blank" rel="noopener">the league says absolute beginners are welcome</a>; its site did not open on 11 Nov 2026)</li>
+        <li>At other model-aircraft club fields near Edmonton, as a MAAC member. Most club pages do not say whether drones are allowed, so ask the club first. (<a href="https://www.maac.ca/clubs/list?zoneCode=A" target="_blank" rel="noopener">MAAC, Zone A club list</a>)</li>
+        <li id="fly-indoors"><strong>Indoors, with the building owner's permission.</strong> Transport Canada's drone rules (Part IX of the Canadian Aviation Regulations) do not apply indoors, but you must still fly safely and respect all other laws, and Transport Canada recommends getting permission from the building owner and/or occupants before you fly indoors (in an apartment, ask your landlord). This drone weighs <span data-weight-min>at least 512 g</span> and spins four 5-inch props: it is not an indoor drone. To practise indoors, use the simulator (Stage 3 practice); the Northern Alberta FPV League flies small "whoop" drones, with ducts around the props, indoors in winter. (<a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/where-fly-your-drone" target="_blank" rel="noopener">Transport Canada, Where to fly your drone</a>; <a href="https://northernalbertafpv.ca/getting-started-in-fpv/" target="_blank" rel="noopener">the league's getting-started page</a>, which did not open on 11 Nov 2026)</li>
+            </ul>
+          </details>
+          <details class="wt-fold" id="fly-cant-fold"><summary>Where you can't fly</summary>
+            <ul id="fly-cant">
+        <li><strong>In Edmonton, City parks are for microdrones only.</strong> The City allows drones under 250 grams (counting everything attached) to take off and land on cut grass in most named parks. This drone weighs <span data-weight-min>at least 512 g</span> with the LiPo and more with the Li-ion, so it may not be flown from within a City park or other municipal public space (land the City owns or controls, plus utility lots, school reserves and school grounds, whoever owns them; Bylaw 20700, s. 55; the fine is $250). Take off and land from private property instead: your own, or someone else's with the owner's permission. All flights still follow the Transport Canada rules. (City of Edmonton, <a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use" target="_blank" rel="noopener">Public Spaces Bylaw 20700, Section 55</a>.)</li>
+        <li>In Strathcona County parks: the parks bylaw bans remote-controlled flying objects. (<a href="https://www.strathcona.ca/emergencies-enforcement/policing-and-enforcement/drones/" target="_blank" rel="noopener">Strathcona County, drones</a>)</li>
+        <li>In Parkland County parks: no drones, except under 250 g in a marked area, or with a County permit. (<a href="https://www.parklandcounty.com/media/swwb4tgx/bylaw-2023-16-parks.pdf" target="_blank" rel="noopener">Parkland County Parks Bylaw 2023-16</a>)</li>
+        <li>In any Alberta provincial park: recreational drones of any size are banned. (<a href="https://albertaparks.ca/albertaparksca/science-and-research/conducting-research/use-of-unmanned-aerial-vehicles" target="_blank" rel="noopener">Alberta Parks</a>)</li>
+        <li>In Elk Island National Park, or any national park. (<a href="https://parks.canada.ca/pn-np/ab/elkisland/securite-safety/drones" target="_blank" rel="noopener">Parks Canada, Elk Island</a>)</li>
+        <li>Near airports and heliports: within 5.6 km of a certified airport's centre, or 1.9 km of a heliport's. Near a military airfield you need its permission. (<a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations" target="_blank" rel="noopener">Transport Canada, Basic operations</a>)</li>
+        <li>In controlled airspace or a restricted area. Around Edmonton that means the control zones at Edmonton International (a circle of 7 nautical miles, about 13 km), Villeneuve (5 nautical miles) and Namao, and the restricted areas CYR212 (Edmonton Institution) and CYR232 and CYR233 (Namao, CFB Edmonton). (NAV CANADA, Designated Airspace Handbook, 29 Oct 2026; <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/where-fly-your-drone" target="_blank" rel="noopener">Transport Canada, Where to fly your drone</a>; <a href="https://map.navdrone.ca" target="_blank" rel="noopener">check the exact spot on NAV Drone Viewer</a>)</li>
+        <li>Near wildfires: Do not fly over a forest-fire area or within 5 nautical miles (9.3 km) of one below 3,000 ft AGL (CAR 601.15), and do not enter airspace restricted by a NOTAM under 601.16. Real fires are agency airspace: drones ground air tankers and endanger crews. Check NOTAMs and Alberta fire bans before you fly. Practise only on controlled heat targets, such as a mug of hot water, on private land with permission. Never light a fire to test the drone. (<a href="https://laws-lois.justice.gc.ca/eng/regulations/SOR-96-433/FullText.html" target="_blank" rel="noopener">CAR 601.15</a>)</li>
+        <li>Over people: keep 30 m sideways from bystanders. (<a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations" target="_blank" rel="noopener">Transport Canada, Basic operations</a>) Never fly at an advertised event, such as a concert or a game, without a special flight operations certificate. (<a href="https://laws-lois.justice.gc.ca/eng/regulations/SOR-96-433/section-901.41.html" target="_blank" rel="noopener">CAR 901.41</a>)</li>
+        <li>Inside a police, fire or crash scene. Edmonton Fire Rescue's perimeter is 30 m sideways and 400 ft up around an active emergency. (<a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use" target="_blank" rel="noopener">City of Edmonton, recreational microdrone use</a>)</li>
+            </ul>
+            <p><strong>Not checked:</strong> Leduc County. No drone rule was found on the county's website, so ask the county before you fly there.</p>
+          </details>
+          <details class="wt-fold"><summary>The free maps</summary>
+            <p>The <a href="https://nrc.canada.ca/en/drone-tool/">NRC Drone Site Selection Tool</a> (red: no; orange: needs permission; yellow: take care; Transport Canada calls it &ldquo;for your convenience only&rdquo; on its <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/where-fly-your-drone" target="_blank" rel="noopener">where to fly page</a>) and NAV CANADA's <a href="https://map.navdrone.ca">NAV Drone Viewer</a> (no account needed).</p>
+          </details>
+          <details class="wt-fold" id="maac-card"><summary>MAAC membership (needed at club fields)</summary>
+            <p>Open CA$115, Introductory CA$30, Junior CA$25, all plus GST. It includes MAAC's liability insurance (you pay a CA$500 share if you are at fault). Memberships end on 31 Dec; if you join after 1 Sep there is a 16-month option, so joining now can cover you to the end of 2027 (check the form). <a href="https://www.maac.ca/membership/join" target="_blank" rel="noopener">MAAC's join page</a>. Not explained there: what Introductory allows.</p>
+          </details>
+          <details class="wt-fold"><summary>Sources</summary>
+            <p class="muted">Read on 4 Nov 2026: Transport Canada, <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/where-fly-your-drone">Where you can fly</a> and <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/basic-operations">Basic operations</a>; <a href="https://www.edmonton.ca/activities_parks_recreation/recreational-microdrone-use">City of Edmonton, recreational microdrone use</a>; <a href="https://www.strathcona.ca/emergencies-enforcement/policing-and-enforcement/drones/">Strathcona County, drones</a>; <a href="https://www.parklandcounty.com/media/swwb4tgx/bylaw-2023-16-parks.pdf">Parkland County Parks Bylaw 2023-16</a>; <a href="https://albertaparks.ca/albertaparksca/science-and-research/conducting-research/use-of-unmanned-aerial-vehicles">Alberta Parks</a>; <a href="https://parks.canada.ca/pn-np/ab/elkisland/securite-safety/drones">Parks Canada, Elk Island</a>; <a href="https://www.maac.ca/clubs/view/928">MAAC, club 928</a>.</p>
+          </details>
+          <div class="quiz" data-quiz="fly5"></div>
+          <label class="asm-done"><input type="checkbox" data-key="fly-5"> I know this step</label>
+        </div>
+      </details>
+      <details class="fly-step" id="fly-day" data-fly-step="6" aria-label="Step 6: Pick the day">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">6</span>
+          <div class="asm-title">
+            <h3>Pick the day</h3>
+            <p class="asm-meta">The weather, the daylight, and you</p>
+          </div>
+        </summary>
+        <div class="asm-notes">
+          <div class="asm-do">
+            <span class="asm-label">Fly only when all of these are true</span>
+            <ol class="asm-actions">
+              <li><strong>No rain or snow.</strong> This build is not weatherproof. Dry, calm, mild days only until it has been tested.</li>
+              <li><strong>Wind:</strong> there is no tested wind limit for this build, so this guide gives no number. Until one is tested, fly only in calm air.</li>
+              <li>Keep the flight pack warm until you fly. Never charge a frozen pack.</li>
+              <li><strong>No frost, ice or snow on the drone:</strong> wipe the props and the frame clean and dry before you fly (CAR 901.35).</li>
+              <li><strong>No flying within 12 hours of an alcoholic drink, or when you are tired</strong> (CAR 901.19).</li>
+              <li><strong>Fly by day.</strong> At night only with lights on the drone that the pilot or a visual observer can see, turned on (CAR 901.39). Lighting is necessary, not sufficient: line of sight, airspace, people, airports, NOTAMs and the site's own rules still apply. No step in this build fits lights.</li>
+            </ol>
+          </div>
+          <details class="wt-fold" id="weather-card"><summary>What weather can it handle?</summary>
+            <div id="weather-out"></div>
+      <script type="application/json" id="weather-data">
+{
+ "lines": [
+  {
+   "what": "Rain, snow or a wet field",
+   "label": "not_confirmed",
+   "text": "Treat it as not weatherproof. No part on the list has a water rating on the pages I opened, so none can be assumed. Do not fly in rain or snow."
+  },
+  {
+   "what": "Raspberry Pi Zero 2 W",
+   "label": "datasheet",
+   "text": "Operating temperature -20 to +70 C.",
+   "source": "Raspberry Pi Zero 2 W product brief",
+   "url": "https://pip-assets.raspberrypi.com/categories/584-raspberry-pi-zero-2-w/documents/RP-008359-DS-1-raspberry-pi-zero-2-w-product-brief.pdf"
+  },
+  {
+   "what": "Thermal camera board (MLX90640)",
+   "label": "datasheet",
+   "text": "Operating temperature -40 to +85 C. It reads targets from -40 to +300 C.",
+   "source": "Adafruit listing for the same chip; Pimoroni's page gives only the target range",
+   "url": "https://www.adafruit.com/product/4407"
+  },
+  {
+   "what": "GPS board (PA1010D)",
+   "label": "not_confirmed",
+   "text": "No operating temperature on the listings I opened."
+  },
+  {
+   "what": "Flight battery (GNB 1500 mAh 4S)",
+   "label": "not_confirmed",
+   "text": "The listing gives no temperature limit. Cold weakens flight batteries in general: they give less power and the voltage drops faster. Keep the pack warm until you fly. Never charge a frozen pack."
+  },
+  {
+   "what": "Flight battery (More Volts 4S 5000 mAh Li-ion)",
+   "label": "not_confirmed",
+   "text": "The listing gives no temperature limit. Charge it only above 0 °C: Li-ion cells of this kind are rated to charge from 0 °C (Molicel P45B data sheet: 'Charge 0°C to 60°C'); the listing names the More Volts cells (TenPower 50XG) but not their charging temperature range. Keep it warm before flying, like the GNB."
+  },
+  {
+   "what": "Frame, motors, speed controller, camera, video transmitter, receiver, radio",
+   "label": "not_confirmed",
+   "text": "The listings give no operating temperature. (The video transmitter's page only says to watch for normal airflow.)"
+  },
+  {
+   "what": "Wind",
+   "label": "not_confirmed",
+   "text": "No wind limit was found for this build and none has been tested. Pick a calm day for the first flights."
+  },
+  {
+   "what": "Flying in real weather",
+   "label": "not_confirmed",
+   "text": "Nothing has been tested: the drone is not built yet."
+  }
+ ]
+}
+      </script>
+          </details>
+          <div class="quiz" data-quiz="fly6"></div>
+          <label class="asm-done"><input type="checkbox" data-key="fly-6"> I know this step</label>
+        </div>
+      </details>
+      <details class="fly-step" id="flight-check-card" data-fly-step="7" aria-label="Step 7: Check the drone">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">7</span>
+          <div class="asm-title">
+            <h3>Check the drone</h3>
+            <p class="asm-meta">The field checklist, before every take-off</p>
+          </div>
+        </summary>
+        <a class="wt-link wt-thumb" href="docs/walkthrough/index.html#fly-check"><img src="docs/images/lessons/fly-check.jpg" alt="" width="720" height="268"><span class="wt-play" aria-hidden="true">&#9654;</span><span class="wt-cap">Watch it in 3D, with quizzes</span></a>
+        <div class="asm-notes">
+          <p>Before you plug in the pack:</p>
+          <ol class="fly-list">
+            <li>The spot passed the airspace check today (NAV Drone or the NRC map), and you checked NOTAMs and fire bans.</li>
+            <li>Nobody within 30 m sideways.</li>
+            <li>No frost, ice or snow on the props or the frame.</li>
+            <li>Props on the right motors (CW on M1 and M4, CCW on M2 and M3), and the nuts are tight.</li>
+            <li>The pack is strapped tight and cannot slide.</li>
+            <li>The video antenna is screwed on.</li>
+            <li>The pack switch on the radio matches the pack: GNB or Li-ion (Build, Step 4).</li>
+            <li>The radio is on and its timer is reset.</li>
+          </ol>
+          <p>After you plug in:</p>
+          <ol class="fly-list" start="9">
+            <li>Start the payload the way that survives a Wi-Fi drop (Build, Step 8), and wait for &ldquo;Ground height set&rdquo;.</li>
+          </ol>
+          <div class="quiz" data-quiz="fly7"></div>
+          <label class="asm-done"><input type="checkbox" data-key="fly-7"> I know this step</label>
+        </div>
+      </details>
+      <details class="fly-step" id="fly-takeoff" data-fly-step="8" aria-label="Step 8: Take off and land on a board">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">8</span>
+          <div class="asm-title">
+            <h3>Take off and land on a board</h3>
+            <p class="asm-meta">Flat and hard, never grass</p>
+          </div>
+        </summary>
+        <a class="wt-link wt-thumb" href="docs/walkthrough/index.html#fly-board"><img src="docs/images/lessons/fly-board.jpg" alt="" width="720" height="268"><span class="wt-play" aria-hidden="true">&#9654;</span><span class="wt-cap">Watch it in 3D, with quizzes</span></a>
+        <div class="asm-notes">
+          <div class="asm-do">
+            <span class="asm-label">What to do</span>
+            <ol class="asm-actions">
+              <li><strong>Take off and land on a flat board or hard flat ground, not grass:</strong> the Pi hangs only about 2.5 cm above the ground.</li>
+              <li>Land straight down and slowly, then disarm as soon as the feet touch.</li>
+            </ol>
+          </div>
+          <p class="asm-warn"><strong>&#9888; Why:</strong> the feet are close together side to side, so if the drone lands leaning or sliding sideways it falls on its side and a prop and an arm hit the ground.</p>
+          <p><a class="wt-text" href="docs/walkthrough/index.html#s8-hover">The first hover, in 3D</a> (Build, Step 8).</p>
+          <div class="quiz" data-quiz="fly8"></div>
+          <label class="asm-done"><input type="checkbox" data-key="fly-8"> I know this step</label>
+        </div>
+      </details>
+      <details class="fly-step" id="fly-air" data-fly-step="9" aria-label="Step 9: In the air, keep your distance">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">9</span>
+          <div class="asm-title">
+            <h3>In the air, keep your distance</h3>
+            <p class="asm-meta">People, height, sight and privacy</p>
+          </div>
+        </summary>
+        <a class="wt-link wt-thumb" href="docs/walkthrough/index.html#fly-distance"><img src="docs/images/lessons/fly-distance.jpg" alt="" width="720" height="255"><span class="wt-play" aria-hidden="true">&#9654;</span><span class="wt-cap">Watch it in 3D, with quizzes</span></a>
+        <div class="asm-notes">
+          <div class="asm-do">
+            <span class="asm-label">The rules while you fly</span>
+            <ol class="asm-actions">
+              <li>Keep nobody within 30 m (100 ft) sideways. That is the Basic-operations boundary, not a safe distance in itself.</li>
+              <li>Stay below 122 m (400 ft) above the ground, and no more than 30 m above any building or structure within 61 m of it (CAR 901.25); going higher needs a special flight operations certificate. This is the limit beginners break first.</li>
+              <li>Keep the drone in sight. If you fly by a screen, you need a visual observer; until then, fly looking at the drone.</li>
+              <li><strong>Privacy:</strong> Transport Canada says &ldquo;You must respect the privacy rights of others when you fly&rdquo; and &ldquo;You must respect trespassing laws.&rdquo; Point the thermal camera only at your own land, or land whose owner said yes. Do not record or log neighbours, their yards or their windows, and delete anything that catches other people.</li>
+            </ol>
+          </div>
+          <div class="quiz" data-quiz="fly9"></div>
+          <label class="asm-done"><input type="checkbox" data-key="fly-9"> I know this step</label>
+        </div>
+      </details>
+      <details class="fly-step" id="fly-after" data-fly-step="10" aria-label="Step 10: After you land">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">10</span>
+          <div class="asm-title">
+            <h3>After you land</h3>
+            <p class="asm-meta">Shut down, write it down, look after the pack</p>
+          </div>
+        </summary>
+        <div class="asm-notes">
+          <div class="asm-do">
+            <span class="asm-label">What to do</span>
+            <ol class="asm-actions">
+              <li>Disarm. Type <code>sudo poweroff</code> in the SSH window and wait until the Pi&rsquo;s light stays off. Then unplug the pack.</li>
+              <li>Write the flight in your flight log (Step 4).</li>
+              <li><strong>Batteries:</strong> charge them attended, in the LiPo bag, on a fireproof surface. Never charge a swollen or damaged pack. Let a pack cool before charging it. Keep the fire extinguisher and a bucket of water within reach: the bag slows a fire but does not stop it. If a pack burns and you cannot put it out at once, or you are in any doubt: get everyone out and call 911. (<a class="wt-text" href="docs/walkthrough/index.html#s5-charge">Charging, in 3D</a>)</li>
+            </ol>
+          </div>
+          <p class="fly-crash"><a href="#crash-card" data-open-crash><strong>After a hard landing</strong></a> <span class="fly-first">Twelve checks before you fly again</span></p>
+          <div class="quiz" data-quiz="fly10"></div>
+          <label class="asm-done"><input type="checkbox" data-key="fly-10"> I know this step</label>
+        </div>
+      </details>
+      <h3 class="fly-part" id="fly-onlyif">Only if you need it</h3>
+      <details class="fly-step fly-extra" id="fly-advanced" aria-label="Only if: the Advanced certificate">
+        <summary class="asm-head">
+          <span class="asm-num" aria-hidden="true">+</span>
+          <div class="asm-title">
+            <h3>The Advanced certificate</h3>
+            <p class="asm-meta">Only for controlled airspace, or closer than 30 m to people</p>
+          </div>
+        </summary>
+        <div class="asm-notes">
+          <p><strong>You do not need it for the steps above.</strong> Basic covers this drone in uncontrolled airspace, 30 m or more from people, away from airports and heliports.</p>
+          <p><strong>You need it only if you want to:</strong></p>
+          <ul>
+            <li>fly in controlled airspace (a lot of Edmonton), with permission from air traffic control;</li>
+            <li>fly closer than 30 m to people;</li>
+            <li>fly less than 5.6 km from the centre of a certified airport, or less than 1.9 km from a heliport.</li>
+          </ul>
+          <div class="asm-do">
+            <span class="asm-label">What it takes</span>
+            <ol class="asm-actions">
+              <li>Be 16 or older, and pass the online <a href="https://tc.canada.ca/en/aviation/drone-safety/drone-pilot-licensing/take-drone-pilot-online-exam/small-advanced" target="_blank" rel="noopener">Advanced exam</a>: 50 multiple-choice questions in 60 minutes; 80 % passes; try again after 24 hours. CA$10.17 a try until 31 Mar 2027.</li>
+              <li>Pass a <a href="https://tc.canada.ca/en/aviation/drone-safety/drone-pilot-licensing/complete-flight-review-drones" target="_blank" rel="noopener">flight review</a> with a flight reviewer. Drone flight schools book them, and ask for the reference number from your exam.</li>
+              <li>Apply for the certificate in the portal and pay its fee (about CA$25).</li>
+              <li><strong>The drone needs papers too.</strong> For most Advanced operations the drone must meet safety requirements. For controlled airspace that is a safety assurance declaration (Standard 922.04; CAR 901.69). A home-built drone has none unless its builder submits one to Transport Canada. (<a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/choosing-right-drone-advanced-complex-operations" target="_blank" rel="noopener">Transport Canada, declaring your drone</a>)</li>
+              <li>To fly in controlled airspace, first ask air traffic control: request an RPAS Flight Authorization from NAV CANADA.</li>
+            </ol>
+          </div>
+          <p class="muted">A pilot who holds the Advanced certificate can fly Basic operations too. Read on 12 Nov 2026: <a href="https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/drone-operation-categories-pilot-certificates/advanced-operations" target="_blank" rel="noopener">Transport Canada, Advanced operations</a>.</p>
+        </div>
+      </details>
     </div>
-  </details>
-  <p class="fly-crash"><a href="#crash-card" data-open-crash><strong>After a hard landing</strong></a> <span class="fly-first">Twelve checks before you fly again</span></p>
+  </div>
+  <div id="quiz-rules" class="quiz" data-quiz="rules"></div>
+  <p class="muted">Check Transport Canada's rules and the manufacturers' manuals.</p>
 </section>
 
 <section role="tabpanel" id="p-steps" aria-labelledby="t-steps" hidden>
@@ -3443,8 +3699,8 @@
                   <li class="s1-rich" data-action-id="S8.3"><p>Still props OFF and without the smoke stopper.</p><ol><li>Open Betaflight Configurator. Download it from github.com/betaflight/betaflight-configurator/releases/latest, or use app.betaflight.com in Chrome. Plug in the USB cable and press Connect.</li><li>Plug in the battery.</li><li>In the Motors tab, tick the confirmation box. Then raise one motor's slider a little at a time.</li><li>Check that the motor that spins is the right one: M1 rear right, M2 front right, M3 rear left, M4 front left, seen from above with the camera at the front.</li><li>Check it spins the way the diagram shows. If a motor spins the wrong way, reverse it with the Motor direction button in the same tab (props off).</li><li>Lower the sliders. Unplug the battery when you are done.</li></ol><p><span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Software and props">On the laptop, check:</a></strong> does Configurator show a slider for each motor, or only the Master slider?</span></p></li>
                   <li class="s1-rich"><p>Set up Angle mode first. In Betaflight's Modes tab, click Add Range next to ANGLE and put it on a switch on your radio. (ANGLE is the self-levelling mode.)</p><p>Before you arm, still connected and disarmed: tilt the drone and check the 3D model on Betaflight's Setup tab tilts the same way as the drone.</p><p>Then press Disconnect in Betaflight (it will not arm while connected). Radio on, arm switch off, then plug the battery in again (you unplugged it at the end of item 3). Props off: arm, switch to Angle mode, and raise the throttle about a third of the way.</p><p>Keep your hands clear of the motors. Tilt the drone so one side points down, for example the nose down. The motors on the low side (here the two front motors) must speed up.</p><p>If any check fails, disarm, unplug the battery and do not fly. Ask for help before trying again.</p></li>
                   <li class="s1-rich" data-action-id="S8.4"><p>Unplug the battery.</p><p>Look at each prop before you fit it: no chips, cracks or bends.</p><p>Fit the props. Each prop has a CW or CCW marking.</p><p>CW props go on M1 and M4. CCW props go on M2 and M3. M1 is rear right, M2 is front right, M3 is rear left, M4 is front left.</p><p>Tighten each nut with the prop tool from the tool kit. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Software and props">When the prop tool arrives, check:</a></strong> it fits the Gemfan prop nut.</span></p><p>Spin each prop with a finger. It should spin freely and straight.</p><p><span class="muted"><strong><a href="#arrival-card" data-open-arrival>When the props arrive, check:</a></strong> how Gemfan marks CW and CCW on a prop, and which face goes up. Look for the letters on the prop. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Software and props">When the props arrive, check:</a></strong> what to do if a prop has no letters. Look at the manufacturer's page.</span></span></p></li>
-                  <li class="s1-rich"><p>Weigh the drone with its battery fitted. The payload is not on yet. Use your kitchen scale.</p><p>Write the number here: ____ g.</p><p>Compare it with the weight card in Fly safely. Your scale reading is the one that counts. 250 g or more must be registered.</p></li>
-                  <li class="s1-rich"><p>Check the site on NAV Drone first. NAV Drone Viewer is NAV CANADA's map: <a href="https://map.navdrone.ca" target="_blank" rel="noopener">map.navdrone.ca</a> (no account needed), or the NAV Drone app for iPhone or Android.</p><p>Basic flying needs uncontrolled airspace, more than 5.6 km from an airport and 1.9 km from a heliport. See the Before you fly card.</p><p>Edmonton city parks are not allowed for this drone (it is over 250 g): use private land with the owner&rsquo;s permission. <a href="#fly-card" data-open="fly-card">See the Before you fly card.</a></p></li>
+                  <li class="s1-rich"><p>Weigh the drone with its battery fitted. The payload is not on yet. Use your kitchen scale.</p><p>Write the number here: ____ g.</p><p>Compare it with the weight in Fly safely, Step 0. Your scale reading is the one that counts. 250 g or more must be registered.</p></li>
+                  <li class="s1-rich"><p>Check the site on NAV Drone first. NAV Drone Viewer is NAV CANADA's map: <a href="https://map.navdrone.ca" target="_blank" rel="noopener">map.navdrone.ca</a> (no account needed), or the NAV Drone app for iPhone or Android.</p><p>Basic flying needs uncontrolled airspace, more than 5.6 km from an airport and 1.9 km from a heliport.</p><p>Edmonton city parks are not allowed for this drone (it is over 250 g): use private land with the owner&rsquo;s permission. <a href="#where-card" data-open="where-card">See Fly safely, Step 5: Pick a legal spot.</a></p></li>
                   <li class="s1-rich" data-action-id="S8.5"><p>First hover of the bare quad (no payload yet). Fly only when all six are true: you hold the Basic drone pilot certificate; you hold the ISED amateur radio certificate (Basic), for the video transmitter; the drone is registered; its registration number is marked on it; the site is in uncontrolled airspace; nobody is within 30 m (100 ft) sideways.</p><p>Never above 122 m (400 ft) above the ground. If you fly by a screen, you need a visual observer; until then, fly looking at the drone.</p><ol><li>Use the GNB pack (the learning pack on the Buy list).</li><li>Put the drone on flat open ground, camera pointing away from you. Radio on, arm switch OFF.</li><li>Angle switch ON (the self-levelling mode you set up in item 4). Pack switch on its GNB position (Step 4).</li><li>Plug in the battery and step back at least 5 m.</li><li>Arm. Slowly raise the throttle until the drone lifts off, and hold it about 1 metre up for up to 30 seconds.</li><li>Lower the throttle gently to land. Disarm. Unplug the battery.</li><li>Touch each motor: they should all feel about the same. If one is much hotter or colder than the others, do not fly again until you have found out why.</li></ol><p><strong>Landing:</strong> The bare drone has no legs yet, so take off and land on a flat board or hard flat ground, not grass. Land straight down and slowly, then disarm as soon as it touches. After a hard landing, use the <a href="#crash-card" data-open-crash>&ldquo;After a hard landing&rdquo; checklist</a>.</p></li>
                   <li class="s1-rich" data-action-id="S8.7"><p>Now mount the payload (Step 7).</p><p>Heat test, props OFF: take the props off first. Radio on, arm switch off, then plug in a charged pack: it powers the Pi through its lead. Turn on your iPhone&rsquo;s Personal Hotspot (Maximize Compatibility on), join it with the laptop and open the SSH window (ssh username@raspberrypi.local). This test needs no GPS fix: in the SSH window, cd Shad-Drone-Payload, then source .venv/bin/activate, then start the payload in bench mode with python payload.py --bench. It takes the camera as 50 cm above the table and prints every hot spot it finds.</p><ol><li>Fill a mug with water just poured from the kettle and set it on the table.</li><li>Hold the drone steady with the thermal camera about 50 cm above the mug. Then put your open hand next to the mug.</li><li>The payload should report the mug as a hot spot, but not your hand. (A hand is far cooler than the 60 C the detector looks for.)</li><li>Write down what it prints. If the mug is not found, refill it with fresh hot water and try again at 50 cm.</li></ol></li>
                   <li class="s1-rich" data-action-id="S8.6"><p>Battery out. Fit the props again, as in item 5.</p><p>Outdoors, with the drone on the ground: turn on your iPhone&rsquo;s Personal Hotspot (Maximize Compatibility on), power the drone, join the hotspot with the laptop and open the SSH window (ssh username@raspberrypi.local). Start the payload so it keeps running if the Wi-Fi drops: cd Shad-Drone-Payload, then source .venv/bin/activate, then <code>nohup python -u payload.py --serve --heading 0 &gt; run.txt 2&gt;&amp;1 &amp;</code>, then <code>tail -f run.txt</code> to watch what it prints. Wait until it prints: "Ground height set to ... from the first GPS fix. Fly only after this line appears." (The first line, "nohup: ignoring input", is normal. Ctrl+C stops only the watching; the payload carries on.) If the SSH window drops, log in again, then cd Shad-Drone-Payload and tail -f run.txt. Once, on the bench with props off, test it: start it this way, turn the hotspot off for 30 seconds, turn it on, log in again and type <code>pgrep -f payload.py</code>. A number means it is still running.</p><p>Three things the payload assumes, so its map is only right when they are true. Before you take the reading you want to report, turn the drone&rsquo;s nose to north. Facing any other way, the map puts the hot spot in the wrong place, and the further from north, the bigger the error. To read a hot spot&rsquo;s position, stop and hover level for a second or two first. In forward flight the positions are metres out. Take off from ground at about the same level as the area you search. (These come from a simulation that runs the payload&rsquo;s own code, not from the real drone.)</p><p><strong>Landing, now that the payload and the legs are on:</strong> Take off and land on a flat board or hard flat ground, not grass: the Pi hangs only about 2.5 cm above the ground. Land straight down and slowly, then disarm as soon as the feet touch. The feet are close together side to side, so if the drone lands leaning or sliding sideways it falls on its side and a prop and an arm hit the ground. After a hard landing, use the <a href="#crash-card" data-open-crash>&ldquo;After a hard landing&rdquo; checklist</a>.</p><p>Then hover 1 metre again: it should stay level without drifting to one side. After you land: disarm, type <code>sudo poweroff</code> in the SSH window, and wait until the Pi&rsquo;s light stays off. Only then unplug the pack. Pulling the pack while the Pi runs is a sudden power cut, and that can spoil the card. (How long the Pi takes to stop was not checked: time it the first time.)</p><p>The line appears in the SSH window on your laptop where you started the payload. Outdoors with a clear sky, the first fix takes about half a minute the first time. The GPS board's light flashes once it has a fix.</p><p>(The half-minute figure comes from a distributor&rsquo;s listing, &ldquo;TTFF 1s/35s&rdquo;. The maker&rsquo;s datasheet was not opened.)</p></li>
@@ -3454,7 +3710,7 @@
 </details>
               <p class="muted tp-link"><a href="#thermal-card" data-open-thermal>Curious what the camera would see from different heights? Open the thermal preview.</a></p>
               <details class="acc" id="crash-card"><summary><strong>After a hard landing</strong> <span class="fly-first">Twelve checks before you fly again</span></summary><div class="acc-body"><ol class="fly-list"><li>Disarm, then take the battery out before you touch anything.</li><li>Look at the battery. Dents, punctures or swelling: do not charge or fly it again. Put it in the LiPo bag. Do not throw it in the household bin: ask a recycling facility. When you charge it, if one cell reads more than 0.2 V below the others, retire the pack. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Packs and charger">When the charger arrives, check:</a></strong> the M7AC shows each cell's voltage while it charges (its first screen; its manual).</span></li><li>Props: replace any that are chipped, bent or white at the hub. Spares are on the buy list.</li><li>Motors, props off: spin each one by hand. A periodic scraping means a bent bell. After the next flight, a motor much hotter than the others points to a bent shaft or bearing.</li><li>Arms and frame: hold them to a light and look for hairline cracks, especially where the arms meet the plates.</li><li>Legs: straight, set screws tight, all four feet on. The drone must still stand level.</li><li>Solder joints: look at and gently tug the battery lead, the capacitor and the motor wires. Re-solder any that move or crack.</li><li>Video antenna: the nut is tight and not bent. The two zip ties still hold it.</li><li>Payload: the joined zip ties are not cut or slipped, the thermal camera still sits flat on its tape, the GPS board is still stuck down, and the GPS cable joints are not pulled.</li><li>Battery strap: not cut, and the pack has not slid.</li><li>Sensors: check again that the heat test finds the mug and not your hand (Step 8, item 9) and that the GPS line appears (item 10), before you fly the payload again.</li><li>Then a short low hover, then a normal flight.</li></ol></div></details>
-              <p class="asm-warn"><strong>&#9888; Safety:</strong> never near a wildfire &mdash; the law says 5 nautical miles (9.3 km). Only controlled targets on private land with permission. <a href="#fly-card" data-open="fly-card">Read the Before you fly card first.</a></p>
+              <p class="asm-warn"><strong>&#9888; Safety:</strong> never near a wildfire &mdash; the law says 5 nautical miles (9.3 km). Only controlled targets on private land with permission. <a href="#fly-card" data-open="fly-card">Do the Fly safely steps first.</a></p>
               <details class="wt-fold"><summary>&#10003; Before you go on</summary>
 <div class="asm-check">
                 <ul>
@@ -3529,27 +3785,6 @@
     observable check. Don't move on until it passes &mdash; and after each step, explain out loud
     what you did, then take the quizzes on the Quizzes page in Learn.</div>
   </div>
-  <details class="acc" id="licences-card">
-    <summary>Licences and courses (amateur radio before the video transmitter is first powered; Transport Canada before the first flight)</summary>
-    <div class="acc-body">
-      <p><strong>Transport Canada:</strong> both are done online in the <a href="https://tc.canada.ca/en/aviation/drone-safety/drone-management-portal">Drone Management Portal</a>.</p>
-      <ul>
-        <li><a href="https://tc.canada.ca/en/aviation/drone-safety/drone-pilot-licensing/take-drone-pilot-online-exam/small-basic">Small Basic exam</a> (the Pilot Certificate &mdash; Basic Operations): 35 multiple-choice questions in 90 minutes; 65 % passes; age 14 or older. CA$10.17 a try until 31 Mar 2027 (CA$10.45 from 1 Apr 2027). You can try again after 24 hours, as often as you need. The certificate downloads as soon as you pass, and it does not expire. But you may fly only within 24 months of passing, or of your latest exam, flight review or Transport Canada endorsed recurrent training, and you carry proof of it when you fly.</li>
-        <li><a href="https://tc.canada.ca/en/aviation/drone-safety/registering-your-drone">Drone registration</a>: every drone of 250 g or more, home-built ones too. It takes about 3 minutes and costs CA$10.17 until 31 Mar 2027. Mark the number on the drone: permanent marker, label or engraving.</li>
-        <li>What the exam covers: <a href="https://tc.canada.ca/en/aviation/publications/knowledge-requirements-pilots-remotely-piloted-aircraft-systems-250-g-including-150-kg-basic-advanced-operations-tp-15263">TP 15263, Knowledge Requirements</a> (free; Transport Canada says it is not a study guide). Transport Canada keeps a <a href="https://tc.canada.ca/en/aviation/drone-safety/drone-pilot-licensing/find-drone-flight-school">list of drone flight schools</a> and recommends a course before the exam.</li>
-      </ul>
-      <p class="muted">Not answered on Transport Canada's pages: what a home build enters as its make, model and serial number.</p>
-      <p><strong>Amateur radio, Basic (for the 5.8 GHz video link):</strong></p>
-      <ul>
-        <li>ISED's Amateur Radio Operator Certificate (Basic): 100 questions; 70 % passes; 80 % or more passes &ldquo;with Honours&rdquo; and adds the bands below 30 MHz.</li>
-        <li>How: study the question bank (the current one has been in force since 15 Jul 2025), practise with ISED's free <a href="https://ised-isde.canada.ca/site/amateur-radio-operator-certificate-services/en/amateur-radio-exam-generator">exam generator</a>, then write the exam with an accredited examiner. ISED's examiner search lists 5 in Edmonton. After you pass, the examiner tells you how to open your ISED account and choose a call sign (this guide has not confirmed the exact steps).</li>
-        <li>Help nearby: the <a href="https://www.tnarc.ca/training">Northern Alberta Radio Club</a> trains new operators and has 2 accredited examiners; it runs Basic courses when there is interest (no dates posted). <a href="https://www.rac.ca/rac-basic-course-re">Radio Amateurs of Canada</a> runs an online Basic course for CA$50 + GST; the fall 2026 course is already under way, and no 2027 dates are posted.</li>
-      </ul>
-      <p class="muted">The exam fee: ISED itself charges none, but an accredited examiner may charge one to cover their costs, so ask the examiner (ISED, RIC-1, section 5.3).</p>
-      <p><strong>MAAC membership (needed at MAAC club fields):</strong> Open CA$115, Introductory CA$30, Junior CA$25, all plus GST. It includes MAAC's liability insurance (you pay a CA$500 share if you are at fault). Memberships end on 31 Dec; if you join after 1 Sep there is a 16-month option, so joining now can cover you to the end of 2027 (check the form). <a href="https://www.maac.ca/membership/join">MAAC's join page</a>. Not explained there: what Introductory allows.</p>
-      <p class="muted">Read on 4 Nov 2026.</p>
-    </div>
-  </details>
   <details class="acc" open>
     <summary>Weekend 1 &mdash; build the airframe (tick as you go)</summary>
     <div class="acc-body">
@@ -3790,7 +4025,6 @@ while True:
   <div id="quiz-power" class="quiz" data-quiz="power"></div>
   <div id="quiz-payload" class="quiz" data-quiz="payload"></div>
   <div id="quiz-detect" class="quiz" data-quiz="detect"></div>
-  <div id="quiz-rules" class="quiz" data-quiz="rules"></div>
   <div id="quiz-final" class="quiz" data-quiz="final"></div>
 
   <details class="acc">
@@ -4217,10 +4451,6 @@ while True:
         a: ["They're heavy", "Armed motors spin with enough force to cause serious injury — configure motor direction, receiver and modes with props off, always", "To save battery", "Betaflight requires it"],
         c: 1,
         why: "This is the cardinal rule of the hobby. A 5-inch prop at idle can cut skin; at power it can injure badly. Props go on last, after everything works, and come off first before any config." },
-      { q: "Under Basic operations, how far must the drone stay from any person?",
-        a: ["5 metres", "More than 30 metres (100 feet) horizontally", "100 metres", "No limit if you're careful"],
-        c: 1,
-        why: "Transport Canada Basic operations: more than 30 m horizontally from any person. Closer than that is Advanced operations territory. That's why test flights happen in empty fields." },
       { q: "What do the 18650 batteries in the RadioMaster Pocket power?",
         a: ["The drone", "Your hand controller — the drone has its own LiPo battery", "The thermal camera", "The GPS"],
         c: 1,
@@ -4280,7 +4510,7 @@ while True:
         a: ["Yes, completely", "No: it slows a fire but does not stop it, so keep an extinguisher and water within reach", "Only for Li-ion packs", "Only if it is zipped shut"],
         c: 1,
         why: "Keep the fire extinguisher and a bucket of water within reach: the bag slows a fire but does not stop it. Do not cover a burning pack: that keeps the heat in.",
-        see: ["Fly safely > Before you fly", "fly-card"] },
+        see: ["Fly safely > Step 10", "fly-after"] },
       { q: "You won't fly for a few days. What do you do with the pack?",
         a: ["Leave it full", "Put it to storage on the charger (Mode: Storage)", "Run it completely flat", "Put it in the freezer"],
         c: 1,
@@ -4295,12 +4525,7 @@ while True:
         a: ["A small campfire", "A mug of hot water", "A lighter flame", "A car's exhaust"],
         c: 1,
         why: "Use a mug of hot water for heat tests. Never light a fire to test the drone.",
-        see: ["Fly safely > Before you fly", "fly-card"] },
-      { q: "Why take off and land on a board or hard flat ground, not grass?",
-        a: ["Grass is often wet", "The Pi hangs only about 2.5 cm above the ground", "Grass blocks the GPS", "It is a Transport Canada rule"],
-        c: 1,
-        why: "Land straight down and slowly, then disarm as soon as the feet touch.",
-        see: ["Fly safely > Before you fly", "fly-card"] },
+        see: ["Fly safely > Step 5", "fly-cant-fold"] },
       { q: "The radio link is lost in flight. With Failsafe Stage 2 = Drop, what does the drone do?",
         a: ["Flies home by GPS", "The motors stop", "Hovers where it is", "Lands slowly"],
         c: 1,
@@ -4372,18 +4597,6 @@ while True:
         why: "Generated prose is not ground truth. Use recorded measurements, human verification and plain-code safety checks." }
     ],
     rules: [
-      { q: "What does CAR 601.15 restrict around a forest fire?",
-        a: ["Nothing for drones", "Operating over the fire area or within 5 NM (9.3 km) below 3,000 ft AGL; NOTAM-restricted airspace is also prohibited", "Only night flights", "Only flights above 25 kg"],
-        c: 1,
-        why: "Read the actual section rather than treating it as a slogan. Check NOTAMs and use controlled bench targets instead of flying to a wildfire." },
-      { q: "What does CAR 901.39 require for night operation?",
-        a: ["Nothing", "Lights sufficient for the pilot or visual observer to see the aircraft, turned on; all other applicable rules still apply", "A generic LED kit alone makes every flight legal", "Flying below trees"],
-        c: 1,
-        why: "Night lighting is necessary, not a waiver of VLOS, category, airspace, aerodrome, NOTAM, site or safety requirements." },
-      { q: "What does a 250 g–25 kg drone need for Basic operations?",
-        a: ["No registration", "Registration/marking, proof of registration and a Pilot Certificate — Basic Operations; exam and registration fees apply", "Only a fire department permit", "Only insurance"],
-        c: 1,
-        why: "Transport Canada requires the certificate and registration proof. Basic is age 14+. The certificate does not expire, but you also need the certificate, a new exam, a flight review or recurrent training within the last 24 months, with proof on hand." },
       { q: "Which set contains only Basic-operation conditions?",
         a: ["Over crowds", "VLOS, ≤25 kg, >30 m from any person, uncontrolled airspace, >5.6 km from certified airports and >1.9 km from heliports", "Any altitude or location", "Beyond visual line of sight"],
         c: 1,
@@ -4392,41 +4605,14 @@ while True:
         a: ["Just look up", "Certification/registration, site permission, airspace/NOTAM/fire checks, weather, >30 m from people for Basic, controlled target and emergency plan", "Charge batteries unattended", "Skip failsafe testing"],
         c: 1,
         why: "Private land alone is not blanket authorization. Recheck current rules and stop if any gate fails." },
-      { q: "What wind limit does this guide give for this build?",
-        a: ["20 km/h", "None yet: it has no tested limit, so fly only in calm air", "40 km/h", "Anything below a wind warning"],
+      { q: "When would you need the Advanced certificate?",
+        a: ["Always, for any drone over 250 g", "To fly in controlled airspace, closer than 30 m to people, or close to an airport or heliport", "To fly on private land", "To carry a thermal camera"],
         c: 1,
-        why: "There is no tested wind limit for this build, so the guide gives no number. Until one is tested, fly only in calm air.",
-        see: ["Fly safely > Before you fly", "fly-card"] },
-      { q: "Can this drone (over 250 g) take off from a City of Edmonton park?",
-        a: ["Yes, on cut grass", "No: City parks are for drones under 250 g; use private property with the owner's permission", "Yes, if nobody is within 30 m", "Only early in the morning"],
+        why: "Basic covers uncontrolled airspace, 30 m or more from people, away from airports and heliports. Controlled airspace, or closer than that, is Advanced." },
+      { q: "With the Advanced certificate, what else does controlled airspace need for a home-built drone?",
+        a: ["Nothing else", "A safety assurance declaration for the drone, and permission from air traffic control", "Only a bigger battery", "A MAAC membership"],
         c: 1,
-        why: "City parks are for microdrones only (Bylaw 20700, s. 55). Take off and land from private property instead.",
-        see: ["Fly safely > Before you fly", "fly-card"] },
-      { q: "How high may you fly?",
-        a: ["Up to 50 m", "Below 122 m (400 ft) above the ground", "Up to 300 m", "No limit away from airports"],
-        c: 1,
-        why: "Stay below 122 m (400 ft) above the ground.",
-        see: ["Fly safely > Before you fly", "fly-card"] },
-      { q: "What is the lawful way to run the 5.8 GHz video transmitter in Canada?",
-        a: ["Nothing is needed at 25 mW", "An ISED Amateur Radio Operator Certificate (Basic)", "The Transport Canada Advanced certificate", "A MAAC membership"],
-        c: 1,
-        why: "The 5.8 GHz video link sits in the amateur radio band. The guide cannot tell you to fly it without the certificate.",
-        see: ["Fly safely > Before you fly", "fly-card"] },
-      { q: "You fly by the screen. What else do you need?",
-        a: ["Nothing extra", "A visual observer; until you have one, fly looking at the drone", "A second screen", "The night LED kit"],
-        c: 1,
-        why: "Keep the drone in sight. If you fly by a screen, you need a visual observer.",
-        see: ["Fly safely > Before you fly", "fly-card"] },
-      { q: "Which of these is a place this drone (over 250 g) can fly near Edmonton?",
-        a: ["An Alberta provincial park", "Elk Island National Park", "Private land, with the owner's permission (after the airspace check)", "A Strathcona County park"],
-        c: 2,
-        why: "Provincial parks, national parks and Strathcona County parks are all closed to it. Private land with permission is open, if the airspace check passes.",
-        see: ["Fly safely > Where you can fly", "where-card"] },
-      { q: "The Transport Canada Small Basic exam: how many questions, and what passes?",
-        a: ["10 questions, 50 %", "35 questions, 65 %", "100 questions, 70 %", "50 questions, 80 %"],
-        c: 1,
-        why: "35 multiple-choice questions in 90 minutes; 65 % passes. (100 questions and 70 % is the amateur radio exam.)",
-        see: ["Learn > Plan > Licences and courses", "licences-card"] }
+        why: "For most Advanced operations the drone itself must meet safety requirements: a home build has no declaration unless its builder submits one to Transport Canada. Controlled airspace also needs permission from air traffic control (NAV CANADA)." }
     ],
     
     final: [
@@ -4462,6 +4648,152 @@ while True:
         a: ["Reddit", "Job Bank NOC 21211, Alberta/Edmonton, updated Nov 2025 — recheck before quoting", "A friend", "A guaranteed employer offer"],
         c: 1,
         why: "The $28.00/$43.27/$57.69 figures are low/median/high occupational wages, not a promised starting salary." }
+    ],
+    fly0: [
+      { q: "What does a 250 g–25 kg drone need for Basic operations?",
+        a: ["No registration", "Registration/marking, proof of registration and a Pilot Certificate — Basic Operations; exam and registration fees apply", "Only a fire department permit", "Only insurance"],
+        c: 1,
+        why: "Transport Canada requires the certificate and registration proof. Basic is age 14+. The certificate does not expire, but you also need the certificate, a new exam, a flight review or recurrent training within the last 24 months, with proof on hand." },
+      { q: "Which weight is the one that counts?",
+        a: ["The estimate from the shop listings", "The finished drone on a kitchen scale, with the battery fitted", "The frame alone", "The weight without the battery"],
+        c: 1,
+        why: "When the drone is finished, put it on a kitchen scale with the battery fitted and write the number down. That figure, not the estimate, is the one that counts." }
+    ],
+    fly1: [
+      { q: "The Transport Canada Small Basic exam: how many questions, and what passes?",
+        a: ["10 questions, 50 %", "35 questions, 65 %", "100 questions, 70 %", "50 questions, 80 %"],
+        c: 1,
+        why: "35 multiple-choice questions in 90 minutes; 65 % passes. (100 questions and 70 % is the amateur radio exam.)" },
+      { q: "You did not pass the Basic exam. When can you try again?",
+        a: ["After 24 hours, as often as you need", "After 30 days", "Never: you get one try", "Only after a flight review"],
+        c: 0,
+        why: "You can try again after 24 hours, as often as you need." },
+      { q: "The Basic certificate does not expire. What must still be true on the day you fly?",
+        a: ["Nothing more", "In the last 24 months you got the certificate, passed an exam again, passed a flight review or did recurrent training, and you carry proof", "You passed the exam in the last 12 months", "You also hold the Advanced certificate"],
+        c: 1,
+        why: "You may fly only if one of those happened within the last 24 months. Carry your certificate and proof of it, printed or on your phone." }
+    ],
+    fly2: [
+      { q: "How may you mark the registration number on the drone?",
+        a: ["In pencil, so it can be changed", "Permanent marker, a permanent label or engraving, where it is clearly visible", "On the radio only", "On a card kept in your pocket"],
+        c: 1,
+        why: "Transport Canada: mark the drone with its registration number, clearly visible, using permanent marker, a permanent label or engraving." },
+      { q: "This drone is home-built. Does it need registering?",
+        a: ["No: only shop-bought drones do", "Yes: every drone of 250 g or more, home-built ones too", "Only if it carries a camera", "Only for night flying"],
+        c: 1,
+        why: "Every drone of 250 g or more must be registered, home-built ones too. It takes about 3 minutes in the Drone Management Portal." }
+    ],
+    fly3: [
+      { q: "What is the lawful way to run the 5.8 GHz video transmitter in Canada?",
+        a: ["Nothing is needed at 25 mW", "An ISED Amateur Radio Operator Certificate (Basic)", "The Transport Canada Advanced certificate", "A MAAC membership"],
+        c: 1,
+        why: "The 5.8 GHz video link sits in the amateur radio band. The guide cannot tell you to fly it without the certificate." },
+      { q: "The amateur radio Basic exam: how many questions, and what passes?",
+        a: ["35 questions, 65 %", "50 questions, 80 %", "100 questions, 70 %", "20 questions, 50 %"],
+        c: 2,
+        why: "100 questions; 70 % passes. 80 % or more passes with Honours and adds the bands below 30 MHz." },
+      { q: "You hold the certificate. What must your video carry?",
+        a: ["Nothing", "Your call sign: at the start and end of each transmission, and at least every 30 minutes", "Your registration number", "The drone's weight"],
+        c: 1,
+        why: "An amateur station identifies itself with its call sign (ISED, RBR-4, section 9). One simple way: hold a card with the call sign in front of the camera at the start and end of each flight." }
+    ],
+    fly4: [
+      { q: "What must your written procedures cover?",
+        a: ["Only how to charge the battery", "Normal flying, and emergencies: a lost radio link, a fly-away, and how you end the flight", "Only the weather", "Nothing: procedures are optional"],
+        c: 1,
+        why: "CAR 901.23: your own procedures, the normal ones and the emergency ones, read before the flight and with you at the field." },
+      { q: "How long do you keep the two logs?",
+        a: ["The flight log 12 months; the repair log 24 months", "Both for one month", "The flight log 24 months; the repair log 12 months", "You do not need to keep them"],
+        c: 0,
+        why: "The flight log (who flew and when) is kept 12 months. The log of every repair or change to the drone is kept 24 months (CAR 901.48)." }
+    ],
+    fly5: [
+      { q: "Can this drone (over 250 g) take off from a City of Edmonton park?",
+        a: ["Yes, on cut grass", "No: City parks are for drones under 250 g; use private property with the owner's permission", "Yes, if nobody is within 30 m", "Only early in the morning"],
+        c: 1,
+        why: "City parks are for microdrones only (Bylaw 20700, s. 55). Take off and land from private property instead." },
+      { q: "Which of these is a place this drone (over 250 g) can fly near Edmonton?",
+        a: ["An Alberta provincial park", "Elk Island National Park", "Private land, with the owner's permission (after the airspace check)", "A Strathcona County park"],
+        c: 2,
+        why: "Provincial parks, national parks and Strathcona County parks are all closed to it. Private land with permission is open, if the airspace check passes." },
+      { q: "What does CAR 601.15 restrict around a forest fire?",
+        a: ["Nothing for drones", "Operating over the fire area or within 5 NM (9.3 km) below 3,000 ft AGL; NOTAM-restricted airspace is also prohibited", "Only night flights", "Only flights above 25 kg"],
+        c: 1,
+        why: "Read the actual section rather than treating it as a slogan. Check NOTAMs and use controlled bench targets instead of flying to a wildfire." },
+      { q: "When do you check the take-off spot on the map?",
+        a: ["Once, the first time you use a field", "Every time, for the exact take-off point", "Only near airports", "Only at night"],
+        c: 1,
+        why: "Every spot must pass the airspace check: look up the exact take-off point on one of the free maps, every time. An empty park is not a legal site." }
+    ],
+    fly6: [
+      { q: "What wind limit does this guide give for this build?",
+        a: ["20 km/h", "None yet: it has no tested limit, so fly only in calm air", "40 km/h", "Anything below a wind warning"],
+        c: 1,
+        why: "There is no tested wind limit for this build, so the guide gives no number. Until one is tested, fly only in calm air." },
+      { q: "What does CAR 901.39 require for night operation?",
+        a: ["Nothing", "Lights sufficient for the pilot or visual observer to see the aircraft, turned on; all other applicable rules still apply", "A generic LED kit alone makes every flight legal", "Flying below trees"],
+        c: 1,
+        why: "Night lighting is necessary, not a waiver of VLOS, category, airspace, aerodrome, NOTAM, site or safety requirements." },
+      { q: "There is frost on the props. What do you do?",
+        a: ["Fly: it melts in the air", "Wipe the props and the frame clean and dry before you fly", "Spin the motors to shake it off", "Put tape over it"],
+        c: 1,
+        why: "No frost, ice or snow on the drone: wipe the props and the frame clean and dry before you fly (CAR 901.35)." },
+      { q: "You had an alcoholic drink 6 hours ago. May you fly?",
+        a: ["Yes, after 4 hours", "No: not within 12 hours of a drink, and not when you are tired", "Yes, if someone watches", "Yes, below 30 m"],
+        c: 1,
+        why: "No flying within 12 hours of an alcoholic drink, or when you are tired (CAR 901.19)." }
+    ],
+    fly7: [
+      { q: "After you plug in the pack, what do you wait for before take-off?",
+        a: ["The props to spin", "The payload to say “Ground height set”", "The radio's timer to reach zero", "Nothing"],
+        c: 1,
+        why: "Start the payload the way that survives a Wi-Fi drop (Build, Step 8), and wait for “Ground height set”." },
+      { q: "The pack switch on the radio: what must it match?",
+        a: ["The weather", "The pack that is fitted: GNB or Li-ion", "The video channel", "The number of props"],
+        c: 1,
+        why: "The pack switch on the radio matches the pack: GNB or Li-ion (Build, Step 4)." },
+      { q: "Which of these is on the checklist before you plug in the pack?",
+        a: ["Nobody within 30 m sideways", "The Pi is already shut down", "The props are still in their packet", "The charger is plugged in"],
+        c: 0,
+        why: "Before you plug in: the spot passed today's airspace check, nobody within 30 m sideways, no frost, the right props tight on the right motors, the pack strapped, the antenna on, the pack switch right, the radio on with its timer reset." }
+    ],
+    fly8: [
+      { q: "Why take off and land on a board or hard flat ground, not grass?",
+        a: ["Grass is often wet", "The Pi hangs only about 2.5 cm above the ground", "Grass blocks the GPS", "It is a Transport Canada rule"],
+        c: 1,
+        why: "Land straight down and slowly, then disarm as soon as the feet touch." },
+      { q: "The feet touch the ground. What do you do next?",
+        a: ["Add a little throttle to settle it", "Disarm at once", "Switch the radio off", "Wait a minute"],
+        c: 1,
+        why: "Land straight down and slowly, then disarm as soon as the feet touch." }
+    ],
+    fly9: [
+      { q: "Under Basic operations, how far must the drone stay from any person?",
+        a: ["5 metres", "More than 30 metres (100 feet) horizontally", "100 metres", "No limit if you're careful"],
+        c: 1,
+        why: "Transport Canada Basic operations: more than 30 m horizontally from any person. Closer than that is Advanced operations territory. That's why test flights happen in empty fields." },
+      { q: "How high may you fly?",
+        a: ["Up to 50 m", "Below 122 m (400 ft) above the ground", "Up to 300 m", "No limit away from airports"],
+        c: 1,
+        why: "Stay below 122 m (400 ft) above the ground." },
+      { q: "You fly by the screen. What else do you need?",
+        a: ["Nothing extra", "A visual observer; until you have one, fly looking at the drone", "A second screen", "The night LED kit"],
+        c: 1,
+        why: "Keep the drone in sight. If you fly by a screen, you need a visual observer." },
+      { q: "The thermal camera caught a neighbour's yard. What do you do?",
+        a: ["Keep it for the build log", "Delete it: point the camera only at your own land, or land whose owner said yes", "Post it with the address hidden", "Nothing: thermal pictures do not count"],
+        c: 1,
+        why: "Transport Canada: you must respect the privacy rights of others when you fly. Do not record or log neighbours, their yards or their windows, and delete anything that catches other people." }
+    ],
+    fly10: [
+      { q: "After landing, what is the right order?",
+        a: ["Unplug the pack, then shut down the Pi", "Disarm, shut down the Pi and wait until its light stays off, then unplug the pack", "Switch the radio off first", "Any order"],
+        c: 1,
+        why: "Disarm. Type sudo poweroff in the SSH window and wait until the Pi's light stays off. Then unplug the pack." },
+      { q: "The pack is warm after the flight. When do you charge it?",
+        a: ["Right away, while it is warm", "After it has cooled: attended, in the LiPo bag, on a fireproof surface", "Overnight, while you sleep", "In the freezer"],
+        c: 1,
+        why: "Let a pack cool before charging it. Charge it attended, in the LiPo bag, on a fireproof surface. Never charge a swollen or damaged pack." }
     ]
   };
 
@@ -4472,12 +4804,23 @@ while True:
 
   /* ---------- Quiz engine: one question at a time, instant feedback ---------- */
   const QUIZ_TITLES = {
-    airframe: "Quiz: Build the airframe (11 questions)",
-    power: "Quiz: Power, batteries & safety (9 questions)",
+    airframe: "Quiz: Build the airframe (10 questions)",
+    power: "Quiz: Power, batteries & safety (8 questions)",
     payload: "Quiz: The thermal payload (9 questions)",
     detect: "Quiz: Detection & mapping (5 questions)",
-    rules: "Quiz: Flight rules & safety (12 questions)",
-    final: "Final exam (8 questions)"
+    rules: "Last check: flight rules, the whole picture (4 questions)",
+    final: "Final exam (8 questions)",
+    fly0: "Quiz: Step 0 (2 questions)",
+    fly1: "Quiz: Step 1 (3 questions)",
+    fly2: "Quiz: Step 2 (2 questions)",
+    fly3: "Quiz: Step 3 (3 questions)",
+    fly4: "Quiz: Step 4 (2 questions)",
+    fly5: "Quiz: Step 5 (4 questions)",
+    fly6: "Quiz: Step 6 (4 questions)",
+    fly7: "Quiz: Step 7 (3 questions)",
+    fly8: "Quiz: Step 8 (2 questions)",
+    fly9: "Quiz: Step 9 (4 questions)",
+    fly10: "Quiz: Step 10 (2 questions)"
   };
   /* a quiz answer's money figures, filled in from the buy list when the question is shown (the bill's own sums) */
   function quizLive(text) {
@@ -4584,7 +4927,7 @@ while True:
         if (!d) { return; }
         const holder = d.closest("[role=tabpanel]");
         if (holder) { openTab(holder.id.slice(2)); }
-        if (d.tagName === "DETAILS") { d.open = true; }
+        for (let p = d; p; p = p.parentElement) { if (p.tagName === "DETAILS") { p.open = true; } }
         d.scrollIntoView({ block: "start" });
       });
       p.appendChild(document.createTextNode("Where this is: "));
@@ -4786,7 +5129,10 @@ while True:
         const d = document.getElementById(a.getAttribute("data-open"));
         const holder = d && d.closest("[role=tabpanel]");
         if (holder) { openTab(holder.id.slice(2)); }
-        if (d) { d.open = true; d.scrollIntoView({ behavior: "smooth", block: "start" }); }
+        if (d) {
+          for (let p = d; p; p = p.parentElement) { if (p.tagName === "DETAILS") { p.open = true; } }   /* a fold inside a step: open the step too */
+          d.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
       });
     });
     const X = readJson("weather-data");
@@ -5610,7 +5956,7 @@ while True:
     btn.addEventListener("click", function () {
       if (!btn.dataset.panel) return;
       const panel = document.getElementById(btn.dataset.panel);
-      const accs = panel.querySelectorAll("details.acc, details.asm-step, details.asm-step0");
+      const accs = panel.querySelectorAll("details.acc, details.asm-step, details.asm-step0, details.fly-step");
       const anyClosed = Array.prototype.some.call(accs, function (d) { return !d.open; });
       accs.forEach(function (d) { d.open = anyClosed; });
       btn.textContent = anyClosed ? "Collapse all" : "Expand all";
@@ -5789,11 +6135,29 @@ while True:
   /* Home's doors show the one-line summary of the card they open. */
   (function () {
     const arr = document.getElementById("arr-first");
-    const fly = document.querySelector("#fly-card .fly-first");
     const a = document.querySelector('[data-door-sub="arr-first"]');
-    const f = document.querySelector('[data-door-sub="fly-card"]');
     if (arr && a) { a.textContent = arr.textContent; }
-    if (fly && f) { f.textContent = fly.textContent; }
+  })();
+  /* Fly safely as steps (Shad, 12 Nov 2026): Step 0's "you need" list shows the tick of the step each line names, and
+     Home's "Before you fly" door names the next step not yet ticked. The ticks themselves are ordinary data-key ticks. */
+  (function () {
+    const steps = Array.prototype.slice.call(document.querySelectorAll("#fly-steps details[data-fly-step]"));
+    if (!steps.length) { return; }
+    function box(s) { return s.querySelector("input[data-key]"); }
+    function paint() {
+      Array.prototype.forEach.call(document.querySelectorAll("[data-fly-need]"), function (li) {
+        const s = steps[Number(li.getAttribute("data-fly-need"))];
+        li.classList.toggle("is-done", !!(s && box(s) && box(s).checked));
+      });
+      const f = document.querySelector('[data-door-sub="fly-card"]');
+      if (!f) { return; }
+      const next = steps.filter(function (s) { return box(s) && !box(s).checked; })[0];
+      const h = next && next.querySelector("h3");
+      f.textContent = next ? "Next: Step " + next.getAttribute("data-fly-step") + " \u00b7 " + (h ? h.textContent : "") : "All " + steps.length + " steps ticked";
+    }
+    document.addEventListener("change", function (e) { if (e.target && e.target.type === "checkbox") { setTimeout(paint, 0); } });
+    paint();
+    window.GuideFly = { repaint: paint };
   })();
 </script>
 <script>
@@ -5864,7 +6228,7 @@ while True:
      lesson button gives way to a plain note. Served by the guide's server or by the public site, nothing changes. */
   (function () {
     if (location.protocol !== "file:") { return; }
-    Array.prototype.forEach.call(document.querySelectorAll("a.wt-link"), function (a) {
+    Array.prototype.forEach.call(document.querySelectorAll("a.wt-link, a.wt-text"), function (a) {   /* wt-text: a lesson link inside a sentence (Fly safely) */
       const next = a.nextElementSibling;
       if (next && next.classList.contains("muted")) { next.remove(); }
       const prev = a.previousElementSibling;
@@ -6001,6 +6365,6 @@ while True:
 </script>
 <script src="docs/js/domain.js"></script>
 <!-- Guide Assistant: offline-first Q&A. Remove these two lines to drop it. -->
-<script src="docs/js/assistant.js?v=build-guide-v15"></script>
+<script src="docs/js/assistant.js?v=build-guide-v16"></script>
 </body>
 </html>

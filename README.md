@@ -21,9 +21,9 @@ A step-by-step guide to building a small drone that carries a thermal camera and
 |---|---|
 | **Home** | Where you are, what to do next and what to buy next. |
 | **Build** | One list, Step 0 (practice) to Step 8. Each step opens to a picture of its 3D lesson, a drawing, the written steps and a check before the next step. |
-| **3D lessons** | 34 short lessons you can pause and turn around, with 35 quizzes (185 questions). They show which part goes where before you touch it. |
+| **3D lessons** | 38 short lessons you can pause and turn around, with 39 quizzes (203 questions). They show which part goes where before you touch it. |
 | **Buy** | 50 parts, each with a shop link and a dated stock check, and a backup shop where one was found. Bought in stages, so every parcel gives you something to do. |
-| **Fly safely** | The Canadian rules for this drone, each with its official source: pilot certificate, registration, where you can fly, the radio licence for the video link. |
+| **Fly safely** | One list, Step 0 to Step 10. First what this drone needs once (pilot certificate, registration, the radio licence for the video link, your papers), then what to do every flight. Each step has its official sources and a short quiz; four have a 3D lesson. |
 | **Learn** | Why it is built this way, how the heat detection works, the plan, and its limits. |
 
 <a href="docs/images/guide-phone.png"><img src="docs/images/guide-phone.png" alt="The guide on a phone: Home, a build step and a 3D lesson" width="100%"></a>
@@ -88,7 +88,7 @@ ES modules and `.glb` files need HTTP, so open it through a server, not as a fil
 | Path | What it is |
 |---|---|
 | `index.html` | the whole guide |
-| `docs/walkthrough/` | the 3D lesson player, 34 lessons, the quizzes, a pretend radio to practise on |
+| `docs/walkthrough/` | the 3D lesson player, 38 lessons, the quizzes, a pretend radio to practise on |
 | `docs/models/`, `scripts/build/` | the 3D models and the Blender scripts that build them |
 | `scripts/build/verify_build.py` | the design check (fit, wiring, weight, tolerance runs) |
 | `docs/build-truth/` | what each step's instruction is based on, and the check results |

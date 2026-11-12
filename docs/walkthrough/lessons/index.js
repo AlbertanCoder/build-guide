@@ -13,6 +13,7 @@ const S7B = "Step 7 · Mount and balance (after the first hover)";
 const S8B = "Step 8 · Test, in this order (with the payload on)";
 const ST1 = "Step 1 · Lay out all the parts";
 const S3R = "Stage 3 · Radio & reflexes";
+const FLY = "Fly safely";
 const q = (q, options, why, review) => ({ q, options, answer: 0, why, review });   // the first option is the right one; the page shuffles them
 
 export const SEQ = [
@@ -308,6 +309,37 @@ export const SEQ = [
     q("A prop is white at the hub:", ["Replace it", "Fly it", "Tape it", "Turn it over"], "Also chipped or bent: replace. Spares are on the buy list.", "s8-hardlanding"),
     q("Spinning a motor by hand (props off), you feel a periodic scraping:", ["A bent bell", "Normal", "Low battery", "A loose prop"], "A motor much hotter than the others after the next flight points to a bent shaft or bearing.", "s8-hardlanding"),
     q("Before flying the payload again after a hard landing:", ["Redo the heat test (mug, not hand) and check the GPS line appears; then a short low hover", "Nothing extra", "Only check the battery", "Fly a long mission to test it"], "Then a normal flight.", "s8-hardlanding"),
+  ] },
+  // Fly safely (12 Nov 2026): four lessons for the Fly safely steps, each with its quiz; they sit before the final quiz, which draws from every quiz above it
+  { id: "fly-mark", group: FLY, title: "Mark the registration number on the drone", load: () => import("./fly-mark.js") },
+  { id: "q-fly-mark", group: FLY, title: "The registration number", quiz: true, questions: [
+    q("Where do you register the drone?", ["In Transport Canada's Drone Management Portal", "At the shop that sold the parts", "With the City of Edmonton", "Nowhere: home-built drones are exempt"], "A drone of 250 g or more must be registered, home-built ones too.", "fly-mark"),
+    q("What may you use to mark the number on the drone?", ["Permanent marker, permanent label or engraving", "Pencil", "A sticky note", "Nothing: keeping the number at home is enough"], "Transport Canada names those three.", "fly-mark"),
+    q("Where on the drone does the number go?", ["Transport Canada does not say where: only that it must be clearly visible", "Under the battery", "On a propeller", "Inside the frame, out of sight"], "This guide's suggestion is the top plate, behind the battery.", "fly-mark"),
+    q("What else does Transport Canada recommend putting on the drone?", ["Your name and contact information", "The price of the drone", "Your pilot exam score", "Nothing"], "It is a recommendation, not a rule.", "fly-mark"),
+    q("What do you carry whenever you fly?", ["Proof of registration, with your pilot certificate", "The frame's box", "Nothing: the number on the drone is enough", "The shop receipt"], "The Basic rules ask for both.", "fly-mark"),
+  ] },
+  { id: "fly-check", group: FLY, title: "Check the drone before every flight", load: () => import("./fly-check.js") },
+  { id: "q-fly-check", group: FLY, title: "The field checklist", quiz: true, questions: [
+    q("Before you plug in the pack, what must be true of the take-off spot?", ["It passed the airspace check today, and you checked NOTAMs and fire bans", "It was fine last month", "It is an empty park", "Nothing: just fly"], "Look up the exact take-off point every time.", "fly-check"),
+    q("Which props go on which motors?", ["CW on M1 and M4, CCW on M2 and M3", "CW on M1 and M2, CCW on M3 and M4", "All four the same", "Any prop on any motor"], "And the nuts are tight.", "fly-check"),
+    q("The pack switch on the radio must:", ["Match the pack you fitted: GNB or Li-ion", "Always be on GNB", "Sit in the middle", "It doesn't matter"], "You set this switch up in Step 4.", "fly-check"),
+    q("You have plugged in. When may you take off with the payload?", ["After the payload shows \"Ground height set\"", "Straight away", "After 5 seconds", "As soon as the props spin"], "Start the payload the way that survives a Wi-Fi drop (Step 8), then wait for that line.", "fly-check"),
+    q("After you land, in what order?", ["Disarm, sudo poweroff, wait until the Pi's light stays off, then unplug the pack", "Unplug the pack first", "sudo poweroff, then disarm", "Leave the pack plugged in"], "A sudden power cut can spoil the card.", "fly-check"),
+  ] },
+  { id: "fly-board", group: FLY, title: "Take off and land on a board", load: () => import("./fly-board.js") },
+  { id: "q-fly-board", group: FLY, title: "Taking off and landing", quiz: true, questions: [
+    q("Where do you take off and land?", ["A flat board or hard flat ground", "Long grass", "A slope", "Your hand"], "Not grass: the Pi hangs only about 2.5 cm above the ground.", "fly-board"),
+    q("How far above the ground does the Pi hang?", ["About 2.5 cm", "About 25 cm", "It touches the ground", "About 1 m"], "That is why grass is out.", "fly-board"),
+    q("How do you land?", ["Straight down and slowly, then disarm as soon as the feet touch", "Fast, to save battery", "Sliding in sideways", "Drop it from 1 m"], "The feet are close together side to side.", "fly-board"),
+    q("The drone lands leaning or sliding sideways. What happens?", ["It falls on its side, and a prop and an arm hit the ground", "Nothing: the feet are far apart", "It bounces back up", "The payload props it up"], "Then use the \"After a hard landing\" checklist.", "fly-board"),
+  ] },
+  { id: "fly-distance", group: FLY, title: "Keep your distance: 30 m and 122 m", load: () => import("./fly-distance.js") },
+  { id: "q-fly-distance", group: FLY, title: "Distance, height and sight", quiz: true, questions: [
+    q("How far sideways must other people be from the drone?", ["At least 30 m (100 ft)", "5 m", "10 m", "It doesn't matter"], "That is the Basic-operations boundary, not a safe distance in itself.", "fly-distance"),
+    q("How is that 30 m measured?", ["Sideways, along the ground", "Straight up", "From the pilot, not the drone", "From the take-off board"], "Sideways means along the ground, whatever the drone's height.", "fly-distance"),
+    q("How high may you fly?", ["Below 122 m (400 ft) above the ground", "Below 1,000 m", "As high as the radio reaches", "Any height in an empty field"], "CAR 901.25. This is the limit beginners break first.", "fly-distance"),
+    q("You fly by a screen. What else do you need?", ["A visual observer", "Nothing", "A bigger battery", "A second radio"], "Until you have one, fly looking at the drone.", "fly-distance"),
   ] },
   { id: "q-final", group: "Final check", title: "The big final quiz", quiz: true, final: true, questions: [] },
 ];
