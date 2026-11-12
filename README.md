@@ -98,6 +98,7 @@ ES modules and `.glb` files need HTTP, so open it through a server, not as a fil
 | `scripts/dev/` | the test suites and `gate.js`, which runs them all |
 | `scripts/standalone/` | single-file build, stock refresh, link check, icons |
 | `Shad-Drone-Order-List.md`, `Shad-Drone-Audit-Report.md` | the earlier order plan and the first design review, as dated documents (the guide's Buy tab is the current list) |
+| `docs/audit-2026-11-12/` | the independent audit of 12 Nov 2026 (`FINDINGS.md`: every line of the parts list checked against the shop pages) and what was fixed from it (`FIX-LOG.md`) |
 
 ### Rebuild the 3D models
 
