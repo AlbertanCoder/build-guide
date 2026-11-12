@@ -137,6 +137,7 @@
   .stage-chip.is-next { background: var(--pine-pale); border: 2px solid var(--pine); padding: 7px 9px; }
   .stage-chip.is-next span { font-weight: 700; color: var(--pine-deep); }
   .buy-next { margin: 12px 0 0; font-size: 15px; }
+  .buy-same { margin-top: 6px; font-size: 14px; color: var(--soft); }   /* the same-shop line under "Buy next" (12 Nov) */
   .stage-chip .chip-why { display: block; margin-top: 4px; font-size: 12.5px; line-height: 1.4; color: var(--soft); }
   .buy-backup { font-size: 12.5px; color: var(--soft); }
   .stage-items { list-style: none; margin: 0; padding: 0; }
@@ -1373,6 +1374,7 @@
     <span class="here-label" id="bill-title">Your bill</span>
     <div data-bill></div>
     <p id="buy-next" class="buy-next"></p>
+    <p id="buy-same-shop" class="buy-next buy-same" hidden></p>
     <ul id="stage-chips" class="stage-chips" aria-label="Buying stages"></ul>
   </section>
 </div>
@@ -1663,12 +1665,12 @@
    "backup2": {
     "shop": "Abra Electronics (Canada)",
     "url": "https://abra-electronics.com/robotics-embedded-electronics/raspberry-pi-zero/pi-zero-2wh-kit-raspberry-pi-zero-2wh-starter-kit.html",
-    "status": "in_stock",
+    "status": "cart",
     "price": 109.95,
     "same": false,
     "country": "CA",
-    "checkedOn": "2026-11-11",
-    "note": "Raspberry Pi Zero 2WH Starter Kit (PI-ZERO-2WH-KIT). Not the same kit, but it has what Step 6 uses: the Pi Zero 2 WH with its pins already soldered, a blank 32 GB card, a card reader and a 5.1 V 2.5 A power supply. Its page said \"Availability: In stock\" with no count on 11 Nov. The bare board was out of stock at every other Canadian shop read that day, so ask Abra to confirm before you pay. Ships from Montreal, to Canada only."
+    "checkedOn": "2026-11-12",
+    "note": "Raspberry Pi Zero 2WH Starter Kit (PI-ZERO-2WH-KIT). Not the same kit, but it has what Step 6 uses: the Pi Zero 2 WH with its pins already soldered, a blank 32 GB card, a card reader and a 5.1 V 2.5 A power supply. Its page says \"Availability: Delivery within 2-3 weeks\" (read 12 Nov; on 11 Nov it said \"In stock\"), so it is not on the shelf: ask Abra before you pay. Ships from Montreal, to Canada only."
    }
   },
   {
@@ -1750,7 +1752,7 @@
    "usd": true,
    "today": false,
    "backup": null,
-   "note": "US shop: freight and duty not included. HAT US$6.95 + 2 cables at US$1.95 = US$10.85, at 1.3960.",
+   "note": "US shop: freight and duty not included. HAT US$6.95 + 2 cables at US$1.95 = US$10.85, at 1.3960. The cable is SparkFun's \"Flexible Qwiic Cable - Female Jumper (4-pin)\", part CAB-17261 (sparkfun.com/flexible-qwiic-cable-female-jumper-4-pin.html): its four loose ends are sockets that push onto the sensors' pins. Do not take the \"Breadboard Jumper\" cable (PRT-17912) at the same price: its ends are pins.",
    "checkedBy": "page read",
    "backupNote": "No backup found. SparkFun is the only source found for this HAT."
   },
@@ -1901,9 +1903,9 @@
    "shop": "Rotor Village",
    "url": "https://rotorvillage.ca/geprc-taker-f405-bls-50a-combo-stack/",
    "stage": 5,
-   "status": "out",
-   "stockNote": "Out of stock",
-   "checkedOn": "2026-11-11",
+   "status": "low",
+   "stockNote": "Only 4 left",
+   "checkedOn": "2026-11-12",
    "today": false,
    "backup": {
     "shop": "Pyrodrone",
@@ -1916,7 +1918,7 @@
     "checkedOn": "2026-11-11",
     "note": "The exact GEPRC stack, in stock. A Canadian seller was not found."
    },
-   "note": "Rotor Village's page says: \"On its way to us, expected around Nov 12–19\" (read 11 Nov). That is the shop's own estimate.",
+   "note": "Back in stock on 12 Nov (it was out of stock on 11 Nov). No Canadian backup shop was found.",
    "backup2": {
     "shop": "GEPRC (the maker's own shop)",
     "url": "https://geprc.com/product/geprc-taker-f405-bls-50a-stack/",
@@ -2424,13 +2426,13 @@
  },
  "stageNotes": {
   "2": [
-   "Out of stock on 11 Nov: the Pi kit and the thermal camera. The kit has two backup shops on its line. The camera is out at its backup shop too, and no Canadian shop had it. You can buy the rest of this stage now: the GPS board (only 5 left), the Qwiic HAT and cables, the spare card and the M2.5 set. Steps 1 to 5 do not need this stage. Step 6 and the payload part of Step 7 wait for the Pi kit and the camera."
+   "Out of stock on 11 Nov: the Pi kit and the thermal camera. The kit has two backup shops on its line; the Canadian one (Abra) quotes delivery in 2 to 3 weeks. The camera is out at its backup shop too, and no Canadian shop had it. You can buy the rest of this stage now: the GPS board (only 5 left), the Qwiic HAT and cables, the spare card and the M2.5 set. Steps 1 to 5 do not need this stage. Step 6 and the payload part of Step 7 wait for the Pi kit and the camera."
   ],
   "4": [
    "When they arrive, check: (a) the knurled standoffs are threaded at both ends (female); (b) the M3 x 10 mm foot screws hold the feet (6.3 mm foot + about 3.7 mm of thread)."
   ],
   "5": [
-   "Out of stock on 11 Nov: the flight stack at Rotor Village. Its page says more is on its way, \"expected around Nov 12–19\". The first backup, Pyrodrone, is a US shop: US$74.99 plus freight and duty. Step 3 cannot start without the stack. The rest of this stage was in stock on 11 Nov."
+   "The flight stack is back at Rotor Village: only 4 left on 12 Nov (it was out of stock on 11 Nov). The only backup found is a US shop, Pyrodrone: US$74.99 plus freight and duty. Step 3 cannot start without the stack. The rest of this stage was in stock on 11 Nov."
   ]
  },
  "optionalStages": [
@@ -3365,7 +3367,7 @@
             <div class="asm-notes">
               <details class="wt-fold"><summary>You will need</summary>
 <div class="asm-parts">
-                <ul><li>Nylon M2.5 standoffs (12 mm) and zip ties (100 mm)</li><li>Kevlar straps and the battery grip pad</li><li>The foam mounting tape (pad, camera and GPS)</li><li>The payload from Step 6: the Pi with its HAT, the thermal camera and the GPS</li><li>The leg parts from the Stage 4 list, and the blue threadlocker</li><li>From the tool kit: the metal ruler, cutters, hexagon screwdriver set</li><li>A marker, the multimeter, the smoke stopper and a charged pack</li></ul>
+                <ul><li>Nylon M2.5 standoffs (12 mm), the M2.5 screw and nut set (Stage 2) and zip ties (100 mm)</li><li>Kevlar straps and the battery grip pad</li><li>The foam mounting tape (pad, camera and GPS)</li><li>The payload from Step 6: the Pi with its HAT, the thermal camera and the GPS</li><li>The leg parts from the Stage 4 list, and the blue threadlocker</li><li>From the tool kit: the metal ruler, cutters, hexagon screwdriver set</li><li>A marker, the multimeter, the smoke stopper and a charged pack</li></ul>
               </div>
 </details>
               <details class="wt-fold"><summary>Show the written steps</summary>
@@ -3375,7 +3377,7 @@
                 <ol class="asm-actions">
                   <li data-action-id="S7.1"><strong>Do not fit the payload to the drone until the bare drone has made its first hover</strong> (item 8 in Step 8). The payload is the Pi, the thermal camera and the GPS. The bare drone is the drone without them. Do the bullets marked <span class="ph-tag ph-now">NOW</span> first. Then go to Step 8 and finish item 8. Come back here for the bullets marked <span class="ph-tag ph-after">AFTER THE FIRST HOVER</span>.</li>
                   <li><strong>The rule: the thermal lens needs an unobstructed vertical line to the ground.</strong> Mounted on top of the frame it just stares at the top plate and the battery.</li>
-                  <li class="s1-rich" data-action-id="S7.3"><p><span class="ph-tag ph-now">NOW</span> hold the parts in place and mark where they go; stick nothing yet. Under the bottom plate, centre the Pi 36 mm behind the stack centre. Hold the MLX90640 just ahead of the Pi, lens straight down, its wide side across the drone. Hold the PA1010D on the top plate in front of the battery, antenna up. Hold the real parts in place first: these positions come from a design simulation, not a test fit. Mark each spot with the marker. Lay the GPS cable's route along the drone's right-hand side (right as seen from the tail looking forward): from the HAT up through the bottom plate's window next to the Pi, over the flight controller, and round the front edge of the top plate to the GPS. If a stack screw head or tip sticks out under the bottom plate, mark it too.</p> <p><span class="ph-tag ph-after">AFTER THE FIRST HOVER</span> fix them on your marks. Make the pad from two layers of the foam mounting tape (on the Stage 4 list), stuck to the plate. Leave the backing on the outer layer, so the standoffs rest on it without sticking. Put a 1 cm square of the same tape under each of the Pi's four standoffs. The pad stops the board touching carbon, and you do not need to drill the plate. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Foam tape and boards">When the tape arrives, check:</a></strong> its thickness, and that two layers stay put under the zip ties.</span></p> <p>Stick the MLX90640 to the pad, just ahead of the Pi, with a square of the foam mounting tape on the back of the board. The lens points straight down. Its wide side runs across the drone. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Foam tape and boards">When the thermal camera arrives, check:</a></strong> the back of the board is flat enough for tape.</span></p> <p>If the battery covers part of the GPS mark, loosen its strap and slide the battery back first (you set its final place in item 8). Stick the PA1010D to the top plate in front of the battery with a strip of the foam mounting tape, so the board does not touch the carbon. The antenna points up. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Foam tape and boards">When the GPS board arrives, check:</a></strong> the back of the board is flat enough for tape.</span></p> <p>Run the GPS cable along the route you laid. Where you marked a screw head or tip, cut a small hole in the pad so the pad lies flat.</p></li>
+                  <li class="s1-rich" data-action-id="S7.3"><p><span class="ph-tag ph-now">NOW</span> hold the parts in place and mark where they go; stick nothing yet. Under the bottom plate, centre the Pi 36 mm behind the stack centre. Hold the MLX90640 just ahead of the Pi, lens straight down, its wide side across the drone. Hold the PA1010D on the top plate in front of the battery, antenna up. Hold the real parts in place first: these positions come from a design simulation, not a test fit. Mark each spot with the marker. Lay the GPS cable's route along the drone's right-hand side (right as seen from the tail looking forward): from the HAT up through the bottom plate's window next to the Pi, over the flight controller, and round the front edge of the top plate to the GPS. If a stack screw head or tip sticks out under the bottom plate, mark it too.</p> <p><span class="ph-tag ph-after">AFTER THE FIRST HOVER</span> fix them on your marks. Make the pad from two layers of the foam mounting tape (on the Stage 4 list), stuck to the plate. Leave the backing on the outer layer, so the standoffs rest on it without sticking. Fix one nylon standoff at each of the Pi's four corner holes, so the four stand between the board and the plate: a standoff with a threaded stud goes through the hole and takes a nut from the M2.5 set; a standoff with a hole at both ends takes a short screw from the set. (Check what driver the set's screws take: the tool kit has hexagon drivers only.) Put a 1 cm square of the same tape under each of the Pi's four standoffs. The pad stops the board touching carbon, and you do not need to drill the plate. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Foam tape and boards">When the tape arrives, check:</a></strong> its thickness, and that two layers stay put under the zip ties.</span></p> <p>Stick the MLX90640 to the pad, just ahead of the Pi, with a square of the foam mounting tape on the back of the board. The lens points straight down. Its wide side runs across the drone. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Foam tape and boards">When the thermal camera arrives, check:</a></strong> the back of the board is flat enough for tape.</span></p> <p>If the battery covers part of the GPS mark, loosen its strap and slide the battery back first (you set its final place in item 8). Stick the PA1010D to the top plate in front of the battery with a strip of the foam mounting tape, so the board does not touch the carbon. The antenna points up. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Foam tape and boards">When the GPS board arrives, check:</a></strong> the back of the board is flat enough for tape.</span></p> <p>Run the GPS cable along the route you laid. Where you marked a screw head or tip, cut a small hole in the pad so the pad lies flat.</p></li>
                   <li data-action-id="S7.4"><span class="ph-tag ph-after">AFTER THE FIRST HOVER</span> Use the two slots on the bottom plate's centre line just behind the stack (about 3 and 5 cm behind it). For each slot, make a long zip tie by joining two of the 100 mm zip ties end to end. Thread it up through one end of the slot, across the top of the plate, and back down through the other end of the same slot, then round under the Pi. Pull it snug and cut the tail flush. (A cut tail is sharp.) Then add the second Kevlar strap round the Pi and the plate as a second lock. The first strap stays on the battery. <span class="arr-check"><strong><a href="#arrival-card" data-open-arrival data-arrival-test="Foam tape and boards">When the Pi is on its standoffs, check:</a></strong> wrap a string round it and measure the loop. Two 100 mm ties joined must reach.</span></li>
                   <li class="s1-rich" data-action-id="S7.4b"><span class="ph-tag ph-after">AFTER THE FIRST HOVER</span><p>Battery unplugged.</p><ol><li>Find the Pi power lead you soldered to the flight controller's GND and 5V pads in Step 3 (+ to 5V, - to GND).</li><li>Measure it once more before it goes into the Pi: it has been through Steps 6 to 8 and the first hover. Props off. Plug a charged pack into the smoke stopper, then the smoke stopper into the drone. Meter on DC volts, red probe on pin 1 of the micro-USB plug, black probe on pin 5 (pins only, not the metal shell). It should read about 5 V. No 5 V, or a minus sign: stop and ask. Then unplug the pack.</li><li>Plug the micro-USB end into the Pi's socket marked PWR IN (not the one marked USB).</li></ol><p>That is the lead's third check: its + and - in Stage 1, about 5 V at Step 5's first power-up, and now. (The "5 V rail" arrival test covers the load.)</p></li>
                   <li data-action-id="S7.5"><span class="ph-tag ph-now">NOW</span> Nothing hanging below the bottom plate may be the lowest point of the drone: a landing on the lens or the Pi will break it. Plan for it now; you fit them later (S7.8, after the first hover): before the first flight WITH the payload, landing legs must stand lower than it. The legs must stand at least 40 mm below the bottom plate. The payload's lowest part sits about 29 mm below it (from the design check; see &ldquo;How this was checked&rdquo;).</li>
@@ -4921,15 +4923,21 @@ while True:
   }
   /* Fable audit M2 (10 Nov 2026): the shop's own count is lower than this line needs, for example "Only 3 left"
      against 4 motors. Returns the sentence to show, or "" when the count is enough or the shop gives no number. */
-  function shortOf(l) {
-    if (l.status === "out" || l.status === "unchecked" || !l.stockNote) { return ""; }
+  /* 12 Nov 2026 audit, B7: ONE reading of the shop's own count ("Only 3 left", "56 in stock"), used by the warning on
+     the line (shortOf) and by the reason on the stage chip (stageWhy). null = no number, or the line is out or unchecked. */
+  function stockCount(l) {
+    if (l.status === "out" || l.status === "unchecked" || !l.stockNote) { return null; }
     const m = /(\d+)\s+(?:left|in stock)/i.exec(l.stockNote);
-    if (!m || Number(m[1]) >= l.qty) { return ""; }
+    return m ? Number(m[1]) : null;
+  }
+  function shortOf(l) {
+    const have = stockCount(l);
+    if (have === null || have >= l.qty) { return ""; }
     const bk = l.backup;
     const alt = bk && bk.same !== false && (bk.status === "in_stock" || bk.status === "low" || bk.status === "cart")
       ? " Buy all " + l.qty + " at " + bk.shop.replace(/\s*\(.*\)$/, "") + " instead (the Backup link on this line), or check the count again before you order."
       : " Check the count again before you order.";
-    return l.shop + " has " + m[1] + " and this build needs " + l.qty + "." + alt;
+    return l.shop + " has " + have + " and this build needs " + l.qty + "." + alt;
   }
   function renderLine(l, opts) {
     const li = mk("li", "buy-row");
@@ -5049,7 +5057,11 @@ while True:
       body.appendChild(mk("p", "stage-done-head", "Already bought"));
       done.forEach(function (f) { body.appendChild(f.fold); });
     }
-    const next = todo.filter(function (f) { return f.n && OPTIONAL_STAGES.indexOf(f.n) === -1; })[0];
+    /* 12 Nov 2026 audit, W2: the stage that opens here, and that Home's "Open the shopping list" scrolls to, is the stage
+       "Buy next" names (nextBuy), not simply the first stage still to buy (that one may be waiting on stock). */
+    const buyNextStage = nextBuy().nx;
+    const next = todo.filter(function (f) { return f.n === buyNextStage; })[0] ||
+      todo.filter(function (f) { return f.n && OPTIONAL_STAGES.indexOf(f.n) === -1; })[0];
     if (next) { next.fold.open = true; next.fold.classList.add("next"); }
     const um = updateMoney;
     updateMoney = function () { um(); refreshStageFolds(); };
@@ -5135,16 +5147,22 @@ while True:
   function shopName(s) { return String(s || "").replace(/ \(Canada\)$/, ""); }
   function stageWhy(n) {
     const st = stageInfo(n), notes = [];
+    const left = st.lines.filter(function (l) { return !owned(l); });
+    const cap = function (s) { return s.charAt(0).toUpperCase() + s.slice(1); };
     if (st.blocked.length) {
       notes.push("Waiting for the " + st.blocked.map(shortName).join(" and the ") + " (out of stock)");
-    } else {
-      st.lines.filter(function (l) { return !owned(l); }).forEach(function (l) {
-        const bk = l.backup || {}, m = /only (\d+) left/i.exec(l.stockNote || ""), nLeft = m ? Number(m[1]) : null;
-        if (l.status === "out" && canadianAlt(l)) { notes.push(shortName(l).charAt(0).toUpperCase() + shortName(l).slice(1) + " from " + shopName(bk.shop) + " (" + l.shop + " is out)"); }
-        else if (nLeft !== null && nLeft < l.qty) { notes.push(l.shop + " has " + nLeft + " of the " + l.qty + " " + shortName(l) + (canadianAlt(l) ? ": get them from " + shopName(bk.shop) : "")); }
-        else if (nLeft !== null && nLeft <= 2) { notes.push(shortName(l).charAt(0).toUpperCase() + shortName(l).slice(1) + ": only " + nLeft + " left, buy soon"); }
-      });
+      /* 12 Nov 2026 audit, B5: one part out of stock does not stop the rest of the stage being bought */
+      const can = left.length - st.blocked.length;
+      if (can > 0) { notes.push(can + " of its " + left.length + " lines can be bought now"); }
     }
+    left.forEach(function (l) {
+      if (st.blocked.indexOf(l) !== -1) { return; }
+      const bk = l.backup || {}, nLeft = stockCount(l);
+      if (l.status === "out" && canadianAlt(l)) { notes.push(cap(shortName(l)) + " from " + shopName(bk.shop) + " (" + l.shop + " is out)"); }
+      else if (nLeft !== null && nLeft < l.qty) { notes.push(l.shop + " has " + nLeft + " of the " + l.qty + " " + shortName(l) + (canadianAlt(l) ? ": get them from " + shopName(bk.shop) : "")); }
+      /* B3: "buy soon" also for a low line with no Canadian shop to fall back on (required stages only) */
+      else if (nLeft !== null && (nLeft <= 2 || (l.status === "low" && !canadianAlt(l) && !isOptional(n)))) { notes.push(cap(shortName(l)) + ": only " + nLeft + " left, buy soon"); }
+    });
     return [STAGE_WHY[n] || ""].concat(notes).filter(Boolean).join(". ") + ".";
   }
   function updateMoney() {
@@ -5221,16 +5239,30 @@ while True:
       document.getElementById("money-out").textContent = "CA$" + Number(slider.value).toLocaleString("en-CA");
       const plan = planFor(budget);
       advice.textContent = "";
-      if (plan.picks.length) {
-        const sum = plan.picks.reduce(function (a, s) { return a + s.left; }, 0);
+      /* 12 Nov 2026 audit, W4: this card and the Buy page's "Buy next" line name the same next stage. When this week's
+         money does not reach that stage, say so first; a cheaper later stage is then offered as what the money covers. */
+      const nbHome = nextBuy();
+      const nxHome = nbHome.nx === null ? null : stageInfo(nbHome.nx);
+      const shortOfNext = !!nxHome && !nxHome.blocked.length && nxHome.left > budget;
+      const picksSum = plan.picks.reduce(function (a, s) { return a + s.left; }, 0);
+      const picksText = plan.picks.map(function (s) { return stageLabel(s.n) + " (" + cad(s.left) + ")"; }).join(" + ") + " = " + cad(picksSum) + ". " + cad(plan.left) + " left over.";
+      if (shortOfNext) {
+        const p = mk("p", "money-pick");
+        p.appendChild(mk("strong", "", "Not enough for " + stageLabel(nxHome.n) + " yet"));
+        p.appendChild(document.createTextNode(" (" + cad(nxHome.left) + ")."));
+        advice.appendChild(p);
+        if (plan.picks.length) { advice.appendChild(mk("p", "money-pick", "This week's money covers: " + picksText)); }
+      } else if (plan.picks.length) {
         const p = mk("p", "money-pick");
         p.appendChild(mk("strong", "", "Best buy for this week: "));
-        p.appendChild(document.createTextNode(plan.picks.map(function (s) { return stageLabel(s.n) + " (" + cad(s.left) + ")"; }).join(" + ") + " = " + cad(sum) + ". " + cad(plan.left) + " left over."));
+        p.appendChild(document.createTextNode(picksText));
         advice.appendChild(p);
       } else if (billTotals().left === 0) {
         advice.appendChild(mk("p", "money-pick", "Everything is bought."));
+      } else if (!nxHome) {
+        advice.appendChild(mk("p", "money-pick", "Every required stage is bought."));
       } else {
-        advice.appendChild(mk("p", "money-pick", "This is not enough for a whole stage yet."));
+        advice.appendChild(mk("p", "money-pick", "Nothing to buy this week: every stage still open has a part out of stock."));
       }
       if (plan.extras.length) {
         advice.appendChild(mk("p", "money-extra", "Optional, for after your first flight (not part of this week's buy): " +
@@ -5265,6 +5297,26 @@ while True:
             if (nb.waiting.length) {
               nextEl.appendChild(document.createTextNode(" " + (nb.waiting.length === 1 ? "Stage " + nb.waiting[0] + " waits" : "Stages " + words(nb.waiting.map(String)) + " wait") + " on stock."));
             }
+          }
+          /* 12 Nov 2026 (Shad's yes; audit B4): shops charge freight per parcel, so name what the shops of the Buy-next
+             stage also sell in the other stages still to buy. Out-of-stock lines and the optional extras are left out. */
+          const sameEl = document.getElementById("buy-same-shop");
+          if (sameEl) {
+            const bits = [];
+            if (nb.nx !== null) {
+              const shops = [];
+              stageInfo(nb.nx).lines.forEach(function (l) { if (!owned(l) && shops.indexOf(l.shop) < 0) { shops.push(l.shop); } });
+              shops.forEach(function (shop) {
+                const other = BUY_LINES.filter(function (l) { return l.shop === shop && l.stage !== nb.nx && !isOptional(l.stage) && !owned(l) && l.status !== "out"; });
+                if (!other.length) { return; }
+                const st = [];
+                other.forEach(function (l) { if (st.indexOf(l.stage) < 0) { st.push(l.stage); } });
+                st.sort(function (a, b) { return a - b; });
+                bits.push(shop + " also sells " + other.length + (other.length === 1 ? " line" : " lines") + " of " + (st.length === 1 ? "Stage " : "Stages ") + words(st.map(String)) + " (" + cad(sumCents(other)) + ")");
+              });
+            }
+            sameEl.textContent = bits.length ? "Same shops, other stages: " + bits.join("; ") + ". One order per shop costs less freight than several." : "";
+            sameEl.hidden = !bits.length;
           }
         }
         STAGE_IDS.forEach(function (n) {
@@ -5949,6 +6001,6 @@ while True:
 </script>
 <script src="docs/js/domain.js"></script>
 <!-- Guide Assistant: offline-first Q&A. Remove these two lines to drop it. -->
-<script src="docs/js/assistant.js?v=build-guide-v14"></script>
+<script src="docs/js/assistant.js?v=build-guide-v15"></script>
 </body>
 </html>

@@ -8,9 +8,9 @@
 export default {
   T: 80,
   steps: [
-    { t0: 0,  text: "<b>AFTER THE FIRST HOVER</b>: fix the parts on your marks. <b>Battery unplugged</b> while you work on the payload (the props may stay on). Make the <b>pad</b> from <b>two layers of the foam mounting tape</b>, stuck to the plate. <b>Leave the backing on the outer layer</b>, so the standoffs rest on it without sticking. Put a <b>1 cm square</b> of the same tape under each of the Pi's four standoffs.",
+    { t0: 0,  text: "<b>AFTER THE FIRST HOVER</b>: fix the parts on your marks. <b>Battery unplugged</b> while you work on the payload (the props may stay on). Make the <b>pad</b> from <b>two layers of the foam mounting tape</b>, stuck to the plate. <b>Leave the backing on the outer layer</b>, so the standoffs rest on it without sticking. Fix one <b>nylon standoff at each of the Pi's four corner holes</b>, so the four stand between the board and the plate: a standoff with a threaded stud goes through the hole and takes a <b>nut from the M2.5 set</b>; a standoff with a hole at both ends takes a <b>short screw from the set</b>. Put a <b>1 cm square</b> of the same tape under each of the Pi's four standoffs.",
       why: "The pad stops the board touching carbon, and you do not need to drill the plate.",
-      simple: "Two layers of foam tape on the plate, backing left on the outer layer. A square of tape under each Pi standoff.",
+      simple: "Two layers of foam tape on the plate, backing left on the outer layer. A standoff on each corner hole of the Pi (nut or short screw from the M2.5 set). A square of tape under each Pi standoff.",
       more: "When the tape arrives, check: its thickness, and that two layers stay put under the zip ties." },
     { t0: 9,  text: "Stick the <b>MLX90640</b> to the pad, just ahead of the Pi, with a square of the foam mounting tape on the back of the board. The <b>lens points straight down</b>. Its <b>wide side runs across</b> the drone.",
       why: "The camera has to see the ground, nothing else.",

@@ -284,12 +284,12 @@
    "backup2": {
     "shop": "Abra Electronics (Canada)",
     "url": "https://abra-electronics.com/robotics-embedded-electronics/raspberry-pi-zero/pi-zero-2wh-kit-raspberry-pi-zero-2wh-starter-kit.html",
-    "status": "in_stock",
+    "status": "cart",
     "price": 109.95,
     "same": false,
     "country": "CA",
-    "checkedOn": "2026-11-11",
-    "note": "Raspberry Pi Zero 2WH Starter Kit (PI-ZERO-2WH-KIT). Not the same kit, but it has what Step 6 uses: the Pi Zero 2 WH with its pins already soldered, a blank 32 GB card, a card reader and a 5.1 V 2.5 A power supply. Its page said \"Availability: In stock\" with no count on 11 Nov. The bare board was out of stock at every other Canadian shop read that day, so ask Abra to confirm before you pay. Ships from Montreal, to Canada only."
+    "checkedOn": "2026-11-12",
+    "note": "Raspberry Pi Zero 2WH Starter Kit (PI-ZERO-2WH-KIT). Not the same kit, but it has what Step 6 uses: the Pi Zero 2 WH with its pins already soldered, a blank 32 GB card, a card reader and a 5.1 V 2.5 A power supply. Its page says \"Availability: Delivery within 2-3 weeks\" (read 12 Nov; on 11 Nov it said \"In stock\"), so it is not on the shelf: ask Abra before you pay. Ships from Montreal, to Canada only."
    }
   },
   {
@@ -371,7 +371,7 @@
    "usd": true,
    "today": false,
    "backup": null,
-   "note": "US shop: freight and duty not included. HAT US$6.95 + 2 cables at US$1.95 = US$10.85, at 1.3960.",
+   "note": "US shop: freight and duty not included. HAT US$6.95 + 2 cables at US$1.95 = US$10.85, at 1.3960. The cable is SparkFun's \"Flexible Qwiic Cable - Female Jumper (4-pin)\", part CAB-17261 (sparkfun.com/flexible-qwiic-cable-female-jumper-4-pin.html): its four loose ends are sockets that push onto the sensors' pins. Do not take the \"Breadboard Jumper\" cable (PRT-17912) at the same price: its ends are pins.",
    "checkedBy": "page read",
    "backupNote": "No backup found. SparkFun is the only source found for this HAT."
   },
@@ -522,9 +522,9 @@
    "shop": "Rotor Village",
    "url": "https://rotorvillage.ca/geprc-taker-f405-bls-50a-combo-stack/",
    "stage": 5,
-   "status": "out",
-   "stockNote": "Out of stock",
-   "checkedOn": "2026-11-11",
+   "status": "low",
+   "stockNote": "Only 4 left",
+   "checkedOn": "2026-11-12",
    "today": false,
    "backup": {
     "shop": "Pyrodrone",
@@ -537,7 +537,7 @@
     "checkedOn": "2026-11-11",
     "note": "The exact GEPRC stack, in stock. A Canadian seller was not found."
    },
-   "note": "Rotor Village's page says: \"On its way to us, expected around Nov 12–19\" (read 11 Nov). That is the shop's own estimate.",
+   "note": "Back in stock on 12 Nov (it was out of stock on 11 Nov). No Canadian backup shop was found.",
    "backup2": {
     "shop": "GEPRC (the maker's own shop)",
     "url": "https://geprc.com/product/geprc-taker-f405-bls-50a-stack/",
@@ -1045,13 +1045,13 @@
  },
  "stageNotes": {
   "2": [
-   "Out of stock on 11 Nov: the Pi kit and the thermal camera. The kit has two backup shops on its line. The camera is out at its backup shop too, and no Canadian shop had it. You can buy the rest of this stage now: the GPS board (only 5 left), the Qwiic HAT and cables, the spare card and the M2.5 set. Steps 1 to 5 do not need this stage. Step 6 and the payload part of Step 7 wait for the Pi kit and the camera."
+   "Out of stock on 11 Nov: the Pi kit and the thermal camera. The kit has two backup shops on its line; the Canadian one (Abra) quotes delivery in 2 to 3 weeks. The camera is out at its backup shop too, and no Canadian shop had it. You can buy the rest of this stage now: the GPS board (only 5 left), the Qwiic HAT and cables, the spare card and the M2.5 set. Steps 1 to 5 do not need this stage. Step 6 and the payload part of Step 7 wait for the Pi kit and the camera."
   ],
   "4": [
    "When they arrive, check: (a) the knurled standoffs are threaded at both ends (female); (b) the M3 x 10 mm foot screws hold the feet (6.3 mm foot + about 3.7 mm of thread)."
   ],
   "5": [
-   "Out of stock on 11 Nov: the flight stack at Rotor Village. Its page says more is on its way, \"expected around Nov 12–19\". The first backup, Pyrodrone, is a US shop: US$74.99 plus freight and duty. Step 3 cannot start without the stack. The rest of this stage was in stock on 11 Nov."
+   "The flight stack is back at Rotor Village: only 4 left on 12 Nov (it was out of stock on 11 Nov). The only backup found is a US shop, Pyrodrone: US$74.99 plus freight and duty. Step 3 cannot start without the stack. The rest of this stage was in stock on 11 Nov."
   ]
  },
  "optionalStages": [
