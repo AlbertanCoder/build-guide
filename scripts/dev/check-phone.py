@@ -164,7 +164,7 @@ try:
                         cap: a ? a.querySelector('.wt-cap').textContent.trim() : '', fits: !!a && r.right <= innerWidth + 1, href: a ? a.getAttribute('href') : '', img: img ? img.getAttribute('src') : '' };
           d.open = was; return out; })()""")
         check("phone: a closed step is a short row; open, it shows its lesson picture with a play button, inside the screen (Shad, 11 Nov)",
-              nav["closedH"] <= 130 and nav["opened"] and nav["thumbW"] >= 250 and nav["play"] and nav["cap"] == "Watch it in 3D, with quizzes" and nav["fits"]
+              nav["closedH"] <= 130 and nav["opened"] and nav["thumbW"] >= 250 and nav["play"] and nav["cap"] == "Watch it in 3D" and nav["fits"]
               and nav["href"].endswith("#s2-frame") and nav["img"] == "docs/images/lessons/s2-frame.jpg", nav)
         top_el = pg.evaluate_handle(TOP_VIEW).as_element()
         top_el.scroll_into_view_if_needed(); top_el.query_selector(".v3d-poster").click()

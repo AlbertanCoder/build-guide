@@ -44,12 +44,11 @@
   .card.on { display:flex; }
   .card .box { background:var(--panel); color:var(--ink); border-radius:14px; padding:18px; width:min(560px,100%); max-height:100%; overflow:auto; box-shadow:0 10px 40px #0006; }
   .box h2 { margin:0 0 6px; font-size:19px; } .box .sub { color:var(--soft); font-size:13px; margin-bottom:12px; }
-  .opt { display:block; width:100%; text-align:left; margin:8px 0; padding:12px 14px; border-radius:10px; border:2px solid var(--line); background:transparent; color:var(--ink); font:inherit; cursor:pointer; }
-  .opt:hover:not(:disabled) { border-color:var(--accent); }
-  .opt.right { border-color:var(--good); background:color-mix(in srgb, var(--good) 14%, transparent); }
-  .opt.wrong { border-color:var(--bad); background:color-mix(in srgb, var(--bad) 12%, transparent); }
-  .opt:disabled { cursor:default; }
-  .fb { margin:10px 0 4px; font-size:15px; } .fb.right { color:var(--good); } .fb.wrong { color:var(--bad); }
+  /* 24 Nov 2026: you can turn and zoom any time, even while it plays; this puts the camera back on the lesson's own path */
+  #resetView { position:absolute; top:10px; right:10px; z-index:3; display:none; border:1px solid var(--line); border-radius:10px; padding:8px 12px; font:inherit; font-size:14px; font-weight:600; background:var(--panel); color:var(--accent); cursor:pointer; box-shadow:0 2px 10px #0003; }
+  #resetView.on { display:block; }
+  .touchOnly { display:none; }
+  @media (pointer: coarse) { .touchOnly { display:inline; } .mouseOnly { display:none; } }
   .btn { border:0; border-radius:10px; padding:11px 16px; font:inherit; font-weight:600; cursor:pointer; background:var(--accent); color:#fff; }
   .btn.ghost { background:transparent; color:var(--accent); border:1px solid var(--line); }
   .btn:disabled { opacity:.45; cursor:default; }
@@ -118,11 +117,11 @@
   <div id="bar"><i></i></div>
   <div id="stage">
     <div id="loading">Loading&hellip;</div>
+    <button id="resetView" title="Put the camera back where the lesson shows it">Reset view</button>
     <div class="card" id="endCard"><div class="box">
       <h2 id="endTitle">Done</h2><div class="sub" id="endSub"></div>
       <div class="row"><button class="btn ghost" id="again">Watch again</button><button class="btn ghost" id="dunnoEnd">? I don't understand the last step</button><button class="btn" id="endNext">Next &rarr;</button></div>
     </div></div>
-    <div class="card" id="quizCard"><div class="box" id="quizBox"></div></div>
     <div id="list"></div>
   </div>
   <div id="panel">
@@ -130,7 +129,6 @@
     <div id="dock">
     <div id="ctl">
       <button id="play" aria-label="Play or pause">&#10074;&#10074;</button>
-      <button id="doneStep" class="btn" style="display:none;flex:none">&#10003; I understand, next step</button>
       <button id="dunno" class="btn ghost" style="display:none;flex:none">? I don't understand</button>
       <input id="scrub" type="range" min="0" max="10" step="0.01" value="0" aria-label="Scrub">
       <div id="time">0.0 s</div>
@@ -138,7 +136,7 @@
     <div id="steps"></div>
     <div id="nav"><button class="btn ghost" id="prev">&larr; Back</button><button class="btn" id="next">Next &rarr;</button></div>
     </div>
-    <div id="hint"><label style="margin-right:12px"><input type="checkbox" id="straight"> Play straight through</label>Pause, then drag to look around. Shapes are simplified and not exact sizes; the words in the guide are the rule.</div>
+    <div id="hint"><span class="mouseOnly">Drag to turn the model, scroll to zoom, right-drag to slide it, even while it plays.</span><span class="touchOnly">One finger turns the model, two fingers zoom, even while it plays.</span> Reset view puts the camera back. Shapes are simplified and not exact sizes; the words in the guide are the rule.</div>
   </div>
 </div>
 
@@ -147,8 +145,11 @@
 </script>
 <script type="module">
 import * as E from "./engine.js";
-import { SEQ } from "./lessons/index.js";
+import { SEQ as ALL } from "./lessons/index.js";
 import { GLOSSARY } from "./glossary.js";
+/* 24 Nov 2026 (Shad): no quizzes and no locks in the 3D lessons; every lesson is open and plays straight through.
+   The quiz questions stay in lessons/index.js, unused here, so they can come back. */
+const SEQ = ALL.filter(s => !s.quiz);
 const { THREE, V, ease } = E;
 
 const $ = id => document.getElementById(id);
@@ -224,27 +225,14 @@ async function pullSaved() {
     try { localStorage.setItem(KEY, JSON.stringify(prog)); } catch (e) {}
   } catch (e) { synced = false; }
 }
-const idx = id => SEQ.findIndex(s => s.id === id);
-/** an item is open when every quiz before it is passed */
-function firstLocked() { const s0 = prog.start || 0; for (let i = s0; i < SEQ.length; i++) if (SEQ[i].quiz && !prog.passed[SEQ[i].id]) return i + 1; return SEQ.length; }
-/* Final audit, 11 Nov 2026 (S11): what he really passed stays open wherever it sits in the list: a lesson whose quiz
-   is passed, a passed quiz, and whatever comes next after it, up to the next quiz not yet passed. As before, the
-   lessons before a "from here" start stay open for review, and nothing opens past a quiz that is not passed. */
-function openSet() {
-  const s0 = prog.start || 0, open = [];
-  for (let i = 0; i < SEQ.length; i++) {
-    const it = SEQ[i], nx = SEQ[i + 1], pv = SEQ[i - 1];
-    const done = it.quiz ? !!prog.passed[it.id] : !!(nx && nx.quiz && prog.passed[nx.id]);
-    open[i] = i === 0 || i <= s0 || done || (open[i - 1] && (!pv.quiz || !!prog.passed[pv.id]));
-  }
-  return open;
-}
-const isOpen = i => !!openSet()[i];
+/** where an id sits in the list; an old link or save to a quiz ("q-<lesson>") goes to that lesson */
+const idx = id => { const i = SEQ.findIndex(s => s.id === id); return i >= 0 || !/^q-/.test(id || "") ? i : SEQ.findIndex(s => s.id === id.slice(2)); };
 
 /* ---------- stage ---------- */
 const stageEl = $("stage");
 const S = E.createStage(stageEl);
 const { renderer, scene, camera, controls } = S;
+controls.enabled = true;   // turn and zoom at any time, playing or paused
 /* Final audit, 11 Nov 2026 (PICS P2, P3): the picture is re-sized whenever its area changes (the words under it change
    height with every step: before, the picture was stretched to fit). A picture narrower than 16:10 widens its viewing
    angle so it shows the same width a desktop does, instead of a narrow middle slice (the angle is capped at 95 degrees). */
@@ -315,7 +303,6 @@ function placeTags() {
     el.style.top = Math.max(el.offsetHeight + 14, y) + "px";
   });
 }
-let waiting = false;
 let simpleFor = -1, speed = 1, moreOpen = false, capKey = "", shownStep = "";
 /** underline the guide's glossary words in a caption (text only, never inside tags) */
 function gloss(html) {
@@ -334,8 +321,11 @@ document.addEventListener("click", e => {
   if (e.target.matches && e.target.matches("img.stepphoto")) { const v = $("photoView"); v.querySelector("img").src = e.target.src; v.style.display = "flex"; }
 });
 $("photoView").onclick = () => { $("photoView").style.display = "none"; };
-function setWaiting(w) { waiting = w; $("doneStep").style.display = $("dunno").style.display = w ? "" : "none"; }
-function setPlaying(p) { playing = p; $("play").innerHTML = p ? "&#10074;&#10074;" : "&#9654;"; controls.enabled = !p; if (p) { userCam = false; setWaiting(false); } }
+/* 24 Nov 2026: no stop after each step, and the model can be turned while it plays. "I don't understand" shows
+   while paused. Once you move the view it stays yours until Reset view (or a new lesson, or Watch again). */
+function setPlaying(p) { playing = p; $("play").innerHTML = p ? "&#10074;&#10074;" : "&#9654;"; $("dunno").style.display = p ? "none" : ""; }
+function setUserCam(u) { userCam = u; $("resetView").classList.toggle("on", u); }
+function resetView() { setUserCam(false); apply(t); }
 
 function clearCurrent() {
   if (!cur) return;
@@ -345,36 +335,28 @@ function clearCurrent() {
 }
 
 /* ---------- navigation ---------- */
-/** first item at or after i that isn't done yet: a lesson is done when its own quiz (the next item) is passed */
+/** first lesson at or after i not yet watched to the end */
 function resumeFrom(i) {
   let j = Math.max(0, i);
-  while (j < SEQ.length - 1) {
-    const it = SEQ[j], nx = SEQ[j + 1];
-    if (it.quiz ? prog.passed[it.id] : (nx && nx.quiz && prog.passed[nx.id])) j++; else break;
-  }
+  while (j < SEQ.length - 1 && prog.watched[SEQ[j].id]) j++;
   return j;
 }
 let welcomeBack = "";
-async function go(id, { autoplay = true, fromLink = false } = {}) {
+/* a link ("3D guide from here", or a lesson's own link on the Build page) opens exactly that lesson */
+async function go(id, { autoplay = true } = {}) {
   let i = idx(id); if (i < 0) i = 0;
-  if (fromLink) { const r = resumeFrom(i); if (r !== i) { welcomeBack = `Welcome back: you already passed up to here. (Open "All lessons" to watch an earlier one again.)`; i = r; id = SEQ[i].id; } }
-  if (fromLink) { prog.start = i; save(); }   // "3D guide from here": start exactly where pressed
-  let wanted = null;
-  if (!isOpen(i)) { wanted = SEQ[i]; i = firstLocked() - 1; }   // can't skip past an unpassed quiz
   const item = SEQ[i];
-  clearCurrent(); endShown = false; simpleFor = -1; speed = 1; moreOpen = false; capKey = "";
-  $("endCard").classList.remove("on"); $("quizCard").classList.remove("on"); $("list").classList.remove("on");
+  clearCurrent(); endShown = false; simpleFor = -1; speed = 1; moreOpen = false; capKey = ""; setUserCam(false);
+  $("endCard").classList.remove("on"); $("list").classList.remove("on");
   if (prog.at !== item.id) prog.step = 0;
   prog.at = item.id; save();
   if (location.hash !== "#" + item.id) history.replaceState(null, "", "#" + item.id);
-  const inGrp = SEQ.filter(x => x.group === item.group && !x.quiz), k = inGrp.findIndex(x => x.id === item.id);
-  const doneInGrp = inGrp.filter(x => { const j = idx(x.id); return SEQ[j + 1] && SEQ[j + 1].quiz && prog.passed[SEQ[j + 1].id]; }).length;
-  $("grp").textContent = item.group + (k >= 0 ? ` · lesson ${k + 1} of ${inGrp.length} · ${doneInGrp} done ✓` : "") + (item.mins ? ` · about ${item.mins} min at the bench` : "");
+  const inGrp = SEQ.filter(x => x.group === item.group), k = inGrp.findIndex(x => x.id === item.id);
+  const doneInGrp = inGrp.filter(x => prog.watched[x.id]).length;
+  $("grp").textContent = item.group + (k >= 0 ? ` · lesson ${k + 1} of ${inGrp.length} · ${doneInGrp} watched ✓` : "") + (item.mins ? ` · about ${item.mins} min at the bench` : "");
   $("ttl").textContent = item.title;
   $("bar").firstElementChild.style.width = ((i + 1) / SEQ.length * 100) + "%";
   $("prev").disabled = i === 0;
-  $("ctl").style.display = $("hint").style.display = item.quiz ? "none" : "";
-  if (item.quiz) { cur = { item }; showQuiz(item); updateNext(); if (wanted) $("cap").innerHTML = `<b>Locked.</b> Pass this quiz first, then keep going to reach "${wanted.title}".`; return; }
   $("loading").style.display = "block";
   const L = (await item.load()).default;
   if (prog.at !== item.id) return;                  // the user moved on while it loaded
@@ -385,7 +367,8 @@ async function go(id, { autoplay = true, fromLink = false } = {}) {
   $("loading").style.display = "none";
   $("scrub").max = L.T;
   $("steps").innerHTML = "";
-  L.steps.forEach((s, k) => { const b = document.createElement("button"); b.textContent = "Step " + (k + 1); b.onclick = () => { setPlaying(false); userCam = false; $("endCard").classList.remove("on"); apply(s.t0 + 0.01); }; $("steps").appendChild(b); });
+  /* a step button jumps there and keeps playing (or stays paused); a view you turned stays yours */
+  L.steps.forEach((s, k) => { const b = document.createElement("button"); b.textContent = "Step " + (k + 1); b.onclick = () => { $("endCard").classList.remove("on"); endShown = false; simpleFor = -1; speed = 1; apply(s.t0 + 0.01, !userCam); }; $("steps").appendChild(b); });
   const resumeStep = (resumeTo === item.id && prog.step > 0 && prog.step < L.steps.length) ? prog.step : 0;
   resumeTo = null;
   apply(resumeStep ? L.steps[resumeStep].t0 + 0.01 : 0); setPlaying(autoplay); updateNext();
@@ -393,100 +376,54 @@ async function go(id, { autoplay = true, fromLink = false } = {}) {
   if (welcomeBack) { $("cap").innerHTML = `<b>${welcomeBack}</b> ` + $("cap").innerHTML; welcomeBack = ""; }
 }
 function updateNext() {
-  const i = idx(cur.item.id);
-  const nb = $("next");
-  if (cur.item.quiz && !prog.passed[cur.item.id]) { nb.disabled = true; nb.innerHTML = "Answer the quiz to go on"; return; }
+  const i = idx(cur.item.id), nb = $("next");
   nb.disabled = i >= SEQ.length - 1;
-  nb.innerHTML = i >= SEQ.length - 1 ? "The end" : (SEQ[i + 1].quiz ? "Quiz &rarr;" : "Next &rarr;");
+  nb.innerHTML = i >= SEQ.length - 1 ? "The end" : "Next &rarr;";
 }
 const goNext = () => { const i = idx(cur.item.id); if (i < SEQ.length - 1) go(SEQ[i + 1].id); };
 $("next").onclick = goNext; $("endNext").onclick = goNext;
 $("prev").onclick = () => { const i = idx(cur.item.id); if (i > 0) go(SEQ[i - 1].id); };
 $("dunnoEnd").onclick = () => dontUnderstand(cur.lesson.steps.length - 1);
-$("again").onclick = () => { $("endCard").classList.remove("on"); endShown = false; userCam = false; apply(0); setPlaying(true); };
-$("play").onclick = () => { if (!cur || !cur.lesson) return; if (!playing && t >= cur.lesson.T - 0.01) { apply(0); $("endCard").classList.remove("on"); endShown = false; } setPlaying(!playing); };
-$("doneStep").onclick = () => { const L = cur.lesson, si = stepAt(L, t); setWaiting(false); simpleFor = -1; speed = 1; if (si < L.steps.length - 1) apply(L.steps[si + 1].t0 + 0.001); setPlaying(true); };
-/** "I don't understand": show the step in simpler words and play it again (slowly when there are no simpler words) */
+$("again").onclick = () => { $("endCard").classList.remove("on"); endShown = false; setUserCam(false); apply(0); setPlaying(true); };
+$("play").onclick = () => { if (!cur || !cur.lesson) return; if (!playing && t >= cur.lesson.T - 0.01) { apply(0, !userCam); $("endCard").classList.remove("on"); endShown = false; } setPlaying(!playing); };
+$("resetView").onclick = resetView;
+/** "I don't understand": show the step in simpler words and play it again (slowly when there are no simpler words);
+    the lesson then plays on at normal speed */
 function dontUnderstand(si) {
   const L = cur.lesson; simpleFor = si; speed = L.steps[si].simple ? 1 : 0.5;
   prog.confused = prog.confused || {}; prog.confused[cur.item.id + ":" + si] = (prog.confused[cur.item.id + ":" + si] || 0) + 1; save();
-  setWaiting(false); $("endCard").classList.remove("on"); endShown = false; apply(L.steps[si].t0 + 0.001); setPlaying(true);
+  $("endCard").classList.remove("on"); endShown = false; apply(L.steps[si].t0 + 0.001, !userCam); setPlaying(true);
 }
 $("dunno").onclick = () => dontUnderstand(stepAt(cur.lesson, t));
-try { $("straight").checked = localStorage.getItem("walkthrough-straight") === "1"; } catch (e) {}
-$("straight").onchange = () => { try { localStorage.setItem("walkthrough-straight", $("straight").checked ? "1" : "0"); } catch (e) {} };
-$("scrub").oninput = () => { setWaiting(false); setPlaying(false); userCam = false; $("endCard").classList.remove("on"); apply(+$("scrub").value); };
-controls.addEventListener("start", () => { userCam = true; });
+$("scrub").oninput = () => { setPlaying(false); $("endCard").classList.remove("on"); endShown = false; apply(+$("scrub").value, !userCam); };
+/* the wheel, a drag or a pinch on the picture: the view is yours until Reset view */
+controls.addEventListener("start", () => { if (cur && cur.lesson) setUserCam(true); });
 
 function showEnd() {
   endShown = true; prog.watched[cur.item.id] = true; save();
   const i = idx(cur.item.id), nx = SEQ[i + 1];
   $("endTitle").textContent = "Done: " + cur.item.title;
-  $("endSub").textContent = nx ? (nx.quiz ? "Next is a short quiz. You need it right to go on." : "Next: " + nx.title) : "That is the last lesson so far.";
+  $("endSub").textContent = nx ? "Next: " + nx.title : "That is the last lesson so far.";
   $("endNext").style.display = nx ? "" : "none";
   $("endCard").classList.add("on");
-}
-
-/* ---------- quiz ---------- */
-function shuffle(a) { const r = a.slice(); for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; }
-function drawFinal(n = 20) {
-  const pool = SEQ.filter(s => s.quiz && !s.final).flatMap(s => s.questions);
-  return shuffle(pool).slice(0, Math.min(n, pool.length));
-}
-function showQuiz(item) {
-  const box = $("quizBox"); let qi = 0;
-  if (item.final) item.questions = drawFinal();
-  $("cap").innerHTML = "<b>Quick check.</b> Answer each question right to unlock the next lesson."; $("steps").innerHTML = ""; $("scrub").max = 1; $("scrub").value = 0; $("time").textContent = "";
-  function render() {
-    if (qi >= item.questions.length) {
-      prog.passed[item.id] = true; save(); updateNext();
-      const lessonsG = SEQ.filter(x => x.group === item.group && !x.quiz), passedG = lessonsG.filter(x => { const j = idx(x.id); return SEQ[j + 1] && SEQ[j + 1].quiz && prog.passed[SEQ[j + 1].id]; }).length;
-      box.innerHTML = `<h2>Nice work! Quiz passed &#10003;</h2><div class="sub">${item.questions.length} of ${item.questions.length} right. ${item.final ? "You've passed the big final quiz." : `${item.group}: ${passedG} of ${lessonsG.length} lessons done.`} The next lesson is unlocked.</div><div class="row"><button class="btn" id="qGo">Next lesson &rarr;</button></div>`;
-      $("qGo").onclick = goNext; prog.at = SEQ[Math.min(SEQ.length - 1, idx(item.id) + 1)].id; save(); return;
-    }
-    const q = item.questions[qi];
-    const order = shuffle(q.options.map((o, k) => k));
-    box.innerHTML = `<h2>Quick check</h2><div class="sub">Question ${qi + 1} of ${item.questions.length}${prog.passed[item.id] ? " &middot; already passed" : ""}</div>
-      <div style="font-weight:600;font-size:17px">${q.q}</div>
-      <div id="opts">${order.map(k => `<button class="opt" data-k="${k}">${q.options[k]}</button>`).join("")}</div>
-      <div class="fb" id="fb"></div><div class="row" id="qRow"></div>`;
-    box.querySelectorAll(".opt").forEach(b => b.onclick = () => {
-      const k = +b.dataset.k, fb = $("fb");
-      if (k === q.answer) {
-        b.classList.add("right"); box.querySelectorAll(".opt").forEach(x => x.disabled = true);
-        fb.className = "fb right"; fb.innerHTML = "Right. " + q.why;
-        $("qRow").innerHTML = `<button class="btn" id="qN">${qi + 1 < item.questions.length ? "Next question" : "Finish"} &rarr;</button>`;
-        $("qN").onclick = () => { qi++; render(); };
-      } else {
-        b.classList.add("wrong"); box.querySelectorAll(".opt").forEach(x => x.disabled = true);
-        fb.className = "fb wrong"; fb.innerHTML = "Not quite. " + q.why + "<br><b>The quiz starts again from question 1</b>: you pass by getting every question right in one go.";
-        $("qRow").innerHTML = `<button class="btn" id="qRestart">Start the quiz again</button>` + (q.review && idx(q.review) >= 0 ? `<button class="btn ghost" id="qR">Watch the lesson again</button>` : "");
-        $("qRestart").onclick = () => { qi = 0; if (item.final) item.questions = drawFinal(); render(); };
-        if ($("qR")) $("qR").onclick = () => go(q.review);
-      }
-    });
-  }
-  render(); $("quizCard").classList.add("on");
 }
 
 /* ---------- lesson list ---------- */
 function showList() {
   const L = $("list"); let html = "", grp = "";
-  const fl = firstLocked();
-  SEQ.forEach((s, i) => {
+  SEQ.forEach(s => {
     if (s.group !== grp) { grp = s.group; html += `<h3>${grp}</h3>`; }
-    const ico = s.quiz ? (prog.passed[s.id] ? "&#10003;" : "?") : (prog.watched[s.id] ? "&#10003;" : "&#9654;");
     const mins = s.mins ? ` <span style="color:var(--soft);font-size:13px">· ${s.mins} min</span>` : "";
-    html += `<button data-id="${s.id}" ${!isOpen(i) ? "disabled" : ""} class="${cur && cur.item.id === s.id ? "here" : ""}"><span class="ico">${!isOpen(i) ? "&#128274;" : ico}</span><span>${s.quiz ? "Quiz: " : ""}${s.title}${mins}</span></button>`;
+    html += `<button data-id="${s.id}" class="${cur && cur.item.id === s.id ? "here" : ""}"><span class="ico">${prog.watched[s.id] ? "&#10003;" : "&#9654;"}</span><span>${s.title}${mins}</span></button>`;
   });
-  const left = SEQ.filter((s, i) => !s.quiz && s.mins && !(SEQ[i + 1] && SEQ[i + 1].quiz && prog.passed[SEQ[i + 1].id])).reduce((a, s) => a + s.mins, 0);
+  const left = SEQ.filter(s => s.mins && !prog.watched[s.id]).reduce((a, s) => a + s.mins, 0);
   L.innerHTML = `<div class="row" style="margin:0 0 6px"><button class="btn ghost" id="closeList">Close</button><a class="btn ghost" href="practice-radio.html" style="text-decoration:none">Practise on a pretend radio</a>${left ? `<span style="color:var(--soft)">About ${Math.round(left / 6) / 10} hours of bench work left (estimate)</span>` : ""}</div>` + html;
   L.querySelectorAll("button[data-id]").forEach(b => b.onclick = () => go(b.dataset.id));
   $("closeList").onclick = () => L.classList.remove("on");
   L.classList.add("on");
 }
 $("openList").onclick = () => $("list").classList.contains("on") ? $("list").classList.remove("on") : showList();
-addEventListener("hashchange", () => { const id = location.hash.slice(1); if (id && (!cur || cur.item.id !== id)) go(id, { fromLink: true }); });
+addEventListener("hashchange", () => { const id = location.hash.slice(1); if (id && (!cur || cur.item.id !== id)) go(id); });
 
 /* ---------- loop ---------- */
 let last = performance.now();
@@ -494,11 +431,13 @@ function frame(now) {
   const dt = Math.min(0.1, (now - last) / 1000); last = now;
   if (cur && cur.lesson) {
     if (playing) {
-      const L = cur.lesson, si = stepAt(L, t), nt = t + dt * speed;
-      if (!$("straight").checked && si < L.steps.length - 1 && nt >= L.steps[si + 1].t0) { apply(L.steps[si + 1].t0 - 0.001); setPlaying(false); setWaiting(true); }
-      else { apply(nt); if (t >= L.T) { setPlaying(false); if (!endShown) showEnd(); } }
+      /* straight through to the end; the parts keep moving while you turn the view */
+      const L = cur.lesson, nt = t + dt * speed;
+      if (speed !== 1 && stepAt(L, nt) !== simpleFor) speed = 1;   // a slow replay ends with its step
+      apply(nt, !userCam);
+      if (t >= L.T) { setPlaying(false); if (!endShown) showEnd(); }
     }
-    else if (userCam) controls.update();
+    if (userCam) controls.update();
     placeTags();
   }
   renderer.render(scene, camera);
@@ -507,30 +446,25 @@ function frame(now) {
 requestAnimationFrame(frame);
 let resumeTo = null;
 await pullSaved(); showSaved();
-/* Final audit, 11 Nov 2026 (S11): opened without a link (the guide's top button), start at the first lesson not yet
-   passed, on any browser. If that is the lesson he was in, pick up at its step. */
+/* Opened without a link (the guide's top button): start at the first lesson not yet watched to the end, on any
+   browser. If that is the lesson he was in, pick up at its step. */
 let startId = location.hash.slice(1);
 const linked = !!startId;
 if (!linked) {
   const first = resumeFrom(0);
   startId = SEQ[first].id;
   resumeTo = prog.at === startId ? startId : null;
-  if (first > 0 && !resumeTo) welcomeBack = `Welcome back: you already passed up to here. (Open "All lessons" to watch an earlier one again.)`;
+  if (first > 0 && !resumeTo) welcomeBack = `Welcome back: you've watched up to here. (Open "All lessons" to watch an earlier one again.)`;
 }
-await go(startId, { autoplay: linked, fromLink: linked });
+await go(startId, { autoplay: linked });
 
 /* hooks for the automated check */
 window.__wt = {
   ids: SEQ.map(s => s.id), errors,
   async go(id) { await go(id, { autoplay: false }); return cur.item.id; },
-  setTime(x) { setPlaying(false); apply(x); placeTags(); renderer.render(scene, camera); return true; },
-  state() { return { id: cur.item.id, quiz: !!cur.item.quiz, t, caption: $("cap").textContent, nextDisabled: $("next").disabled, lesson: cur.rig && cur.rig.state ? cur.rig.state(t) : null, errors }; },
-  answer(text) { const b = [...document.querySelectorAll("#quizBox .opt")].find(x => x.textContent.trim() === text); if (!b) return "no such option"; b.click(); const n = document.getElementById("qN"); if (n) n.click(); return document.getElementById("fb") ? document.getElementById("fb").className : "done"; },
-  restartQuiz() { const b = document.getElementById("qRestart"); if (b) b.click(); return !!b; },
-  waiting() { return waiting; },
-  playFor(ms) { setPlaying(true); return new Promise(r => setTimeout(() => r({ t, waiting }), ms)); },
-  quizQuestions() { return cur && cur.item.quiz ? cur.item.questions : null; },
-  quizText() { return document.getElementById("quizBox").innerText; },
+  setTime(x) { setPlaying(false); apply(x, !userCam); placeTags(); renderer.render(scene, camera); return true; },
+  state() { return { id: cur.item.id, t, playing, userCam, endShown, caption: $("cap").textContent, nextDisabled: $("next").disabled, cam: camera.position.toArray(), lesson: cur.rig && cur.rig.state ? cur.rig.state(t) : null, errors }; },
+  playFor(ms) { setPlaying(true); return new Promise(r => setTimeout(() => r({ t, playing, endShown }), ms)); },
   reset() { localStorage.removeItem(KEY); },
   setProgress(x) { prog = { at: prog.at, passed: {}, watched: {}, ...x }; save(); return true; },
   ready: true,
