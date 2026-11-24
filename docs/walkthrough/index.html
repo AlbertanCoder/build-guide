@@ -396,8 +396,20 @@ function dontUnderstand(si) {
 }
 $("dunno").onclick = () => dontUnderstand(stepAt(cur.lesson, t));
 $("scrub").oninput = () => { setPlaying(false); $("endCard").classList.remove("on"); endShown = false; apply(+$("scrub").value, !userCam); };
-/* the wheel, a drag or a pinch on the picture: the view is yours until Reset view */
-controls.addEventListener("start", () => { if (cur && cur.lesson) setUserCam(true); });
+/* the wheel, a drag or a pinch on the picture: the view is yours until Reset view.
+   When you take it over it gets limits, measured from where the lesson's camera was at that moment: no closer than a quarter
+   of that distance and no farther than 3.2 times it (the same two numbers as the guide's model viewer), and not under the
+   bench, unless the lesson itself was looking from below. Before, you could scroll out until the model was gone, or turn the
+   camera under the bench. (Noise Logger audit of 24 Nov 2026, finding 8.) */
+function takeOver() {
+  if (!userCam) {
+    const off = camera.position.clone().sub(controls.target), d = off.length() || 1;
+    controls.minDistance = d * 0.25; controls.maxDistance = d * 3.2;
+    controls.maxPolarAngle = Math.max(Math.PI * 0.495, Math.acos(Math.max(-1, Math.min(1, off.y / d))));
+  }
+  setUserCam(true);
+}
+controls.addEventListener("start", () => { if (cur && cur.lesson) takeOver(); });
 
 function showEnd() {
   endShown = true; prog.watched[cur.item.id] = true; save();
